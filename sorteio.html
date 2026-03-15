@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsGames — Sorteios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0e;--card:#131318;--surface:#1a1a20;--border:#252530;--border2:#323240;
+  --green:#00ff55;--green-glow:rgba(0,255,85,.2);--green-dim:rgba(0,255,85,.07);
+  --mars:#e8421a;--orange:#ff6b2b;--amber:#ffb300;
+  --text:#fff;--muted:#555;--dim:#1a1a22;--radius:12px;
+  --bronze:#cd9f6a;--prata:#e8e8e8;--ouro:#FFD700;--esm:#50c878;--dia:#b9f2ff;
+  --diario:#e8421a;--semanal:#ffb300;--mensal:#b9f2ff;
+}
+
+/* Tema claro */
+body.tema-claro{
+  --bg:#f4f4f8;--card:#ffffff;--surface:#eeeef5;--border:#dddde8;--border2:#c8c8d8;
+  --text:#0d0d18;--muted:#7070a0;--dim:#e6e6f0;
+  --green:#009933;--green-glow:rgba(0,153,51,.18);--green-dim:rgba(0,153,51,.08);
+  --mars:#d63a14;background:var(--bg);color:var(--text);
+}
+body.tema-claro .stars-bg{display:none}
+body.tema-claro .navbar{background:rgba(248,248,252,.97);border-bottom-color:rgba(214,58,20,.15)}
+body.tema-claro .card{background:#fff;border-color:var(--border)}
+body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes floatPlanet{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
+@keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes orbit{0%{transform:rotate(0deg) translateX(70px) rotate(0deg)}100%{transform:rotate(360deg) translateX(70px) rotate(-360deg)}}
+@keyframes orbit2{0%{transform:rotate(120deg) translateX(55px) rotate(-120deg)}100%{transform:rotate(480deg) translateX(55px) rotate(-480deg)}}
+@keyframes orbit3{0%{transform:rotate(240deg) translateX(90px) rotate(-240deg)}100%{transform:rotate(600deg) translateX(90px) rotate(-600deg)}}
+@keyframes ticketShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes countFlip{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes confetti{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100px) rotate(720deg);opacity:0}}
+@keyframes winnerGlow{0%,100%{box-shadow:0 0 20px rgba(255,215,0,.4)}50%{box-shadow:0 0 50px rgba(255,215,0,.9),0 0 80px rgba(255,165,0,.5)}}
+@keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(3000%)}}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* Stars */
+.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 25% 40%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 45% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 60%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 75% 35%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 85% 75%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 35% 80%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(2px 2px at 55% 90%,rgba(255,255,255,.2) 0%,transparent 100%);
+  opacity:.8}
+
+/* Navbar */
+.navbar{position:sticky;top:0;z-index:200;background:rgba(10,10,14,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(232,66,26,.15);padding:0 16px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:var(--mars)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.04);
+  font-size:10px;font-weight:700;color:#aaa;letter-spacing:.5px;
+  cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s}
+.nav-btn:hover{border-color:#555;color:#fff}
+.nav-btn-user{border-color:rgba(0,255,85,.2);color:var(--green)}
+.nav-btn-user:hover{border-color:var(--green);background:rgba(0,255,85,.05)}
+
+/* HERO */
+.hero{
+  position:relative;z-index:1;
+  padding:60px 16px 40px;text-align:center;
+  background:radial-gradient(ellipse at 50% 0%,rgba(232,66,26,.1) 0%,transparent 60%);
+  overflow:hidden;
+}
+.hero-scan{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-scan::after{content:'';position:absolute;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(0,255,85,.3),transparent);
+  animation:scanLine 6s linear infinite}
+
+/* Sistema solar decorativo */
+.solar-wrap{position:relative;width:160px;height:160px;margin:0 auto 32px}
+.sol-planet{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#c0392b,#8b1a10 40%,#1a0504 80%);
+  box-shadow:0 0 30px rgba(232,66,26,.6),inset -8px -8px 16px rgba(0,0,0,.5);
+  animation:floatPlanet 5s ease-in-out infinite;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+}
+.sol-orbit-1,.sol-orbit-2,.sol-orbit-3{position:absolute;top:50%;left:50%;border-radius:50%}
+.sol-orbit-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:1px dashed rgba(255,255,255,.1)}
+.sol-orbit-ring.r1{width:140px;height:140px;margin:-70px 0 0 -70px}
+.sol-orbit-ring.r2{width:110px;height:110px;margin:-55px 0 0 -55px}
+.sol-orbit-ring.r3{width:180px;height:180px;margin:-90px 0 0 -90px}
+.sol-orb{width:10px;height:10px;border-radius:50%;margin:-5px 0 0 -5px}
+.sol-orbit-1 .sol-orb{background:var(--green);box-shadow:0 0 10px var(--green);animation:orbit 3s linear infinite}
+.sol-orbit-2 .sol-orb{background:var(--amber);box-shadow:0 0 10px var(--amber);animation:orbit2 5s linear infinite}
+.sol-orbit-3 .sol-orb{background:var(--dia);box-shadow:0 0 10px var(--dia);animation:orbit3 7s linear infinite}
+
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--mars);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';height:1px;width:40px;background:rgba(232,66,26,.4)}
+.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(28px,6vw,52px);font-weight:900;
+  color:#fff;letter-spacing:2px;margin-bottom:12px;line-height:1.1}
+.hero-title span{color:var(--mars)}
+.hero-sub{font-size:13px;color:#666;font-weight:600;max-width:520px;margin:0 auto 32px;line-height:1.7}
+
+/* Tickets do usuário */
+.ticket-strip{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:12px 24px;border-radius:99px;
+  background:rgba(255,183,0,.06);border:1px solid rgba(255,183,0,.2);
+  margin-bottom:12px;
+}
+.ticket-icon{font-size:20px;animation:ticketShake 3s ease-in-out infinite}
+.ticket-info{text-align:left}
+.ticket-count{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--amber);line-height:1}
+.ticket-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-top:2px}
+.ticket-reset{font-size:10px;color:#555;font-weight:600;margin-top:6px}
+.ticket-reset span{color:var(--green)}
+
+/* Tabs de tipo de sorteio */
+.sorteio-tabs{display:flex;gap:8px;justify-content:center;margin:40px 0 32px;
+  padding:0 16px;flex-wrap:wrap}
+.sorteio-tab{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 24px;border-radius:99px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.03);
+  font-size:11px;font-weight:700;color:#666;letter-spacing:.5px;
+  cursor:pointer;transition:all .2s;
+}
+.sorteio-tab:hover{border-color:#555;color:#aaa}
+.sorteio-tab.active-diario{border-color:var(--diario);color:var(--diario);background:rgba(232,66,26,.08)}
+.sorteio-tab.active-semanal{border-color:var(--semanal);color:var(--semanal);background:rgba(255,179,0,.08)}
+.sorteio-tab.active-mensal{border-color:var(--mensal);color:var(--mensal);background:rgba(185,242,255,.08)}
+.tab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tab-dot-diario{background:var(--diario);box-shadow:0 0 6px var(--diario)}
+.tab-dot-semanal{background:var(--semanal);box-shadow:0 0 6px var(--semanal)}
+.tab-dot-mensal{background:var(--mensal);box-shadow:0 0 6px var(--mensal)}
+
+/* Main content */
+.main{max-width:900px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1}
+
+/* Card do sorteio ativo */
+.sorteio-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;margin-bottom:28px;animation:fadeUp .4s ease both;
+}
+.sorteio-card-header{
+  padding:28px 28px 0;
+  position:relative;
+}
+.sorteio-tipo-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:99px;
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.badge-diario{background:rgba(232,66,26,.12);border:1px solid rgba(232,66,26,.3);color:var(--diario)}
+.badge-semanal{background:rgba(255,179,0,.1);border:1px solid rgba(255,179,0,.3);color:var(--semanal)}
+.badge-mensal{background:rgba(185,242,255,.08);border:1px solid rgba(185,242,255,.25);color:var(--mensal)}
+.badge-dot{width:6px;height:6px;border-radius:50%;animation:pulseGlow 1.5s ease-in-out infinite}
+.sorteio-titulo{font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,26px);
+  font-weight:900;color:#fff;margin-bottom:8px}
+.sorteio-desc{font-size:12px;color:#666;font-weight:600;line-height:1.6;margin-bottom:20px}
+
+/* Premio */
+.premio-box{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,165,0,.03));
+  border:1px solid rgba(255,215,0,.15);
+  margin-bottom:24px;
+}
+.premio-icon{font-size:32px;flex-shrink:0}
+.premio-info{}
+.premio-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:4px}
+.premio-nome{font-size:16px;font-weight:900;color:#fff}
+.premio-plat{font-size:10px;color:#888;font-weight:600;margin-top:2px}
+
+/* Contador regressivo */
+.contador-wrap{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  padding:20px 28px;
+  background:rgba(0,0,0,.3);border-top:1px solid var(--border);
+}
+.contador-item{text-align:center}
+.contador-num{
+  font-family:'Orbitron',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:900;
+  color:#fff;line-height:1;display:block;
+  transition:all .2s;
+}
+.contador-num.flip{animation:countFlip .2s ease}
+.contador-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-top:4px;display:block}
+.contador-sep{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+  color:var(--mars);display:flex;align-items:center;padding-top:4px;justify-content:center}
+
+/* Participação */
+.participar-section{padding:24px 28px;border-top:1px solid var(--border)}
+.participar-top{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.participantes-info{font-size:11px;color:#666;font-weight:600}
+.participantes-info strong{color:#aaa}
+.meus-tickets{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:99px;
+  background:rgba(255,183,0,.08);border:1px solid rgba(255,183,0,.2);
+  font-size:11px;font-weight:700;color:var(--amber);
+}
+
+/* Slider de tickets */
+.tickets-slider-wrap{margin-bottom:16px}
+.tickets-slider-label{
+  display:flex;justify-content:space-between;
+  font-size:10px;font-weight:700;color:#666;margin-bottom:8px;letter-spacing:.5px}
+.tickets-slider-label span{color:var(--amber);font-size:14px}
+input[type=range].tickets-range{
+  width:100%;-webkit-appearance:none;height:4px;
+  border-radius:2px;background:var(--border);outline:none;
+}
+input[type=range].tickets-range::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--amber);cursor:pointer;
+  box-shadow:0 0 10px rgba(255,183,0,.5);
+  transition:box-shadow .2s;
+}
+input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px rgba(255,183,0,.8)}
+
+/* Botão participar */
+.btn-participar{
+  width:100%;padding:16px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--mars),#ff6b2b);
+  color:#fff;font-family:'Montserrat',sans-serif;
+  font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:transform .15s,box-shadow .2s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-participar:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,66,26,.4)}
+.btn-participar:active{transform:scale(.98)}
+.btn-participar:disabled{background:var(--surface);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+.btn-participar.ja-participa{background:linear-gradient(135deg,rgba(0,255,85,.15),rgba(0,255,85,.08));
+  border:1px solid rgba(0,255,85,.3);color:var(--green)}
+
+/* Já participando */
+.ja-participando{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:10px;
+  background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.15);
+  font-size:12px;font-weight:700;color:var(--green);
+}
+
+/* Lista de participantes */
+.participantes-section{padding:0 28px 24px}
+.participantes-title{font-size:10px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.participantes-grid{display:flex;flex-wrap:wrap;gap:8px}
+.participante-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:10px;font-weight:700;color:#aaa;
+}
+.participante-avatar{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:900;color:#fff;flex-shrink:0;
+}
+.participante-chips-mais{
+  padding:6px 12px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:10px;font-weight:700;color:var(--muted);
+}
+
+/* Card sorteio encerrado / sem sorteio */
+.sem-sorteio{
+  text-align:center;padding:60px 24px;
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+}
+.sem-sorteio-emoji{font-size:48px;margin-bottom:16px;display:block;
+  animation:floatPlanet 4s ease-in-out infinite}
+.sem-sorteio-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;
+  color:#fff;margin-bottom:8px}
+.sem-sorteio-sub{font-size:12px;color:#555;font-weight:600;line-height:1.7}
+
+/* Vencedor anterior */
+.vencedor-card{
+  background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,165,0,.04));
+  border:1px solid rgba(255,215,0,.2);border-radius:16px;
+  padding:20px;margin-bottom:28px;
+  display:flex;align-items:center;gap:16px;
+  animation:winnerGlow 3s ease-in-out infinite;
+}
+.vencedor-trophy{font-size:36px}
+.vencedor-info{}
+.vencedor-label{font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.vencedor-nome{font-size:16px;font-weight:900;color:#fff}
+.vencedor-premio{font-size:11px;color:#888;margin-top:2px}
+
+/* Histórico */
+.historico-section{margin-top:8px}
+.historico-title{font-size:10px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:14px;
+  padding-bottom:8px;border-bottom:1px solid var(--border)}
+.historico-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);
+}
+.historico-icon{font-size:20px;flex-shrink:0}
+.historico-info{flex:1}
+.historico-nome{font-size:12px;font-weight:700;color:#ccc}
+.historico-detalhe{font-size:10px;color:#555;margin-top:2px}
+.historico-tipo{
+  padding:3px 10px;border-radius:99px;
+  font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+}
+.historico-tipo.diario{background:rgba(232,66,26,.12);color:var(--diario)}
+.historico-tipo.semanal{background:rgba(255,179,0,.1);color:var(--semanal)}
+.historico-tipo.mensal{background:rgba(185,242,255,.08);color:var(--mensal)}
+
+/* Login necessário */
+.login-cta{
+  text-align:center;padding:40px 24px;
+  background:var(--card);border:1px dashed var(--border2);border-radius:16px;
+  margin-bottom:20px;
+}
+.login-cta-title{font-size:16px;font-weight:900;color:#fff;margin-bottom:8px}
+.login-cta-sub{font-size:12px;color:#555;margin-bottom:20px}
+.btn-login-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;border-radius:10px;
+  background:var(--mars);color:#fff;border:none;
+  font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;
+  letter-spacing:.5px;text-decoration:none;cursor:pointer;
+  transition:box-shadow .2s,transform .15s;
+}
+.btn-login-cta:hover{box-shadow:0 6px 20px rgba(232,66,26,.4);transform:translateY(-1px)}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid rgba(0,255,85,.3);color:var(--green);
+  padding:12px 22px;border-radius:8px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.erro{border-color:rgba(232,66,26,.4);color:var(--mars)}
+
+/* Confetti */
+.confetti-piece{
+  position:fixed;pointer-events:none;z-index:9999;
+  width:8px;height:8px;border-radius:2px;
+  animation:confetti 1.5s ease-out forwards;
+}
+
+@media(min-width:600px){
+  .hero{padding:80px 32px 50px}
+  .main{padding:0 32px 80px}
+  .sorteio-card-header{padding:32px 32px 0}
+  .participar-section,.participantes-section{padding-left:32px;padding-right:32px}
+  .contador-wrap{padding:24px 32px}
+}
+</style>
+</head>
+<body>
+<div class="stars-bg"></div>
+
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-text">Mars<span>Games</span></div>
+  </a>
+  <div class="nav-right">
+    <a class="nav-btn" href="index.html">← Loja</a>
+    <a class="nav-btn nav-btn-user" href="perfil.html" id="navPerfilBtn" style="display:none">Meu Perfil</a>
+    <a class="nav-btn" href="perfil.html" id="navLoginBtn">Entrar</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-scan"></div>
+  <div class="solar-wrap">
+    <div class="sol-orbit-ring r2"></div>
+    <div class="sol-orbit-ring r1"></div>
+    <div class="sol-orbit-ring r3"></div>
+    <div class="sol-planet">🎲</div>
+    <div class="sol-orbit-1"><div class="sol-orb"></div></div>
+    <div class="sol-orbit-2"><div class="sol-orb"></div></div>
+    <div class="sol-orbit-3"><div class="sol-orb"></div></div>
+  </div>
+  <div class="hero-eyebrow">MarsGames</div>
+  <h1 class="hero-title">Sorteios<br><span>Galácticos</span></h1>
+  <p class="hero-sub">Use seus tickets para concorrer a jogos incríveis. Quanto mais tickets, maiores suas chances de ganhar!</p>
+
+  <div id="ticketStrip" style="display:none">
+    <div class="ticket-strip">
+      <div class="ticket-icon">🎟️</div>
+      <div class="ticket-info">
+        <div class="ticket-count" id="heroTicketCount">0</div>
+        <div class="ticket-label">Tickets disponíveis</div>
+      </div>
+    </div>
+    <div class="ticket-reset">Renova em: <span id="ticketResetTimer">carregando...</span></div>
+  </div>
+</section>
+
+<!-- TABS -->
+<div class="sorteio-tabs">
+  <div class="sorteio-tab" id="tab-diario" onclick="setTipoSorteio('diario')">
+    <div class="tab-dot tab-dot-diario"></div>🔥 Diário
+  </div>
+  <div class="sorteio-tab" id="tab-semanal" onclick="setTipoSorteio('semanal')">
+    <div class="tab-dot tab-dot-semanal"></div>⭐ Semanal
+  </div>
+  <div class="sorteio-tab" id="tab-mensal" onclick="setTipoSorteio('mensal')">
+    <div class="tab-dot tab-dot-mensal"></div>💎 Mensal
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Loading -->
+  <div id="loading-sorteio" style="text-align:center;padding:60px;color:var(--muted)">
+    <div style="width:32px;height:32px;border:3px solid rgba(0,255,85,.15);border-top-color:#00ff55;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase">Carregando sorteio...</div>
+  </div>
+
+  <!-- Conteúdo do sorteio -->
+  <div id="sorteio-content" style="display:none">
+
+    <!-- Vencedor anterior -->
+    <div id="vencedorCard" style="display:none" class="vencedor-card">
+      <div class="vencedor-trophy">🏆</div>
+      <div class="vencedor-info">
+        <div class="vencedor-label">🎉 Último vencedor</div>
+        <div class="vencedor-nome" id="vencedorNome">—</div>
+        <div class="vencedor-premio" id="vencedorPremio">—</div>
+      </div>
+    </div>
+
+    <!-- Card principal do sorteio -->
+    <div class="sorteio-card" id="sorteioCardMain">
+
+      <!-- Header -->
+      <div class="sorteio-card-header">
+        <div class="sorteio-tipo-badge" id="sorteioTipoBadge">
+          <div class="badge-dot" id="badgeDot"></div>
+          <span id="badgeLabel">Diário</span>
+        </div>
+        <div class="sorteio-titulo" id="sorteioTitulo">Carregando...</div>
+        <div class="sorteio-desc" id="sorteioDesc"></div>
+
+        <!-- Prêmio -->
+        <div class="premio-box">
+          <div class="premio-icon">🎮</div>
+          <div class="premio-info">
+            <div class="premio-label">Prêmio</div>
+            <div class="premio-nome" id="premiNome">—</div>
+            <div class="premio-plat" id="premiPlat"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contador -->
+      <div class="contador-wrap" id="contadorWrap">
+        <div class="contador-item">
+          <span class="contador-num" id="cDias">00</span>
+          <span class="contador-label">Dias</span>
+        </div>
+        <div class="contador-item">
+          <span class="contador-num" id="cHoras">00</span>
+          <span class="contador-label">Horas</span>
+        </div>
+        <div class="contador-item">
+          <span class="contador-num" id="cMinutos">00</span>
+          <span class="contador-label">Min</span>
+        </div>
+        <div class="contador-item">
+          <span class="contador-num" id="cSegundos">00</span>
+          <span class="contador-label">Seg</span>
+        </div>
+      </div>
+
+      <!-- Participação -->
+      <div class="participar-section">
+        <!-- CTA login -->
+        <div id="ctaLogin" style="display:none" class="login-cta">
+          <div class="login-cta-title">Entre para participar 🚀</div>
+          <div class="login-cta-sub">Faça login para usar seus tickets e concorrer ao prêmio!</div>
+          <a href="perfil.html" class="btn-login-cta">Entrar agora</a>
+        </div>
+
+        <!-- Participação logado -->
+        <div id="ctaParticipacao" style="display:none">
+          <div class="participar-top">
+            <div class="participantes-info">
+              <strong id="totalParticipantes">0</strong> participantes •
+              <strong id="totalTicketsSorteio">0</strong> tickets no pote
+            </div>
+            <div class="meus-tickets">🎟️ <span id="meusTicketsLabel">0 tickets</span></div>
+          </div>
+
+          <!-- Já participa -->
+          <div id="jaParticipaBox" style="display:none" class="ja-participando">
+            ✅ Você já está participando com <strong id="ticketsUsadosLabel" style="color:var(--amber);margin:0 4px">0</strong> tickets! Boa sorte! 🍀
+          </div>
+
+          <!-- Slider para escolher tickets -->
+          <div id="sliderBox">
+            <div class="tickets-slider-wrap">
+              <div class="tickets-slider-label">
+                <span>Quantos tickets usar?</span>
+                <span id="sliderValLabel">1</span>
+              </div>
+              <input type="range" class="tickets-range" id="ticketsRange"
+                min="1" max="10" value="1" oninput="atualizarSlider(this.value)">
+            </div>
+            <div style="font-size:10px;color:#555;font-weight:600;margin-bottom:14px;text-align:center">
+              Usar <strong id="ticketsEscolhidos" style="color:var(--amber)">1</strong> ticket(s) →
+              <strong id="chanceLabel" style="color:var(--green)">calculando...</strong> de chance
+            </div>
+            <button class="btn-participar" id="btnParticipar" onclick="participar()">
+              🎟️ Participar do sorteio
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participantes -->
+      <div class="participantes-section" id="participantesSection" style="display:none">
+        <div class="participantes-title">Participantes</div>
+        <div class="participantes-grid" id="participantesGrid"></div>
+      </div>
+    </div>
+
+    <!-- Histórico de vencedores -->
+    <div class="historico-section" id="historicoSection" style="display:none">
+      <div class="historico-title">Últimos vencedores</div>
+      <div id="historicoList"></div>
+    </div>
+  </div>
+
+  <!-- Sem sorteio -->
+  <div id="sem-sorteio" style="display:none">
+    <div class="sem-sorteio">
+      <span class="sem-sorteio-emoji" id="semSorteioEmoji">🚀</span>
+      <div class="sem-sorteio-title" id="semSorteioTitle">Nenhum sorteio ativo agora</div>
+      <div class="sem-sorteio-sub" id="semSorteiSub">Fique de olho! Em breve teremos um sorteio incrível para você.<br>Siga o nosso Discord para ser avisado primeiro! 🎮</div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}
+});
+
+/* Tema */
+(function(){
+  var t=localStorage.getItem('mg_tema');
+  if(t==='light') document.body.classList.add('tema-claro');
+  window.addEventListener('storage',function(e){
+    if(e.key==='mg_tema') e.newValue==='light'?document.body.classList.add('tema-claro'):document.body.classList.remove('tema-claro');
+  });
+})();
+
+var userSession=null, meusTickets=0, tipoAtual='diario';
+var sorteioAtual=null, jaParticipa=false, contadorInterval=null;
+
+/* ── HELPERS ── */
+function showToast(msg,erro){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='show'+(erro?' erro':'');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.className=''},3000);
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function pad(n){return String(n).padStart(2,'0')}
+
+/* ── AUTH ── */
+sb.auth.onAuthStateChange(function(event,session){
+  if(event==='INITIAL_SESSION'||event==='SIGNED_IN'){
+    userSession=session;
+    if(session){
+      document.getElementById('navLoginBtn').style.display='none';
+      document.getElementById('navPerfilBtn').style.display='flex';
+      document.getElementById('ticketStrip').style.display='block';
+      carregarTickets(session.user);
+    } else {
+      document.getElementById('navLoginBtn').style.display='flex';
+      document.getElementById('navPerfilBtn').style.display='none';
+    }
+    carregarSorteio(tipoAtual);
+  }
+});
+
+/* ── TICKETS ── */
+async function carregarTickets(user){
+  var{data}=await sb.from('tickets').select('*').eq('user_email',user.email).maybeSingle();
+
+  /* Sem registro: cria com tickets baseados no nível */
+  if(!data){
+    var nivel=await getNivelUsuario(user.email);
+    var qtd=nivel==='diamante'?3:nivel==='esmeralda'?2:nivel==='ouro'?2:1;
+    var{data:novo}=await sb.from('tickets').insert({
+      user_id:user.id,user_email:user.email,
+      quantidade:qtd,total_acumulado:qtd,
+      ultima_renovacao:new Date().toISOString()
+    }).select().single();
+    data=novo;
+  } else {
+    /* Verifica se precisa renovar (semana virou) */
+    var ultima=new Date(data.ultima_renovacao);
+    var agora=new Date();
+    var diffDias=Math.floor((agora-ultima)/(1000*60*60*24));
+    if(diffDias>=7){
+      var nivel=await getNivelUsuario(user.email);
+      var bonus=nivel==='diamante'?3:nivel==='esmeralda'?2:nivel==='ouro'?2:1;
+      var novaQtd=data.quantidade+bonus;
+      await sb.from('tickets').update({
+        quantidade:novaQtd,
+        total_acumulado:(data.total_acumulado||0)+bonus,
+        ultima_renovacao:agora.toISOString()
+      }).eq('user_email',user.email);
+      data.quantidade=novaQtd;
+      data.ultima_renovacao=agora.toISOString();
+      showToast('🎟️ +'+bonus+' tickets renovados!');
+    }
+  }
+
+  meusTickets=data?data.quantidade:0;
+  document.getElementById('heroTicketCount').textContent=meusTickets;
+  atualizarTimerRenovacao(data?data.ultima_renovacao:new Date().toISOString());
+}
+
+async function getNivelUsuario(email){
+  var{data}=await sb.from('marspoints').select('pontos').eq('user_email',email).maybeSingle();
+  var pts=(data&&data.pontos)||0;
+  if(pts>=5000)return'diamante';
+  if(pts>=1000)return'esmeralda';
+  if(pts>=500)return'ouro';
+  if(pts>=100)return'prata';
+  return'bronze';
+}
+
+function atualizarTimerRenovacao(ultima){
+  var renovar=new Date(ultima);
+  renovar.setDate(renovar.getDate()+7);
+  function tick(){
+    var diff=renovar-new Date();
+    if(diff<=0){document.getElementById('ticketResetTimer').textContent='Renovando...';return}
+    var d=Math.floor(diff/86400000);
+    var h=Math.floor((diff%86400000)/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var s=Math.floor((diff%60000)/1000);
+    var txt=d>0?d+'d '+pad(h)+'h '+pad(m)+'m':pad(h)+'h '+pad(m)+'m '+pad(s)+'s';
+    document.getElementById('ticketResetTimer').textContent=txt;
+  }
+  tick();setInterval(tick,1000);
+}
+
+/* ── TABS ── */
+function setTipoSorteio(tipo){
+  tipoAtual=tipo;
+  ['diario','semanal','mensal'].forEach(function(t){
+    var tab=document.getElementById('tab-'+t);
+    tab.className='sorteio-tab'+(t===tipo?' active-'+t:'');
+  });
+  if(contadorInterval)clearInterval(contadorInterval);
+  carregarSorteio(tipo);
+}
+
+/* ── CARREGAR SORTEIO ── */
+async function carregarSorteio(tipo){
+  document.getElementById('loading-sorteio').style.display='block';
+  document.getElementById('sorteio-content').style.display='none';
+  document.getElementById('sem-sorteio').style.display='none';
+
+  var{data:sorteios}=await sb.from('sorteios_periodicos')
+    .select('*').eq('tipo',tipo).eq('ativo',true)
+    .order('created_at',{ascending:false}).limit(1);
+
+  document.getElementById('loading-sorteio').style.display='none';
+
+  if(!sorteios||sorteios.length===0){
+    mostrarSemSorteio(tipo);
+    carregarHistorico(tipo);
+    return;
+  }
+
+  sorteioAtual=sorteios[0];
+  renderSorteio(sorteioAtual);
+  document.getElementById('sorteio-content').style.display='block';
+
+  /* Carrega participantes e histórico */
+  carregarParticipantes(sorteioAtual.id);
+  carregarHistorico(tipo);
+
+  /* Verifica se usuário já participa */
+  if(userSession){
+    var{data:part}=await sb.from('sorteio_participacoes')
+      .select('*').eq('sorteio_id',sorteioAtual.id)
+      .eq('user_email',userSession.user.email).maybeSingle();
+    jaParticipa=!!part;
+    renderParticipacao(part);
+  } else {
+    document.getElementById('ctaLogin').style.display='block';
+    document.getElementById('ctaParticipacao').style.display='none';
+  }
+}
+
+function renderSorteio(s){
+  /* Badge tipo */
+  var cores={diario:'badge-diario',semanal:'badge-semanal',mensal:'badge-mensal'};
+  var nomes={diario:'🔥 Diário',semanal:'⭐ Semanal',mensal:'💎 Mensal'};
+  var dotCores={diario:'var(--diario)',semanal:'var(--semanal)',mensal:'var(--mensal)'};
+  document.getElementById('sorteioTipoBadge').className='sorteio-tipo-badge '+cores[s.tipo];
+  document.getElementById('badgeDot').style.background=dotCores[s.tipo];
+  document.getElementById('badgeLabel').textContent=nomes[s.tipo];
+  document.getElementById('sorteioTitulo').textContent=s.titulo;
+  document.getElementById('sorteioDesc').textContent=s.descricao||'';
+  document.getElementById('premiNome').textContent=s.premio;
+  document.getElementById('premiPlat').textContent=s.plataforma||'Steam Key';
+
+  /* Vencedor anterior */
+  if(s.vencedor_email){
+    document.getElementById('vencedorCard').style.display='flex';
+    document.getElementById('vencedorNome').textContent=s.vencedor_email;
+    document.getElementById('vencedorPremio').textContent='Ganhou: '+s.premio;
+  }
+
+  /* Contador */
+  iniciarContador(s.data_fim);
+}
+
+function iniciarContador(dataFim){
+  if(!dataFim){
+    document.getElementById('cDias').textContent='--';
+    document.getElementById('cHoras').textContent='--';
+    document.getElementById('cMinutos').textContent='--';
+    document.getElementById('cSegundos').textContent='--';
+    return;
+  }
+  var fim=new Date(dataFim);
+  var prev={d:'',h:'',m:'',s:''};
+
+  function tick(){
+    var diff=fim-new Date();
+    if(diff<=0){
+      clearInterval(contadorInterval);
+      document.getElementById('cDias').textContent='00';
+      document.getElementById('cHoras').textContent='00';
+      document.getElementById('cMinutos').textContent='00';
+      document.getElementById('cSegundos').textContent='00';
+      showToast('⏰ Sorteio encerrado! Apurando vencedor...');
+      return;
+    }
+    var d=pad(Math.floor(diff/86400000));
+    var h=pad(Math.floor((diff%86400000)/3600000));
+    var m=pad(Math.floor((diff%3600000)/60000));
+    var s=pad(Math.floor((diff%60000)/1000));
+    function set(id,val,key){
+      var el=document.getElementById(id);
+      if(prev[key]!==val){el.classList.remove('flip');void el.offsetWidth;el.classList.add('flip');}
+      el.textContent=val;prev[key]=val;
+    }
+    set('cDias',d,'d');set('cHoras',h,'h');set('cMinutos',m,'m');set('cSegundos',s,'s');
+  }
+  tick();
+  contadorInterval=setInterval(tick,1000);
+}
+
+function renderParticipacao(part){
+  document.getElementById('ctaLogin').style.display='none';
+  document.getElementById('ctaParticipacao').style.display='block';
+
+  if(part){
+    document.getElementById('jaParticipaBox').style.display='flex';
+    document.getElementById('sliderBox').style.display='none';
+    document.getElementById('ticketsUsadosLabel').textContent=part.tickets_usados;
+  } else {
+    document.getElementById('jaParticipaBox').style.display='none';
+    document.getElementById('sliderBox').style.display='block';
+    /* Configura slider */
+    var max=Math.max(1,meusTickets);
+    var range=document.getElementById('ticketsRange');
+    range.max=max;range.value=1;
+    atualizarSlider(1);
+  }
+}
+
+function atualizarSlider(val){
+  document.getElementById('sliderValLabel').textContent=val+' 🎟️';
+  document.getElementById('ticketsEscolhidos').textContent=val;
+  /* Calcular chance */
+  if(sorteioAtual){
+    var totalPote=sorteioAtual.total_participantes+parseInt(val);
+    var chance=totalPote>0?Math.round((parseInt(val)/totalPote)*100):100;
+    document.getElementById('chanceLabel').textContent='~'+chance+'% de chance';
+  }
+}
+
+async function carregarParticipantes(sorteioId){
+  var{data}=await sb.from('sorteio_participacoes')
+    .select('user_email,tickets_usados')
+    .eq('sorteio_id',sorteioId)
+    .order('tickets_usados',{ascending:false})
+    .limit(20);
+
+  if(!data||data.length===0){
+    document.getElementById('participantesSection').style.display='none';
+    return;
+  }
+  document.getElementById('participantesSection').style.display='block';
+  document.getElementById('totalParticipantes').textContent=data.length;
+
+  var totalTickets=data.reduce(function(s,p){return s+p.tickets_usados},0);
+  document.getElementById('totalTicketsSorteio').textContent=totalTickets;
+
+  var mostrar=data.slice(0,8);
+  var html=mostrar.map(function(p){
+    var ini=(p.user_email[0]||'?').toUpperCase();
+    var email=p.user_email.replace(/(.{3}).*(@.*)/, '$1***$2');
+    return '<div class="participante-chip">'+
+      '<div class="participante-avatar">'+ini+'</div>'+
+      esc(email)+' ('+p.tickets_usados+'🎟️)</div>';
+  }).join('');
+  if(data.length>8) html+='<div class="participante-chips-mais">+'+( data.length-8)+' mais</div>';
+  document.getElementById('participantesGrid').innerHTML=html;
+}
+
+async function carregarHistorico(tipo){
+  var{data}=await sb.from('sorteios_periodicos')
+    .select('titulo,premio,vencedor_email,vencedor_nome,data_fim,tipo')
+    .eq('tipo',tipo).not('vencedor_email','is',null)
+    .order('data_fim',{ascending:false}).limit(5);
+
+  if(!data||data.length===0){
+    document.getElementById('historicoSection').style.display='none';
+    return;
+  }
+  document.getElementById('historicoSection').style.display='block';
+  document.getElementById('historicoList').innerHTML=data.map(function(s){
+    var dt=s.data_fim?new Date(s.data_fim).toLocaleDateString('pt-BR'):'—';
+    var email=(s.vencedor_email||'').replace(/(.{3}).*(@.*)/, '$1***$2');
+    return '<div class="historico-item">'+
+      '<div class="historico-icon">🏆</div>'+
+      '<div class="historico-info">'+
+        '<div class="historico-nome">'+esc(email)+'</div>'+
+        '<div class="historico-detalhe">'+esc(s.premio)+' • '+dt+'</div>'+
+      '</div>'+
+      '<span class="historico-tipo '+s.tipo+'">'+s.tipo+'</span>'+
+    '</div>';
+  }).join('');
+}
+
+function mostrarSemSorteio(tipo){
+  var msgs={
+    diario:{emoji:'🔥',titulo:'Sem sorteio diário agora',sub:'O próximo sorteio diário começa em breve! Guarde seus tickets. 🎟️'},
+    semanal:{emoji:'⭐',titulo:'Sem sorteio semanal ativo',sub:'Fique de olho! O sorteio semanal com prêmios incríveis está chegando. 🎮'},
+    mensal:{emoji:'💎',titulo:'Sem sorteio mensal ativo',sub:'O grande sorteio mensal com os melhores prêmios está sendo preparado! 🚀'}
+  };
+  var m=msgs[tipo]||msgs.diario;
+  document.getElementById('semSorteioEmoji').textContent=m.emoji;
+  document.getElementById('semSorteioTitle').textContent=m.titulo;
+  document.getElementById('semSorteiSub').textContent=m.sub;
+  document.getElementById('sem-sorteio').style.display='block';
+  document.getElementById('sorteio-content').style.display='none';
+  carregarHistorico(tipo);
+}
+
+/* ── PARTICIPAR ── */
+async function participar(){
+  if(!userSession){showToast('Faça login para participar!',true);return}
+  if(!sorteioAtual){return}
+  if(jaParticipa){showToast('Você já está participando!');return}
+
+  var tickets=parseInt(document.getElementById('ticketsRange').value)||1;
+  if(tickets>meusTickets){
+    showToast('Você não tem tickets suficientes!',true);return;
+  }
+
+  var btn=document.getElementById('btnParticipar');
+  btn.disabled=true;btn.textContent='Participando...';
+
+  try{
+    /* Insere participação */
+    var{error:errPart}=await sb.from('sorteio_participacoes').insert({
+      sorteio_id:sorteioAtual.id,
+      user_email:userSession.user.email,
+      user_id:userSession.user.id,
+      tickets_usados:tickets
+    });
+    if(errPart){
+      if(errPart.code==='23505'){showToast('Você já está participando!');return}
+      throw errPart;
+    }
+
+    /* Debita tickets */
+    var{error:errTick}=await sb.from('tickets')
+      .update({quantidade:meusTickets-tickets,updated_at:new Date().toISOString()})
+      .eq('user_email',userSession.user.email);
+    if(errTick)throw errTick;
+
+    /* Atualiza total do sorteio */
+    await sb.from('sorteios_periodicos')
+      .update({total_participantes:(sorteioAtual.total_participantes||0)+tickets})
+      .eq('id',sorteioAtual.id);
+
+    meusTickets-=tickets;
+    document.getElementById('heroTicketCount').textContent=meusTickets;
+    jaParticipa=true;
+
+    /* Confetti! */
+    lancarConfetti();
+    showToast('🎉 Participando com '+tickets+' ticket(s)! Boa sorte!');
+
+    /* Atualiza UI */
+    document.getElementById('jaParticipaBox').style.display='flex';
+    document.getElementById('sliderBox').style.display='none';
+    document.getElementById('ticketsUsadosLabel').textContent=tickets;
+    sorteioAtual.total_participantes=(sorteioAtual.total_participantes||0)+tickets;
+    carregarParticipantes(sorteioAtual.id);
+
+  }catch(e){
+    showToast('Erro: '+(e.message||'Tente novamente'),true);
+  } finally {
+    btn.disabled=false;btn.textContent='🎟️ Participar do sorteio';
+  }
+}
+
+function lancarConfetti(){
+  var cores=['#e8421a','#00ff55','#ffb300','#b9f2ff','#ff6b2b','#ffffff'];
+  for(var i=0;i<24;i++){
+    var el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText='left:'+(20+Math.random()*60)+'%;top:'+(20+Math.random()*30)+'%;'+
+      'background:'+cores[Math.floor(Math.random()*cores.length)]+';'+
+      'animation-delay:'+(Math.random()*.8)+'s;'+
+      'animation-duration:'+(1+Math.random())+'s;'+
+      'transform:rotate('+(Math.random()*360)+'deg)';
+    document.body.appendChild(el);
+    setTimeout(function(e){e.remove()},2500,el);
+  }
+}
+
+/* Init */
+setTipoSorteio('diario');
+</script>
+</body>
+</html>
