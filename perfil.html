@@ -1887,11 +1887,7 @@ initSupabase();
     var mat=new THREE.PointsMaterial({size:.08,map:sprite,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false});
     var pts=new THREE.Points(geo,mat);
     scene.add(pts);
-    var mouse={x:0,y:0};
-    document.addEventListener('mousemove',function(e){
-      mouse.x=(e.clientX/W-.5)*.4;
-      mouse.y=(e.clientY/H-.5)*.25;
-    },{passive:true});
+
     window.addEventListener('resize',function(){
       W=window.innerWidth;H=window.innerHeight;
       cam.aspect=W/H;cam.updateProjectionMatrix();
@@ -1901,8 +1897,9 @@ initSupabase();
     (function animate(){
       requestAnimationFrame(animate);
       var t=clock.getElapsedTime();
-      pts.rotation.y=t*.018+mouse.x*.6;
-      pts.rotation.x=t*.005+mouse.y*.3;
+      pts.rotation.y=t*.012;
+      pts.rotation.x=t*.004;
+      pts.rotation.z=t*.002;
       renderer.render(scene,cam);
     })();
     canvas.classList.add('ready');

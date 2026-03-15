@@ -32,16 +32,19 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes floatPlanet{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
-@keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:1}}
-@keyframes orbit{0%{transform:rotate(0deg) translateX(70px) rotate(0deg)}100%{transform:rotate(360deg) translateX(70px) rotate(-360deg)}}
-@keyframes orbit2{0%{transform:rotate(120deg) translateX(55px) rotate(-120deg)}100%{transform:rotate(480deg) translateX(55px) rotate(-480deg)}}
-@keyframes orbit3{0%{transform:rotate(240deg) translateX(90px) rotate(-240deg)}100%{transform:rotate(600deg) translateX(90px) rotate(-600deg)}}
-@keyframes ticketShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
-@keyframes countFlip{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes floatPlanet{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+@keyframes pulseGlow{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes orbit{from{transform:rotate(0deg) translateX(72px) rotate(0deg)}to{transform:rotate(360deg) translateX(72px) rotate(-360deg)}}
+@keyframes orbit2{from{transform:rotate(120deg) translateX(58px) rotate(-120deg)}to{transform:rotate(480deg) translateX(58px) rotate(-480deg)}}
+@keyframes orbit3{from{transform:rotate(240deg) translateX(96px) rotate(-240deg)}to{transform:rotate(600deg) translateX(96px) rotate(-600deg)}}
+@keyframes orbit4{from{transform:rotate(60deg) translateX(44px) rotate(-60deg)}to{transform:rotate(420deg) translateX(44px) rotate(-420deg)}}
+@keyframes ticketPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 @keyframes confetti{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100px) rotate(720deg);opacity:0}}
 @keyframes winnerGlow{0%,100%{box-shadow:0 0 20px rgba(255,215,0,.4)}50%{box-shadow:0 0 50px rgba(255,215,0,.9),0 0 80px rgba(255,165,0,.5)}}
 @keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(3000%)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes marsRotate{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes ringPulse{0%,100%{opacity:.15}50%{opacity:.3}}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -88,25 +91,82 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   background:linear-gradient(to right,transparent,rgba(0,255,85,.3),transparent);
   animation:scanLine 6s linear infinite}
 
-/* Sistema solar decorativo */
-.solar-wrap{position:relative;width:160px;height:160px;margin:0 auto 32px}
-.sol-planet{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:64px;height:64px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#c0392b,#8b1a10 40%,#1a0504 80%);
-  box-shadow:0 0 30px rgba(232,66,26,.6),inset -8px -8px 16px rgba(0,0,0,.5);
-  animation:floatPlanet 5s ease-in-out infinite;
-  display:flex;align-items:center;justify-content:center;
-  font-size:26px;
+/* Sistema solar — redesign imponente */
+.solar-wrap{
+  position:relative;width:220px;height:220px;margin:0 auto 40px;
+  filter:drop-shadow(0 0 40px rgba(232,66,26,.25));
 }
-.sol-orbit-1,.sol-orbit-2,.sol-orbit-3{position:absolute;top:50%;left:50%;border-radius:50%}
-.sol-orbit-ring{position:absolute;top:50%;left:50%;border-radius:50%;border:1px dashed rgba(255,255,255,.1)}
-.sol-orbit-ring.r1{width:140px;height:140px;margin:-70px 0 0 -70px}
-.sol-orbit-ring.r2{width:110px;height:110px;margin:-55px 0 0 -55px}
-.sol-orbit-ring.r3{width:180px;height:180px;margin:-90px 0 0 -90px}
-.sol-orb{width:10px;height:10px;border-radius:50%;margin:-5px 0 0 -5px}
-.sol-orbit-1 .sol-orb{background:var(--green);box-shadow:0 0 10px var(--green);animation:orbit 3s linear infinite}
-.sol-orbit-2 .sol-orb{background:var(--amber);box-shadow:0 0 10px var(--amber);animation:orbit2 5s linear infinite}
-.sol-orbit-3 .sol-orb{background:var(--dia);box-shadow:0 0 10px var(--dia);animation:orbit3 7s linear infinite}
+/* Marte — planeta texturizado sem emoji */
+.sol-planet{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:80px;height:80px;border-radius:50%;
+  background:
+    radial-gradient(circle at 30% 25%,#e8563a 0%,#c0392b 25%,#8b1a10 55%,#1a0504 85%);
+  box-shadow:
+    0 0 0 2px rgba(232,66,26,.15),
+    0 0 30px rgba(232,66,26,.5),
+    0 0 80px rgba(232,66,26,.2),
+    inset -12px -10px 20px rgba(0,0,0,.6),
+    inset 6px 4px 16px rgba(255,120,80,.15);
+  animation:floatPlanet 6s ease-in-out infinite;
+  overflow:hidden;
+}
+/* Craters de Marte */
+.sol-planet::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:
+    radial-gradient(circle at 40% 35%,rgba(0,0,0,.3) 0%,transparent 20%),
+    radial-gradient(circle at 65% 55%,rgba(0,0,0,.2) 0%,transparent 15%),
+    radial-gradient(circle at 25% 65%,rgba(0,0,0,.25) 0%,transparent 18%),
+    radial-gradient(circle at 75% 25%,rgba(255,100,60,.15) 0%,transparent 25%);
+}
+/* Anel atmosférico */
+.sol-planet::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid rgba(232,66,26,.3);
+  animation:ringPulse 3s ease-in-out infinite;
+}
+.sol-orbit-1,.sol-orbit-2,.sol-orbit-3,.sol-orbit-4{
+  position:absolute;top:50%;left:50%;border-radius:50%;
+}
+.sol-orbit-ring{
+  position:absolute;top:50%;left:50%;border-radius:50%;
+  border:1px solid rgba(255,255,255,.07);
+}
+.sol-orbit-ring.r1{width:130px;height:130px;margin:-65px 0 0 -65px}
+.sol-orbit-ring.r2{width:160px;height:160px;margin:-80px 0 0 -80px;border-style:dashed;opacity:.5}
+.sol-orbit-ring.r3{width:200px;height:200px;margin:-100px 0 0 -100px}
+.sol-orbit-ring.r4{width:90px;height:90px;margin:-45px 0 0 -45px;opacity:.4}
+.sol-orb{border-radius:50%;position:absolute}
+/* Lua 1 — verde/esmeralda */
+.sol-orbit-1 .sol-orb{
+  width:9px;height:9px;margin:-4.5px 0 0 -4.5px;
+  background:radial-gradient(circle at 35% 35%,#66ffaa,var(--green));
+  box-shadow:0 0 8px var(--green),0 0 16px rgba(0,255,85,.4);
+  animation:orbit 4s linear infinite;
+}
+/* Lua 2 — âmbar */
+.sol-orbit-2 .sol-orb{
+  width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
+  background:radial-gradient(circle at 35% 35%,#ffe066,var(--amber));
+  box-shadow:0 0 10px var(--amber),0 0 20px rgba(255,179,0,.4);
+  animation:orbit2 7s linear infinite;
+}
+/* Lua 3 — azul/diamante */
+.sol-orbit-3 .sol-orb{
+  width:7px;height:7px;margin:-3.5px 0 0 -3.5px;
+  background:radial-gradient(circle at 35% 35%,#e8f8ff,var(--dia));
+  box-shadow:0 0 8px var(--dia),0 0 14px rgba(185,242,255,.5);
+  animation:orbit3 11s linear infinite;
+}
+/* Lua 4 — interna, mars */
+.sol-orbit-4 .sol-orb{
+  width:6px;height:6px;margin:-3px 0 0 -3px;
+  background:radial-gradient(circle at 35% 35%,#ff9977,var(--mars));
+  box-shadow:0 0 6px var(--mars);
+  animation:orbit4 2.5s linear infinite;
+}
 
 .hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
   color:var(--mars);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -238,20 +298,56 @@ input[type=range].tickets-range::-webkit-slider-thumb{
 }
 input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px rgba(255,183,0,.8)}
 
-/* Botão participar */
+/* Botão participar — premium */
 .btn-participar{
-  width:100%;padding:16px;border-radius:12px;border:none;
-  background:linear-gradient(135deg,var(--mars),#ff6b2b);
-  color:#fff;font-family:'Montserrat',sans-serif;
-  font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
-  cursor:pointer;transition:transform .15s,box-shadow .2s;
-  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:0;border:none;border-radius:14px;
+  cursor:pointer;transition:transform .2s,box-shadow .25s,filter .2s;
+  display:block;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#e8421a 0%,#ff6b2b 50%,#ff9044 100%);
+  box-shadow:0 4px 20px rgba(232,66,26,.35);
 }
-.btn-participar:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,66,26,.4)}
-.btn-participar:active{transform:scale(.98)}
-.btn-participar:disabled{background:var(--surface);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
-.btn-participar.ja-participa{background:linear-gradient(135deg,rgba(0,255,85,.15),rgba(0,255,85,.08));
-  border:1px solid rgba(0,255,85,.3);color:var(--green)}
+.btn-participar::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%);
+  pointer-events:none;
+}
+/* Faixa shimmer */
+.btn-participar::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);
+  background-size:200% 100%;
+  animation:shimmer 2.5s linear infinite;
+  pointer-events:none;
+}
+.btn-participar-inner{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:17px 24px;position:relative;z-index:1;
+  font-family:'Montserrat',sans-serif;font-size:14px;font-weight:900;
+  letter-spacing:1.5px;text-transform:uppercase;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.btn-participar-icon{
+  font-size:18px;display:flex;align-items:center;
+  animation:ticketPulse 2s ease-in-out infinite;
+}
+.btn-participar:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 32px rgba(232,66,26,.55),0 0 0 1px rgba(255,120,60,.3);
+  filter:brightness(1.08);
+}
+.btn-participar:active{transform:scale(.97) translateY(0);box-shadow:0 2px 10px rgba(232,66,26,.3)}
+.btn-participar:disabled{
+  background:var(--surface);box-shadow:none;cursor:not-allowed;filter:none;
+  animation:none;
+}
+.btn-participar:disabled::after{display:none}
+.btn-participar:disabled .btn-participar-inner{color:var(--muted)}
+.btn-participar.ja-participa{
+  background:linear-gradient(135deg,rgba(0,255,85,.12),rgba(0,200,60,.08));
+  border:1px solid rgba(0,255,85,.25);box-shadow:0 4px 16px rgba(0,255,85,.1);
+}
+.btn-participar.ja-participa::after{display:none}
+.btn-participar.ja-participa .btn-participar-inner{color:var(--green)}
 
 /* Já participando */
 .ja-participando{
@@ -398,17 +494,19 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 <section class="hero">
   <div class="hero-scan"></div>
   <div class="solar-wrap">
-    <div class="sol-orbit-ring r2"></div>
+    <div class="sol-orbit-ring r4"></div>
     <div class="sol-orbit-ring r1"></div>
+    <div class="sol-orbit-ring r2"></div>
     <div class="sol-orbit-ring r3"></div>
-    <div class="sol-planet">🎲</div>
+    <div class="sol-planet"></div>
+    <div class="sol-orbit-4"><div class="sol-orb"></div></div>
     <div class="sol-orbit-1"><div class="sol-orb"></div></div>
     <div class="sol-orbit-2"><div class="sol-orb"></div></div>
     <div class="sol-orbit-3"><div class="sol-orb"></div></div>
   </div>
-  <div class="hero-eyebrow">MarsGames</div>
+  <div class="hero-eyebrow">MarsGames Universe</div>
   <h1 class="hero-title">Sorteios<br><span>Galácticos</span></h1>
-  <p class="hero-sub">Use seus tickets para concorrer a jogos incríveis. Quanto mais tickets, maiores suas chances de ganhar!</p>
+  <p class="hero-sub">Use seus MarsTickets para concorrer a jogos incríveis. Vencedores sorteados automaticamente — boa sorte, cosmonauta.</p>
 
   <div id="ticketStrip" style="display:none">
     <div class="ticket-strip">
@@ -538,7 +636,10 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
               Usando <strong id="ticketsEscolhidos" style="color:var(--amber)">1</strong> ticket(s) no sorteio
             </div>
             <button class="btn-participar" id="btnParticipar" onclick="participar()">
-              🎟️ Participar do sorteio
+              <div class="btn-participar-inner">
+                <span class="btn-participar-icon">🎟️</span>
+                <span>Participar do Sorteio</span>
+              </div>
             </button>
           </div>
         </div>
@@ -1014,11 +1115,7 @@ setTipoSorteio('diario');
     var mat=new THREE.PointsMaterial({size:.08,map:sprite,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false});
     var pts=new THREE.Points(geo,mat);
     scene.add(pts);
-    var mouse={x:0,y:0};
-    document.addEventListener('mousemove',function(e){
-      mouse.x=(e.clientX/W-.5)*.4;
-      mouse.y=(e.clientY/H-.5)*.25;
-    },{passive:true});
+
     window.addEventListener('resize',function(){
       W=window.innerWidth;H=window.innerHeight;
       cam.aspect=W/H;cam.updateProjectionMatrix();
@@ -1028,8 +1125,9 @@ setTipoSorteio('diario');
     (function animate(){
       requestAnimationFrame(animate);
       var t=clock.getElapsedTime();
-      pts.rotation.y=t*.018+mouse.x*.6;
-      pts.rotation.x=t*.005+mouse.y*.3;
+      pts.rotation.y=t*.012;
+      pts.rotation.x=t*.004;
+      pts.rotation.z=t*.002;
       renderer.render(scene,cam);
     })();
     canvas.classList.add('ready');
