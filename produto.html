@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsGames — Produto</title>
+<meta name="description" content="Jogos PC Steam com até 90% OFF. Entrega imediata.">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0e;--card:#131318;--surface:#1a1a20;--border:#252530;--border2:#323240;
+  --green:#00ff55;--green-glow:rgba(0,255,85,.2);--green-dim:rgba(0,255,85,.07);
+  --mars:#e8421a;--mars-dim:rgba(232,66,26,.12);--mars-glow:rgba(232,66,26,.3);
+  --orange:#ff6b2b;--amber:#ffb300;
+  --text:#fff;--muted:#555;--dim:#1a1a22;--radius:12px;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── STARS ── */
+.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 45% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 75% 35%,rgba(255,255,255,.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 85% 75%,rgba(255,255,255,.4) 0%,transparent 100%);opacity:.6}
+
+/* ── NAVBAR ── */
+.navbar{position:sticky;top:0;z-index:200;background:rgba(10,10,14,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(232,66,26,.15);padding:0 20px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:var(--mars)}
+.nav-back{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.04);
+  font-size:10px;font-weight:700;color:#aaa;letter-spacing:.5px;cursor:pointer;
+  text-decoration:none;transition:border-color .2s,color .2s}
+.nav-back:hover{border-color:#555;color:#fff}
+.nav-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nav-cart-btn{display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:10px;
+  background:linear-gradient(135deg,#00e64d,#00cc44);color:#000;
+  cursor:pointer;border:none;position:relative;
+  box-shadow:0 4px 14px rgba(0,255,85,.25);transition:box-shadow .2s,transform .15s}
+.nav-cart-btn:hover{box-shadow:0 6px 20px rgba(0,255,85,.4);transform:translateY(-1px)}
+.nav-cart-btn svg{width:18px;height:18px;fill:none;stroke:#000;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:#ff4444;color:#fff;
+  width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+
+/* ── LOADING ── */
+#loading{display:flex;align-items:center;justify-content:center;min-height:60vh;
+  flex-direction:column;gap:16px;position:relative;z-index:1}
+.loader{width:36px;height:36px;border:3px solid rgba(232,66,26,.2);border-top-color:var(--mars);
+  border-radius:50%;animation:spin .7s linear infinite}
+.loader-txt{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+
+/* ── ERROR ── */
+#error-screen{display:none;align-items:center;justify-content:center;min-height:60vh;
+  flex-direction:column;gap:16px;position:relative;z-index:1;text-align:center;padding:20px}
+.error-icon{font-size:48px;margin-bottom:8px}
+.error-title{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--mars)}
+.error-sub{font-size:13px;color:var(--muted);margin-top:8px}
+
+/* ── PRODUTO ── */
+#produto-content{display:none;position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:32px 16px 80px}
+@media(min-width:768px){#produto-content{padding:40px 32px 80px}}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.breadcrumb a{font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;transition:color .2s}
+.breadcrumb a:hover{color:#aaa}
+.breadcrumb-sep{color:#2a2a38;font-size:11px}
+.breadcrumb-cur{font-size:11px;font-weight:700;color:#888}
+
+/* Grid principal */
+.prod-grid{display:grid;grid-template-columns:1fr;gap:32px}
+@media(min-width:900px){.prod-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}}
+@media(min-width:1200px){.prod-grid{grid-template-columns:1.2fr 1fr}}
+
+/* ─ Imagem ─ */
+.prod-img-col{}
+.prod-img-main{
+  width:100%;aspect-ratio:16/10;border-radius:16px;overflow:hidden;
+  border:1px solid var(--border);background:var(--dim);position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.prod-img-main img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.prod-img-main:hover img{transform:scale(1.03)}
+.prod-img-badge{
+  position:absolute;top:12px;left:12px;
+  background:var(--mars);color:#fff;
+  font-size:8px;font-weight:900;padding:4px 10px;border-radius:4px;
+  letter-spacing:1px;text-transform:uppercase;
+}
+.prod-img-badge.esgotado{background:rgba(255,255,255,.08);color:#555;border:1px solid #222}
+.prod-plat-tag{
+  position:absolute;bottom:12px;left:12px;
+  background:rgba(0,0,0,.88);color:#fff;
+  font-size:8px;font-weight:900;padding:4px 10px;border-radius:4px;z-index:2;
+  border-left:3px solid var(--green);letter-spacing:.5px;
+}
+
+/* ─ Info ─ */
+.prod-info-col{animation:fadeUp .4s ease both}
+.prod-cat-label{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--orange);margin-bottom:14px;
+}
+.prod-cat-dot{width:5px;height:5px;border-radius:50%;background:var(--mars);animation:pulse 1.5s ease-in-out infinite}
+.prod-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(20px,3vw,34px);font-weight:900;line-height:1.1;
+  color:#fff;margin-bottom:16px;
+  text-shadow:0 0 40px rgba(232,66,26,.1);
+}
+.prod-desc{font-size:13px;color:#888;line-height:1.8;margin-bottom:24px;font-weight:600}
+
+/* Preço */
+.prod-price-box{
+  background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.12);
+  border-radius:12px;padding:20px;margin-bottom:24px;
+}
+.prod-price-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.prod-price-val{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--green);line-height:1}
+.prod-price-val.esgotado{color:#333}
+.prod-price-original{font-size:13px;color:#333;text-decoration:line-through;font-weight:700;margin-top:4px}
+.prod-discount{
+  display:inline-block;background:linear-gradient(135deg,var(--mars),#cc3300);
+  color:#fff;font-size:10px;font-weight:900;
+  padding:3px 9px;border-radius:4px;margin-top:6px;letter-spacing:.5px;
+}
+
+/* Botões */
+.prod-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.btn-comprar{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:16px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;
+  font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
+  transition:box-shadow .2s,transform .15s;min-height:52px;
+}
+.btn-comprar:hover{box-shadow:0 0 28px var(--mars-glow);transform:translateY(-2px)}
+.btn-comprar:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none;background:#222}
+.btn-comprar svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-carrinho{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border-radius:10px;width:100%;
+  background:var(--green-dim);border:1px solid rgba(0,255,85,.25);
+  color:var(--green);font-family:'Montserrat',sans-serif;
+  font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:background .2s,box-shadow .2s;
+  min-height:48px;max-height:52px;overflow:hidden;
+}
+.btn-carrinho:hover{background:rgba(0,255,85,.12);box-shadow:0 0 20px rgba(0,255,85,.15)}
+.btn-favorito{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px;border-radius:10px;
+  background:transparent;border:1px solid var(--border2);
+  color:#555;font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:border-color .2s,color .2s;min-height:44px;
+}
+.btn-favorito:hover{border-color:rgba(255,68,68,.4);color:#ff5555}
+.btn-favorito.ativo{border-color:rgba(255,68,68,.4);color:#ff5555;background:rgba(255,68,68,.06)}
+.btn-favorito svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Trust pills */
+.prod-trust{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.trust-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:700;color:#555;
+}
+.trust-item svg{width:12px;height:12px;flex-shrink:0;color:var(--green)}
+
+/* Detalhes */
+.prod-details{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:18px;
+}
+.prod-details-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.detail-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--dim);font-size:11px}
+.detail-row:last-child{border-bottom:none}
+.detail-key{color:var(--muted);font-weight:700}
+.detail-val{color:#ccc;font-weight:700;text-align:right}
+.detail-val.green{color:var(--green)}
+.detail-val.red{color:#ff4444}
+
+/* ─ Seção de relacionados ─ */
+.related-section{margin-top:56px}
+.related-title{
+  font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;
+}
+.related-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.related-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+}
+@media(min-width:480px){.related-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:768px){.related-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1024px){.related-grid{grid-template-columns:repeat(5,1fr)}}
+
+.rel-card{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;cursor:pointer;text-decoration:none;display:block;
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+.rel-card:hover{border-color:rgba(232,66,26,.3);transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.rel-card:active{transform:scale(.97)}
+.rel-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--dim);display:block}
+.rel-body{padding:10px}
+.rel-name{font-size:10px;font-weight:700;color:#eee;line-height:1.3;margin-bottom:4px}
+.rel-price{font-size:13px;font-weight:900;color:var(--green)}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid rgba(0,255,85,.3);color:var(--green);
+  padding:12px 22px;border-radius:8px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Skeleton loader */
+.skeleton{
+  background:linear-gradient(90deg,var(--card) 25%,var(--surface) 50%,var(--card) 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;
+}
+
+/* ══ REQUISITOS DO SISTEMA ══ */
+.req-section{margin-top:20px}
+.req-toggle{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:0;overflow:hidden;margin-bottom:8px;
+}
+.req-toggle summary{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;cursor:pointer;list-style:none;
+  font-size:11px;font-weight:700;color:#aaa;letter-spacing:.5px;
+  user-select:none;transition:color .2s,background .2s;
+}
+.req-toggle summary::-webkit-details-marker{display:none}
+.req-toggle summary:hover{color:#fff;background:rgba(255,255,255,.02)}
+.req-toggle[open] summary{color:var(--green);border-bottom:1px solid var(--border)}
+.req-toggle summary svg{width:14px;height:14px;transition:transform .2s;flex-shrink:0;opacity:.6}
+.req-toggle[open] summary svg{transform:rotate(180deg);opacity:1}
+.req-content{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:480px){.req-content{grid-template-columns:1fr}}
+.req-col-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.req-col-title svg{width:12px;height:12px}
+.req-col-title.min{color:#888}
+.req-col-title.rec{color:var(--green)}
+.req-item{font-size:11px;color:#888;font-weight:600;line-height:1.6;
+  padding:4px 0;border-bottom:1px solid var(--dim)}
+.req-item:last-child{border-bottom:none}
+.req-item strong{color:#ccc;font-weight:700}
+
+/* ══ BADGES DE COMPATIBILIDADE ══ */
+.compat-badges{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;
+}
+.compat-badge{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:7px 12px;
+  font-size:10px;font-weight:700;color:#888;
+  transition:border-color .2s;
+}
+.compat-badge.steam{border-color:rgba(102,192,244,.2);color:#66c0f4}
+.compat-badge.brasil{border-color:rgba(0,255,85,.2);color:var(--green)}
+.compat-badge.offline{border-color:rgba(232,66,26,.2);color:var(--orange)}
+.compat-badge svg{width:14px;height:14px;flex-shrink:0}
+
+</style>
+</head>
+<body>
+<div class="stars-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-text">Mars<span>Games</span></div>
+  </a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a class="nav-back" href="javascript:history.back()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar
+    </a>
+    <a class="nav-back" href="catalogo.html" style="border-color:rgba(0,255,85,.2);color:var(--green)">
+      Catálogo
+    </a>
+    <button class="nav-cart-btn" onclick="toggleCart()" aria-label="Carrinho">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <div class="cart-badge" id="cartBadge">0</div>
+    </button>
+  </div>
+</nav>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loader"></div>
+  <div class="loader-txt">Carregando produto...</div>
+</div>
+
+<!-- ERROR -->
+<div id="error-screen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;position:relative;z-index:1;text-align:center;padding:20px">
+  <div class="error-icon">🚀</div>
+  <div class="error-title">Produto não encontrado</div>
+  <div class="error-sub">Este produto pode ter sido removido ou o link está incorreto.</div>
+  <a href="catalogo.html" style="margin-top:20px;display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;background:var(--green);color:#000;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none">Ver catálogo</a>
+</div>
+
+<!-- PRODUTO -->
+<div id="produto-content">
+  <div class="breadcrumb">
+    <a href="index.html">Início</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="catalogo.html">Catálogo</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-cur" id="breadCat">—</span>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-cur" id="breadNome">—</span>
+  </div>
+
+  <div class="prod-grid">
+    <!-- Imagem -->
+    <div class="prod-img-col">
+      <div class="prod-img-main">
+        <img id="prodImg" src="" alt="">
+        <div class="prod-img-badge" id="prodBadge">Oferta</div>
+        <div class="prod-plat-tag" id="prodPlatTag">STEAM OFFLINE</div>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="prod-info-col">
+      <div class="prod-cat-label">
+        <div class="prod-cat-dot"></div>
+        <span id="prodCat">—</span>
+      </div>
+      <h1 class="prod-title" id="prodNome">—</h1>
+      <p class="prod-desc" id="prodDesc">Jogo digital para PC via Steam Offline. Entrega imediata após confirmação do pagamento.</p>
+
+      <!-- Preço -->
+      <div class="prod-price-box">
+        <div class="prod-price-label">Preço especial MarsGames</div>
+        <div class="prod-price-val" id="prodPreco">—</div>
+        <div class="prod-price-original" id="prodPrecoOrig" style="display:none"></div>
+        <div class="prod-discount" id="prodDesc_badge" style="display:none"></div>
+      </div>
+
+      <!-- Botões -->
+      <div class="prod-btns">
+        <button class="btn-comprar" id="btnComprar" onclick="comprarAgora()">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+          Comprar agora
+        </button>
+        <button class="btn-carrinho" id="btnCarrinho" onclick="adicionarCarrinho()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar ao carrinho
+        </button>
+        <button class="btn-favorito" id="btnFav" onclick="toggleFavorito()">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Adicionar aos favoritos
+        </button>
+      </div>
+
+      <!-- Trust -->
+      <div class="prod-trust">
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Entrega imediata
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Pagamento seguro
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          Suporte no Discord
+        </div>
+      </div>
+
+      <!-- Detalhes -->
+      <div class="prod-details">
+        <div class="prod-details-title">Detalhes do produto</div>
+        <div class="detail-row">
+          <span class="detail-key">Plataforma</span>
+          <span class="detail-val" id="detPlat">Steam</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Categoria</span>
+          <span class="detail-val" id="detCat">—</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Modalidade</span>
+          <span class="detail-val">Steam Offline</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Entrega</span>
+          <span class="detail-val green">Imediata 24h</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Disponibilidade</span>
+          <span class="detail-val" id="detEstoque">—</span>
+        </div>
+      </div>
+
+      <!-- Badges de compatibilidade -->
+      <div class="compat-badges" id="compatBadges">
+        <div class="compat-badge steam">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          Steam
+        </div>
+        <div class="compat-badge brasil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Ativa no Brasil
+        </div>
+        <div class="compat-badge offline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg>
+          Steam Offline
+        </div>
+      </div>
+
+      <!-- Requisitos do sistema -->
+      <div class="req-section" id="reqSection" style="display:none">
+        <details class="req-toggle" id="reqToggle">
+          <summary>
+            <span style="display:flex;align-items:center;gap:8px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Requisitos do Sistema
+            </span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="req-content">
+            <div>
+              <div class="req-col-title min">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Mínimo
+              </div>
+              <div id="reqMin"></div>
+            </div>
+            <div>
+              <div class="req-col-title rec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Recomendado
+              </div>
+              <div id="reqRec"></div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jogos Relacionados -->
+  <div class="related-section">
+    <div class="related-title">Jogos relacionados</div>
+    <div class="related-grid" id="relGrid">
+      <!-- preenchido via JS -->
+    </div>
+  </div>
+</div>
+
+<!-- CARRINHO DRAWER -->
+<div id="cartOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200" onclick="toggleCart()"></div>
+<div id="cartDrawer" style="position:fixed;top:0;right:0;bottom:0;width:100%;max-width:400px;background:var(--card);border-left:1px solid var(--border);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.23,1,.32,1)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)">
+    <span style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900">Carrinho</span>
+    <button onclick="toggleCart()" style="width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+  <div id="cartItems" style="flex:1;overflow-y:auto;padding:14px 20px">
+    <div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:11px;font-weight:600">🛒<br><br>Carrinho vazio</div>
+  </div>
+  <div style="padding:16px 20px;border-top:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">Total</span>
+      <span id="cartTotal" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green)">R$ 0,00</span>
+    </div>
+    <button id="checkoutBtn" onclick="checkout()" disabled style="width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.3">Finalizar compra</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var produto=null;
+var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
+var favoritos=JSON.parse(localStorage.getItem('mg_favs')||'[]');
+
+/* ── INIT ── */
+async function init(){
+  var params=new URLSearchParams(window.location.search);
+  var id=params.get('id');
+  var nome=params.get('nome');
+
+  if(!id&&!nome){showError();return}
+
+  var query=sb.from('produtos').select('*');
+  if(id){
+    query=query.eq('id',id);
+  } else {
+    // Decodificar nome da URL e buscar com match exato primeiro
+    var nomeDecoded=decodeURIComponent(nome).replace(/\+/g,' ');
+    query=query.ilike('nome',nomeDecoded);
+  }
+
+  var{data,error}=await query.maybeSingle();
+
+  // Se não encontrou com nome exato, tenta busca parcial
+  if(!data&&!id){
+    var nomeDecoded2=decodeURIComponent(nome).replace(/\+/g,' ');
+    var{data:data2}=await sb.from('produtos')
+      .select('*').ilike('nome','%'+nomeDecoded2.split(' ')[0]+'%').eq('ativo',true).limit(1).maybeSingle();
+    data=data2;
+  }
+
+  if(!data){showError();return}
+  produto=data;
+  renderProduto(data);
+  carregarRelacionados(data.categoria,data.id);
+  atualizarCarrinho();
+}
+
+function renderProduto(p){
+  // Meta
+  document.title='MarsGames — '+p.nome;
+
+  // Breadcrumb
+  document.getElementById('breadCat').textContent=p.categoria||'Produto';
+  document.getElementById('breadNome').textContent=p.nome;
+
+  // Imagem
+  var img=document.getElementById('prodImg');
+  img.src=p.imagem||'';img.alt=p.nome;
+
+  // Badge
+  var badge=document.getElementById('prodBadge');
+  var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
+  if(!ok){badge.textContent='Esgotado';badge.className='prod-img-badge esgotado'}
+  else if(p.categoria==='Combos e Bundles'){badge.textContent='Bundle';badge.style.background='#f5c842';badge.style.color='#000'}
+  else if(p.categoria==='Steam Key / Outros'){badge.textContent='Key';badge.style.background='#5865f2'}
+  else{badge.textContent='Oferta'}
+
+  document.getElementById('prodPlatTag').textContent=(p.plataforma||'Steam').toUpperCase()+' OFFLINE';
+
+  // Info
+  document.getElementById('prodCat').textContent=p.categoria||'—';
+  document.getElementById('prodNome').textContent=p.nome;
+  document.getElementById('prodDesc').textContent=p.descricao||'Jogo digital para PC via Steam Offline. Entrega imediata após confirmação do pagamento.';
+
+  // Preço
+  var preco=Number(p.preco);
+  document.getElementById('prodPreco').textContent='R$ '+preco.toFixed(2).replace('.',',');
+  if(!ok)document.getElementById('prodPreco').classList.add('esgotado');
+
+  // Botões
+  var btnC=document.getElementById('btnComprar');
+  var btnAdd=document.getElementById('btnCarrinho');
+  if(!ok){
+    btnC.disabled=true;btnC.textContent='Esgotado';
+    btnAdd.disabled=true;btnAdd.style.opacity='.3';
+  }
+
+  // Favorito
+  if(favoritos.includes(p.id)){
+    document.getElementById('btnFav').classList.add('ativo');
+    document.getElementById('btnFav').querySelector('svg').style.fill='#ff5555';
+  }
+
+  // Detalhes
+  document.getElementById('detPlat').textContent=p.plataforma||'Steam';
+  document.getElementById('detCat').textContent=p.categoria||'—';
+  document.getElementById('detEstoque').textContent=
+    !ok?'Esgotado':(p.estoque>=999?'Disponível':'Disponível ('+p.estoque+' unidades)');
+  document.getElementById('detEstoque').className='detail-val '+(ok?'green':'red');
+
+  // Requisitos do sistema
+  if(p.requisitos_min||p.requisitos_rec){
+    document.getElementById('reqSection').style.display='block';
+    var reqMin=document.getElementById('reqMin');
+    var reqRec=document.getElementById('reqRec');
+    if(p.requisitos_min){
+      reqMin.innerHTML=p.requisitos_min.split('\n').map(function(l){
+        return l?'<div class="req-item">'+esc(l)+'</div>':''
+      }).join('');
+    }
+    if(p.requisitos_rec){
+      reqRec.innerHTML=p.requisitos_rec.split('\n').map(function(l){
+        return l?'<div class="req-item">'+esc(l)+'</div>':''
+      }).join('');
+    }
+  }
+
+  // Mostrar
+  document.getElementById('loading').style.display='none';
+  document.getElementById('produto-content').style.display='block';
+}
+
+async function carregarRelacionados(cat,idAtual){
+  var{data}=await sb.from('produtos')
+    .select('*').eq('categoria',cat).eq('ativo',true)
+    .neq('id',idAtual).limit(5);
+
+  var grid=document.getElementById('relGrid');
+  if(!data||data.length===0){
+    // buscar qualquer produto se não tiver da mesma categoria
+    var{data:outros}=await sb.from('produtos').select('*').eq('ativo',true).neq('id',idAtual).limit(5);
+    data=outros||[];
+  }
+  if(!data||data.length===0){grid.parentElement.style.display='none';return}
+
+  grid.innerHTML=data.map(function(p){
+    return '<a class="rel-card" href="produto.html?id='+p.id+'">'+
+      '<img class="rel-img" src="'+esc(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
+      '<div class="rel-body">'+
+        '<div class="rel-name">'+esc(p.nome)+'</div>'+
+        '<div class="rel-price">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+      '</div>'+
+    '</a>';
+  }).join('');
+}
+
+/* ── AÇÕES ── */
+function comprarAgora(){
+  if(!produto)return;
+  // Por enquanto vai pro Discord — integração MP vem depois
+  showToast('Redirecionando para finalizar compra...');
+  setTimeout(function(){
+    window.open('https://discord.gg/bKnR9accnw','_blank');
+  },800);
+}
+
+function adicionarCarrinho(){
+  if(!produto)return;
+  var jatem=carrinho.find(function(x){return x.id===produto.id});
+  if(jatem){showToast('Jogo já está no carrinho!');return}
+  carrinho.push(produto);
+  salvarCarrinho();
+  atualizarCarrinho();
+  showToast('✓ '+produto.nome.substring(0,30)+' adicionado!');
+}
+
+function toggleFavorito(){
+  if(!produto)return;
+  var idx=favoritos.indexOf(produto.id);
+  var btn=document.getElementById('btnFav');
+  var svg=btn.querySelector('svg');
+  if(idx===-1){
+    favoritos.push(produto.id);
+    btn.classList.add('ativo');svg.style.fill='#ff5555';
+    showToast('Adicionado aos favoritos!');
+  }else{
+    favoritos.splice(idx,1);
+    btn.classList.remove('ativo');svg.style.fill='none';
+    showToast('Removido dos favoritos');
+  }
+  localStorage.setItem('mg_favs',JSON.stringify(favoritos));
+}
+
+/* ── CARRINHO ── */
+function salvarCarrinho(){localStorage.setItem('mg_cart',JSON.stringify(carrinho))}
+function toggleCart(){
+  var o=document.getElementById('cartOverlay');
+  var d=document.getElementById('cartDrawer');
+  var open=d.style.transform==='translateX(0px)'||d.style.transform==='translateX(0)';
+  if(open){o.style.display='none';d.style.transform='translateX(100%)';document.body.style.overflow=''}
+  else{o.style.display='block';d.style.transform='translateX(0)';document.body.style.overflow='hidden'}
+}
+function atualizarCarrinho(){
+  document.getElementById('cartBadge').textContent=carrinho.length;
+  var total=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+  document.getElementById('cartTotal').textContent='R$ '+total.toFixed(2).replace('.',',');
+  var btn=document.getElementById('checkoutBtn');
+  btn.disabled=carrinho.length===0;
+  btn.style.opacity=carrinho.length===0?'.3':'1';
+  var items=document.getElementById('cartItems');
+  if(carrinho.length===0){
+    items.innerHTML='<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:11px;font-weight:600">🛒<br><br>Carrinho vazio</div>';
+    return;
+  }
+  items.innerHTML=carrinho.map(function(p){
+    return '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--dim);align-items:center">'+
+      '<img src="'+esc(p.imagem||'')+'" style="width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--dim);flex-shrink:0">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:11px;font-weight:700;color:#eee;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+'</div>'+
+        '<div style="font-size:13px;font-weight:900;color:var(--green)">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+      '</div>'+
+      '<button onclick="removerCarrinho(\''+p.id+'\')" style="background:transparent;border:none;color:#333;cursor:pointer;font-size:16px;padding:4px;min-width:32px;min-height:32px">✕</button>'+
+    '</div>';
+  }).join('');
+}
+function removerCarrinho(id){
+  carrinho=carrinho.filter(function(x){return x.id!==id});
+  salvarCarrinho();atualizarCarrinho();
+}
+function checkout(){
+  showToast('Redirecionando...');
+  setTimeout(function(){window.open('https://discord.gg/bKnR9accnw','_blank')},800);
+}
+
+/* ── HELPERS ── */
+function showError(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('error-screen').style.display='flex';
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
+}
+
+init();
+</script>
+</body>
+</html>

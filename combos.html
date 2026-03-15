@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsGames — Combos e Bundles</title>
+<meta name="description" content="Combos e bundles com vários jogos por um preço incrível.">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0e;--card:#131318;--surface:#1a1a20;--border:#252530;--border2:#323240;
+  --green:#00ff55;--green-glow:rgba(0,255,85,.2);--green-dim:rgba(0,255,85,.07);
+  --mars:#e8421a;--mars-dim:rgba(232,66,26,.12);--orange:#ff6b2b;--amber:#ffb300;
+  --text:#fff;--muted:#555;--dim:#1a1a22;--radius:12px;--touch:44px;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
+.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(1px 1px at 20% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 40%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.3) 0%,transparent 100%);opacity:.6}
+
+/* NAVBAR */
+.navbar{position:sticky;top:0;z-index:200;background:rgba(10,10,14,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(232,66,26,.15);padding:0 16px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:var(--mars)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.04);
+  font-size:10px;font-weight:700;color:#aaa;letter-spacing:.5px;
+  cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;white-space:nowrap}
+.nav-btn:hover{border-color:#555;color:#fff}
+.nav-cart-btn{display:flex;align-items:center;justify-content:center;
+  min-width:44px;height:44px;border-radius:10px;
+  background:linear-gradient(135deg,#00e64d,#00cc44);color:#000;
+  cursor:pointer;border:none;position:relative;
+  box-shadow:0 4px 14px rgba(0,255,85,.25);transition:box-shadow .2s,transform .15s}
+.nav-cart-btn:hover{box-shadow:0 6px 20px rgba(0,255,85,.4);transform:translateY(-1px)}
+.nav-cart-btn svg{width:18px;height:18px;fill:none;stroke:#000;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:#ff4444;color:#fff;
+  width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+
+/* HEADER */
+.page-header{position:relative;z-index:1;padding:32px 16px 0;max-width:1280px;margin:0 auto}
+@media(min-width:768px){.page-header{padding:40px 32px 0}}
+.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.page-title{font-family:'Orbitron',sans-serif;font-size:clamp(22px,3.5vw,36px);font-weight:900;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.page-title span{color:var(--green)}
+
+/* FILTROS */
+.filters-bar{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  margin-bottom:24px;
+}
+.filter-search{
+  display:flex;align-items:center;gap:0;
+  border-radius:10px;border:1px solid var(--border2);
+  background:rgba(255,255,255,.03);overflow:hidden;flex:1;min-width:200px;
+  transition:border-color .2s;
+}
+.filter-search:focus-within{border-color:rgba(232,66,26,.4)}
+.filter-search input{
+  flex:1;background:none;border:none;outline:none;
+  padding:12px 14px;font-size:13px;color:#ccc;
+  font-family:'Montserrat',sans-serif;
+}
+.filter-search input::placeholder{color:#444}
+.filter-search svg{width:16px;height:16px;flex-shrink:0;color:#444;margin-right:12px}
+.filter-count{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;align-self:center}
+
+/* Pills de categoria */
+.cats-pills{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  margin-bottom:24px;
+}
+.cats-pills::-webkit-scrollbar{display:none}
+.cat-pill{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 16px;border-radius:99px;
+  border:1px solid var(--border);background:var(--card);
+  font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:.5px;cursor:pointer;white-space:nowrap;flex-shrink:0;
+  transition:border-color .2s,color .2s,background .2s;min-height:40px;
+  text-decoration:none;
+}
+.cat-pill:hover{border-color:var(--border2);color:#aaa}
+.cat-pill.active{border-color:var(--mars);color:var(--orange);background:var(--mars-dim)}
+
+/* GRID */
+.store-wrap{position:relative;z-index:1;padding:0 16px 80px;max-width:1280px;margin:0 auto}
+@media(min-width:768px){.store-wrap{padding:0 32px 80px}}
+.prods-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+}
+@media(min-width:480px){.prods-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+@media(min-width:640px){.prods-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.prods-grid{grid-template-columns:repeat(4,1fr);gap:14px}}
+@media(min-width:1200px){.prods-grid{grid-template-columns:repeat(5,1fr)}}
+
+.prod-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;
+  transition:border-color .25s,box-shadow .25s,transform .2s;
+  animation:fadeUp .4s ease both;display:flex;flex-direction:column;position:relative;
+  text-decoration:none;
+}
+@media(hover:hover){
+  .prod-card:hover{border-color:rgba(232,66,26,.3);box-shadow:0 8px 40px rgba(0,0,0,.7);transform:translateY(-4px)}
+  .prod-card:hover .prod-img{transform:scale(1.06)}
+}
+.prod-card:active{transform:scale(.98)}
+.prod-img-wrap{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--dim)}
+.prod-img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.prod-tag{position:absolute;top:6px;left:6px;z-index:2;
+  font-size:7px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px}
+.tag-oferta{background:var(--mars);color:#fff}
+.tag-key{background:#5865f2;color:#fff}
+.tag-combo{background:var(--amber);color:#000}
+.tag-esgotado{background:rgba(255,255,255,.08);color:#555;border:1px solid #222}
+.prod-body{padding:10px;flex:1;display:flex;flex-direction:column;gap:4px}
+.prod-name{font-size:11px;font-weight:700;color:#eee;line-height:1.35;flex:1}
+.prod-plat{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.prod-price{font-size:16px;font-weight:900;color:var(--green);margin-top:2px}
+.prod-price.esgotado{color:#333}
+.prod-btn{
+  width:100%;padding:9px;border-radius:8px;border:none;margin-top:6px;
+  font-family:'Montserrat',sans-serif;font-size:9px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  transition:box-shadow .2s,background .2s;min-height:38px;
+}
+.prod-btn-buy{background:var(--mars-dim);color:var(--orange);border:1px solid rgba(232,66,26,.3)}
+.prod-btn-dis{background:#111;color:#333;cursor:not-allowed;border:1px solid #1a1a1a}
+.loader-wrap{display:flex;align-items:center;justify-content:center;
+  padding:80px;gap:12px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1px;grid-column:1/-1}
+.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--mars);border-radius:50%;animation:spin .7s linear infinite}
+.empty-grid{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);font-size:12px;font-weight:600}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid rgba(0,255,85,.3);color:var(--green);
+  padding:12px 22px;border-radius:8px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Carrinho drawer */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none}
+.cart-overlay.open{display:block}
+.cart-drawer{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:400px;
+  background:var(--card);border-left:1px solid var(--border);z-index:201;
+  display:flex;flex-direction:column;transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.23,1,.32,1)}
+.cart-drawer.open{transform:translateX(0)}
+</style>
+</head>
+<body>
+<div class="stars-bg"></div>
+
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-text">Mars<span>Games</span></div>
+  </a>
+  <div class="nav-right">
+    <a class="nav-btn" href="index.html">Início</a>
+    <a class="nav-btn" href="promocoes.html" style="color:var(--orange);border-color:rgba(232,66,26,.3)">Promoções</a>
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <div class="cart-badge" id="cartBadge">0</div>
+    </button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-eyebrow">MarsGames — Steam Offline PC</div>
+  <h1 class="page-title"><span>Combos e Bundles</span></h1>
+
+  <!-- Filtros -->
+  <div class="filters-bar">
+    <div class="filter-search">
+      <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="filter-count" id="filterCount">— jogos</div>
+  </div>
+
+  <!-- Pills -->
+  <div class="cats-pills" id="catsPills">
+    <span class="cat-pill" data-cat="todos">Todos os jogos</span>
+    <span class="cat-pill" data-cat="Ação / RPG">Ação / RPG</span>
+    <span class="cat-pill" data-cat="Luta / Tiros">Luta / Tiros</span>
+    <span class="cat-pill" data-cat="Terror / Indie">Terror / Indie</span>
+    <span class="cat-pill" data-cat="Simulação / Sobrevivência">Simulação</span>
+    <span class="cat-pill" data-cat="Esportes">Esportes</span>
+    <span class="cat-pill active" data-cat="Combos e Bundles">Combos e Bundles</span>
+    <span class="cat-pill" data-cat="Steam Key / Outros">Chaves Aleatórias</span>
+  </div>
+</div>
+
+<div class="store-wrap">
+  <div class="prods-grid" id="prodsGrid">
+    <div class="loader-wrap"><div class="spinner"></div> Carregando jogos...</div>
+  </div>
+</div>
+
+<!-- CARRINHO -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)">
+    <span style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900">Carrinho</span>
+    <button onclick="toggleCart()" style="width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+  <div id="cartItems" style="flex:1;overflow-y:auto;padding:14px 20px"></div>
+  <div style="padding:16px 20px;border-top:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">Total</span>
+      <span id="cartTotal" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green)">R$ 0,00</span>
+    </div>
+    <button id="checkoutBtn" onclick="checkout()" disabled style="width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.3">Finalizar compra</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var todosProdutos=[],catAtual='Combos e Bundles',buscaAtual='';
+var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
+
+async function init(){
+  var{data,error}=await sb.from('produtos').select('*').eq('ativo',true).order('created_at',{ascending:false});
+  if(error||!data){
+    document.getElementById('prodsGrid').innerHTML='<div class="empty-grid">Erro ao carregar produtos.</div>';
+    return;
+  }
+  todosProdutos=data;
+  renderProdutos();
+  atualizarCarrinho();
+
+  // Eventos nas pills
+  document.querySelectorAll('.cat-pill').forEach(function(pill){
+    pill.addEventListener('click',function(){
+      catAtual=this.dataset.cat;
+      document.querySelectorAll('.cat-pill').forEach(function(p){p.classList.remove('active')});
+      this.classList.add('active');
+      buscaAtual='';
+      document.getElementById('searchInput').value='';
+      renderProdutos();
+    });
+  });
+}
+
+function renderProdutos(){
+  var lista=todosProdutos.filter(function(p){
+    var catOk=catAtual==='todos'||p.categoria===catAtual;
+    var buscaOk=!buscaAtual||(p.nome||'').toLowerCase().includes(buscaAtual.toLowerCase());
+    return catOk&&buscaOk;
+  });
+  document.getElementById('filterCount').textContent=lista.length+' jogos';
+  var grid=document.getElementById('prodsGrid');
+  if(lista.length===0){grid.innerHTML='<div class="empty-grid">Nenhum jogo encontrado.</div>';return}
+  grid.innerHTML=lista.map(function(p,i){
+    var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
+    var tagClass=!ok?'tag-esgotado':p.categoria==='Combos e Bundles'?'tag-combo':p.categoria==='Steam Key / Outros'?'tag-key':'tag-oferta';
+    var tagTxt=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Bundle':p.categoria==='Steam Key / Outros'?'Key':'Oferta';
+    return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s">'+
+      '<div class="prod-img-wrap">'+
+        (p.imagem?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">':'')+
+        '<div class="prod-tag '+tagClass+'">'+tagTxt+'</div>'+
+      '</div>'+
+      '<div class="prod-body">'+
+        '<div class="prod-name">'+esc(p.nome)+'</div>'+
+        '<div class="prod-plat">'+esc(p.plataforma||'Steam')+'</div>'+
+        '<div class="prod-price'+(ok?'':' esgotado')+'">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+        '<button class="prod-btn '+(ok?'prod-btn-buy':'prod-btn-dis')+'" '+(ok?'':'disabled')+
+          ' onclick="event.preventDefault();event.stopPropagation();addCarrinho(\''+p.id+'\')">'+(ok?'Comprar agora':'Esgotado')+'</button>'+
+      '</div>'+
+    '</a>';
+  }).join('');
+}
+
+function buscar(q){buscaAtual=q;renderProdutos()}
+
+function addCarrinho(id){
+  var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
+  if(carrinho.find(function(x){return x.id===id})){showToast('Jogo já está no carrinho!');return}
+  carrinho.push(p);salvarCarrinho();atualizarCarrinho();
+  showToast('✓ '+p.nome.substring(0,28)+' adicionado!');
+}
+function removerCarrinho(id){carrinho=carrinho.filter(function(x){return x.id!==id});salvarCarrinho();atualizarCarrinho()}
+function salvarCarrinho(){localStorage.setItem('mg_cart',JSON.stringify(carrinho))}
+function atualizarCarrinho(){
+  document.getElementById('cartBadge').textContent=carrinho.length;
+  var total=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+  document.getElementById('cartTotal').textContent='R$ '+total.toFixed(2).replace('.',',');
+  var btn=document.getElementById('checkoutBtn');
+  btn.disabled=carrinho.length===0;btn.style.opacity=carrinho.length===0?'.3':'1';
+  var items=document.getElementById('cartItems');
+  if(carrinho.length===0){items.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:11px">Carrinho vazio</div>';return}
+  items.innerHTML=carrinho.map(function(p){
+    return '<div style="display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--dim);align-items:center">'+
+      '<img src="'+esc(p.imagem||'')+'" style="width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0">'+
+      '<div style="flex:1;min-width:0"><div style="font-size:10px;font-weight:700;color:#eee;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+'</div>'+
+      '<div style="font-size:12px;font-weight:900;color:var(--green)">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div></div>'+
+      '<button onclick="removerCarrinho(\''+p.id+'\')" style="background:transparent;border:none;color:#333;cursor:pointer;font-size:16px;padding:4px;min-width:28px">✕</button></div>';
+  }).join('');
+}
+function toggleCart(){
+  var o=document.getElementById('cartOverlay');var d=document.getElementById('cartDrawer');
+  var open=d.classList.contains('open');
+  if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
+  else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
+}
+function checkout(){showToast('Redirecionando...');setTimeout(function(){window.open('https://discord.gg/bKnR9accnw','_blank')},800)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
+
+init();
+</script>
+</body>
+</html>
