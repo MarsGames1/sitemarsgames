@@ -3846,7 +3846,15 @@ async function checkout(){
     if(!res.ok) throw new Error(data.error||'Erro HTTP '+res.status);
     if(!data.init_point) throw new Error('Link de pagamento não retornado');
 
-    window.location.href=data.init_point;
+    // Abrir Mercado Pago em nova aba
+    window.open(data.init_point, '_blank');
+
+    // Mostrar botão "Já paguei" após abrir o MP
+    btn.disabled=false;
+    btn.textContent='✅ Já paguei — ver meu pedido';
+    btn.onclick=function(){window.location.href='sucesso.html'};
+    btn.style.background='linear-gradient(135deg,#00cc44,#00aa33)';
+    showToast('Finalize o pagamento na janela aberta!');
 
   }catch(err){
     var msg=err.name==='AbortError'?'Tempo esgotado — tente novamente':err.message;
