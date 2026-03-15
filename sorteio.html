@@ -528,9 +528,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
               <input type="range" class="tickets-range" id="ticketsRange"
                 min="1" max="10" value="1" oninput="atualizarSlider(this.value)">
             </div>
-            <div style="font-size:10px;color:#555;font-weight:600;margin-bottom:14px;text-align:center">
-              Usar <strong id="ticketsEscolhidos" style="color:var(--amber)">1</strong> ticket(s) →
-              <strong id="chanceLabel" style="color:var(--green)">calculando...</strong> de chance
+            <div style="font-size:10px;color:#888;font-weight:600;margin-bottom:14px;text-align:center">
+              Usando <strong id="ticketsEscolhidos" style="color:var(--amber)">1</strong> ticket(s) no sorteio
             </div>
             <button class="btn-participar" id="btnParticipar" onclick="participar()">
               🎟️ Participar do sorteio
@@ -776,12 +775,11 @@ function iniciarContador(dataFim){
     var h=pad(Math.floor((diff%86400000)/3600000));
     var m=pad(Math.floor((diff%3600000)/60000));
     var s=pad(Math.floor((diff%60000)/1000));
-    function set(id,val,key){
-      var el=document.getElementById(id);
-      if(prev[key]!==val){el.classList.remove('flip');void el.offsetWidth;el.classList.add('flip');}
-      el.textContent=val;prev[key]=val;
-    }
-    set('cDias',d,'d');set('cHoras',h,'h');set('cMinutos',m,'m');set('cSegundos',s,'s');
+    /* Atualiza só quando o valor muda — sem animação que causa glitch */
+    if(prev.d!==d){document.getElementById('cDias').textContent=d;prev.d=d;}
+    if(prev.h!==h){document.getElementById('cHoras').textContent=h;prev.h=h;}
+    if(prev.m!==m){document.getElementById('cMinutos').textContent=m;prev.m=m;}
+    if(prev.s!==s){document.getElementById('cSegundos').textContent=s;prev.s=s;}
   }
   tick();
   contadorInterval=setInterval(tick,1000);
@@ -809,12 +807,6 @@ function renderParticipacao(part){
 function atualizarSlider(val){
   document.getElementById('sliderValLabel').textContent=val+' 🎟️';
   document.getElementById('ticketsEscolhidos').textContent=val;
-  /* Calcular chance */
-  if(sorteioAtual){
-    var totalPote=sorteioAtual.total_participantes+parseInt(val);
-    var chance=totalPote>0?Math.round((parseInt(val)/totalPote)*100):100;
-    document.getElementById('chanceLabel').textContent='~'+chance+'% de chance';
-  }
 }
 
 async function carregarParticipantes(sorteioId){

@@ -457,6 +457,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 .tab-tickets.active{color:var(--amber)!important;border-bottom-color:var(--amber)!important}
 .tab-marspoints{color:var(--green)!important;border-bottom-color:transparent}
 .tab-marspoints.active{color:var(--green)!important;border-bottom-color:var(--green)!important}
+.tab-premios{color:var(--ouro)!important;border-bottom-color:transparent}
+.tab-premios.active{color:var(--ouro)!important;border-bottom-color:var(--ouro)!important}
 /* MarsTickets */
 .tickets-hero{
   background:linear-gradient(135deg,rgba(255,183,0,.08),rgba(255,183,0,.03));
@@ -779,6 +781,7 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab" onclick="showTab('pontos',this)">Histórico de Pontos</div>
     <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
+    <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
     <div class="tab" onclick="showTab('editar',this)">Editar Perfil</div>
   </div>
 
@@ -993,6 +996,12 @@ body.tema-claro .section-loader{color:var(--muted)}
         🎲 Participar dos sorteios
       </a>
     </div>
+  </div>
+
+  <!-- PRÊMIOS DE SORTEIO -->
+  <div class="tab-content" id="tab-premios">
+    <div id="premiosLoader" class="section-loader"><div class="spinner"></div> Carregando prêmios...</div>
+    <div id="premiosList" style="display:none"></div>
   </div>
 
   <!-- EDITAR PERFIL -->
@@ -1416,12 +1425,22 @@ var CONQUISTAS=[
   {id:'fiel',            icon:'🔥', nome:'Fã de RPG',          desc:'Comprou 3 jogos da categoria Ação/RPG',       titulo:'Caçador de RPG',      pts:60,  req:function(p){return(p.rpg_comprados||0)>=3}},
   {id:'caçador',         icon:'💰', nome:'Caçador de Ofertas', desc:'Comprou 5 jogos em promoção',                 titulo:'Caçador de Ofertas',  pts:80,  req:function(p){return(p.promo_comprados||0)>=5}},
   {id:'social',          icon:'🤝', nome:'Embaixador',         desc:'Indicou um amigo que fez a primeira compra',  titulo:'Embaixador Mars',     pts:150, req:function(p){return(p.indicacoes||0)>=1}},
+  {id:'sortudo',         icon:'🏆', nome:'Sortudo',            desc:'Venceu um sorteio MarsGames!',                titulo:'SORTUDO',             pts:0,   req:function(p){return p.titulo_exibido==='SORTUDO'||(p.historico_sorteio||false)}},
 ];
 
 function renderConquistas(perfil){
   var grid=document.getElementById('conquistasGrid');
   var opcoes=document.getElementById('tituloOpcoes');
-  var titulosDesbloqueados=[{nome:getNivel(perfil.pontos||0).titulo,fonte:'Nível '+getNivel(perfil.pontos||0).nome}];
+  var nivel=getNivel(perfil.pontos||0);
+  var titulosDesbloqueados=[{nome:nivel.titulo,fonte:'Nível '+nivel.nome}];
+  /* Também adiciona todos os títulos de nível desbloqueados abaixo do atual */
+  var NIVEIS_LISTA=['Bronze','Prata','Ouro','Esmeralda','Diamante'];
+  var idxAtual=NIVEIS_LISTA.indexOf(nivel.nome);
+  var TITULOS_NIVEL={'Bronze':'Recruta Marciano','Prata':'Explorador','Ouro':'Comandante','Esmeralda':'Elite Mars','Diamante':'Lendário'};
+  for(var ni=0;ni<idxAtual;ni++){
+    var nn=NIVEIS_LISTA[ni];
+    titulosDesbloqueados.push({nome:TITULOS_NIVEL[nn],fonte:'Nível '+nn+' (desbloqueado)'});
+  }
 
   grid.innerHTML=CONQUISTAS.map(function(c){
     var desbloqueada=c.req(perfil);
@@ -1592,6 +1611,50 @@ function showTab(id,el){
   if(el)el.classList.add('active');
   if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
   if(id==='marspoints-perfil' && userSession) carregarMarsPointsPerfil(userSession.user);
+  if(id==='premios' && userSession) carregarPremios(userSession.user);
+}
+
+/* ── PRÊMIOS DE SORTEIO ── */
+async function carregarPremios(user){
+  var loader=document.getElementById('premiosLoader');
+  var list=document.getElementById('premiosList');
+  if(loader)loader.style.display='flex';
+  if(list)list.style.display='none';
+  try{
+    var mp=await sb.from('marspoints').select('historico,pontos').eq('user_email',user.email).maybeSingle();
+    var hist=(mp&&mp.data&&mp.data.historico)||[];
+    var premios=hist.filter(function(h){return h.tipo==='sorteio'&&h.chave;});
+    if(loader)loader.style.display='none';
+    if(list)list.style.display='block';
+    if(!premios.length){
+      list.innerHTML='<div style="text-align:center;padding:60px 24px">'+
+        '<div style="font-size:48px;margin-bottom:16px">🎲</div>'+
+        '<div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;color:#fff;margin-bottom:8px">Nenhum prêmio ainda</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-bottom:20px">Participe dos sorteios e ganhe jogos incríveis!</div>'+
+        '<a href="sorteio.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;background:var(--mars);color:#fff;font-weight:900;font-size:12px;text-decoration:none">🎲 Ver sorteios</a>'+
+      '</div>';
+      return;
+    }
+    list.innerHTML=premios.map(function(h){
+      var dt=h.data?new Date(h.data).toLocaleDateString('pt-BR'):'—';
+      return '<div style="background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,165,0,.04));border:1px solid rgba(255,215,0,.2);border-radius:14px;padding:20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">'+
+        '<div style="font-size:40px;flex-shrink:0">🏆</div>'+
+        '<div style="flex:1;min-width:180px">'+
+          '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:4px">Prêmio de sorteio — '+dt+'</div>'+
+          '<div style="font-size:16px;font-weight:900;color:#fff;margin-bottom:8px">'+esc(h.descricao||'Prêmio')+'</div>'+
+          '<div style="font-size:10px;color:#888;margin-bottom:8px">Sua chave/credencial:</div>'+
+          '<div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;font-weight:700;color:var(--amber);word-break:break-all;letter-spacing:.5px">'+esc(h.chave)+'</div>'+
+        '</div>'+
+        '<button onclick="navigator.clipboard.writeText(''+esc(h.chave)+'').then(function(){showToast('Chave copiada! ✓')})" '+
+          'style="padding:10px 18px;border-radius:8px;background:var(--amber);border:none;color:#000;font-weight:900;font-size:11px;cursor:pointer;flex-shrink:0">'+
+          '📋 Copiar'+
+        '</button>'+
+      '</div>';
+    }).join('');
+  }catch(e){
+    if(loader)loader.style.display='none';
+    if(list){list.style.display='block';list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Erro ao carregar prêmios.</div>';}
+  }
 }
 
 /* ── MARSPOINTS PERFIL ── */
