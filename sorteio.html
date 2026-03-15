@@ -372,10 +372,16 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
   .participar-section,.participantes-section{padding-left:32px;padding-right:32px}
   .contador-wrap{padding:24px 32px}
 }
+
+/* ══ ANIMATION ENGINE ══ */
+#mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
+#mars-canvas.ready{opacity:1}
 </style>
 </head>
 <body>
 <div class="stars-bg"></div>
+<canvas id="mars-canvas"></canvas>
+
 
 <nav class="navbar">
   <a class="nav-logo" href="index.html">
@@ -955,6 +961,184 @@ function lancarConfetti(){
 
 /* Init */
 setTipoSorteio('diario');
+</script>
+<script>
+/* ══ MARSGAMES ANIMATION ENGINE ══ */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  if(conn&&(conn.saveData||conn.effectiveType==='2g'||conn.effectiveType==='slow-2g')) return;
+
+  /* ── Loader helper ── */
+  function loadScript(src,cb){
+    var s=document.createElement('script');
+    s.src=src;s.async=true;s.onload=cb;s.onerror=function(){if(cb)cb()};
+    document.head.appendChild(s);
+  }
+
+  /* ── THREE.JS: partículas de fundo ── */
+  function initThree(){
+    if(typeof THREE==='undefined') return;
+    var canvas=document.getElementById('mars-canvas');
+    if(!canvas) return;
+    var W=window.innerWidth,H=window.innerHeight;
+    var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+    renderer.setSize(W,H);
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(75,W/H,.1,1000);
+    cam.position.z=5;
+    var N=W<768?600:1200;
+    var pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(var i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*24;
+      pos[i*3+1]=(Math.random()-.5)*24;
+      pos[i*3+2]=(Math.random()-.5)*14;
+      var r=Math.random();
+      if(r<.05){col[i*3]=.91;col[i*3+1]=.26;col[i*3+2]=.1;}      /* mars red */
+      else if(r<.09){col[i*3]=0;col[i*3+1]=1;col[i*3+2]=.33;}    /* green */
+      else{var v=Math.random()*.45+.55;col[i*3]=v;col[i*3+1]=v;col[i*3+2]=v;}
+    }
+    var geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    var mat=new THREE.PointsMaterial({size:.035,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true});
+    var pts=new THREE.Points(geo,mat);
+    scene.add(pts);
+    var mouse={x:0,y:0};
+    document.addEventListener('mousemove',function(e){
+      mouse.x=(e.clientX/W-.5)*.4;
+      mouse.y=(e.clientY/H-.5)*.25;
+    },{passive:true});
+    window.addEventListener('resize',function(){
+      W=window.innerWidth;H=window.innerHeight;
+      cam.aspect=W/H;cam.updateProjectionMatrix();
+      renderer.setSize(W,H);
+    });
+    var clock=new THREE.Clock();
+    (function animate(){
+      requestAnimationFrame(animate);
+      var t=clock.getElapsedTime();
+      pts.rotation.y=t*.018+mouse.x*.6;
+      pts.rotation.x=t*.005+mouse.y*.3;
+      renderer.render(scene,cam);
+    })();
+    canvas.classList.add('ready');
+  }
+
+  /* ── GSAP: animações de entrada e interação ── */
+  function initGSAP(){
+    if(typeof gsap==='undefined') return;
+
+    /* Registra ScrollTrigger se disponível */
+    if(typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
+
+    /* Helper: anima elementos ao entrar na viewport */
+    function onScroll(sel,from,stagger){
+      var els=document.querySelectorAll(sel);
+      if(!els.length) return;
+      var base={duration:.65,ease:'power3.out',stagger:stagger||.07};
+      if(typeof ScrollTrigger!=='undefined'){
+        base.scrollTrigger={trigger:els[0],start:'top 88%',once:true};
+      }
+      gsap.from(els,Object.assign(base,from));
+    }
+
+    /* Navbar */
+    gsap.from('.nav-logo',{x:-20,opacity:0,duration:.55,delay:.15,ease:'power2.out'});
+    gsap.from('.nav-right > *',{y:-12,opacity:0,duration:.4,stagger:.06,delay:.25,ease:'power2.out'});
+    gsap.from('.nav-links .nav-link',{y:-8,opacity:0,duration:.35,stagger:.05,delay:.3,ease:'power2.out'});
+
+    /* Hero */
+    var heroEls=['.hero-badge','.hero-eyebrow','.hero-title','.hero-sub','.hero-btns','.countdown',
+                 '.solar-wrap','.hero-title span'];
+    var delays=[0,.1,.2,.35,.45,.55,0,.25];
+    heroEls.forEach(function(sel,i){
+      var el=document.querySelector(sel);
+      if(!el) return;
+      gsap.from(el,{y:i<2?14:26,opacity:0,duration:.6,delay:.2+delays[i],ease:'power3.out'});
+    });
+
+    /* Seções ao scroll */
+    onScroll('.prod-card',{y:28,opacity:0,scale:.97},.05);
+    onScroll('.mv-card',{y:20,opacity:0},.06);
+    onScroll('.cex-card',{y:22,opacity:0,scale:.96},.07);
+    onScroll('.pstat',{y:16,opacity:0,scale:.95},.07);
+    onScroll('.benef-card',{y:18,opacity:0},.06);
+    onScroll('.stat-card',{y:16,opacity:0,scale:.95},.05);
+    onScroll('.conquista-card',{y:18,opacity:0},.05);
+    onScroll('.tickets-nivel-item',{x:-18,opacity:0},.06);
+    onScroll('.cats-explore-head',{y:28,opacity:0,duration:.8},0);
+    onScroll('.perfil-hero',{y:22,opacity:0,duration:.65},0);
+    onScroll('.sorteio-card',{y:26,opacity:0,duration:.65},0);
+    onScroll('.sorteio-tab',{y:12,opacity:0},.06);
+    onScroll('.vencedor-card',{scale:.95,opacity:0,duration:.7},0);
+    onScroll('.tinfo-card',{y:14,opacity:0},.07);
+    onScroll('.historico-item',{x:-14,opacity:0},.05);
+    onScroll('.pts-item',{x:-12,opacity:0},.04);
+    onScroll('.fav-card',{y:16,opacity:0,scale:.97},.06);
+    onScroll('.boa-bullet',{x:-12,opacity:0},.05);
+    onScroll('.login-card',{y:24,opacity:0,scale:.97,duration:.6},0);
+
+    /* Hover magnético nos cards de produto */
+    document.querySelectorAll('.prod-card,.mv-card').forEach(function(card){
+      card.addEventListener('mousemove',function(e){
+        var r=card.getBoundingClientRect();
+        var x=(e.clientX-r.left-r.width/2)/r.width*7;
+        var y=(e.clientY-r.top-r.height/2)/r.height*7;
+        gsap.to(card,{rotateY:x,rotateX:-y,duration:.25,ease:'power2.out',transformPerspective:700,overwrite:'auto'});
+      });
+      card.addEventListener('mouseleave',function(){
+        gsap.to(card,{rotateY:0,rotateX:0,duration:.5,ease:'elastic.out(1,.6)',overwrite:'auto'});
+      });
+    });
+
+    /* Hover lift suave nos pstats e benef-cards */
+    document.querySelectorAll('.pstat,.benef-card,.tinfo-card,.stat-card').forEach(function(el){
+      el.addEventListener('mouseenter',function(){gsap.to(el,{y:-5,scale:1.03,duration:.22,ease:'power2.out',overwrite:'auto'});});
+      el.addEventListener('mouseleave',function(){gsap.to(el,{y:0,scale:1,duration:.35,ease:'power2.out',overwrite:'auto'});});
+    });
+
+    /* Tabs — anima o conteúdo ao trocar */
+    document.querySelectorAll('.tab').forEach(function(tab){
+      tab.addEventListener('click',function(){
+        setTimeout(function(){
+          var active=document.querySelector('.tab-content.active');
+          if(active) gsap.from(active,{y:14,opacity:0,duration:.3,ease:'power2.out'});
+        },10);
+      });
+    });
+
+    /* Botões — feedback de clique */
+    document.querySelectorAll('.btn-participar,.btn-mars,.edit-btn,.mv-buy').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        gsap.timeline()
+          .to(btn,{scale:.95,duration:.1,ease:'power2.in'})
+          .to(btn,{scale:1,duration:.3,ease:'elastic.out(1,.5)'});
+      });
+    });
+  }
+
+  /* ── Inicialização ── */
+  function init(){
+    /* Three.js — baixa depois que página carregou */
+    if(document.getElementById('mars-canvas')){
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
+        if(window.requestIdleCallback) requestIdleCallback(initThree,{timeout:3000});
+        else setTimeout(initThree,800);
+      });
+    }
+    /* GSAP + ScrollTrigger */
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js',function(){
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js',function(){
+        initGSAP();
+      });
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
 </script>
 </body>
 </html>

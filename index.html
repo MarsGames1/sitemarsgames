@@ -2352,6 +2352,10 @@ footer::before{
   font-size:11px;font-weight:700;color:#cc88ff;margin-top:8px;
 }
 
+
+/* ══ ANIMATION ENGINE ══ */
+#mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
+#mars-canvas.ready{opacity:1}
 </style>
 </head>
 <body>
@@ -2397,6 +2401,8 @@ footer::before{
 </div>
 
 <div class="stars-bg"></div>
+<canvas id="mars-canvas"></canvas>
+
 
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">
