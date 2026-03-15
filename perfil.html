@@ -216,25 +216,24 @@ body.tema-claro .pstat-val{color:var(--mars)}
 /* Inner — círculo perfeito que clipa img/fallback */
 .avatar-inner{
   width:80px;height:80px;
-  border-radius:50%;
-  overflow:hidden;
+  /* clip-path:circle é matematicamente perfeito — sem efeito ovo */
+  clip-path:circle(50%);
+  -webkit-clip-path:circle(50%);
   position:relative;
   z-index:1;
   display:flex;align-items:center;justify-content:center;
   background:var(--dim);
   flex-shrink:0;
-  /* borda padrão (sem nível) */
   border:3px solid var(--border2);
+  box-sizing:border-box;
 }
 .perfil-avatar{
   width:100%;height:100%;
   object-fit:cover;
   border:none;display:block;
-  border-radius:50%;
 }
 .perfil-avatar-fallback{
   width:100%;height:100%;
-  border-radius:50%;
   background:linear-gradient(135deg,rgba(232,66,26,.25),rgba(0,255,85,.12));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
@@ -860,40 +859,33 @@ function mostrarLoading(){
 
 async function checkAuth(){
   mostrarLoading();
-  var resolvido=false;
 
-  function entrar(session){
-    if(resolvido&&perfilData) return;
-    resolvido=true;
-    userSession=session;
-    mostrarPerfil();
-    if(!perfilData) carregarPerfil(session.user);
-  }
-  function sair(){
-    if(_fazendoLogout) return; /* logout manual — já tratado */
-    resolvido=true;
-    mostrarLogin();
-  }
-
-  /* Listener PRIMEIRO — captura SIGNED_IN do redirect OAuth */
-  sb.auth.onAuthStateChange(function(event,session){
-    if(event==='SIGNED_IN'&&session) entrar(session);
-    if(event==='INITIAL_SESSION'){ if(session) entrar(session); else sair(); }
-    if(event==='TOKEN_REFRESHED'&&session) userSession=session;
-    if(event==='SIGNED_OUT'&&!_fazendoLogout){ perfilData=null; userSession=null; mostrarLogin(); }
+  /* onAuthStateChange é a única fonte da verdade.
+     INITIAL_SESSION = primeira carga (sessão salva ou nenhuma)
+     SIGNED_IN       = redirect OAuth de volta ao site
+     SIGNED_OUT      = logout
+     TOKEN_REFRESHED = refresh silencioso */
+  sb.auth.onAuthStateChange(function(event, session){
+    if(event==='INITIAL_SESSION'){
+      if(session){ userSession=session; mostrarPerfil(); carregarPerfil(session.user); }
+      else { mostrarLogin(); }
+    }
+    if(event==='SIGNED_IN' && session){
+      /* Troca de conta: limpa perfil antigo antes de carregar novo */
+      if(userSession && userSession.user.id !== session.user.id){
+        perfilData=null;
+      }
+      userSession=session;
+      mostrarPerfil();
+      carregarPerfil(session.user);
+    }
+    if(event==='TOKEN_REFRESHED' && session){
+      userSession=session;
+    }
+    if(event==='SIGNED_OUT' && !_fazendoLogout){
+      perfilData=null; userSession=null; mostrarLogin();
+    }
   });
-
-  /* Fallback: rede lenta ou nenhum evento chegou em 5s */
-  setTimeout(async function(){
-    if(resolvido) return;
-    try{
-      var r=await sb.auth.getSession();
-      var s=r&&r.data&&r.data.session;
-      if(resolvido) return;
-      resolvido=true;
-      if(s) entrar(s); else mostrarLogin();
-    }catch(e){ if(!resolvido) mostrarLogin(); }
-  },5000);
 }
 
 async function carregarPerfil(user){
