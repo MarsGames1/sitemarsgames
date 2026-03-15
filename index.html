@@ -30,6 +30,142 @@
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ══ TELA DE MANUTENÇÃO ══ */
+@keyframes manuFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-18px) rotate(2deg)}}
+@keyframes manuPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.08)}}
+@keyframes manuOrbit{0%{transform:rotate(0deg) translateX(110px) rotate(0deg)}100%{transform:rotate(360deg) translateX(110px) rotate(-360deg)}}
+@keyframes manuOrbit2{0%{transform:rotate(180deg) translateX(80px) rotate(-180deg)}100%{transform:rotate(540deg) translateX(80px) rotate(-540deg)}}
+@keyframes manuScan{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes manuBlink{0%,100%{opacity:1}50%{opacity:0}}
+#manutencao-screen{
+  display:none;position:fixed;inset:0;z-index:99999;
+  background:#0a0a0e;
+  flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Montserrat',sans-serif;overflow:hidden;
+}
+.manu-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(232,66,26,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(232,66,26,.06) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+}
+.manu-scan{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.manu-scan::after{
+  content:'';position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.6),rgba(0,255,85,.4),transparent);
+  animation:manuScan 4s linear infinite;
+  box-shadow:0 0 20px rgba(232,66,26,.4);
+}
+.manu-planet-wrap{
+  position:relative;width:220px;height:220px;margin-bottom:40px;
+}
+.manu-planet{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#c0392b,#8b1a10 40%,#1a0504 80%);
+  box-shadow:0 0 40px rgba(232,66,26,.5),inset -14px -14px 28px rgba(0,0,0,.6);
+  animation:manuFloat 6s ease-in-out infinite;
+}
+.manu-planet::after{
+  content:'🔧';font-size:32px;
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  filter:drop-shadow(0 0 8px rgba(255,200,0,.8));
+}
+.manu-orbit-1,.manu-orbit-2{
+  position:absolute;top:50%;left:50%;
+  width:8px;height:8px;border-radius:50%;margin:-4px 0 0 -4px;
+}
+.manu-orbit-1{background:var(--green);box-shadow:0 0 12px var(--green);animation:manuOrbit 4s linear infinite}
+.manu-orbit-2{background:#ff6b2b;box-shadow:0 0 10px #ff6b2b;animation:manuOrbit2 7s linear infinite}
+.manu-ring{
+  position:absolute;top:50%;left:50%;
+  width:200px;height:200px;border-radius:50%;
+  margin:-100px 0 0 -100px;
+  border:1px dashed rgba(232,66,26,.2);
+}
+.manu-ring-2{
+  position:absolute;top:50%;left:50%;
+  width:160px;height:160px;border-radius:50%;
+  margin:-80px 0 0 -80px;
+  border:1px dashed rgba(0,255,85,.15);
+}
+.manu-content{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:540px}
+.manu-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:99px;
+  background:rgba(232,66,26,.12);border:1px solid rgba(232,66,26,.3);
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--mars);margin-bottom:24px;
+}
+.manu-badge::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--mars);box-shadow:0 0 8px var(--mars);
+  animation:manuBlink 1s ease-in-out infinite;
+}
+.manu-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(26px,5vw,42px);font-weight:900;
+  color:#fff;letter-spacing:2px;margin-bottom:12px;
+  text-shadow:0 0 40px rgba(232,66,26,.4);
+}
+.manu-title span{color:var(--mars)}
+.manu-subtitle{
+  font-size:14px;color:#666;font-weight:600;line-height:1.7;margin-bottom:32px;
+}
+.manu-subtitle strong{color:#aaa}
+.manu-progress-wrap{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:20px 24px;margin-bottom:28px;
+}
+.manu-progress-label{
+  display:flex;justify-content:space-between;
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  color:#555;margin-bottom:10px;
+}
+.manu-progress-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.manu-progress-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(to right,var(--mars),var(--green));
+  animation:manuPulse 2s ease-in-out infinite;
+}
+.manu-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.manu-link{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:8px;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,.03);
+  font-size:11px;font-weight:700;color:#aaa;
+  text-decoration:none;letter-spacing:.5px;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.manu-link:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.06)}
+.manu-link.discord{border-color:rgba(114,137,218,.25);color:#7289da}
+.manu-link.discord:hover{border-color:rgba(114,137,218,.6);background:rgba(114,137,218,.07)}
+
+/* ── Animações do anel de nível (navbar) ── */
+@keyframes navBronzePulse{
+  0%,100%{box-shadow:0 0 5px 1px rgba(205,159,106,.5),inset 0 0 0 2px rgba(205,159,106,.8)}
+  50%{box-shadow:0 0 14px 4px rgba(205,159,106,.85),inset 0 0 0 2px rgba(205,159,106,1)}
+}
+@keyframes navPrataShimmer{
+  0%,100%{box-shadow:0 0 7px 2px rgba(232,232,232,.4),inset 0 0 0 2px rgba(232,232,232,.9)}
+  50%{box-shadow:0 0 16px 5px rgba(232,232,232,.7),inset 0 0 0 2px #fff}
+}
+@keyframes navOuroPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.5),inset 0 0 0 2px rgba(255,215,0,.9)}
+  50%{box-shadow:0 0 20px 6px rgba(255,215,0,.85),inset 0 0 0 2px #FFD700}
+}
+@keyframes navEsmPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.55),inset 0 0 0 2px rgba(80,200,120,.9)}
+  50%{box-shadow:0 0 22px 7px rgba(80,200,120,.9),inset 0 0 0 2px #50c878}
+}
+@keyframes navDiaRotate{to{transform:rotate(360deg)}}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;
   /* Melhor scroll no iOS */
@@ -96,22 +232,49 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .nav-login svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav-login-label{display:none}
 /* Avatar pós-login na navbar */
+/* Wrapper do avatar — contém o anel giratório (diamante) e o círculo de foto */
+.nav-avatar-wrap{
+  position:relative;width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+/* Anel externo — só diamante usa como disco giratório */
+.nav-avatar-ring{
+  position:absolute;inset:0;border-radius:50%;
+}
+/* Avatar clicável */
 .nav-user-avatar{
   width:36px;height:36px;border-radius:50%;
-  border:2px solid var(--green);
+  border:2px solid var(--border2);
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
-  box-shadow:0 0 10px rgba(0,255,85,.4);
-  transition:box-shadow .2s,border-color .2s;
+  position:relative;z-index:1;
+  clip-path:circle(50%);
+  -webkit-clip-path:circle(50%);
+  transition:border-color .2s;
 }
-.nav-user-avatar:hover{box-shadow:0 0 18px rgba(0,255,85,.7)}
-.nav-user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 #navAvatarFallback{
-  width:100%;height:100%;border-radius:50%;
+  width:100%;height:100%;
   background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:var(--green);
 }
+/* ── Anéis por nível ── */
+.nav-nivel-bronze   .nav-user-avatar{border-color:var(--bronze);animation:navBronzePulse 2.5s ease-in-out infinite}
+.nav-nivel-prata    .nav-user-avatar{border-color:var(--prata); animation:navPrataShimmer 3s ease-in-out infinite}
+.nav-nivel-ouro     .nav-user-avatar{border-color:var(--ouro);  animation:navOuroPulse 2s ease-in-out infinite}
+.nav-nivel-esmeralda .nav-user-avatar{border-color:var(--esm); animation:navEsmPulse 1.8s ease-in-out infinite}
+/* Diamante: disco conic-gradient girando em volta */
+.nav-nivel-diamante .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
+  animation:navDiaRotate 2.5s linear infinite;
+  box-shadow:0 0 14px rgba(185,242,255,.6),0 0 28px rgba(123,97,255,.35);
+}
+.nav-nivel-diamante .nav-avatar-ring::before{
+  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg);z-index:0;
+}
+.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
 /* Pontos — oculto no mobile */
 .nav-points{display:none}
 /* oculto no mobile, aparece no desktop via media query */
@@ -2058,6 +2221,46 @@ footer::before{
 </head>
 <body>
 
+<!-- ══ TELA DE MANUTENÇÃO ══ -->
+<div id="manutencao-screen">
+  <div class="manu-grid"></div>
+  <div class="manu-scan"></div>
+  <div class="manu-planet-wrap">
+    <div class="manu-ring"></div>
+    <div class="manu-ring-2"></div>
+    <div class="manu-planet"></div>
+    <div class="manu-orbit-1"></div>
+    <div class="manu-orbit-2"></div>
+  </div>
+  <div class="manu-content">
+    <div class="manu-badge">Em manutenção</div>
+    <div class="manu-title">Mars<span>Games</span></div>
+    <div class="manu-subtitle">
+      Estamos aprimorando a experiência para você.<br>
+      <strong>Voltamos em breve com novidades! 🚀</strong>
+    </div>
+    <div class="manu-progress-wrap">
+      <div class="manu-progress-label">
+        <span>Trabalhando nisso...</span>
+        <span style="color:var(--green)">Em breve</span>
+      </div>
+      <div class="manu-progress-bar">
+        <div class="manu-progress-fill" style="width:70%"></div>
+      </div>
+    </div>
+    <div class="manu-links">
+      <a class="manu-link discord" href="https://discord.gg/bKnR9accnw" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#7289da"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        Fale no Discord
+      </a>
+      <a class="manu-link" href="mailto:contato@marsgames.com">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Enviar email
+      </a>
+    </div>
+  </div>
+</div>
+
 <div class="stars-bg"></div>
 
 <!-- ══ NAVBAR ══ -->
@@ -2110,11 +2313,14 @@ footer::before{
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span class="nav-login-label">Entrar</span>
     </a>
-    <!-- Avatar pós-login -->
-    <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" style="display:none" title="Meu perfil">
-      <img id="navAvatarImg" src="" alt="" style="display:none">
-      <div id="navAvatarFallback"></div>
-    </a>
+    <!-- Avatar pós-login com anel de nível -->
+    <div class="nav-avatar-wrap" id="navAvatarWrap" style="display:none">
+      <div class="nav-avatar-ring" id="navAvatarRing"></div>
+      <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" title="Meu perfil">
+        <img id="navAvatarImg" src="" alt="" style="display:none">
+        <div id="navAvatarFallback"></div>
+      </a>
+    </div>
     <!-- Carrinho -->
     <button class="nav-cart" onclick="toggleCart()" aria-label="Carrinho">
       <svg class="nav-cart-icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -3420,34 +3626,83 @@ function showToast(msg){
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
 }
 
-carregarProdutos();
+/* ══ VERIFICAÇÃO DE MANUTENÇÃO ══ */
+async function verificarManutencao(){
+  try{
+    var{data}=await sb.from('config').select('value').eq('key','manutencao').maybeSingle();
+    if(data && data.value==='1'){
+      document.getElementById('manutencao-screen').style.display='flex';
+      document.body.style.overflow='hidden';
+      return true; /* site em manutenção */
+    }
+  }catch(e){ /* se falhar, continua normal */ }
+  return false;
+}
+
+(async function(){
+  var emManutencao = await verificarManutencao();
+  if(!emManutencao){
+    carregarProdutos();
+  }
+})();
 
 /* ── AUTH NAVBAR ── */
-function atualizarNavbar(session){
-  var btnLogin  = document.getElementById('navLogin');
-  var btnAvatar = document.getElementById('navUserAvatar');
-  var imgAvatar = document.getElementById('navAvatarImg');
-  var fallback  = document.getElementById('navAvatarFallback');
-  if(!btnLogin || !btnAvatar) return;
+var NAV_NIVEIS=[
+  {nome:'bronze',   min:0},
+  {nome:'prata',    min:100},
+  {nome:'ouro',     min:500},
+  {nome:'esmeralda',min:1000},
+  {nome:'diamante', min:5000}
+];
+function getNavNivel(pts){
+  for(var i=NAV_NIVEIS.length-1;i>=0;i--){
+    if(pts>=NAV_NIVEIS[i].min) return NAV_NIVEIS[i].nome;
+  }
+  return 'bronze';
+}
+
+async function atualizarNavbar(session){
+  var btnLogin = document.getElementById('navLogin');
+  var wrap     = document.getElementById('navAvatarWrap');
+  var imgAvatar= document.getElementById('navAvatarImg');
+  var fallback = document.getElementById('navAvatarFallback');
+  if(!btnLogin || !wrap) return;
+
   if(session && session.user){
-    var meta = session.user.user_metadata || {};
-    var avatarUrl = meta.avatar_url || '';
-    var nome = meta.full_name || meta.name || session.user.email || '';
-    var inicial = (nome.trim()[0] || 'U').toUpperCase();
-    btnLogin.style.display  = 'none';
-    btnAvatar.style.display = 'flex';
+    var meta     = session.user.user_metadata || {};
+    var avatarUrl= meta.avatar_url || meta.picture || '';
+    var nome     = meta.full_name || meta.name || session.user.email || '';
+    var inicial  = (nome.trim()[0] || 'U').toUpperCase();
+
+    btnLogin.style.display = 'none';
+    wrap.style.display     = 'flex';
+
+    /* Foto ou inicial */
     if(avatarUrl){
-      imgAvatar.src = avatarUrl;
-      imgAvatar.style.display = 'block';
-      fallback.style.display  = 'none';
+      imgAvatar.src          = avatarUrl;
+      imgAvatar.style.display= 'block';
+      fallback.style.display = 'none';
     } else {
-      imgAvatar.style.display = 'none';
-      fallback.style.display  = 'flex';
-      fallback.textContent    = inicial;
+      imgAvatar.style.display= 'none';
+      fallback.style.display = 'flex';
+      fallback.textContent   = inicial;
+    }
+
+    /* Busca pontos para definir o nível do anel */
+    try{
+      var mp = await sb.from('marspoints')
+        .select('pontos')
+        .eq('user_email', session.user.email)
+        .maybeSingle();
+      var pts   = (mp.data && mp.data.pontos) || 0;
+      var nivel = getNavNivel(pts);
+      wrap.className = 'nav-avatar-wrap nav-nivel-' + nivel;
+    }catch(e){
+      wrap.className = 'nav-avatar-wrap nav-nivel-bronze';
     }
   } else {
-    btnLogin.style.display  = 'flex';
-    btnAvatar.style.display = 'none';
+    btnLogin.style.display = 'flex';
+    wrap.style.display     = 'none';
   }
 }
 sb.auth.onAuthStateChange(function(_event, session){ atualizarNavbar(session); });
