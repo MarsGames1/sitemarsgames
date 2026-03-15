@@ -959,14 +959,22 @@ function renderConquistas(perfil){
 
   // Seletor de título
   var tituloAtual=perfil.titulo_exibido||titulosDesbloqueados[0].nome;
-  opcoes.innerHTML=titulosDesbloqueados.map(function(t){
+  opcoes.innerHTML=titulosDesbloqueados.map(function(t,idx){
     var sel=tituloAtual===t.nome;
-    return '<div class="titulo-opcao'+(sel?' selecionado':'')+'" onclick="selecionarTitulo(\'' +esc(t.nome).replace(/'/g,"&#39;")+ '\',this)">'+
+    return '<div class="titulo-opcao'+(sel?' selecionado':'')+'" data-titulo-idx="'+idx+'">'+
       '<div><div class="titulo-opcao-nome">'+esc(t.nome)+'</div>'+
       '<div class="titulo-opcao-fonte">'+esc(t.fonte)+'</div></div>'+
       '<div class="titulo-opcao-check"></div>'+
     '</div>';
   }).join('');
+
+  // Adicionar eventos via JS em vez de onclick inline
+  opcoes.querySelectorAll('.titulo-opcao').forEach(function(el){
+    el.addEventListener('click',function(){
+      var idx=parseInt(this.dataset.tituloIdx);
+      selecionarTitulo(titulosDesbloqueados[idx].nome, this);
+    });
+  });
 }
 
 async function selecionarTitulo(titulo, el){
