@@ -545,22 +545,35 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   .nav-points{display:flex}
 }
 @media(min-width:1200px){
-  .nav-search{
-    display:flex;align-items:center;gap:0;
-    border-radius:8px;border:1px solid var(--border2);
-    background:rgba(255,255,255,.03);overflow:hidden;
-    transition:border-color .2s;
+  /* Busca compacta — ícone que expande */
+  .nav-search{display:flex;align-items:center;position:relative}
+  .nav-search-icon-btn{
+    width:34px;height:34px;border-radius:8px;border:1px solid var(--border2);
+    background:rgba(255,255,255,.03);color:#666;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:border-color .2s,color .2s,background .2s;flex-shrink:0;
   }
-  .nav-search:focus-within{border-color:rgba(232,66,26,.4)}
-  .nav-search input{
+  .nav-search-icon-btn:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.06)}
+  .nav-search-icon-btn svg{pointer-events:none}
+  .nav-search-expand{
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    display:flex;align-items:center;gap:0;
+    border-radius:8px;border:1px solid rgba(232,66,26,.4);
+    background:rgba(10,10,14,.97);backdrop-filter:blur(16px);
+    overflow:hidden;width:0;opacity:0;pointer-events:none;
+    transition:width .25s cubic-bezier(.4,0,.2,1),opacity .2s;
+    z-index:50;
+  }
+  .nav-search-expand.open{width:200px;opacity:1;pointer-events:all}
+  .nav-search-expand input{
     background:none;border:none;outline:none;
     padding:7px 12px;font-size:11px;color:#ccc;
-    font-family:'Montserrat',sans-serif;width:160px;
+    font-family:'Montserrat',sans-serif;width:100%;
   }
-  .nav-search input::placeholder{color:#444}
+  .nav-search-expand input::placeholder{color:#555}
   .nav-search-btn{
     padding:7px 10px;background:none;border:none;
-    color:#555;cursor:pointer;transition:color .15s;display:flex;align-items:center;
+    color:#555;cursor:pointer;transition:color .15s;display:flex;align-items:center;flex-shrink:0;
   }
   .nav-search-btn:hover{color:#ccc}
   .nav-points{
@@ -1076,15 +1089,15 @@ footer::before{
 
 /* Card */
 .mv-card{
-  flex:0 0 240px;
+  flex:0 0 216px;
   background:var(--card);border:1px solid var(--border);
   border-radius:16px;overflow:visible;
   position:relative;
   transition:transform .38s cubic-bezier(.23,1,.32,1),border-color .38s,box-shadow .38s;
   cursor:pointer;display:flex;flex-direction:column;
 }
-@media(min-width:768px){.mv-card{flex:0 0 280px}}
-@media(min-width:1024px){.mv-card{flex:0 0 300px}}
+@media(min-width:768px){.mv-card{flex:0 0 252px}}
+@media(min-width:1024px){.mv-card{flex:0 0 270px}}
 
 .mv-card-inner{border-radius:16px;overflow:hidden;display:flex;flex-direction:column;flex:1}
 
@@ -2383,11 +2396,12 @@ footer::before{
 
   <!-- Links centrais -->
   <div class="nav-links">
-    <a class="nav-link active" href="catalogo.html">Produtos</a>
+    <a class="nav-link active" href="index.html">Loja</a>
+    <a class="nav-link nav-link-sorteio" href="sorteio.html" id="navSorteioLink">
+      <span class="nav-sorteio-dot"></span>🎲 Sorteios
+    </a>
     <a class="nav-link" href="promocoes.html">Promoções</a>
-    <a class="nav-link" href="chaves.html">Chaves Steam Aleatórias</a>
-    <a class="nav-link" href="combos.html">Combos e Bundles</a>
-    <!-- Dropdown Mais -->
+    <a class="nav-link" href="combos.html">Bundles</a>
     <div class="nav-dropdown">
       <button class="nav-dropdown-toggle">
         Mais
@@ -2396,22 +2410,26 @@ footer::before{
       <div class="nav-dropdown-menu">
         <a class="nav-dropdown-item" href="catalogo.html?cat=Ação+%2F+RPG">Ação / RPG</a>
         <a class="nav-dropdown-item" href="catalogo.html?cat=Luta+%2F+Tiros">Luta / Tiros</a>
-        <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação / Sobrevivência</a>
+        <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação</a>
         <a class="nav-dropdown-item" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
-        <span class="nav-dropdown-item" onclick="alert('Em breve!')">Indicação de amigos</span>
-        <span class="nav-dropdown-item" onclick="alert('Em breve!')">Minhas recompensas</span>
+        <a class="nav-dropdown-item" href="sorteio.html">🎲 Sorteios</a>
       </div>
     </div>
   </div>
 
   <!-- Direita -->
   <div class="nav-right">
-    <!-- Busca -->
-    <div class="nav-search">
-      <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value)">
-      <button class="nav-search-btn" aria-label="Buscar">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <!-- Busca compacta -->
+    <div class="nav-search" id="navSearchWrap">
+      <button class="nav-search-icon-btn" id="navSearchToggle" onclick="toggleNavSearch()" aria-label="Buscar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
+      <div class="nav-search-expand" id="navSearchExpand">
+        <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value)" onblur="recolherSearch()">
+        <button class="nav-search-btn" aria-label="Buscar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
     </div>
     <!-- Discord -->
     <a class="nav-discord" href="https://discord.gg/bKnR9accnw" target="_blank">
@@ -2542,7 +2560,6 @@ footer::before{
     <div class="mv-pill green">Entrega imediata</div>
     <div class="mv-pill green">Pagamento seguro</div>
     <div class="mv-pill yellow">+500 clientes satisfeitos</div>
-    <div class="mv-pill">Steam Offline PC</div>
   </div>
 
   <!-- Carrossel -->
@@ -2608,7 +2625,6 @@ footer::before{
       '<div class="mv-card-inner">'+
         '<div class="mv-img-wrap">'+
           '<img class="mv-img" src="'+p.img+'" alt="'+p.name+'" loading="lazy" decoding="async">'+
-          '<div class="mv-plat-badge">STEAM OFFLINE</div>'+
         '</div>'+
         '<div class="mv-info">'+
           '<h3 class="mv-name">'+p.name+'</h3>'+
@@ -2626,7 +2642,7 @@ footer::before{
   var pos=CLONES, animating=false;
 
   function getCardW(){
-    return window.innerWidth>=1024?300:window.innerWidth>=768?280:240;
+    return window.innerWidth>=1024?270:window.innerWidth>=768?252:216;
   }
   CARD_W=getCardW();
   var STEP=CARD_W+GAP;
@@ -2861,17 +2877,13 @@ footer::before{
 <!-- ══ EXPLORAR CATEGORIAS ══ -->
 <section class="cats-explore-section">
   <div class="cats-explore-head">
-    <div class="cats-explore-eyebrow">Steam Offline PC</div>
+    <div class="cats-explore-eyebrow">Escolha seu gênero</div>
     <div class="cats-explore-title">
       <span class="et-base">Explorar Categorias</span>
       <span class="et-r" aria-hidden="true">Explorar Categorias</span>
       <span class="et-c" aria-hidden="true">Explorar Categorias</span>
     </div>
-    <div class="cats-explore-sub">
-      <span class="cats-explore-sub-line"></span>
-      <span class="cats-explore-sub-text">Escolha seu gênero</span>
-      <span class="cats-explore-sub-line r"></span>
-    </div>
+
   </div>
 
   <div class="cats-explore-gallery">
@@ -3569,6 +3581,21 @@ var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
 })();
 
 var todosProdutos=[],catAtual='todos',buscaAtual='',carrinho=[],prodModalAtual=null;
+
+/* Busca compacta — expande ao clicar no ícone */
+function toggleNavSearch(){
+  var exp=document.getElementById('navSearchExpand');
+  if(!exp)return;
+  var open=exp.classList.contains('open');
+  if(open){exp.classList.remove('open');}
+  else{exp.classList.add('open');setTimeout(function(){var i=document.getElementById('searchInput');if(i)i.focus();},60);}
+}
+function recolherSearch(){
+  var inp=document.getElementById('searchInput');
+  if(inp&&!inp.value){
+    setTimeout(function(){var exp=document.getElementById('navSearchExpand');if(exp)exp.classList.remove('open');},180);
+  }
+}
 
 /* ── COUNTDOWN ── */
 (function(){
