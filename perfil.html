@@ -858,24 +858,32 @@ function mostrarLoading(){
 }
 
 async function checkAuth(){
+  /* Se a URL tem erro do Supabase (Database error saving new user, etc.)
+     mostra mensagem amigável em vez de loop infinito */
+  var hash=window.location.hash;
+  if(hash.includes('error')){
+    var msg=decodeURIComponent((hash.match(/error_description=([^&]+)/)||['','Erro ao entrar'])[1]).replace(/[+]/g,' ');
+    history.replaceState(null,'',window.location.pathname);
+    mostrarLogin();
+    setTimeout(function(){ showToast('Erro: '+msg); }, 400);
+    return;
+  }
+
   mostrarLoading();
 
-  /* onAuthStateChange é a única fonte da verdade.
-     INITIAL_SESSION = primeira carga (sessão salva ou nenhuma)
-     SIGNED_IN       = redirect OAuth de volta ao site
-     SIGNED_OUT      = logout
-     TOKEN_REFRESHED = refresh silencioso */
   sb.auth.onAuthStateChange(function(event, session){
     if(event==='INITIAL_SESSION'){
       if(session){ userSession=session; mostrarPerfil(); carregarPerfil(session.user); }
       else { mostrarLogin(); }
     }
     if(event==='SIGNED_IN' && session){
-      /* Troca de conta: limpa perfil antigo antes de carregar novo */
+      /* Troca de conta: limpa dados do perfil anterior */
       if(userSession && userSession.user.id !== session.user.id){
         perfilData=null;
       }
       userSession=session;
+      /* Limpa o hash da URL */
+      history.replaceState(null,'',window.location.pathname);
       mostrarPerfil();
       carregarPerfil(session.user);
     }
