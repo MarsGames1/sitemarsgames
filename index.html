@@ -30,6 +30,116 @@
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* ══════════════════════════════════════════════════════
+   TEMA CLARO — MarsGames
+══════════════════════════════════════════════════════ */
+body.tema-claro{
+  --bg:#f4f4f8;--card:#ffffff;--surface:#eeeef5;
+  --border:#dddde8;--border2:#c8c8d8;
+  --text:#0d0d18;--muted:#7070a0;--dim:#e6e6f0;
+  --green:#009933;--green-glow:rgba(0,153,51,.18);--green-dim:rgba(0,153,51,.08);
+  --mars:#d63a14;--mars-dim:rgba(214,58,20,.1);--mars-glow:rgba(214,58,20,.25);
+  background:var(--bg);color:var(--text);
+}
+body.tema-claro .stars-bg{display:none}
+body.tema-claro .manu-grid{display:none}
+body.tema-claro::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 0%,rgba(232,66,26,.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 100%,rgba(0,153,51,.05) 0%,transparent 50%)}
+body.tema-claro .navbar{background:rgba(248,248,252,.97);border-bottom-color:rgba(214,58,20,.15);box-shadow:0 1px 20px rgba(0,0,0,.08)}
+body.tema-claro .navbar::after{background:linear-gradient(to right,transparent,rgba(214,58,20,.3) 30%,rgba(0,153,51,.2) 70%,transparent)}
+body.tema-claro .nav-logo-text{color:var(--text)}
+body.tema-claro .nav-link{color:#555}
+body.tema-claro .nav-link:hover{color:var(--text);background:rgba(0,0,0,.04)}
+body.tema-claro .nav-link.active{color:var(--mars)}
+body.tema-claro .nav-btn,body.tema-claro .nav-login{border-color:var(--border2);background:rgba(0,0,0,.03);color:#555}
+body.tema-claro .nav-btn:hover,body.tema-claro .nav-login:hover{border-color:#aaa;color:var(--text);background:rgba(0,0,0,.06)}
+body.tema-claro .nav-cart{background:rgba(0,0,0,.04);border-color:var(--border2)}
+body.tema-claro .nav-cart:hover{background:rgba(0,0,0,.08)}
+body.tema-claro .nav-cart-icon{stroke:#555}
+body.tema-claro .cart-count{background:var(--mars)}
+body.tema-claro .nav-hamburger span{background:var(--text)}
+body.tema-claro .nav-mobile-menu{background:#fff;border-color:var(--border)}
+body.tema-claro .nav-mobile-link{color:#555;border-color:var(--border)}
+body.tema-claro #navAvatarFallback{background:linear-gradient(135deg,rgba(214,58,20,.2),rgba(0,153,51,.12));color:var(--mars)}
+body.tema-claro .hero-title{color:var(--text)}
+body.tema-claro .hero-title span{color:var(--mars)}
+body.tema-claro .hero-subtitle{color:#666}
+body.tema-claro .hero-btn-secondary{border-color:var(--border2);color:#555;background:rgba(0,0,0,.03)}
+body.tema-claro .hero-stat-val{color:var(--text)}
+body.tema-claro .hero-stat-lbl{color:var(--muted)}
+body.tema-claro .cat-pill{background:rgba(0,0,0,.04);border-color:var(--border);color:#666}
+body.tema-claro .cat-pill:hover{border-color:#aaa;color:var(--text)}
+body.tema-claro .cat-pill.active{background:var(--mars);border-color:var(--mars);color:#fff;box-shadow:0 4px 14px rgba(214,58,20,.3)}
+body.tema-claro .prod-card{background:#fff;border-color:var(--border);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+body.tema-claro .prod-card:hover{border-color:rgba(214,58,20,.3);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+body.tema-claro .prod-name{color:var(--text)}
+body.tema-claro .prod-plat{color:var(--muted)}
+body.tema-claro .prod-price{color:var(--mars)}
+body.tema-claro .prod-btn-dis{background:var(--surface);color:var(--muted)}
+body.tema-claro .modal-overlay{background:rgba(0,0,0,.4)}
+body.tema-claro .modal-box{background:#fff;border-color:var(--border)}
+body.tema-claro .modal-cat{color:var(--muted)}
+body.tema-claro .modal-name{color:var(--text)}
+body.tema-claro .modal-desc{color:#555}
+body.tema-claro .modal-price{color:var(--mars)}
+body.tema-claro .cart-overlay{background:rgba(0,0,0,.35)}
+body.tema-claro .cart-drawer{background:#fff;border-color:var(--border)}
+body.tema-claro .cart-title{color:var(--text)}
+body.tema-claro .cart-item{background:var(--surface);border-color:var(--border)}
+body.tema-claro .cart-item-name{color:var(--text)}
+body.tema-claro .cart-item-price{color:var(--mars)}
+body.tema-claro .cart-empty{color:var(--muted)}
+body.tema-claro .cart-total-label{color:var(--muted)}
+body.tema-claro .cart-total-value{color:var(--text)}
+body.tema-claro .search-wrap input{background:#fff;border-color:var(--border2);color:var(--text)}
+body.tema-claro .search-wrap input::placeholder{color:#aaa}
+body.tema-claro #toast{background:#fff;border-color:rgba(0,153,51,.3);color:var(--green);box-shadow:0 4px 20px rgba(0,0,0,.15)}
+body.tema-claro .notif-popup{background:#fff;border-color:var(--border);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+body.tema-claro .notif-name{color:var(--text)}
+body.tema-claro .notif-action{color:#555}
+body.tema-claro .surpresa-btn{background:#fff;border-color:var(--border2);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+body.tema-claro .perfil-hero{background:linear-gradient(135deg,rgba(214,58,20,.06) 0%,rgba(0,153,51,.03) 100%);border-color:var(--border)}
+body.tema-claro .perfil-nome{color:var(--text)}
+body.tema-claro .perfil-email{color:var(--muted)}
+body.tema-claro .pstat{background:rgba(0,0,0,.04);border-color:var(--border)}
+body.tema-claro .pstat-val{color:var(--mars)}
+body.tema-claro .tabs{border-color:var(--border)}
+body.tema-claro .tab{color:var(--muted)}
+body.tema-claro .tab.active{color:var(--mars);border-bottom-color:var(--mars)}
+body.tema-claro .benef-card{background:#fff;border-color:var(--border)}
+body.tema-claro .benef-card.atual{border-color:var(--mars)}
+body.tema-claro .cupom-box{background:linear-gradient(135deg,rgba(0,153,51,.06),rgba(0,153,51,.02));border-color:rgba(0,153,51,.2)}
+body.tema-claro .cupom-code{color:var(--green)}
+body.tema-claro .conquista-card{background:#fff;border-color:var(--border)}
+body.tema-claro .conquista-card.desbloqueada{border-color:rgba(0,153,51,.25)}
+body.tema-claro .conquista-nome{color:var(--text)}
+body.tema-claro .conquista-desc{color:var(--muted)}
+body.tema-claro .edit-form{background:#fff;border-color:var(--border)}
+body.tema-claro .edit-input{background:var(--surface);border-color:var(--border2);color:var(--text)}
+body.tema-claro .edit-input:focus{border-color:rgba(214,58,20,.4)}
+body.tema-claro .edit-label{color:var(--muted)}
+body.tema-claro .pts-item{border-color:var(--border)}
+body.tema-claro .pts-item-desc{color:var(--text)}
+body.tema-claro .pts-item-date{color:var(--muted)}
+body.tema-claro .fav-card{background:#fff;border-color:var(--border)}
+body.tema-claro .fav-name{color:var(--text)}
+body.tema-claro .fav-price{color:var(--mars)}
+body.tema-claro .titulo-seletor{background:#fff;border-color:var(--border)}
+body.tema-claro .titulo-opcao{border-color:var(--border2)}
+body.tema-claro .titulo-opcao.selecionado{border-color:var(--green);background:rgba(0,153,51,.05)}
+body.tema-claro .titulo-opcao-nome{color:var(--text)}
+body.tema-claro .login-card{background:#fff;border-color:rgba(214,58,20,.2)}
+body.tema-claro .progresso-bar{background:var(--border)}
+body.tema-claro .nivel-badge-wrap{background:var(--bg)!important}
+body.tema-claro .section-loader{color:var(--muted)}
+body.tema-claro .indicacao-card{background:#fff;border-color:var(--border)}
+body.tema-claro .indicacao-title{color:var(--text)}
+body.tema-claro .indicacao-desc{color:#666}
+body.tema-claro .indicacao-link{background:var(--surface);border-color:var(--border2);color:var(--text)}
+body.tema-claro .exit-popup{background:#fff;border-color:var(--border)}
+body.tema-claro .exit-title{color:var(--text)}
+body.tema-claro .exit-sub{color:#666}
 
 /* ══ TELA DE MANUTENÇÃO ══ */
 @keyframes manuFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-18px) rotate(2deg)}}
@@ -2253,7 +2363,7 @@ footer::before{
         <svg width="16" height="16" viewBox="0 0 24 24" fill="#7289da"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
         Fale no Discord
       </a>
-      <a class="manu-link" href="mailto:contato@marsgames.com">
+      <a class="manu-link" href="/cdn-cgi/l/email-protection#f99a96978d988d96b994988b8a9e98949c8ad79a9694">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
         Enviar email
       </a>
@@ -2449,7 +2559,7 @@ footer::before{
   </div>
 </section>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){
   /* ── Dados dos produtos ── */
   var MV_PRODUTOS=[
@@ -3437,6 +3547,27 @@ var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
     storageKey:'mg_auth'
   }
 });
+
+/* ══ TEMA CLARO — aplicar em todas as páginas ══ */
+(function(){
+  function aplicarTema(tema){
+    if(tema==='light'){
+      document.body.classList.add('tema-claro');
+    } else {
+      document.body.classList.remove('tema-claro');
+    }
+  }
+  /* Aplica imediatamente ao carregar */
+  var temaSalvo = localStorage.getItem('mg_tema');
+  if(temaSalvo) aplicarTema(temaSalvo);
+  /* Escuta mudanças de outras abas/páginas em tempo real */
+  window.addEventListener('storage', function(e){
+    if(e.key === 'mg_tema') aplicarTema(e.newValue || 'dark');
+  });
+  /* Expõe para uso nos botões */
+  window.aplicarTema = aplicarTema;
+})();
+
 var todosProdutos=[],catAtual='todos',buscaAtual='',carrinho=[],prodModalAtual=null;
 
 /* ── COUNTDOWN ── */
@@ -3922,12 +4053,4 @@ window.addEventListener('resize',function(){
         </button>
       </div>
       <div class="indicacao-pts">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Você e seu amigo ganham +100 MarsPoints cada!
-      </div>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02

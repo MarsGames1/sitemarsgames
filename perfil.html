@@ -44,21 +44,121 @@
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
 /* ── TEMA CLARO ── */
+/* ══════════════════════════════════════════════════════
+   TEMA CLARO — MarsGames
+   Ativado via body.tema-claro — funciona em todas as páginas
+══════════════════════════════════════════════════════ */
 body.tema-claro{
-  --bg:#f0f0f5;--card:#ffffff;--surface:#e8e8f0;--border:#d0d0e0;--border2:#c0c0d8;
-  --text:#0a0a14;--muted:#888;--dim:#e0e0ea;
+  --bg:#f4f4f8;--card:#ffffff;--surface:#eeeef5;
+  --border:#dddde8;--border2:#c8c8d8;
+  --text:#0d0d18;--muted:#7070a0;--dim:#e6e6f0;
+  --green:#009933;--green-glow:rgba(0,153,51,.18);--green-dim:rgba(0,153,51,.08);
+  --mars:#d63a14;--mars-dim:rgba(214,58,20,.1);--mars-glow:rgba(214,58,20,.25);
   background:var(--bg);color:var(--text);
 }
 body.tema-claro .stars-bg{display:none}
-body.tema-claro .navbar{background:rgba(240,240,245,.97);border-bottom-color:rgba(232,66,26,.2)}
-body.tema-claro .login-card{background:#fff;border-color:rgba(232,66,26,.2)}
-body.tema-claro .perfil-hero{background:linear-gradient(135deg,rgba(232,66,26,.05),rgba(0,255,85,.03))}
-body.tema-claro .tab{color:#888}
-body.tema-claro .tab.active{color:var(--mars)}
-body.tema-claro .tab-content{color:var(--text)}
-body.tema-claro .edit-input{background:#f8f8fc;color:#000;border-color:#ccc}
-body.tema-claro .pstat{background:rgba(0,0,0,.04);border-color:#ddd}
+body.tema-claro::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 0%,rgba(232,66,26,.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 100%,rgba(0,153,51,.05) 0%,transparent 50%);
+}
+/* Navbar */
+body.tema-claro .navbar{background:rgba(248,248,252,.97);border-bottom-color:rgba(214,58,20,.15);box-shadow:0 1px 20px rgba(0,0,0,.08)}
+body.tema-claro .navbar::after{background:linear-gradient(to right,transparent,rgba(214,58,20,.3) 30%,rgba(0,153,51,.2) 70%,transparent)}
+body.tema-claro .nav-logo-text{color:var(--text)}
+body.tema-claro .nav-link{color:#555}
+body.tema-claro .nav-link:hover{color:var(--text);background:rgba(0,0,0,.04)}
+body.tema-claro .nav-link.active{color:var(--mars)}
+body.tema-claro .nav-btn,body.tema-claro .nav-login{border-color:var(--border2);background:rgba(0,0,0,.03);color:#555}
+body.tema-claro .nav-btn:hover,body.tema-claro .nav-login:hover{border-color:#aaa;color:var(--text);background:rgba(0,0,0,.06)}
+body.tema-claro .nav-cart{background:rgba(0,0,0,.04);border-color:var(--border2)}
+body.tema-claro .nav-cart:hover{background:rgba(0,0,0,.08)}
+body.tema-claro .nav-cart-icon{stroke:#555}
+body.tema-claro .cart-count{background:var(--mars)}
+body.tema-claro .nav-hamburger span{background:var(--text)}
+body.tema-claro .nav-mobile-menu{background:#fff;border-color:var(--border)}
+body.tema-claro .nav-mobile-link{color:#555;border-color:var(--border)}
+body.tema-claro #navAvatarFallback{background:linear-gradient(135deg,rgba(214,58,20,.2),rgba(0,153,51,.12));color:var(--mars)}
+/* Hero */
+body.tema-claro .hero-title{color:var(--text)}
+body.tema-claro .hero-title span{color:var(--mars)}
+body.tema-claro .hero-subtitle{color:#666}
+body.tema-claro .hero-btn-secondary{border-color:var(--border2);color:#555;background:rgba(0,0,0,.03)}
+body.tema-claro .hero-stat-val{color:var(--text)}
+body.tema-claro .hero-stat-lbl{color:var(--muted)}
+/* Categoria pills */
+body.tema-claro .cat-pill{background:rgba(0,0,0,.04);border-color:var(--border);color:#666}
+body.tema-claro .cat-pill:hover{border-color:#aaa;color:var(--text)}
+body.tema-claro .cat-pill.active{background:var(--mars);border-color:var(--mars);color:#fff;box-shadow:0 4px 14px rgba(214,58,20,.3)}
+/* Cards de produto */
+body.tema-claro .prod-card{background:#fff;border-color:var(--border);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+body.tema-claro .prod-card:hover{border-color:rgba(214,58,20,.3);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+body.tema-claro .prod-name{color:var(--text)}
+body.tema-claro .prod-plat{color:var(--muted)}
+body.tema-claro .prod-price{color:var(--mars)}
+body.tema-claro .prod-btn-dis{background:var(--surface);color:var(--muted)}
+/* Modal */
+body.tema-claro .modal-overlay{background:rgba(0,0,0,.4)}
+body.tema-claro .modal-box{background:#fff;border-color:var(--border)}
+body.tema-claro .modal-cat{color:var(--muted)}
+body.tema-claro .modal-name{color:var(--text)}
+body.tema-claro .modal-desc{color:#555}
+body.tema-claro .modal-price{color:var(--mars)}
+/* Carrinho */
+body.tema-claro .cart-overlay{background:rgba(0,0,0,.35)}
+body.tema-claro .cart-drawer{background:#fff;border-color:var(--border)}
+body.tema-claro .cart-title{color:var(--text)}
+body.tema-claro .cart-item{background:var(--surface);border-color:var(--border)}
+body.tema-claro .cart-item-name{color:var(--text)}
+body.tema-claro .cart-item-price{color:var(--mars)}
+body.tema-claro .cart-empty{color:var(--muted)}
+body.tema-claro .cart-total-label{color:var(--muted)}
+body.tema-claro .cart-total-value{color:var(--text)}
+/* Busca */
+body.tema-claro .search-wrap input{background:#fff;border-color:var(--border2);color:var(--text)}
+body.tema-claro .search-wrap input::placeholder{color:#aaa}
+/* Toast / Notif */
+body.tema-claro #toast{background:#fff;border-color:rgba(0,153,51,.3);color:var(--green);box-shadow:0 4px 20px rgba(0,0,0,.15)}
+body.tema-claro .notif-popup{background:#fff;border-color:var(--border);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+body.tema-claro .notif-name{color:var(--text)}
+body.tema-claro .notif-action{color:#555}
+/* Surpresa */
+body.tema-claro .surpresa-btn{background:#fff;border-color:var(--border2);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+/* ── Perfil ── */
+body.tema-claro .perfil-hero{background:linear-gradient(135deg,rgba(214,58,20,.06) 0%,rgba(0,153,51,.03) 100%);border-color:var(--border)}
+body.tema-claro .perfil-nome{color:var(--text)}
+body.tema-claro .perfil-email{color:var(--muted)}
+body.tema-claro .pstat{background:rgba(0,0,0,.04);border-color:var(--border)}
 body.tema-claro .pstat-val{color:var(--mars)}
+body.tema-claro .tabs{border-color:var(--border)}
+body.tema-claro .tab{color:var(--muted)}
+body.tema-claro .tab.active{color:var(--mars);border-bottom-color:var(--mars)}
+body.tema-claro .benef-card{background:#fff;border-color:var(--border)}
+body.tema-claro .benef-card.atual{border-color:var(--mars)}
+body.tema-claro .cupom-box{background:linear-gradient(135deg,rgba(0,153,51,.06),rgba(0,153,51,.02));border-color:rgba(0,153,51,.2)}
+body.tema-claro .cupom-code{color:var(--green)}
+body.tema-claro .conquista-card{background:#fff;border-color:var(--border)}
+body.tema-claro .conquista-card.desbloqueada{border-color:rgba(0,153,51,.25)}
+body.tema-claro .conquista-nome{color:var(--text)}
+body.tema-claro .conquista-desc{color:var(--muted)}
+body.tema-claro .edit-form{background:#fff;border-color:var(--border)}
+body.tema-claro .edit-input{background:var(--surface);border-color:var(--border2);color:var(--text)}
+body.tema-claro .edit-input:focus{border-color:rgba(214,58,20,.4)}
+body.tema-claro .edit-label{color:var(--muted)}
+body.tema-claro .pts-item{border-color:var(--border)}
+body.tema-claro .pts-item-desc{color:var(--text)}
+body.tema-claro .pts-item-date{color:var(--muted)}
+body.tema-claro .fav-card{background:#fff;border-color:var(--border)}
+body.tema-claro .fav-name{color:var(--text)}
+body.tema-claro .fav-price{color:var(--mars)}
+body.tema-claro .titulo-seletor{background:#fff;border-color:var(--border)}
+body.tema-claro .titulo-opcao{border-color:var(--border2)}
+body.tema-claro .titulo-opcao.selecionado{border-color:var(--green);background:rgba(0,153,51,.05)}
+body.tema-claro .titulo-opcao-nome{color:var(--text)}
+body.tema-claro .login-card{background:#fff;border-color:rgba(214,58,20,.2)}
+body.tema-claro .progresso-bar{background:var(--border)}
+body.tema-claro .nivel-badge-wrap{background:var(--bg)!important}
+body.tema-claro .section-loader{color:var(--muted)}
 
 .stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
@@ -746,6 +846,26 @@ var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 var sb, userSession=null, perfilData=null;
 
+/* ══ TEMA CLARO — aplicar em todas as páginas ══ */
+(function(){
+  function aplicarTema(tema){
+    if(tema==='light'){
+      document.body.classList.add('tema-claro');
+    } else {
+      document.body.classList.remove('tema-claro');
+    }
+  }
+  /* Aplica imediatamente ao carregar */
+  var temaSalvo = localStorage.getItem('mg_tema');
+  if(temaSalvo) aplicarTema(temaSalvo);
+  /* Escuta mudanças de outras abas/páginas em tempo real */
+  window.addEventListener('storage', function(e){
+    if(e.key === 'mg_tema') aplicarTema(e.newValue || 'dark');
+  });
+  /* Expõe para uso nos botões */
+  window.aplicarTema = aplicarTema;
+})();
+
 // Aguardar Supabase carregar
 function initSupabase(){
   var lib=window.supabase||window.Supabase;
@@ -1197,26 +1317,23 @@ async function salvarPerfil(){
 
 // ── TABS ──
 function setTema(tema){
-  if(tema==='light'){
-    document.body.classList.add('tema-claro');
-    document.getElementById('btnTemaDark').style.borderColor='var(--border2)';
-    document.getElementById('btnTemaDark').style.color='#aaa';
-    document.getElementById('btnTemaDark').style.background='rgba(255,255,255,.04)';
-    document.getElementById('btnTemaLight').style.borderColor='var(--mars)';
-    document.getElementById('btnTemaLight').style.color='var(--mars)';
-    document.getElementById('btnTemaLight').style.background='rgba(232,66,26,.07)';
-    localStorage.setItem('mg_tema','light');
-  } else {
-    document.body.classList.remove('tema-claro');
-    document.getElementById('btnTemaDark').style.borderColor='var(--green)';
-    document.getElementById('btnTemaDark').style.color='var(--green)';
-    document.getElementById('btnTemaDark').style.background='rgba(0,255,85,.07)';
-    document.getElementById('btnTemaLight').style.borderColor='var(--border2)';
-    document.getElementById('btnTemaLight').style.color='#aaa';
-    document.getElementById('btnTemaLight').style.background='rgba(255,255,255,.04)';
-    localStorage.setItem('mg_tema','dark');
+  localStorage.setItem('mg_tema', tema);
+  window.aplicarTema(tema);
+  /* Atualiza visual dos botões */
+  var isDark = tema !== 'light';
+  var btnD = document.getElementById('btnTemaDark');
+  var btnL = document.getElementById('btnTemaLight');
+  if(btnD){
+    btnD.style.borderColor = isDark ? 'var(--green)' : 'var(--border2)';
+    btnD.style.color       = isDark ? 'var(--green)' : '#aaa';
+    btnD.style.background  = isDark ? 'rgba(0,255,85,.07)' : 'rgba(255,255,255,.04)';
   }
-  showToast(tema==='light'?'Tema claro ativado!':'Tema escuro ativado!');
+  if(btnL){
+    btnL.style.borderColor = !isDark ? 'var(--mars)' : 'var(--border2)';
+    btnL.style.color       = !isDark ? 'var(--mars)' : '#aaa';
+    btnL.style.background  = !isDark ? 'rgba(232,66,26,.07)' : 'rgba(255,255,255,.04)';
+  }
+  showToast(tema==='light' ? '☀️ Tema claro ativado!' : '🌙 Tema escuro ativado!');
 }
 
 function checkTema(nivel){
