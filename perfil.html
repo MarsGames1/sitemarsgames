@@ -434,8 +434,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 .progresso-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.23,1,.32,1)}
 
 /* Stats rápidas */
-.perfil-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-left:auto;align-self:center}
-@media(min-width:600px){.perfil-stats{grid-template-columns:repeat(3,1fr)}}
+.perfil-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-left:auto;align-self:center}
+@media(min-width:768px){.perfil-stats{grid-template-columns:repeat(6,1fr)}}
 .pstat{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;
   padding:12px 16px;text-align:center}
 .pstat-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--green);line-height:1}
@@ -455,6 +455,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 .tab-content.active{display:block}
 .tab-tickets{color:var(--amber)!important;border-bottom-color:transparent}
 .tab-tickets.active{color:var(--amber)!important;border-bottom-color:var(--amber)!important}
+.tab-marspoints{color:var(--green)!important;border-bottom-color:transparent}
+.tab-marspoints.active{color:var(--green)!important;border-bottom-color:var(--green)!important}
 /* MarsTickets */
 .tickets-hero{
   background:linear-gradient(135deg,rgba(255,183,0,.08),rgba(255,183,0,.03));
@@ -755,6 +757,11 @@ body.tema-claro .section-loader{color:var(--muted)}
         <div class="pstat-val" id="statDesconto">0%</div>
         <div class="pstat-lbl">Desconto atual</div>
       </div>
+      <div class="pstat" style="border-color:rgba(0,255,85,.25);background:rgba(0,255,85,.05);cursor:pointer"
+           onclick="showTab('pontos',document.querySelector('.tab'))">
+        <div class="pstat-val" id="statMarsPoints" style="color:var(--green)">0</div>
+        <div class="pstat-lbl" style="color:rgba(0,255,85,.7)">⭐ MarsPoints</div>
+      </div>
       <div class="pstat" style="border-color:rgba(255,183,0,.3);background:rgba(255,183,0,.05);cursor:pointer"
            onclick="showTab('tickets',document.querySelector('.tab-tickets'))">
         <div class="pstat-val" id="statTickets" style="color:var(--amber)">0</div>
@@ -770,6 +777,7 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab" onclick="showTab('pedidos',this)">Meus Pedidos</div>
     <div class="tab" onclick="showTab('favoritos',this)">Favoritos</div>
     <div class="tab" onclick="showTab('pontos',this)">Histórico de Pontos</div>
+    <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab" onclick="showTab('editar',this)">Editar Perfil</div>
   </div>
@@ -843,6 +851,71 @@ body.tema-claro .section-loader{color:var(--muted)}
   <div class="tab-content" id="tab-pontos">
     <div class="section-loader" id="ptsLoader"><div class="spinner"></div> Carregando histórico...</div>
     <div class="pts-list" id="ptsList" style="display:none"></div>
+  </div>
+
+  <!-- MARSPOINTS PERFIL -->
+  <div class="tab-content" id="tab-marspoints-perfil">
+    <!-- Hero MarsPoints -->
+    <div style="background:linear-gradient(135deg,rgba(0,255,85,.08),rgba(0,255,85,.03));border:1px solid rgba(0,255,85,.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:20px">
+      <div style="font-size:48px;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(0,255,85,.5))">⭐</div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Meus MarsPoints</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--green);line-height:1" id="mpHeroCount">0</div>
+        <div style="font-size:11px;color:#666;margin-top:6px;font-weight:600">Use para descontos e benefícios exclusivos</div>
+        <div style="margin-top:8px">
+          <span class="nivel-tag" id="mpHeroNivel" style="font-size:10px">Bronze</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats rápidos -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--green)" id="mpStatTotal">0</div>
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px">Pontos atuais</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--mars)" id="mpStatDesconto">0%</div>
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px">Desconto atual</div>
+      </div>
+    </div>
+
+    <!-- Tabela de níveis -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Como subir de nível</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(205,159,106,.05)">
+          <span style="font-size:11px;font-weight:700;color:var(--bronze)">🥉 Bronze</span>
+          <span style="font-size:10px;color:var(--muted)">0 — 99 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--bronze)">Sem desconto</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(232,232,232,.03)">
+          <span style="font-size:11px;font-weight:700;color:var(--prata)">🥈 Prata</span>
+          <span style="font-size:10px;color:var(--muted)">100 — 499 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--prata)">5% OFF</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(255,215,0,.04)">
+          <span style="font-size:11px;font-weight:700;color:var(--ouro)">🥇 Ouro</span>
+          <span style="font-size:10px;color:var(--muted)">500 — 999 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--ouro)">10% OFF</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(80,200,120,.04)">
+          <span style="font-size:11px;font-weight:700;color:var(--esm)">💚 Esmeralda</span>
+          <span style="font-size:10px;color:var(--muted)">1.000 — 4.999 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--esm)">15% OFF</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid rgba(185,242,255,.2);background:rgba(185,242,255,.04)">
+          <span style="font-size:11px;font-weight:700;color:var(--dia)">💎 Diamante</span>
+          <span style="font-size:10px;color:var(--muted)">5.000+ pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--dia)">20% OFF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Histórico -->
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">Histórico de pontos</div>
+    <div class="section-loader" id="mpPerfilLoader"><div class="spinner"></div> Carregando...</div>
+    <div id="mpPerfilList" style="display:none;flex-direction:column;gap:6px"></div>
   </div>
 
   <!-- MARSTICKETS -->
@@ -1494,10 +1567,16 @@ function checkTema(nivel){
 /* Carrega tickets para mostrar no hero */
 async function carregarTicketsHero(user){
   try{
-    var{data}=await sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle();
-    var qtd=data?data.quantidade||0:0;
+    var[tckRes,mpRes]=await Promise.all([
+      sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle(),
+      sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle()
+    ]);
+    var qtd=tckRes.data?tckRes.data.quantidade||0:0;
+    var pts=mpRes.data?mpRes.data.pontos||0:0;
     var el=document.getElementById('statTickets');
     if(el)el.textContent=qtd;
+    var mp=document.getElementById('statMarsPoints');
+    if(mp)mp.textContent=pts.toLocaleString('pt-BR');
   }catch(e){}
 }
 
@@ -1507,6 +1586,52 @@ function showTab(id,el){
   document.getElementById('tab-'+id).classList.add('active');
   if(el)el.classList.add('active');
   if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
+  if(id==='marspoints-perfil' && userSession) carregarMarsPointsPerfil(userSession.user);
+}
+
+/* ── MARSPOINTS PERFIL ── */
+async function carregarMarsPointsPerfil(user){
+  var loader=document.getElementById('mpPerfilLoader');
+  var list=document.getElementById('mpPerfilList');
+  if(loader)loader.style.display='flex';
+  if(list)list.style.display='none';
+  try{
+    var mp=await sb.from('marspoints').select('pontos,historico').eq('user_email',user.email).maybeSingle();
+    var pts=(mp&&mp.data)?mp.data.pontos||0:0;
+    var nivel=getNivel(pts);
+    // Atualiza hero
+    var mpHero=document.getElementById('mpHeroCount');
+    if(mpHero)mpHero.textContent=pts.toLocaleString('pt-BR');
+    var mpNivel=document.getElementById('mpHeroNivel');
+    if(mpNivel){mpNivel.textContent=nivel.nome;mpNivel.className='nivel-tag '+nivel.cls;}
+    var mpStat=document.getElementById('mpStatTotal');
+    if(mpStat)mpStat.textContent=pts.toLocaleString('pt-BR');
+    var mpDesc=document.getElementById('mpStatDesconto');
+    if(mpDesc)mpDesc.textContent=nivel.pct+'%';
+    // Histórico
+    if(loader)loader.style.display='none';
+    if(list)list.style.display='flex';
+    var hist=(mp&&mp.data&&mp.data.historico)||[];
+    if(!hist.length){
+      list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:11px">Nenhuma movimentação ainda.</div>';
+      return;
+    }
+    list.innerHTML=hist.slice(0,30).map(function(h){
+      var ganho=(h.pontos||0)>0;
+      var dt=h.data?new Date(h.data).toLocaleString('pt-BR'):'—';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;background:var(--card);border:1px solid var(--border)">'+
+        '<div style="width:34px;height:34px;border-radius:8px;flex-shrink:0;background:'+(ganho?'rgba(0,255,85,.1)':'rgba(255,85,85,.1)')+';display:flex;align-items:center;justify-content:center;font-size:15px">'+(h.tipo==='sorteio'?'🏆':ganho?'⭐':'💸')+'</div>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="font-size:11px;font-weight:700;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(h.descricao||'Ajuste')+'</div>'+
+          '<div style="font-size:9px;color:var(--muted);margin-top:2px">'+dt+'</div>'+
+        '</div>'+
+        '<div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;flex-shrink:0;color:'+(ganho?'var(--green)':'var(--red)')+'">'+( ganho?'+':'')+h.pontos+'</div>'+
+      '</div>';
+    }).join('');
+  }catch(e){
+    if(loader)loader.style.display='none';
+    if(list){list.style.display='flex';list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted)">Erro ao carregar pontos.</div>';}
+  }
 }
 
 /* ── MARSTICKETS ── */
