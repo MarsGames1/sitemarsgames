@@ -3829,7 +3829,11 @@ async function checkout(){
           'Content-Type':'application/json',
           'Authorization':'Bearer '+session.access_token
         },
-        body:JSON.stringify({itens:itens})
+        body:JSON.stringify({
+          itens:itens,
+          user_email:session.user.email,
+          user_id:session.user.id
+        })
       }
     );
     clearTimeout(timeout);
