@@ -435,7 +435,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* Stats rápidas */
 .perfil-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-left:auto;align-self:center}
-@media(min-width:600px){.perfil-stats{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:600px){.perfil-stats{grid-template-columns:repeat(3,1fr)}}
 .pstat{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;
   padding:12px 16px;text-align:center}
 .pstat-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--green);line-height:1}
@@ -754,6 +754,11 @@ body.tema-claro .section-loader{color:var(--muted)}
       <div class="pstat">
         <div class="pstat-val" id="statDesconto">0%</div>
         <div class="pstat-lbl">Desconto atual</div>
+      </div>
+      <div class="pstat" style="border-color:rgba(255,183,0,.3);background:rgba(255,183,0,.05);cursor:pointer"
+           onclick="showTab('tickets',document.querySelector('.tab-tickets'))">
+        <div class="pstat-val" id="statTickets" style="color:var(--amber)">0</div>
+        <div class="pstat-lbl" style="color:rgba(255,183,0,.7)">🎟️ Tickets</div>
       </div>
     </div>
   </div>
@@ -1181,6 +1186,7 @@ async function carregarPerfil(user){
   carregarPedidos(user.id);
   carregarFavoritos(user.id);
   carregarHistoricoPontosEmail(user.email);
+  carregarTicketsHero(user);
 }
 
 function renderPerfil(p){
@@ -1290,29 +1296,36 @@ function copiarCupom(code){
 }
 
 async function carregarPedidos(userId){
-  document.getElementById('pedidosLoader').style.display='flex';
-  document.getElementById('pedidosList').style.display='none';
-  var{data}=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false});
-  document.getElementById('pedidosLoader').style.display='none';
-  document.getElementById('pedidosList').style.display='flex';
-  document.getElementById('statPedidos').textContent=data?data.length:0;
-  if(!data||data.length===0){
-    document.getElementById('pedidosList').innerHTML='<div class="sem-pedidos">Você ainda não fez nenhum pedido.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Ver catálogo</a></div>';
-    return;
+  var loader=document.getElementById('pedidosLoader');
+  var list=document.getElementById('pedidosList');
+  if(loader)loader.style.display='flex';
+  if(list)list.style.display='none';
+  try{
+    var{data,error}=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false});
+    if(loader)loader.style.display='none';
+    if(list)list.style.display='flex';
+    if(document.getElementById('statPedidos'))document.getElementById('statPedidos').textContent=data?data.length:0;
+    if(error||!data||data.length===0){
+      if(list)list.innerHTML='<div class="sem-pedidos">Você ainda não fez nenhum pedido.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Ver catálogo</a></div>';
+      return;
+    }
+    list.innerHTML=data.map(function(p){
+      return '<div class="pedido-card">'+
+        (p.produto_img?'<img class="pedido-img" src="'+esc(p.produto_img)+'" alt="">':'<div class="pedido-img"></div>')+
+        '<div class="pedido-info">'+
+          '<div class="pedido-nome">'+esc(p.produto_nome||'Produto')+'</div>'+
+          '<div class="pedido-data">'+fmtDate(p.created_at)+'</div>'+
+        '</div>'+
+        '<div class="pedido-preco">R$ '+Number(p.valor||0).toFixed(2).replace('.',',')+'</div>'+
+        '<span class="pedido-status '+(p.status==='entregue'||p.status==='pago'?'status-entregue':'status-pendente')+'">'+
+          (p.status||'pendente')+
+        '</span>'+
+      '</div>';
+    }).join('');
+  }catch(e){
+    if(loader)loader.style.display='none';
+    if(list){list.style.display='flex';list.innerHTML='<div class="sem-pedidos">Erro ao carregar pedidos.</div>';}
   }
-  document.getElementById('pedidosList').innerHTML=data.map(function(p){
-    return '<div class="pedido-card">'+
-      (p.produto_img?'<img class="pedido-img" src="'+esc(p.produto_img)+'" alt="">':'<div class="pedido-img"></div>')+
-      '<div class="pedido-info">'+
-        '<div class="pedido-nome">'+esc(p.produto_nome||'Produto')+'</div>'+
-        '<div class="pedido-data">'+fmtDate(p.created_at)+'</div>'+
-      '</div>'+
-      '<div class="pedido-preco">R$ '+Number(p.valor||0).toFixed(2).replace('.',',')+'</div>'+
-      '<span class="pedido-status '+(p.status==='entregue'||p.status==='pago'?'status-entregue':'status-pendente')+'">'+
-        (p.status||'pendente')+
-      '</span>'+
-    '</div>';
-  }).join('');
 }
 
 /* ── CONQUISTAS ── */
@@ -1374,26 +1387,34 @@ async function selecionarTitulo(titulo, el){
 }
 
 async function carregarFavoritos(userId){
-  document.getElementById('favsLoader').style.display='flex';
-  document.getElementById('favsList').style.display='none';
-  var{data}=await sb.from('favoritos').select('*, produtos(*)').eq('user_id',userId);
-  document.getElementById('favsLoader').style.display='none';
-  document.getElementById('favsList').style.display='grid';
-  document.getElementById('statFavs').textContent=data?data.length:0;
-  if(!data||data.length===0){
-    document.getElementById('favsList').innerHTML='<div class="sem-favs" style="grid-column:1/-1">Você ainda não tem favoritos.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Explorar jogos</a></div>';
-    return;
+  var loaderEl=document.getElementById('favsLoader');
+  var listEl=document.getElementById('favsList');
+  if(loaderEl)loaderEl.style.display='flex';
+  if(listEl)listEl.style.display='none';
+  try{
+    var{data,error}=await sb.from('favoritos').select('*, produtos(*)').eq('user_id',userId);
+    if(loaderEl)loaderEl.style.display='none';
+    if(listEl)listEl.style.display='grid';
+    if(error||!data||data.length===0){
+      if(document.getElementById('statFavs'))document.getElementById('statFavs').textContent='0';
+      if(listEl)listEl.innerHTML='<div class="sem-favs" style="grid-column:1/-1">Você ainda não tem favoritos.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Explorar jogos</a></div>';
+      return;
+    }
+    if(document.getElementById('statFavs'))document.getElementById('statFavs').textContent=data.length;
+    listEl.innerHTML=data.map(function(f){
+      var p=f.produtos;if(!p)return '';
+      return '<a class="fav-card" href="produto.html?id='+p.id+'">'+
+        '<img class="fav-img" src="'+esc(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
+        '<div class="fav-body">'+
+          '<div class="fav-name">'+esc(p.nome)+'</div>'+
+          '<div class="fav-price">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+        '</div>'+
+      '</a>';
+    }).join('');
+  }catch(e){
+    if(loaderEl)loaderEl.style.display='none';
+    if(listEl){listEl.style.display='grid';listEl.innerHTML='<div class="sem-favs" style="grid-column:1/-1">Erro ao carregar favoritos.</div>';}
   }
-  document.getElementById('favsList').innerHTML=data.map(function(f){
-    var p=f.produtos;if(!p)return '';
-    return '<a class="fav-card" href="produto.html?id='+p.id+'">'+
-      '<img class="fav-img" src="'+esc(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
-      '<div class="fav-body">'+
-        '<div class="fav-name">'+esc(p.nome)+'</div>'+
-        '<div class="fav-price">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
-      '</div>'+
-    '</a>';
-  }).join('');
 }
 
 async function carregarHistoricoPontosEmail(userEmail){
@@ -1403,9 +1424,11 @@ async function carregarHistoricoPontosEmail(userEmail){
   try{
     var email=userSession?userSession.user.email:'';
     var mp=await sb.from('marspoints').select('historico,pontos').eq('user_email',email).maybeSingle();
-    document.getElementById('ptsLoader').style.display='none';
-    document.getElementById('ptsList').style.display='flex';
-    var hist=(mp.data&&mp.data.historico)||[];
+    var ptsLoader=document.getElementById('ptsLoader');
+    var ptsList=document.getElementById('ptsList');
+    if(ptsLoader)ptsLoader.style.display='none';
+    if(ptsList)ptsList.style.display='flex';
+    var hist=(mp&&mp.data&&mp.data.historico)||[];
     if(!hist.length){
       document.getElementById('ptsList').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
       return;
@@ -1421,8 +1444,9 @@ async function carregarHistoricoPontosEmail(userEmail){
       '</div>';
     }).join('');
   }catch(e){
-    document.getElementById('ptsLoader').style.display='none';
-    document.getElementById('ptsList').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
+    var pl=document.getElementById('ptsLoader');var ptl=document.getElementById('ptsList');
+    if(pl)pl.style.display='none';
+    if(ptl)ptl.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
   }
 }
 
@@ -1465,6 +1489,16 @@ function checkTema(nivel){
   if(podeUsarTema && temaSalvo==='light'){
     setTema('light');
   }
+}
+
+/* Carrega tickets para mostrar no hero */
+async function carregarTicketsHero(user){
+  try{
+    var{data}=await sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle();
+    var qtd=data?data.quantidade||0:0;
+    var el=document.getElementById('statTickets');
+    if(el)el.textContent=qtd;
+  }catch(e){}
 }
 
 function showTab(id,el){
