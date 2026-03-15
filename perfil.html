@@ -662,10 +662,11 @@ function initSupabase(){
   }
   sb=lib.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{
-      flowType:'pkce',
+      flowType:'implicit',
       detectSessionInUrl:true,
       persistSession:true,
-      autoRefreshToken:true
+      autoRefreshToken:true,
+      storageKey:'mg_auth'
     }
   });
   checkAuth();
@@ -692,25 +693,26 @@ function getNivel(pts){
 
 // ── AUTH ──
 async function loginGoogle(){
-  var redirect=window.location.origin+window.location.pathname;
+  /* URL exata cadastrada no Supabase e no Google Cloud */
+  var redirect='https://marsgames1.github.io/sitemarsgames/perfil.html';
   showToast('Abrindo Google...');
   try{
     var{data,error}=await sb.auth.signInWithOAuth({
       provider:'google',
       options:{
         redirectTo:redirect,
-        skipBrowserRedirect:false
+        queryParams:{prompt:'select_account'}
       }
     });
     if(error)throw error;
   }catch(e){
     console.error('Google login erro:',e);
-    showToast('Erro ao conectar com Google: '+e.message);
+    showToast('Erro: '+e.message);
   }
 }
 
 async function loginDiscord(){
-  var redirect=window.location.origin+window.location.pathname;
+  var redirect='https://marsgames1.github.io/sitemarsgames/perfil.html';
   showToast('Abrindo Discord...');
   try{
     var{data,error}=await sb.auth.signInWithOAuth({
@@ -732,53 +734,97 @@ async function logout(){
 }
 
 async function checkAuth(){
-  // Escutar mudanças de auth PRIMEIRO — captura eventos de redirect
+  /* Mostrar loading enquanto verifica sessão */
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('perfil-content').style.display='none';
+
+  /* Listener de mudanças de auth — captura redirect OAuth */
   sb.auth.onAuthStateChange(async function(event,session){
-    console.log('Auth event:', event, session?'com sessão':'sem sessão');
-    if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED'||event==='INITIAL_SESSION')&&session){
+    console.log('Auth event:',event,session?session.user.email:'sem sessão');
+    if(event==='SIGNED_IN'&&session&&!perfilData){
       userSession=session;
       document.getElementById('login-screen').style.display='none';
       document.getElementById('perfil-content').style.display='block';
-      document.getElementById('btnLogout').style.display='flex';
-      if(!perfilData) await carregarPerfil(session.user);
+      try{document.getElementById('btnLogout').style.display='flex'}catch(e){}
+      await carregarPerfil(session.user);
+    }
+    if(event==='TOKEN_REFRESHED'&&session){
+      userSession=session;
     }
     if(event==='SIGNED_OUT'){
-      perfilData=null;
+      perfilData=null;userSession=null;
       document.getElementById('login-screen').style.display='flex';
       document.getElementById('perfil-content').style.display='none';
-      document.getElementById('btnLogout').style.display='none';
+      try{document.getElementById('btnLogout').style.display='none'}catch(e){}
     }
   });
 
-  // Verificar sessão existente
-  var{data:{session},error}=await sb.auth.getSession();
-  console.log('Sessão atual:', session?'logado':'não logado', error||'');
-  
-  if(!session){
+  /* Verificar sessão existente (usuário já logado antes) */
+  try{
+    var res=await sb.auth.getSession();
+    var session=res.data&&res.data.session;
+    if(!session){
+      document.getElementById('login-screen').style.display='flex';
+      return;
+    }
+    userSession=session;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('perfil-content').style.display='block';
+    try{document.getElementById('btnLogout').style.display='flex'}catch(e){}
+    await carregarPerfil(session.user);
+  }catch(e){
+    console.error('Erro checkAuth:',e);
     document.getElementById('login-screen').style.display='flex';
-    return;
   }
-  userSession=session;
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('perfil-content').style.display='block';
-  document.getElementById('btnLogout').style.display='flex';
-  await carregarPerfil(session.user);
 }
 
 async function carregarPerfil(user){
-  // Buscar perfil no banco
-  var{data:perfil}=await sb.from('perfis').select('*').eq('id',user.id).single();
+  var perfil=null;
 
-  // Se não existe (primeiro login), criar
+  try{
+    /* Buscar perfil existente */
+    var res=await sb.from('perfis').select('*').eq('id',user.id).single();
+    if(res.data){
+      perfil=res.data;
+    } else {
+      /* Primeiro login — criar perfil */
+      var nome=user.user_metadata.full_name||user.user_metadata.name||user.email.split('@')[0];
+      var ins=await sb.from('perfis').insert({
+        id:user.id,
+        email:user.email,
+        nome:nome,
+        avatar_url:user.user_metadata.avatar_url||user.user_metadata.picture||null,
+        provider:(user.app_metadata&&user.app_metadata.provider)||'google',
+        pontos:0,
+        total_gasto:0,
+        total_pedidos:0,
+        total_avaliacoes:0
+      }).select().single();
+      perfil=ins.data;
+    }
+  }catch(e){
+    console.error('Erro ao carregar perfil:',e);
+    /* Fallback: montar perfil com dados do auth mesmo sem tabela */
+    perfil={
+      id:user.id,
+      email:user.email,
+      nome:user.user_metadata.full_name||user.user_metadata.name||user.email.split('@')[0],
+      avatar_url:user.user_metadata.avatar_url||user.user_metadata.picture||null,
+      pontos:0,
+      total_gasto:0,
+      total_pedidos:0,
+      total_avaliacoes:0
+    };
+  }
+
   if(!perfil){
-    var nome=user.user_metadata.full_name||user.email.split('@')[0];
-    var{data:novo}=await sb.from('perfis').insert({
-      id:user.id, email:user.email, nome:nome,
-      avatar_url:user.user_metadata.avatar_url,
-      provider:user.app_metadata.provider||'google',
-      pontos:0, total_gasto:0
-    }).select().single();
-    perfil=novo;
+    perfil={
+      id:user.id,
+      email:user.email,
+      nome:user.email.split('@')[0],
+      avatar_url:null,
+      pontos:0,total_gasto:0,total_pedidos:0,total_avaliacoes:0
+    };
   }
 
   perfilData=perfil;
