@@ -651,8 +651,17 @@ body.tema-claro .pstat-val{color:var(--mars)}
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-var userSession=null, perfilData=null;
+var sb, userSession=null, perfilData=null;
+
+// Aguardar Supabase carregar
+function initSupabase(){
+  if(typeof window.supabase === 'undefined'){
+    setTimeout(initSupabase, 100);
+    return;
+  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  checkAuth();
+}
 
 // ── HELPERS (definidos primeiro para uso em qualquer função) ──
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
@@ -1067,7 +1076,7 @@ function showTab(id,el){
 
 // ── HELPERS ──
 
-checkAuth();
+initSupabase();
 </script>
 </body>
 </html>
