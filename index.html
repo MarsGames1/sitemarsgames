@@ -270,9 +270,12 @@ body.tema-claro .exit-sub{color:#666}
 
 /* ── Animações do anel de nível (navbar) ── */
 
-/* Pontos — oculto no mobile */
+/* Elementos ocultos no mobile */
 .nav-points{display:none}
-/* oculto no mobile, aparece no desktop via media query */
+.nav-links{display:none}
+.nav-search{display:none}
+.nav-discord{display:none}
+.nav-login-label{display:none}
 /* Carrinho */
 .nav-cart{
   display:flex;align-items:center;justify-content:center;
@@ -366,6 +369,7 @@ body.tema-claro .exit-sub{color:#666}
   .nav-logo-text{font-size:17px}
   .nav-hamburger{display:none}
   .nav-mobile-menu{display:none!important}
+  .nav-login{width:auto;padding:7px 14px;gap:7px;font-size:11px;font-weight:700;letter-spacing:.5px}
   .nav-login-label{display:inline}
   .nav-discord{
     display:flex;align-items:center;gap:6px;padding:7px 12px;
@@ -443,7 +447,7 @@ body.tema-claro .exit-sub{color:#666}
 }
 @media(min-width:1200px){
   /* Busca compacta — ícone que expande */
-  .nav-search{display:flex;align-items:center;position:relative}
+  .nav-search{display:flex!important;align-items:center;position:relative}
   .nav-search-icon-btn{
     width:34px;height:34px;border-radius:8px;border:1px solid var(--border2);
     background:rgba(255,255,255,.03);color:#666;cursor:pointer;
@@ -3787,9 +3791,8 @@ async function checkout(){
       return{id:p.id,nome:p.nome,preco:Number(p.preco),quantidade:1,imagem:p.imagem||''};
     });
 
-    /* Timeout de 15s para não travar para sempre */
     var controller=new AbortController();
-    var timeout=setTimeout(function(){controller.abort()},15000);
+    var timeout=setTimeout(function(){controller.abort()},20000);
 
     var res=await fetch(
       'https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',
@@ -3808,12 +3811,11 @@ async function checkout(){
     var texto=await res.text();
     var data;
     try{data=JSON.parse(texto);}
-    catch(e){throw new Error('Resposta inválida da função: '+texto.substring(0,100));}
+    catch(e){throw new Error('Resposta inválida: '+texto.substring(0,100));}
 
     if(!res.ok) throw new Error(data.error||'Erro HTTP '+res.status);
     if(!data.init_point) throw new Error('Link de pagamento não retornado');
 
-    /* Abre o checkout do Mercado Pago */
     window.location.href=data.init_point;
 
   }catch(err){
