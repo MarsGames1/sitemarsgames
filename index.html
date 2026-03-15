@@ -3590,15 +3590,24 @@ footer::before{
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
-  auth:{
-    flowType:'implicit',
-    detectSessionInUrl:true,
-    persistSession:true,
-    autoRefreshToken:true,
-    storageKey:'mg_auth'
-  }
-});
+var sb=null;
+
+function initSb(){
+  if(typeof window.supabase==='undefined'){setTimeout(initSb,50);return;}
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+    auth:{
+      flowType:'implicit',
+      detectSessionInUrl:true,
+      persistSession:true,
+      autoRefreshToken:true,
+      storageKey:'mg_auth'
+    }
+  });
+  // Iniciar funções que dependem do Supabase
+  carregarProdutos();
+  verificarSessao();
+}
+initSb();
 
 /* ══ TEMA CLARO — aplicar em todas as páginas ══ */
 (function(){
@@ -3795,19 +3804,32 @@ function toggleCart(){
   if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
+// Atualizar navbar com info do usuário logado
+async function atualizarNavSessao(){
+  if(!sb)return;
+  try{
+    var{data:{session}}=await sb.auth.getSession();
+    if(!session)return;
+    var user=session.user;
+    var nome=(user.user_metadata&&user.user_metadata.full_name)||user.email.split('@')[0];
+    var avatar=user.user_metadata&&user.user_metadata.avatar_url;
+    // Atualizar botão login
+    var loginBtn=document.getElementById('navLogin');
+    if(loginBtn){
+      loginBtn.innerHTML='<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nav-login-label" style="color:var(--green)">'+nome.split(' ')[0]+'</span>';
+      loginBtn.style.borderColor='rgba(0,255,85,.3)';
+    }
+  }catch(e){}
+}
+
 async function checkout(){
   if(carrinho.length===0)return;
 
   var btn=document.getElementById('checkoutBtn');
 
-  /* Verifica login */
+  // Login opcional — se logado passa email, se não logado segue mesmo assim
   var r=await sb.auth.getSession();
   var session=r.data&&r.data.session?r.data.session:null;
-  if(!session){
-    showToast('Faça login para finalizar a compra!');
-    setTimeout(function(){window.location.href='perfil.html'},1200);
-    return;
-  }
 
   btn.disabled=true;
   btn.textContent='⏳ Processando...';
@@ -3820,19 +3842,20 @@ async function checkout(){
     var controller=new AbortController();
     var timeout=setTimeout(function(){controller.abort()},20000);
 
+    // Headers sem autenticação obrigatória
+    var headers={'Content-Type':'application/json'};
+    if(session) headers['Authorization']='Bearer '+session.access_token;
+
     var res=await fetch(
       'https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',
       {
         method:'POST',
         signal:controller.signal,
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+session.access_token
-        },
+        headers:headers,
         body:JSON.stringify({
           itens:itens,
-          user_email:session.user.email,
-          user_id:session.user.id
+          user_email:session?session.user.email:null,
+          user_id:session?session.user.id:null
         })
       }
     );
