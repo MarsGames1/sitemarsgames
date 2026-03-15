@@ -3773,9 +3773,51 @@ function toggleCart(){
   if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
-function checkout(){
+async function checkout(){
   if(carrinho.length===0)return;
-  alert('Em breve integração com Mercado Pago!\nPor enquanto entre no Discord para finalizar: discord.gg/bKnR9accnw');
+
+  /* Verifica login */
+  var{data:{session}}=await sb.auth.getSession();
+  if(!session){
+    showToast('Faça login para finalizar a compra!');
+    setTimeout(function(){window.location.href='perfil.html'},1200);
+    return;
+  }
+
+  /* Desabilita botão */
+  var btn=document.getElementById('checkoutBtn');
+  btn.disabled=true;
+  btn.textContent='⏳ Processando...';
+
+  try{
+    var itens=carrinho.map(function(p){
+      return{id:p.id,nome:p.nome,preco:Number(p.preco),quantidade:1,imagem:p.imagem||''};
+    });
+
+    /* Chama Edge Function */
+    var res=await fetch(
+      'https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+session.access_token
+        },
+        body:JSON.stringify({itens:itens})
+      }
+    );
+
+    var data=await res.json();
+    if(!res.ok) throw new Error(data.error||'Erro ao criar pagamento');
+
+    /* Redireciona para o checkout do Mercado Pago */
+    window.location.href=data.init_point;
+
+  }catch(err){
+    showToast('Erro: '+err.message);
+    btn.disabled=false;
+    btn.textContent='🚀 Finalizar via Pix / Cartão';
+  }
 }
 
 /* ── NOTIF POPUPS (simulado) ── */
