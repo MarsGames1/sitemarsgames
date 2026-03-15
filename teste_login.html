@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste Login MarsGames</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+body{background:#0a0a0e;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px}
+button{padding:14px 28px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;min-width:220px}
+.google{background:#fff;color:#000}
+.discord{background:#5865f2;color:#fff}
+#log{background:#111;padding:16px;border-radius:8px;font-size:11px;width:400px;min-height:60px;color:#0f0;font-family:monospace;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<h2>Teste de Login</h2>
+<button class="google" onclick="testarGoogle()">Testar Google</button>
+<button class="discord" onclick="testarDiscord()">Testar Discord</button>
+<div id="log">Aguardando...</div>
+
+<script>
+var log=document.getElementById('log');
+function escrever(msg){log.textContent+='\n'+msg;console.log(msg)}
+
+try{
+  var sb=window.supabase.createClient(
+    'https://rzjtlghpsygxkivgwgws.supabase.co',
+    'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm'
+  );
+  escrever('✅ Supabase iniciado');
+}catch(e){
+  escrever('❌ Erro Supabase: '+e.message);
+}
+
+async function testarGoogle(){
+  escrever('Tentando Google...');
+  try{
+    var{data,error}=await sb.auth.signInWithOAuth({
+      provider:'google',
+      options:{redirectTo:'https://marsgames1.github.io/sitemarsgames/perfil.html'}
+    });
+    escrever('data: '+JSON.stringify(data));
+    if(error)escrever('❌ Erro: '+error.message);
+    else escrever('✅ OK — redirecionando...');
+  }catch(e){escrever('❌ Exception: '+e.message)}
+}
+
+async function testarDiscord(){
+  escrever('Tentando Discord...');
+  try{
+    var{data,error}=await sb.auth.signInWithOAuth({
+      provider:'discord',
+      options:{redirectTo:'https://marsgames1.github.io/sitemarsgames/perfil.html'}
+    });
+    if(error)escrever('❌ Erro: '+error.message);
+    else escrever('✅ OK — redirecionando...');
+  }catch(e){escrever('❌ Exception: '+e.message)}
+}
+</script>
+</body>
+</html>
