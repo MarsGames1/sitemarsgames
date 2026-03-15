@@ -659,7 +659,14 @@ function initSupabase(){
     setTimeout(initSupabase, 100);
     return;
   }
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth:{
+      flowType:'pkce',
+      detectSessionInUrl:true,
+      persistSession:true,
+      autoRefreshToken:true
+    }
+  });
   checkAuth();
 }
 
@@ -724,34 +731,18 @@ async function logout(){
 }
 
 async function checkAuth(){
-  // Detectar código OAuth na URL (PKCE flow)
-  var params=new URLSearchParams(window.location.search);
-  var code=params.get('code');
-  if(code){
-    // Trocar code por sessão
-    try{
-      await sb.auth.exchangeCodeForSession(code);
-    }catch(e){console.log('exchange error:',e)}
-    // Limpar URL
-    history.replaceState(null,'',window.location.pathname);
-  }
-
-  // Detectar hash token (implicit flow)
-  if(window.location.hash&&window.location.hash.includes('access_token')){
-    try{await sb.auth.getSession()}catch(e){}
-    history.replaceState(null,'',window.location.pathname);
-  }
-
-  // Escutar mudanças de auth (captura login após redirect)
+  // Escutar mudanças de auth PRIMEIRO — captura eventos de redirect
   sb.auth.onAuthStateChange(async function(event,session){
-    if(event==='SIGNED_IN'&&session){
+    console.log('Auth event:', event, session?'com sessão':'sem sessão');
+    if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session){
       userSession=session;
       document.getElementById('login-screen').style.display='none';
       document.getElementById('perfil-content').style.display='block';
       document.getElementById('btnLogout').style.display='flex';
-      await carregarPerfil(session.user);
+      if(!perfilData) await carregarPerfil(session.user);
     }
     if(event==='SIGNED_OUT'){
+      perfilData=null;
       document.getElementById('login-screen').style.display='flex';
       document.getElementById('perfil-content').style.display='none';
       document.getElementById('btnLogout').style.display='none';
@@ -759,7 +750,9 @@ async function checkAuth(){
   });
 
   // Verificar sessão existente
-  var{data:{session}}=await sb.auth.getSession();
+  var{data:{session},error}=await sb.auth.getSession();
+  console.log('Sessão atual:', session?'logado':'não logado', error||'');
+  
   if(!session){
     document.getElementById('login-screen').style.display='flex';
     return;
