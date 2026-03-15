@@ -1188,8 +1188,7 @@ function mostrarLoading(){
 }
 
 async function checkAuth(){
-  /* Se a URL tem erro do Supabase (Database error saving new user, etc.)
-     mostra mensagem amigável em vez de loop infinito */
+  /* Trata erro do redirect OAuth na URL */
   var hash=window.location.hash;
   if(hash.includes('error')){
     var msg=decodeURIComponent((hash.match(/error_description=([^&]+)/)||['','Erro ao entrar'])[1]).replace(/[+]/g,' ');
@@ -1200,30 +1199,45 @@ async function checkAuth(){
   }
 
   mostrarLoading();
+  var _resolvido=false;
+
+  function _entrar(session){
+    if(_resolvido) return;
+    _resolvido=true;
+    userSession=session;
+    history.replaceState(null,'',window.location.pathname);
+    mostrarPerfil();
+    carregarPerfil(session.user);
+  }
+  function _sair(){
+    if(_resolvido) return;
+    _resolvido=true;
+    mostrarLogin();
+  }
 
   sb.auth.onAuthStateChange(function(event, session){
     if(event==='INITIAL_SESSION'){
-      if(session){ userSession=session; mostrarPerfil(); carregarPerfil(session.user); }
-      else { mostrarLogin(); }
+      if(session) _entrar(session); else _sair();
     }
     if(event==='SIGNED_IN' && session){
-      /* Troca de conta: limpa dados do perfil anterior */
-      if(userSession && userSession.user.id !== session.user.id){
-        perfilData=null;
-      }
-      userSession=session;
-      /* Limpa o hash da URL */
-      history.replaceState(null,'',window.location.pathname);
-      mostrarPerfil();
-      carregarPerfil(session.user);
+      if(userSession && userSession.user.id !== session.user.id) perfilData=null;
+      _resolvido=false; /* permite re-entrar na troca de conta */
+      _entrar(session);
     }
-    if(event==='TOKEN_REFRESHED' && session){
-      userSession=session;
-    }
-    if(event==='SIGNED_OUT' && !_fazendoLogout){
-      perfilData=null; userSession=null; mostrarLogin();
-    }
+    if(event==='TOKEN_REFRESHED' && session){ userSession=session; }
+    if(event==='SIGNED_OUT' && !_fazendoLogout){ perfilData=null; userSession=null; mostrarLogin(); }
   });
+
+  /* Fallback: se INITIAL_SESSION não disparar em 4s, tenta getSession diretamente */
+  setTimeout(async function(){
+    if(_resolvido) return;
+    try{
+      var r=await sb.auth.getSession();
+      if(_resolvido) return;
+      if(r.data&&r.data.session) _entrar(r.data.session);
+      else _sair();
+    }catch(e){ if(!_resolvido) _sair(); }
+  }, 4000);
 }
 
 async function carregarPerfil(user){
