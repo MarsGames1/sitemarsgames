@@ -165,11 +165,16 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   display:flex;flex-direction:column;transform:translateX(100%);
   transition:transform .35s cubic-bezier(.23,1,.32,1)}
 .cart-drawer.open{transform:translateX(0)}
+
+/* ══ ANIMATION ENGINE ══ */
+#mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
+#mars-canvas.ready{opacity:1}
 </style>
 </head>
 <body>
 <div class="stars-bg"></div>
 
+<canvas id="mars-canvas"></canvas>
 <nav class="navbar">
   <a class="nav-logo" href="index.html">
     <div class="nav-logo-text">Mars<span>Games</span></div>
@@ -229,7 +234,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
       <span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">Total</span>
       <span id="cartTotal" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green)">R$ 0,00</span>
     </div>
-    <button id="checkoutBtn" onclick="checkout()" disabled style="width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.3">Finalizar compra</button>
+    <button id="checkoutBtn" onclick="checkout()" disabled style="width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.3">🚀 Finalizar compra</button>
   </div>
 </div>
 
@@ -238,7 +243,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storageKey:'mg_auth',persistSession:true}});
 var todosProdutos=[],catAtual='todos',buscaAtual='';
 var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
 
@@ -336,11 +341,126 @@ function toggleCart(){
   if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
-function checkout(){showToast('Redirecionando...');setTimeout(function(){window.open('https://discord.gg/bKnR9accnw','_blank')},800)}
+async function checkout(){
+  if(carrinho.length===0)return;
+  var r=await sb.auth.getSession();
+  if(!r.data||!r.data.session){
+    showToast('Faça login para finalizar!');
+    setTimeout(function(){window.location.href='perfil.html'},1200);
+    return;
+  }
+  var session=r.data.session;
+  var btn=document.getElementById('checkoutBtn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Processando...';}
+  try{
+    var itens=carrinho.map(function(p){
+      return{id:p.id,nome:p.nome,preco:Number(p.preco),quantidade:1,imagem:p.imagem||''};
+    });
+    var res=await fetch('https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({itens:itens})
+    });
+    var data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Erro ao processar pagamento');
+    window.location.href=data.init_point;
+  }catch(err){
+    showToast('Erro: '+err.message);
+    if(btn){btn.disabled=false;btn.textContent='🚀 Finalizar compra';}
+  }
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
 init();
+</script>
+<script>
+/* ══ MARSGAMES ANIMATION ENGINE ══ */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  if(conn&&(conn.saveData||conn.effectiveType==='2g')) return;
+
+  function loadScript(src,cb){
+    var s=document.createElement('script');s.src=src;s.async=true;
+    s.onload=cb;s.onerror=function(){if(cb)cb()};document.head.appendChild(s);
+  }
+
+  function initThree(){
+    if(typeof THREE==='undefined') return;
+    var canvas=document.getElementById('mars-canvas');if(!canvas) return;
+    var W=window.innerWidth,H=window.innerHeight;
+    var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(W,H);
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(75,W/H,.1,1000);cam.position.z=5;
+    var N=W<768?600:1200;
+    var pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(var i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*24;pos[i*3+1]=(Math.random()-.5)*24;pos[i*3+2]=(Math.random()-.5)*14;
+      var r=Math.random();
+      if(r<.05){col[i*3]=.91;col[i*3+1]=.26;col[i*3+2]=.1;}
+      else if(r<.09){col[i*3]=0;col[i*3+1]=1;col[i*3+2]=.33;}
+      else{var v=Math.random()*.45+.55;col[i*3]=v;col[i*3+1]=v;col[i*3+2]=v;}
+    }
+    var geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    var sc=document.createElement('canvas');sc.width=sc.height=32;
+    var ctx=sc.getContext('2d');
+    var g=ctx.createRadialGradient(16,16,0,16,16,16);
+    g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.4,'rgba(255,255,255,.8)');g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,32,32);
+    var spr=new THREE.CanvasTexture(sc);
+    var mat=new THREE.PointsMaterial({size:.08,map:spr,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false});
+    var pts=new THREE.Points(geo,mat);scene.add(pts);
+    window.addEventListener('resize',function(){W=window.innerWidth;H=window.innerHeight;cam.aspect=W/H;cam.updateProjectionMatrix();renderer.setSize(W,H);});
+    var clock=new THREE.Clock();
+    (function animate(){requestAnimationFrame(animate);var t=clock.getElapsedTime();
+      pts.rotation.y=t*.012;pts.rotation.x=t*.004;pts.rotation.z=t*.002;
+      renderer.render(scene,cam);})();
+    canvas.classList.add('ready');
+  }
+
+  function initGSAP(){
+    if(typeof gsap==='undefined') return;
+    if(typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
+    function onScroll(sel,from,stagger){
+      var els=document.querySelectorAll(sel);if(!els.length)return;
+      var base={duration:.65,ease:'power3.out',stagger:stagger||.07};
+      if(typeof ScrollTrigger!=='undefined') base.scrollTrigger={trigger:els[0],start:'top 88%',once:true};
+      gsap.from(els,Object.assign(base,from));
+    }
+    gsap.from('.nav-logo',{x:-20,opacity:0,duration:.55,delay:.15,ease:'power2.out'});
+    gsap.from('.nav-right > *',{y:-12,opacity:0,duration:.4,stagger:.06,delay:.25});
+    onScroll('.prod-card,.jogo-card,.produto-hero',{y:28,opacity:0,scale:.97},.05);
+    onScroll('.pstat,.info-card',{y:16,opacity:0,scale:.95},.07);
+    onScroll('.cat-card,.filtro-btn',{y:14,opacity:0},.04);
+    document.querySelectorAll('.prod-card,.jogo-card,.mv-card').forEach(function(card){
+      card.addEventListener('mousemove',function(e){
+        var r=card.getBoundingClientRect();
+        var x=(e.clientX-r.left-r.width/2)/r.width*7;
+        var y=(e.clientY-r.top-r.height/2)/r.height*7;
+        gsap.to(card,{rotateY:x,rotateX:-y,duration:.25,ease:'power2.out',transformPerspective:700,overwrite:'auto'});
+      });
+      card.addEventListener('mouseleave',function(){gsap.to(card,{rotateY:0,rotateX:0,duration:.5,ease:'elastic.out(1,.6)',overwrite:'auto'});});
+    });
+  }
+
+  function init(){
+    if(document.getElementById('mars-canvas')){
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
+        if(window.requestIdleCallback) requestIdleCallback(initThree,{timeout:3000});
+        else setTimeout(initThree,800);
+      });
+    }
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js',function(){
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js',function(){initGSAP();});
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
 </script>
 </body>
 </html>
