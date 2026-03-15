@@ -443,12 +443,21 @@ body.tema-claro .section-loader{color:var(--muted)}
   color:var(--muted);margin-top:4px}
 
 /* TABS */
-.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
-  margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tabs-wrap{position:relative;margin-bottom:24px}
+.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--border);padding-bottom:0;
+  -webkit-overflow-scrolling:touch;}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:12px 18px;font-size:11px;font-weight:700;color:var(--muted);
+/* Sombra indicando scroll à direita */
+.tabs-wrap::after{
+  content:'';position:absolute;top:0;right:0;bottom:4px;width:40px;
+  background:linear-gradient(to right,transparent,var(--bg));
+  pointer-events:none;border-radius:0 8px 0 0;
+  transition:opacity .2s;
+}
+.tab{padding:11px 16px;font-size:11px;font-weight:700;color:var(--muted);
   cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
-  transition:color .15s,border-color .15s;letter-spacing:.5px}
+  transition:color .15s,border-color .15s;letter-spacing:.4px;flex-shrink:0}
 .tab:hover{color:#aaa}
 .tab.active{color:var(--green);border-bottom-color:var(--green)}
 .tab-content{display:none;animation:fadeUp .3s ease both}
@@ -779,6 +788,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   </div>
 
   <!-- TABS -->
+  <div class="tabs-wrap">
   <div class="tabs">
     <div class="tab active" onclick="showTab('beneficios',this)">Benefícios</div>
     <div class="tab" onclick="showTab('conquistas',this)">Conquistas</div>
@@ -789,6 +799,7 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
     <div class="tab" onclick="showTab('editar',this)">Editar Perfil</div>
+  </div>
   </div>
 
   <!-- BENEFÍCIOS -->
@@ -1269,8 +1280,11 @@ async function carregarPerfil(user){
     ]);
 
     var perfil=perfilRes.data||fallback;
-    /* Injeta pontos do marspoints no perfil */
-    if(mpRes.data) perfil.pontos=mpRes.data.pontos||0;
+    /* Injeta pontos E historico do marspoints no perfil */
+    if(mpRes.data){
+      perfil.pontos=mpRes.data.pontos||0;
+      perfil.historico=mpRes.data.historico||[];
+    }
     perfilData=perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
@@ -1324,10 +1338,11 @@ function renderPerfil(p){
   document.getElementById('perfilNome').textContent=p.nome||'Cliente MarsGames';
   document.getElementById('perfilEmail').textContent=p.email;
 
-  // Título do nível
+  // Título — respeita o titulo_exibido salvo pelo usuário
   var tituloEl=document.getElementById('perfilTitulo');
   var nomeSlugTitulo=nivel.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  tituloEl.textContent=nivel.titulo;
+  var tituloMostrar=p.titulo_exibido||nivel.titulo;
+  tituloEl.textContent='+ '+tituloMostrar;
   tituloEl.className='perfil-titulo perfil-titulo-'+nomeSlugTitulo;
   document.getElementById('perfilPts').textContent=pts.toLocaleString('pt-BR');
 
@@ -1446,7 +1461,12 @@ var CONQUISTAS=[
   {id:'fiel',            icon:'🔥', nome:'Fã de RPG',          desc:'Comprou 3 jogos da categoria Ação/RPG',       titulo:'Caçador de RPG',      pts:60,  req:function(p){return(p.rpg_comprados||0)>=3}},
   {id:'caçador',         icon:'💰', nome:'Caçador de Ofertas', desc:'Comprou 5 jogos em promoção',                 titulo:'Caçador de Ofertas',  pts:80,  req:function(p){return(p.promo_comprados||0)>=5}},
   {id:'social',          icon:'🤝', nome:'Embaixador',         desc:'Indicou um amigo que fez a primeira compra',  titulo:'Embaixador Mars',     pts:150, req:function(p){return(p.indicacoes||0)>=1}},
-  {id:'sortudo',         icon:'🏆', nome:'Sortudo',            desc:'Venceu um sorteio MarsGames!',                titulo:'SORTUDO',             pts:0,   req:function(p){return p.titulo_exibido==='SORTUDO'||(p.historico_sorteio||false)}},
+  {id:'sortudo',         icon:'🏆', nome:'Sortudo',            desc:'Venceu um sorteio MarsGames!',                titulo:'SORTUDO',             pts:0,   req:function(p){
+    /* Desbloqueado se titulo_exibido for SORTUDO OU se tiver histórico de sorteio nos marspoints */
+    if(p.titulo_exibido==='SORTUDO') return true;
+    var hist=p.historico||[];
+    return hist.some(function(h){return h.tipo==='sorteio'&&h.chave;});
+  }},
 ];
 
 function renderConquistas(perfil){
