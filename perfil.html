@@ -1234,16 +1234,17 @@ async function checkAuth(){
     if(event==='SIGNED_OUT' && !_fazendoLogout){ perfilData=null; userSession=null; mostrarLogin(); }
   });
 
-  /* Fallback: se INITIAL_SESSION não disparar em 4s, tenta getSession diretamente */
-  setTimeout(async function(){
+  /* Tenta getSession imediatamente em paralelo — não espera só o evento */
+  sb.auth.getSession().then(function(r){
     if(_resolvido) return;
-    try{
-      var r=await sb.auth.getSession();
-      if(_resolvido) return;
-      if(r.data&&r.data.session) _entrar(r.data.session);
-      else _sair();
-    }catch(e){ if(!_resolvido) _sair(); }
-  }, 4000);
+    if(r.data&&r.data.session) _entrar(r.data.session);
+    else _sair();
+  }).catch(function(){ if(!_resolvido) _sair(); });
+
+  /* Fallback final: se em 3s nada resolveu, vai para login */
+  setTimeout(function(){
+    if(!_resolvido) _sair();
+  }, 3000);
 }
 
 async function carregarPerfil(user){
@@ -1665,7 +1666,7 @@ async function carregarPremios(user){
           '<div style="font-size:10px;color:#888;margin-bottom:8px">Sua chave/credencial:</div>'+
           '<div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:13px;font-weight:700;color:var(--amber);word-break:break-all;letter-spacing:.5px">'+esc(h.chave)+'</div>'+
         '</div>'+
-        '<button onclick="navigator.clipboard.writeText(''+esc(h.chave)+'').then(function(){showToast('Chave copiada! ✓')})" '+
+        '<button onclick="navigator.clipboard.writeText(\'' + esc(h.chave) + '\').then(function(){showToast(\'Chave copiada! ✓\')})" '+
           'style="padding:10px 18px;border-radius:8px;background:var(--amber);border:none;color:#000;font-weight:900;font-size:11px;cursor:pointer;flex-shrink:0">'+
           '📋 Copiar'+
         '</button>'+
@@ -1852,7 +1853,18 @@ initSupabase();
     var geo=new THREE.BufferGeometry();
     geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
     geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-    var mat=new THREE.PointsMaterial({size:.035,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true});
+    /* Textura circular para evitar partículas quadradas */
+    var spriteCanvas=document.createElement('canvas');
+    spriteCanvas.width=spriteCanvas.height=32;
+    var ctx2d=spriteCanvas.getContext('2d');
+    var grad=ctx2d.createRadialGradient(16,16,0,16,16,16);
+    grad.addColorStop(0,'rgba(255,255,255,1)');
+    grad.addColorStop(.4,'rgba(255,255,255,.8)');
+    grad.addColorStop(1,'rgba(255,255,255,0)');
+    ctx2d.fillStyle=grad;
+    ctx2d.fillRect(0,0,32,32);
+    var sprite=new THREE.CanvasTexture(spriteCanvas);
+    var mat=new THREE.PointsMaterial({size:.08,map:sprite,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false});
     var pts=new THREE.Points(geo,mat);
     scene.add(pts);
     var mouse={x:0,y:0};
