@@ -472,6 +472,55 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
 #mars-canvas.ready{opacity:1}
+
+/* ══ ANÉIS DE NÍVEL NA NAVBAR ══ */
+@keyframes navBronzePulse{
+  0%,100%{box-shadow:0 0 5px 1px rgba(205,159,106,.5)}
+  50%{box-shadow:0 0 16px 5px rgba(205,159,106,.9)}
+}
+@keyframes navPrataShimmer{
+  0%,100%{box-shadow:0 0 7px 2px rgba(232,232,232,.4)}
+  50%{box-shadow:0 0 18px 6px rgba(232,232,232,.8)}
+}
+@keyframes navOuroPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.5)}
+  50%{box-shadow:0 0 22px 7px rgba(255,215,0,.9)}
+}
+@keyframes navEsmPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.5)}
+  50%{box-shadow:0 0 24px 8px rgba(80,200,120,.9)}
+}
+@keyframes navDiaRotate{to{transform:rotate(360deg)}}
+
+.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.nav-avatar-ring{position:absolute;inset:0;border-radius:50%}
+.nav-user-avatar{
+  width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
+  position:relative;z-index:1;
+  clip-path:circle(50%);-webkit-clip-path:circle(50%);
+  transition:border-color .2s;
+}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+#navAvatarFallback{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:#00ff55;
+}
+.nav-nivel-bronze    .nav-user-avatar{border-color:#cd9f6a;animation:navBronzePulse 2.5s ease-in-out infinite}
+.nav-nivel-prata     .nav-user-avatar{border-color:#e8e8e8;animation:navPrataShimmer 3s ease-in-out infinite}
+.nav-nivel-ouro      .nav-user-avatar{border-color:#FFD700;animation:navOuroPulse 2s ease-in-out infinite}
+.nav-nivel-esmeralda .nav-user-avatar{border-color:#50c878;animation:navEsmPulse 1.8s ease-in-out infinite}
+.nav-nivel-diamante  .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
+  animation:navDiaRotate 2.5s linear infinite;
+  box-shadow:0 0 14px rgba(185,242,255,.6),0 0 28px rgba(123,97,255,.35);
+}
+.nav-nivel-diamante  .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
+.nav-nivel-diamante  .nav-user-avatar{border:none;position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -1246,6 +1295,51 @@ setTipoSorteio('diario');
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
   else init();
 })();
+</script>
+<script>
+/* ══ ANEL DE NÍVEL NA NAVBAR ══ */
+var NAV_NIVEIS=[
+  {min:0,nome:'bronze'},{min:100,nome:'prata'},{min:500,nome:'ouro'},
+  {min:1000,nome:'esmeralda'},{min:5000,nome:'diamante'}
+];
+function getNavNivel(pts){
+  for(var i=NAV_NIVEIS.length-1;i>=0;i--){
+    if(pts>=NAV_NIVEIS[i].min) return NAV_NIVEIS[i].nome;
+  }
+  return 'bronze';
+}
+async function atualizarNavbar(session){
+  var btnLogin=document.getElementById('navLogin');
+  var wrap=document.getElementById('navAvatarWrap');
+  var imgAvatar=document.getElementById('navAvatarImg');
+  var fallback=document.getElementById('navAvatarFallback');
+  if(!wrap) return;
+  if(session&&session.user){
+    var meta=session.user.user_metadata||{};
+    var avatarUrl=meta.avatar_url||meta.picture||'';
+    var nome=meta.full_name||meta.name||session.user.email||'';
+    var inicial=(nome.trim()[0]||'U').toUpperCase();
+    if(btnLogin) btnLogin.style.display='none';
+    wrap.style.display='flex';
+    if(avatarUrl){
+      if(imgAvatar){imgAvatar.src=avatarUrl;imgAvatar.style.display='block';}
+      if(fallback) fallback.style.display='none';
+    } else {
+      if(imgAvatar) imgAvatar.style.display='none';
+      if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
+    }
+    try{
+      var mp=await sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle();
+      var pts=(mp.data&&mp.data.pontos)||0;
+      wrap.className='nav-avatar-wrap nav-nivel-'+getNavNivel(pts);
+    }catch(e){wrap.className='nav-avatar-wrap nav-nivel-bronze';}
+  } else {
+    if(btnLogin) btnLogin.style.display='flex';
+    wrap.style.display='none';
+  }
+}
+sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
+sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});
 </script>
 </body>
 </html>
