@@ -190,83 +190,117 @@ body.tema-claro .pstat-val{color:var(--mars)}
 .perfil-hero::before{content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(232,66,26,.04),transparent 60%);pointer-events:none}
 /* ══ AVATAR + BORDAS DE NÍVEL ══ */
-.perfil-avatar-wrap{position:relative;flex-shrink:0;width:86px;height:86px}
-
-/* Anel externo — camada giratória/decorativa */
-.avatar-ring{
-  position:absolute;inset:0;border-radius:50%;
+/* ══ AVATAR + BORDAS DE NÍVEL ══
+   Estrutura:
+   .perfil-avatar-wrap  (86×86, position:relative)
+     .avatar-ring       (86×86, círculo giratório — só diamante usa)
+     .avatar-inner      (80×80, centralizado, clips conteúdo)
+     .nivel-badge-wrap  (badge no canto)
+═══════════════════════════════════ */
+.perfil-avatar-wrap{
+  position:relative;
+  flex-shrink:0;
+  width:86px;height:86px;
   display:flex;align-items:center;justify-content:center;
 }
 
-/* Inner — clipa o conteúdo */
+/* Anel externo — usado apenas pelo diamante como disco giratório */
+.avatar-ring{
+  position:absolute;
+  width:86px;height:86px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  /* padrão: invisível */
+}
+
+/* Inner — círculo perfeito que clipa img/fallback */
 .avatar-inner{
-  width:80px;height:80px;border-radius:50%;overflow:hidden;
-  position:relative;z-index:1;
+  width:80px;height:80px;
+  border-radius:50%;
+  overflow:hidden;
+  position:relative;
+  z-index:1;
   display:flex;align-items:center;justify-content:center;
   background:var(--dim);
+  flex-shrink:0;
+  /* borda padrão (sem nível) */
+  border:3px solid var(--border2);
 }
-.perfil-avatar{width:100%;height:100%;object-fit:cover;border:none;display:block}
+.perfil-avatar{
+  width:100%;height:100%;
+  object-fit:cover;
+  border:none;display:block;
+  border-radius:50%;
+}
 .perfil-avatar-fallback{
   width:100%;height:100%;
-  background:linear-gradient(135deg,rgba(232,66,26,.2),rgba(0,255,85,.1));
+  border-radius:50%;
+  background:linear-gradient(135deg,rgba(232,66,26,.25),rgba(0,255,85,.12));
   display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;color:var(--green);
+  font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ── Bronze: anel laranja-mel com brilho quente pulsante ── */
+/* ── Bronze: borda âmbar com pulso quente ── */
 .avatar-bronze .avatar-inner{
-  outline:3px solid var(--bronze);
-  outline-offset:0;
+  border:3px solid var(--bronze);
   animation:bronzePulse 2.5s ease-in-out infinite;
 }
-
-/* ── Prata: anel prateado com shimmer ── */
+/* ── Prata: borda prateada com shimmer ── */
 .avatar-prata .avatar-inner{
-  outline:3px solid var(--prata);
-  outline-offset:0;
+  border:3px solid var(--prata);
   animation:prataShimmer 3s ease-in-out infinite;
 }
-
-/* ── Ouro: anel dourado pulsante intenso ── */
+/* ── Ouro: borda dourada com pulso expansivo ── */
 .avatar-ouro .avatar-inner{
-  outline:3px solid var(--ouro);
-  outline-offset:0;
+  border:3px solid var(--ouro);
   animation:ouroPulse 2s ease-in-out infinite;
 }
-
-/* ── Esmeralda: anel verde energia pulsante ── */
+/* ── Esmeralda: borda verde-energia pulsante ── */
 .avatar-esmeralda .avatar-inner{
-  outline:3px solid var(--esm);
-  outline-offset:0;
+  border:3px solid var(--esm);
   animation:esmPulse 1.8s ease-in-out infinite;
 }
 
-/* ── Diamante: anel cônico giratório ── */
+/* ── Diamante: disco conic-gradient girando + inner sem borda ── */
 .avatar-diamante .avatar-ring{
   background:conic-gradient(
     from 0deg,
-    #b9f2ff,#7b61ff,#ffffff,#00ffff,#e0b0ff,#ffffff,#b9f2ff
+    #b9f2ff 0%,#a78bfa 15%,#ffffff 28%,
+    #00ffff 42%,#e0b0ff 58%,#ffffff 72%,
+    #7b61ff 85%,#b9f2ff 100%
   );
   animation:diaRotate 2.5s linear infinite;
-  box-shadow:0 0 22px rgba(185,242,255,.65),0 0 44px rgba(123,97,255,.4);
+  box-shadow:
+    0 0 18px rgba(185,242,255,.6),
+    0 0 36px rgba(123,97,255,.35);
 }
-/* Máscara circular — cria o anel escondendo o centro */
+/* Máscara: cobre o centro do disco deixando só o anel visível */
 .avatar-diamante .avatar-ring::before{
   content:'';
-  position:absolute;inset:3px;
+  position:absolute;
+  width:80px;height:80px;
   border-radius:50%;
   background:var(--bg);
   z-index:0;
 }
 .avatar-diamante .avatar-inner{
-  position:relative;z-index:1;
+  border:none;
+  position:relative;
+  z-index:1;
+  box-shadow:0 0 0 1px rgba(185,242,255,.2);
 }
 
+/* Badge de nível */
 .nivel-badge-wrap{
-  position:absolute;bottom:-2px;right:-2px;
-  width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-  z-index:3;
+  position:absolute;
+  bottom:-2px;right:-2px;
+  width:26px;height:26px;
+  border-radius:50%;
+  border:2px solid var(--bg);
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+  z-index:4;
 }
 .perfil-info{flex:1;min-width:200px}
 .perfil-nome{font-family:'Orbitron',sans-serif;font-size:clamp(16px,2.5vw,22px);
