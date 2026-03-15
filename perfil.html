@@ -1085,6 +1085,8 @@ function initSupabase(){
 }
 
 // ── HELPERS (definidos primeiro para uso em qualquer função) ──
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('pt-BR')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
 // ── NÍVEIS ──
