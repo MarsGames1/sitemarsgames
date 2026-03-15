@@ -19,6 +19,75 @@
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
+
+/* ══ ANÉIS DE NÍVEL NAVBAR ══ */
+@keyframes navBronzePulse{
+  0%,100%{box-shadow:0 0 6px 2px rgba(205,159,106,.6)}
+  50%{box-shadow:0 0 18px 6px rgba(205,159,106,1),0 0 30px 4px rgba(205,159,106,.4)}
+}
+@keyframes navPrataShimmer{
+  0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.5)}
+  50%{box-shadow:0 0 20px 7px rgba(232,232,232,.9),0 0 35px 4px rgba(255,255,255,.3)}
+}
+@keyframes navOuroPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.6)}
+  50%{box-shadow:0 0 22px 8px rgba(255,215,0,1),0 0 38px 5px rgba(255,215,0,.4)}
+}
+@keyframes navEsmPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.6)}
+  50%{box-shadow:0 0 24px 9px rgba(80,200,120,1),0 0 40px 5px rgba(80,200,120,.4)}
+}
+@keyframes navDiaRotate{to{transform:rotate(360deg)}}
+
+.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-avatar-ring{position:absolute;inset:-3px;border-radius:50%;z-index:0}
+.nav-user-avatar{
+  width:34px;height:34px;border-radius:50%;
+  border:2.5px solid #444;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
+  position:relative;z-index:1;
+  clip-path:circle(50%);-webkit-clip-path:circle(50%);
+  background:#131318;
+}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+#navAvatarFallback{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
+}
+/* Bronze — borda âmbar quente */
+.nav-nivel-bronze .nav-user-avatar{
+  border-color:#cd9f6a !important;
+  animation:navBronzePulse 2.5s ease-in-out infinite;
+}
+/* Prata — borda prateada */
+.nav-nivel-prata .nav-user-avatar{
+  border-color:#e8e8e8 !important;
+  animation:navPrataShimmer 3s ease-in-out infinite;
+}
+/* Ouro — borda dourada */
+.nav-nivel-ouro .nav-user-avatar{
+  border-color:#FFD700 !important;
+  animation:navOuroPulse 2s ease-in-out infinite;
+}
+/* Esmeralda — borda verde */
+.nav-nivel-esmeralda .nav-user-avatar{
+  border-color:#50c878 !important;
+  animation:navEsmPulse 1.8s ease-in-out infinite;
+}
+/* Diamante — disco girando */
+.nav-nivel-diamante .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
+  animation:navDiaRotate 2.5s linear infinite;
+  box-shadow:0 0 16px rgba(185,242,255,.7),0 0 32px rgba(123,97,255,.4);
+}
+.nav-nivel-diamante .nav-avatar-ring::before{
+  content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0;
+}
+.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
+
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
 .stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -171,53 +240,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 #mars-canvas.ready{opacity:1}
 
 /* ══ ANÉIS DE NÍVEL NA NAVBAR ══ */
-@keyframes navBronzePulse{
-  0%,100%{box-shadow:0 0 5px 1px rgba(205,159,106,.5)}
-  50%{box-shadow:0 0 16px 5px rgba(205,159,106,.9)}
-}
-@keyframes navPrataShimmer{
-  0%,100%{box-shadow:0 0 7px 2px rgba(232,232,232,.4)}
-  50%{box-shadow:0 0 18px 6px rgba(232,232,232,.8)}
-}
-@keyframes navOuroPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.5)}
-  50%{box-shadow:0 0 22px 7px rgba(255,215,0,.9)}
-}
-@keyframes navEsmPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.5)}
-  50%{box-shadow:0 0 24px 8px rgba(80,200,120,.9)}
-}
-@keyframes navDiaRotate{to{transform:rotate(360deg)}}
 
-.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center}
-.nav-avatar-ring{position:absolute;inset:0;border-radius:50%}
-.nav-user-avatar{
-  width:36px;height:36px;border-radius:50%;
-  border:2px solid var(--border2);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
-  position:relative;z-index:1;
-  clip-path:circle(50%);-webkit-clip-path:circle(50%);
-  transition:border-color .2s;
-}
-.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-#navAvatarFallback{
-  width:100%;height:100%;
-  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:#00ff55;
-}
-.nav-nivel-bronze    .nav-user-avatar{border-color:#cd9f6a;animation:navBronzePulse 2.5s ease-in-out infinite}
-.nav-nivel-prata     .nav-user-avatar{border-color:#e8e8e8;animation:navPrataShimmer 3s ease-in-out infinite}
-.nav-nivel-ouro      .nav-user-avatar{border-color:#FFD700;animation:navOuroPulse 2s ease-in-out infinite}
-.nav-nivel-esmeralda .nav-user-avatar{border-color:#50c878;animation:navEsmPulse 1.8s ease-in-out infinite}
-.nav-nivel-diamante  .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
-  animation:navDiaRotate 2.5s linear infinite;
-  box-shadow:0 0 14px rgba(185,242,255,.6),0 0 28px rgba(123,97,255,.35);
-}
-.nav-nivel-diamante  .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
-.nav-nivel-diamante  .nav-user-avatar{border:none;position:relative;z-index:1}
 </style>
 </head>
 <body>

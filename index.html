@@ -259,132 +259,7 @@ body.tema-claro .exit-sub{color:#666}
 .manu-link.discord:hover{border-color:rgba(114,137,218,.6);background:rgba(114,137,218,.07)}
 
 /* ── Animações do anel de nível (navbar) ── */
-@keyframes navBronzePulse{
-  0%,100%{box-shadow:0 0 5px 1px rgba(205,159,106,.5),inset 0 0 0 2px rgba(205,159,106,.8)}
-  50%{box-shadow:0 0 14px 4px rgba(205,159,106,.85),inset 0 0 0 2px rgba(205,159,106,1)}
-}
-@keyframes navPrataShimmer{
-  0%,100%{box-shadow:0 0 7px 2px rgba(232,232,232,.4),inset 0 0 0 2px rgba(232,232,232,.9)}
-  50%{box-shadow:0 0 16px 5px rgba(232,232,232,.7),inset 0 0 0 2px #fff}
-}
-@keyframes navOuroPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.5),inset 0 0 0 2px rgba(255,215,0,.9)}
-  50%{box-shadow:0 0 20px 6px rgba(255,215,0,.85),inset 0 0 0 2px #FFD700}
-}
-@keyframes navEsmPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.55),inset 0 0 0 2px rgba(80,200,120,.9)}
-  50%{box-shadow:0 0 22px 7px rgba(80,200,120,.9),inset 0 0 0 2px #50c878}
-}
-@keyframes navDiaRotate{to{transform:rotate(360deg)}}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;
-  /* Melhor scroll no iOS */
-  -webkit-overflow-scrolling:touch;
-}
 
-/* ══ STARS BG ══ */
-.stars-bg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 25% 40%,rgba(255,255,255,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 45% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 60% 60%,rgba(255,255,255,.3) 0%,transparent 100%),
-    radial-gradient(1px 1px at 75% 35%,rgba(255,255,255,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 85% 75%,rgba(255,255,255,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 35% 80%,rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 90% 20%,rgba(255,255,255,.3) 0%,transparent 100%),
-    radial-gradient(2px 2px at 55% 90%,rgba(255,255,255,.2) 0%,transparent 100%),
-    radial-gradient(1px 1px at 15% 65%,rgba(255,255,255,.4) 0%,transparent 100%);
-  opacity:.8;
-}
-
-/* ══════════════════════════════════
-   NAVBAR — mobile-first
-══════════════════════════════════ */
-.navbar{
-  position:sticky;top:0;z-index:200;
-  background:rgba(6,6,8,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(232,66,26,.15);
-  padding:0 16px;height:72px;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;overflow:visible;
-}
-.navbar::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent);
-}
-/* Logo */
-.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
-.nav-logo img{width:52px;height:52px;object-fit:contain;background:transparent;filter:drop-shadow(0 0 12px rgba(232,66,26,.6))}
-.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:1.5px;color:#fff}
-.nav-logo-text span{color:var(--mars)}
-/* Links desktop — ocultos por padrão, aparece em telas grandes */
-.nav-links{display:none}
-/* Direita */
-.nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0;overflow:visible;min-width:0}
-/* Busca — oculta no mobile */
-.nav-search{display:none}
-/* Discord — oculto no mobile */
-.nav-discord{display:none}
-/* Login — só ícone no mobile */
-/* Login */
-.nav-login{
-  display:flex;align-items:center;gap:7px;
-  padding:8px 14px;height:38px;
-  border-radius:8px;border:1px solid var(--border2);
-  background:rgba(255,255,255,.04);
-  cursor:pointer;transition:border-color .2s,background .2s;
-  text-decoration:none;color:#aaa;
-  font-size:11px;font-weight:700;letter-spacing:.5px;
-  white-space:nowrap;flex-shrink:0;
-}
-.nav-login:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.07)}
-.nav-login svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.nav-login-label{display:none}
-/* Avatar pós-login na navbar */
-/* Wrapper do avatar — contém o anel giratório (diamante) e o círculo de foto */
-.nav-avatar-wrap{
-  position:relative;width:40px;height:40px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
-/* Anel externo — só diamante usa como disco giratório */
-.nav-avatar-ring{
-  position:absolute;inset:0;border-radius:50%;
-}
-/* Avatar clicável */
-.nav-user-avatar{
-  width:36px;height:36px;border-radius:50%;
-  border:2px solid var(--border2);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
-  position:relative;z-index:1;
-  clip-path:circle(50%);
-  -webkit-clip-path:circle(50%);
-  transition:border-color .2s;
-}
-.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-#navAvatarFallback{
-  width:100%;height:100%;
-  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:var(--green);
-}
-/* ── Anéis por nível ── */
-.nav-nivel-bronze   .nav-user-avatar{border-color:var(--bronze);animation:navBronzePulse 2.5s ease-in-out infinite}
-.nav-nivel-prata    .nav-user-avatar{border-color:var(--prata); animation:navPrataShimmer 3s ease-in-out infinite}
-.nav-nivel-ouro     .nav-user-avatar{border-color:var(--ouro);  animation:navOuroPulse 2s ease-in-out infinite}
-.nav-nivel-esmeralda .nav-user-avatar{border-color:var(--esm); animation:navEsmPulse 1.8s ease-in-out infinite}
-/* Diamante: disco conic-gradient girando em volta */
-.nav-nivel-diamante .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
-  animation:navDiaRotate 2.5s linear infinite;
-  box-shadow:0 0 14px rgba(185,242,255,.6),0 0 28px rgba(123,97,255,.35);
-}
-.nav-nivel-diamante .nav-avatar-ring::before{
-  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg);z-index:0;
-}
-.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
 /* Pontos — oculto no mobile */
 .nav-points{display:none}
 /* oculto no mobile, aparece no desktop via media query */
@@ -2384,6 +2259,20 @@ footer::before{
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
 #mars-canvas.ready{opacity:1}
+
+/* ══ ANÉIS DE NÍVEL NAVBAR ══ */
+@keyframes navBronzePulse{0%,100%{box-shadow:0 0 6px 2px rgba(205,159,106,.6)}50%{box-shadow:0 0 18px 6px rgba(205,159,106,1)}}
+@keyframes navPrataShimmer{0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.5)}50%{box-shadow:0 0 20px 7px rgba(232,232,232,.9)}}
+@keyframes navOuroPulse{0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.6)}50%{box-shadow:0 0 22px 8px rgba(255,215,0,1)}}
+@keyframes navEsmPulse{0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.6)}50%{box-shadow:0 0 24px 9px rgba(80,200,120,1)}}
+@keyframes navDiaRotate{to{transform:rotate(360deg)}}
+.nav-nivel-bronze .nav-user-avatar{border-color:#cd9f6a !important;animation:navBronzePulse 2.5s ease-in-out infinite}
+.nav-nivel-prata .nav-user-avatar{border-color:#e8e8e8 !important;animation:navPrataShimmer 3s ease-in-out infinite}
+.nav-nivel-ouro .nav-user-avatar{border-color:#FFD700 !important;animation:navOuroPulse 2s ease-in-out infinite}
+.nav-nivel-esmeralda .nav-user-avatar{border-color:#50c878 !important;animation:navEsmPulse 1.8s ease-in-out infinite}
+.nav-nivel-diamante .nav-avatar-ring{background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);animation:navDiaRotate 2.5s linear infinite;box-shadow:0 0 16px rgba(185,242,255,.7)}
+.nav-nivel-diamante .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
+.nav-nivel-diamante .nav-user-avatar{border:none !important;position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -3211,6 +3100,71 @@ footer::before{
 </script>
 
 
+<!-- ══ FILTROS DE CATEGORIA ══ -->
+<div class="cats-wrap">
+  <div class="cats-scroll" id="catsScroll">
+    <button class="cat-pill active" data-cat="todos" onclick="setCat('todos',this)">
+      <span class="cat-emoji">🎮</span> Todos
+    </button>
+    <button class="cat-pill" data-cat="Ação / RPG" onclick="setCat('Ação / RPG',this)">
+      <span class="cat-emoji">⚔️</span> Ação / RPG
+    </button>
+    <button class="cat-pill" data-cat="Luta / Tiros" onclick="setCat('Luta / Tiros',this)">
+      <span class="cat-emoji">🔫</span> Luta / Tiros
+    </button>
+    <button class="cat-pill" data-cat="Terror / Indie" onclick="setCat('Terror / Indie',this)">
+      <span class="cat-emoji">👻</span> Terror / Indie
+    </button>
+    <button class="cat-pill" data-cat="Simulação / Sobrevivência" onclick="setCat('Simulação / Sobrevivência',this)">
+      <span class="cat-emoji">🌍</span> Simulação
+    </button>
+    <button class="cat-pill" data-cat="Esportes" onclick="setCat('Esportes',this)">
+      <span class="cat-emoji">⚽</span> Esportes
+    </button>
+    <button class="cat-pill" data-cat="Combos e Bundles" onclick="setCat('Combos e Bundles',this)">
+      <span class="cat-emoji">📦</span> Combos
+    </button>
+    <button class="cat-pill" data-cat="promo" onclick="setCat('promo',this)">
+      <span class="cat-emoji">🔥</span> Promoções
+    </button>
+  </div>
+</div>
+
+<!-- ══ LOJA ══ -->
+<div class="store-wrap">
+  <div class="store-head">
+    <div>
+      <div class="store-title-main">CATÁLOGO COMPLETO</div>
+      <div class="store-count-text" id="storeCount">carregando...</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input class="search-input" id="searchInputLoja" type="text"
+        placeholder="Buscar jogo..."
+        oninput="buscar(this.value)">
+    </div>
+  </div>
+  <div class="prods-grid" id="prodsGrid">
+    <div class="loader-wrap">
+      <div class="spinner"></div>
+      Carregando jogos...
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:28px">
+    <a href="catalogo.html" style="display:inline-flex;align-items:center;gap:8px;
+       padding:13px 28px;border-radius:10px;border:1px solid var(--border2);
+       background:rgba(255,255,255,.03);color:#888;font-size:11px;font-weight:700;
+       letter-spacing:.5px;text-decoration:none;transition:all .2s"
+       onmouseover="this.style.borderColor='#555';this.style.color='#fff'"
+       onmouseout="this.style.borderColor='';this.style.color=''">
+      Ver catálogo completo →
+    </a>
+  </div>
+</div>
+
+
 <!-- ══ RANKING + AVALIAÇÕES ══ -->
 <section class="rk-section">
   <div class="rk-inner">
@@ -3804,16 +3758,17 @@ function toggleCart(){
 async function checkout(){
   if(carrinho.length===0)return;
 
+  var btn=document.getElementById('checkoutBtn');
+
   /* Verifica login */
-  var{data:{session}}=await sb.auth.getSession();
+  var r=await sb.auth.getSession();
+  var session=r.data&&r.data.session?r.data.session:null;
   if(!session){
     showToast('Faça login para finalizar a compra!');
     setTimeout(function(){window.location.href='perfil.html'},1200);
     return;
   }
 
-  /* Desabilita botão */
-  var btn=document.getElementById('checkoutBtn');
   btn.disabled=true;
   btn.textContent='⏳ Processando...';
 
@@ -3822,11 +3777,15 @@ async function checkout(){
       return{id:p.id,nome:p.nome,preco:Number(p.preco),quantidade:1,imagem:p.imagem||''};
     });
 
-    /* Chama Edge Function */
+    /* Timeout de 15s para não travar para sempre */
+    var controller=new AbortController();
+    var timeout=setTimeout(function(){controller.abort()},15000);
+
     var res=await fetch(
       'https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',
       {
         method:'POST',
+        signal:controller.signal,
         headers:{
           'Content-Type':'application/json',
           'Authorization':'Bearer '+session.access_token
@@ -3834,15 +3793,23 @@ async function checkout(){
         body:JSON.stringify({itens:itens})
       }
     );
+    clearTimeout(timeout);
 
-    var data=await res.json();
-    if(!res.ok) throw new Error(data.error||'Erro ao criar pagamento');
+    var texto=await res.text();
+    var data;
+    try{data=JSON.parse(texto);}
+    catch(e){throw new Error('Resposta inválida da função: '+texto.substring(0,100));}
 
-    /* Redireciona para o checkout do Mercado Pago */
+    if(!res.ok) throw new Error(data.error||'Erro HTTP '+res.status);
+    if(!data.init_point) throw new Error('Link de pagamento não retornado');
+
+    /* Abre o checkout do Mercado Pago */
     window.location.href=data.init_point;
 
   }catch(err){
-    showToast('Erro: '+err.message);
+    var msg=err.name==='AbortError'?'Tempo esgotado — tente novamente':err.message;
+    showToast('Erro: '+msg);
+    console.error('Checkout error:',err);
     btn.disabled=false;
     btn.textContent='🚀 Finalizar via Pix / Cartão';
   }
