@@ -515,20 +515,20 @@ async function init(){
   var query=sb.from('produtos').select('*');
   if(id){
     query=query.eq('id',id);
+    var{data,error}=await query.maybeSingle();
   } else {
-    // Decodificar nome da URL e buscar com match exato primeiro
-    var nomeDecoded=decodeURIComponent(nome).replace(/\+/g,' ');
-    query=query.ilike('nome',nomeDecoded);
-  }
-
-  var{data,error}=await query.maybeSingle();
-
-  // Se não encontrou com nome exato, tenta busca parcial
-  if(!data&&!id){
-    var nomeDecoded2=decodeURIComponent(nome).replace(/\+/g,' ');
-    var{data:data2}=await sb.from('produtos')
-      .select('*').ilike('nome','%'+nomeDecoded2.split(' ')[0]+'%').eq('ativo',true).limit(1).maybeSingle();
-    data=data2;
+    // Decodificar nome da URL corretamente
+    var nomeDecoded=decodeURIComponent((nome||'').replace(/\+/g,' ')).trim();
+    // Busca exata primeiro
+    var{data,error}=await sb.from('produtos')
+      .select('*').ilike('nome',nomeDecoded).eq('ativo',true).maybeSingle();
+    // Se não achou, busca parcial com primeiro trecho do nome
+    if(!data){
+      var primeiraPalavra=nomeDecoded.split(' ').slice(0,2).join(' ');
+      var{data:data2}=await sb.from('produtos')
+        .select('*').ilike('nome','%'+primeiraPalavra+'%').eq('ativo',true).limit(1).maybeSingle();
+      data=data2;
+    }
   }
 
   if(!data){showError();return}

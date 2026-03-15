@@ -675,7 +675,7 @@ async function loginGoogle(){
   // URL de redirect — sempre apontar para o perfil
   var redirect=window.location.hostname==='localhost'
     ? window.location.origin+'/perfil.html'
-    : 'https://sitemarsgames.netlify.app/perfil.html';
+    : 'https://marsgames1.github.io/sitemarsgames/perfil.html';
 
   var{error}=await sb.auth.signInWithOAuth({
     provider:'google',
@@ -690,7 +690,7 @@ async function loginGoogle(){
 async function loginDiscord(){
   var redirect=window.location.hostname==='localhost'
     ? window.location.origin+'/perfil.html'
-    : 'https://sitemarsgames.netlify.app/perfil.html';
+    : 'https://marsgames1.github.io/sitemarsgames/perfil.html';
 
   var{error}=await sb.auth.signInWithOAuth({
     provider:'discord',
