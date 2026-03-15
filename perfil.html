@@ -654,6 +654,9 @@ var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 var userSession=null, perfilData=null;
 
+// ── HELPERS (definidos primeiro para uso em qualquer função) ──
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
+
 // ── NÍVEIS ──
 var NIVEIS=[
   {nome:'Bronze',  min:0,    max:99,   cor:'var(--bronze)',emoji:'🥉',cls:'nivel-bronze',   desc:'Sem desconto',pct:0,  titulo:'Recruta Marciano'},
@@ -1063,9 +1066,6 @@ function showTab(id,el){
 }
 
 // ── HELPERS ──
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function fmtDate(d){if(!d)return '—';return new Date(d).toLocaleDateString('pt-BR')}
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
 checkAuth();
 </script>
