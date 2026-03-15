@@ -712,13 +712,41 @@ async function logout(){
 }
 
 async function checkAuth(){
-  // Processar hash da URL após redirect OAuth
-  if(window.location.hash&&window.location.hash.includes('access_token')){
-    await sb.auth.getSession();
-    // Limpar hash da URL
+  // Detectar código OAuth na URL (PKCE flow)
+  var params=new URLSearchParams(window.location.search);
+  var code=params.get('code');
+  if(code){
+    // Trocar code por sessão
+    try{
+      await sb.auth.exchangeCodeForSession(code);
+    }catch(e){console.log('exchange error:',e)}
+    // Limpar URL
     history.replaceState(null,'',window.location.pathname);
   }
 
+  // Detectar hash token (implicit flow)
+  if(window.location.hash&&window.location.hash.includes('access_token')){
+    try{await sb.auth.getSession()}catch(e){}
+    history.replaceState(null,'',window.location.pathname);
+  }
+
+  // Escutar mudanças de auth (captura login após redirect)
+  sb.auth.onAuthStateChange(async function(event,session){
+    if(event==='SIGNED_IN'&&session){
+      userSession=session;
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('perfil-content').style.display='block';
+      document.getElementById('btnLogout').style.display='flex';
+      await carregarPerfil(session.user);
+    }
+    if(event==='SIGNED_OUT'){
+      document.getElementById('login-screen').style.display='flex';
+      document.getElementById('perfil-content').style.display='none';
+      document.getElementById('btnLogout').style.display='none';
+    }
+  });
+
+  // Verificar sessão existente
   var{data:{session}}=await sb.auth.getSession();
   if(!session){
     document.getElementById('login-screen').style.display='flex';
