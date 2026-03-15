@@ -268,14 +268,40 @@ body.tema-claro .exit-sub{color:#666}
 .manu-link.discord{border-color:rgba(114,137,218,.25);color:#7289da}
 .manu-link.discord:hover{border-color:rgba(114,137,218,.6);background:rgba(114,137,218,.07)}
 
-/* ── Animações do anel de nível (navbar) ── */
+/* ══ NAVBAR ══ */
+.navbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(6,6,8,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(232,66,26,.15);
+  padding:0 16px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.navbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent);
+}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.nav-logo img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,66,26,.5))}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:var(--mars)}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+/* Login */
+.nav-login{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:8px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.04);
+  cursor:pointer;transition:border-color .2s,background .2s;
+  text-decoration:none;color:#aaa;flex-shrink:0;
+}
+.nav-login:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.07)}
+.nav-login svg{width:18px;height:18px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-login-label{display:none}
 
 /* Elementos ocultos no mobile */
 .nav-points{display:none}
 .nav-links{display:none}
 .nav-search{display:none}
 .nav-discord{display:none}
-.nav-login-label{display:none}
 /* Carrinho */
 .nav-cart{
   display:flex;align-items:center;justify-content:center;
