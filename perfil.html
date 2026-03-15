@@ -1320,6 +1320,9 @@ function renderPerfil(p){
   // Stats
   document.getElementById('statGasto').textContent='R$ '+Number(p.total_gasto||0).toFixed(0);
   document.getElementById('statDesconto').textContent=nivel.pct+'%';
+  // MarsPoints — já temos o valor em memória, não precisa de nova query
+  var mpEl=document.getElementById('statMarsPoints');
+  if(mpEl)mpEl.textContent=pts.toLocaleString('pt-BR');
 
   // Editar
   document.getElementById('editNome').value=p.nome||'';
@@ -1567,16 +1570,16 @@ function checkTema(nivel){
 /* Carrega tickets para mostrar no hero */
 async function carregarTicketsHero(user){
   try{
-    var[tckRes,mpRes]=await Promise.all([
-      sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle(),
-      sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle()
-    ]);
+    // Pontos já foram populados pelo renderPerfil — só busca tickets
+    var tckRes=await sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle();
     var qtd=tckRes.data?tckRes.data.quantidade||0:0;
-    var pts=mpRes.data?mpRes.data.pontos||0:0;
     var el=document.getElementById('statTickets');
     if(el)el.textContent=qtd;
-    var mp=document.getElementById('statMarsPoints');
-    if(mp)mp.textContent=pts.toLocaleString('pt-BR');
+    // Se por algum motivo marspoints ainda não foi populado, tenta novamente
+    var mpEl=document.getElementById('statMarsPoints');
+    if(mpEl&&mpEl.textContent==='0'&&perfilData){
+      mpEl.textContent=(perfilData.pontos||0).toLocaleString('pt-BR');
+    }
   }catch(e){}
 }
 
