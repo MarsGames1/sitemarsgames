@@ -427,13 +427,13 @@ body.tema-claro .pstat-val{color:var(--mars)}
   </div>
 </nav>
 
-<!-- LOGIN -->
-<!-- Loading screen -->
+<!-- LOADING -->
 <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;min-height:80vh;flex-direction:column;gap:16px;position:relative;z-index:1">
   <div style="width:36px;height:36px;border:3px solid rgba(0,255,85,.15);border-top-color:#00ff55;border-radius:50%;animation:spin 0.7s linear infinite"></div>
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#555">Verificando sessão...</div>
 </div>
 
+<!-- LOGIN -->
 <div id="login-screen" style="display:none">
   <div class="login-card">
     <div class="login-planet"></div>
@@ -487,7 +487,7 @@ body.tema-claro .pstat-val{color:var(--mars)}
   <div class="perfil-hero">
     <div class="perfil-avatar-wrap" id="avatarWrap">
       <img class="perfil-avatar" id="perfilAvatar" src="" alt="" onerror="this.style.display='none';document.getElementById('perfilAvatarFallback').style.display='flex'">
-      <div class="perfil-avatar-fallback" id="perfilAvatarFallback" style="display:none"></div>
+      <div class="perfil-avatar-fallback" id="perfilAvatarFallback" style="display:none" id="perfilAvatarFallback"></div>
       <div class="nivel-badge-wrap" id="nivelBadge" style="background:#131318"></div>
     </div>
     <div class="perfil-info">
@@ -736,124 +736,109 @@ async function loginDiscord(){
 }
 async function logout(){
   try{
-    document.getElementById('btnLogout').textContent='Saindo...';
-    document.getElementById('btnLogout').disabled=true;
+    var btn=document.getElementById('btnLogout');
+    if(btn){btn.textContent='Saindo...';btn.disabled=true;}
     await sb.auth.signOut();
-  }catch(e){
-    console.error('Erro logout:',e);
-  }finally{
-    /* Limpar tudo manualmente para garantir */
-    perfilData=null;
-    userSession=null;
-    localStorage.removeItem('mg_auth');
-    localStorage.removeItem('mg_auth-code-verifier');
-    /* Limpar todas as chaves do supabase do localStorage */
+  }catch(e){console.error(e);}
+  finally{
+    perfilData=null;userSession=null;
     Object.keys(localStorage).forEach(function(k){
-      if(k.startsWith('sb-')||k.startsWith('supabase'))localStorage.removeItem(k);
+      if(k.startsWith('sb-')||k.startsWith('supabase')||k==='mg_auth')localStorage.removeItem(k);
     });
-    document.getElementById('perfil-content').style.display='none';
-    document.getElementById('login-screen').style.display='flex';
-    document.getElementById('loading-screen').style.display='none';
-    document.getElementById('btnLogout').style.display='none';
+    mostrarLogin();
   }
 }
 
-function mostrarLoading(){
-  document.getElementById('loading-screen').style.display='flex';
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('perfil-content').style.display='none';
-}
 function mostrarLogin(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('perfil-content').style.display='none';
-  document.getElementById('btnLogout').style.display='none';
+  var btn=document.getElementById('btnLogout');
+  if(btn){btn.style.display='none';btn.textContent='Sair';btn.disabled=false;}
 }
 function mostrarPerfil(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('login-screen').style.display='none';
   document.getElementById('perfil-content').style.display='block';
-  document.getElementById('btnLogout').style.display='flex';
+  var btn=document.getElementById('btnLogout');
+  if(btn)btn.style.display='flex';
+}
+function mostrarLoading(){
+  document.getElementById('loading-screen').style.display='flex';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('perfil-content').style.display='none';
 }
 
+var _authReady=false;
 async function checkAuth(){
   mostrarLoading();
 
-  /* Listener — captura redirect OAuth após voltar do Google/Discord */
-  sb.auth.onAuthStateChange(async function(event,session){
-    if(event==='SIGNED_IN'&&session){
-      userSession=session;
-      mostrarPerfil();
-      if(!perfilData) await carregarPerfil(session.user);
-    }
-    if(event==='TOKEN_REFRESHED'&&session){
-      userSession=session;
-    }
-    if(event==='SIGNED_OUT'){
-      perfilData=null;userSession=null;
-      mostrarLogin();
-    }
-    if(event==='INITIAL_SESSION'){
-      if(!session) mostrarLogin();
-    }
-  });
+  /* Aguarda 400ms para o Supabase processar o #access_token da URL */
+  await new Promise(function(r){setTimeout(r,400)});
 
-  /* Verificar sessão salva */
+  /* getSession resolve tanto sessão salva quanto redirect OAuth */
   try{
     var res=await sb.auth.getSession();
     var session=res&&res.data&&res.data.session;
-    if(!session){
+    _authReady=true;
+    if(session){
+      userSession=session;
+      mostrarPerfil();
+      await carregarPerfil(session.user);
+    }else{
       mostrarLogin();
-      return;
     }
-    userSession=session;
-    mostrarPerfil();
-    await carregarPerfil(session.user);
   }catch(e){
     console.error('Erro checkAuth:',e);
     mostrarLogin();
   }
+
+  /* Listener só para eventos DEPOIS da carga inicial */
+  sb.auth.onAuthStateChange(async function(event,session){
+    if(!_authReady) return; /* Ignora eventos da inicialização */
+    if(event==='SIGNED_IN'&&session&&!perfilData){
+      userSession=session;
+      mostrarPerfil();
+      await carregarPerfil(session.user);
+    }
+    if(event==='TOKEN_REFRESHED'&&session){userSession=session;}
+    if(event==='SIGNED_OUT'){perfilData=null;userSession=null;mostrarLogin();}
+  });
 }
 
 async function carregarPerfil(user){
   var nome=user.user_metadata.full_name||user.user_metadata.name||user.email.split('@')[0];
   var avatar=user.user_metadata.avatar_url||user.user_metadata.picture||null;
 
-  /* Montar fallback imediatamente — usuário vê dados na hora */
-  var perfilFallback={
-    id:user.id, email:user.email, nome:nome, avatar_url:avatar,
-    pontos:0, total_gasto:0, total_pedidos:0, total_avaliacoes:0
-  };
-  renderPerfil(perfilFallback);
+  /* Mostra dados do Google imediatamente enquanto busca o banco */
+  var fallback={id:user.id,email:user.email,nome:nome,avatar_url:avatar,
+    pontos:0,total_gasto:0,total_pedidos:0,total_avaliacoes:0,
+    rpg_comprados:0,promo_comprados:0,indicacoes:0};
+  renderPerfil(fallback);
 
   try{
-    /* Upsert: cria se não existe, atualiza avatar/email se mudou */
-    var upsertRes=await sb.from('perfis').upsert({
-      id:user.id,
-      email:user.email,
-      nome:nome,
-      avatar_url:avatar,
-      provider:(user.app_metadata&&user.app_metadata.provider)||'google',
-    },{onConflict:'id',ignoreDuplicates:false}).select().single();
+    /* upsert: cria na primeira vez, atualiza depois */
+    var r=await sb.from('perfis').upsert(
+      {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
+       provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
+      {onConflict:'id'}
+    ).select().single();
 
-    var perfil=upsertRes.data||perfilFallback;
+    var perfil=r.data||fallback;
     perfilData=perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
     renderConquistas(perfil);
-    carregarPedidos(user.id);
-    carregarFavoritos(user.id);
-    carregarHistoricoPontos(user.id);
   }catch(e){
-    console.error('Erro carregarPerfil:',e);
-    /* Usa fallback — pelo menos nome e foto aparecem */
-    perfilData=perfilFallback;
-    carregarBeneficiosCupom(perfilFallback);
-    renderConquistas(perfilFallback);
-    carregarPedidos(user.id);
-    carregarFavoritos(user.id);
-    carregarHistoricoPontos(user.id);
+    console.error('Erro perfil banco:',e);
+    perfilData=fallback;
+    carregarBeneficiosCupom(fallback);
+    renderConquistas(fallback);
   }
+
+  carregarPedidos(user.id);
+  carregarFavoritos(user.id);
+  carregarHistoricoPontos(user.id);
 }
 
 function renderPerfil(p){
