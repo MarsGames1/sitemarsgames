@@ -734,19 +734,20 @@ async function loginDiscord(){
     showToast('Erro: '+e.message);
   }
 }
+var _fazendoLogout=false;
+
 async function logout(){
-  try{
-    var btn=document.getElementById('btnLogout');
-    if(btn){btn.textContent='Saindo...';btn.disabled=true;}
-    await sb.auth.signOut();
-  }catch(e){console.error(e);}
-  finally{
-    perfilData=null;userSession=null;
-    Object.keys(localStorage).forEach(function(k){
-      if(k.startsWith('sb-')||k.startsWith('supabase')||k==='mg_auth')localStorage.removeItem(k);
-    });
-    mostrarLogin();
-  }
+  if(_fazendoLogout) return;
+  _fazendoLogout=true;
+  var btn=document.getElementById('btnLogout');
+  if(btn){btn.textContent='Saindo...';btn.disabled=true;}
+  try{ await sb.auth.signOut(); }catch(e){ console.error(e); }
+  /* Limpa storage manualmente */
+  Object.keys(localStorage).forEach(function(k){
+    if(k.startsWith('sb-')||k.startsWith('supabase')||k==='mg_auth')localStorage.removeItem(k);
+  });
+  perfilData=null; userSession=null; _fazendoLogout=false;
+  mostrarLogin();
 }
 
 function mostrarLogin(){
@@ -761,7 +762,7 @@ function mostrarPerfil(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('perfil-content').style.display='block';
   var btn=document.getElementById('btnLogout');
-  if(btn)btn.style.display='flex';
+  if(btn){btn.style.display='flex';btn.textContent='Sair';btn.disabled=false;}
 }
 function mostrarLoading(){
   document.getElementById('loading-screen').style.display='flex';
@@ -771,53 +772,40 @@ function mostrarLoading(){
 
 async function checkAuth(){
   mostrarLoading();
+  var resolvido=false;
 
-  /* IMPORTANTE: listener registrado PRIMEIRO para não perder eventos do OAuth */
-  var jaResolveu=false;
+  function entrar(session){
+    if(resolvido&&perfilData) return;
+    resolvido=true;
+    userSession=session;
+    mostrarPerfil();
+    if(!perfilData) carregarPerfil(session.user);
+  }
+  function sair(){
+    if(_fazendoLogout) return; /* logout manual — já tratado */
+    resolvido=true;
+    mostrarLogin();
+  }
 
-  sb.auth.onAuthStateChange(async function(event,session){
-    if(event==='SIGNED_IN'&&session){
-      if(jaResolveu&&perfilData) return; /* já carregado, ignora duplicata */
-      jaResolveu=true;
-      userSession=session;
-      mostrarPerfil();
-      if(!perfilData) await carregarPerfil(session.user);
-    }
-    if(event==='INITIAL_SESSION'){
-      if(session&&!jaResolveu){
-        jaResolveu=true;
-        userSession=session;
-        mostrarPerfil();
-        await carregarPerfil(session.user);
-      } else if(!session&&!jaResolveu){
-        jaResolveu=true;
-        mostrarLogin();
-      }
-    }
-    if(event==='TOKEN_REFRESHED'&&session){
-      userSession=session;
-    }
-    if(event==='SIGNED_OUT'){
-      jaResolveu=false;
-      perfilData=null;
-      userSession=null;
-      mostrarLogin();
-    }
+  /* Listener PRIMEIRO — captura SIGNED_IN do redirect OAuth */
+  sb.auth.onAuthStateChange(function(event,session){
+    if(event==='SIGNED_IN'&&session) entrar(session);
+    if(event==='INITIAL_SESSION'){ if(session) entrar(session); else sair(); }
+    if(event==='TOKEN_REFRESHED'&&session) userSession=session;
+    if(event==='SIGNED_OUT'&&!_fazendoLogout){ perfilData=null; userSession=null; mostrarLogin(); }
   });
 
-  /* Segurança: se após 4s nenhum evento chegou (rede lenta), força verificação */
+  /* Fallback: rede lenta ou nenhum evento chegou em 5s */
   setTimeout(async function(){
-    if(jaResolveu) return;
+    if(resolvido) return;
     try{
-      var res=await sb.auth.getSession();
-      var s=res&&res.data&&res.data.session;
-      if(!jaResolveu){
-        jaResolveu=true;
-        if(s){ userSession=s; mostrarPerfil(); await carregarPerfil(s.user); }
-        else { mostrarLogin(); }
-      }
-    }catch(e){ if(!jaResolveu) mostrarLogin(); }
-  },4000);
+      var r=await sb.auth.getSession();
+      var s=r&&r.data&&r.data.session;
+      if(resolvido) return;
+      resolvido=true;
+      if(s) entrar(s); else mostrarLogin();
+    }catch(e){ if(!resolvido) mostrarLogin(); }
+  },5000);
 }
 
 async function carregarPerfil(user){
@@ -831,28 +819,39 @@ async function carregarPerfil(user){
   renderPerfil(fallback);
 
   try{
-    /* upsert: cria na primeira vez, atualiza depois */
-    var r=await sb.from('perfis').upsert(
-      {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
-       provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
-      {onConflict:'id'}
-    ).select().single();
+    /* Busca perfil e pontos em paralelo */
+    var [perfilRes, mpRes] = await Promise.all([
+      sb.from('perfis').upsert(
+        {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
+         provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
+        {onConflict:'id'}
+      ).select().single(),
+      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle()
+    ]);
 
-    var perfil=r.data||fallback;
+    var perfil=perfilRes.data||fallback;
+    /* Injeta pontos do marspoints no perfil */
+    if(mpRes.data) perfil.pontos=mpRes.data.pontos||0;
     perfilData=perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
     renderConquistas(perfil);
   }catch(e){
     console.error('Erro perfil banco:',e);
+    /* Tenta pegar pontos mesmo no erro */
+    try{
+      var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
+      if(mp.data) fallback.pontos=mp.data.pontos||0;
+    }catch(_){}
     perfilData=fallback;
+    renderPerfil(fallback);
     carregarBeneficiosCupom(fallback);
     renderConquistas(fallback);
   }
 
   carregarPedidos(user.id);
   carregarFavoritos(user.id);
-  carregarHistoricoPontos(user.id);
+  carregarHistoricoPontosEmail(user.email);
 }
 
 function renderPerfil(p){
@@ -1068,26 +1067,34 @@ async function carregarFavoritos(userId){
   }).join('');
 }
 
-async function carregarHistoricoPontos(userId){
+async function carregarHistoricoPontosEmail(userEmail){
   document.getElementById('ptsLoader').style.display='flex';
   document.getElementById('ptsList').style.display='none';
-  var{data}=await sb.from('pontos_historico').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(30);
-  document.getElementById('ptsLoader').style.display='none';
-  document.getElementById('ptsList').style.display='flex';
-  if(!data||data.length===0){
-    document.getElementById('ptsList').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico de pontos ainda.</div>';
-    return;
+  /* Busca histórico do marspoints — mesma tabela do admin */
+  try{
+    var email=userSession?userSession.user.email:'';
+    var mp=await sb.from('marspoints').select('historico,pontos').eq('user_email',email).maybeSingle();
+    document.getElementById('ptsLoader').style.display='none';
+    document.getElementById('ptsList').style.display='flex';
+    var hist=(mp.data&&mp.data.historico)||[];
+    if(!hist.length){
+      document.getElementById('ptsList').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
+      return;
+    }
+    document.getElementById('ptsList').innerHTML=hist.slice(0,30).map(function(h){
+      var ganho=h.pontos>0;
+      return '<div class="pts-item">'+
+        '<div class="pts-item-info">'+
+          '<div class="pts-item-desc">'+esc(h.descricao||'Pontos')+'</div>'+
+          '<div class="pts-item-date">'+fmtDate(h.data||h.created_at)+'</div>'+
+        '</div>'+
+        '<div class="pts-item-val '+(ganho?'ganho':'gasto')+'">'+(ganho?'+':'')+h.pontos+' pts</div>'+
+      '</div>';
+    }).join('');
+  }catch(e){
+    document.getElementById('ptsLoader').style.display='none';
+    document.getElementById('ptsList').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
   }
-  document.getElementById('ptsList').innerHTML=data.map(function(h){
-    var ganho=h.pontos>0;
-    return '<div class="pts-item">'+
-      '<div class="pts-item-info">'+
-        '<div class="pts-item-desc">'+esc(h.descricao||'Pontos')+'</div>'+
-        '<div class="pts-item-date">'+fmtDate(h.created_at)+'</div>'+
-      '</div>'+
-      '<div class="pts-item-val '+(ganho?'ganho':'gasto')+'">'+(ganho?'+':'')+h.pontos+' pts</div>'+
-    '</div>';
-  }).join('');
 }
 
 async function salvarPerfil(){
