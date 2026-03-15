@@ -3233,6 +3233,36 @@ async function carregarProdutos(){
   document.getElementById('statCount').textContent=data.length+'+';
   renderProdutos();
   iniciarNotifs();
+  ativarRealtimeProdutos();
+}
+
+var _realtimeAtivo=false;
+function ativarRealtimeProdutos(){
+  if(_realtimeAtivo)return;
+  _realtimeAtivo=true;
+  sb.channel('produtos-site')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'produtos'},function(payload){
+      if(payload.new&&payload.new.ativo){
+        todosProdutos.unshift(payload.new);
+        document.getElementById('statCount').textContent=todosProdutos.length+'+';
+        renderProdutos();
+      }
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'produtos'},function(payload){
+      var idx=todosProdutos.findIndex(function(p){return p.id===payload.new.id});
+      if(payload.new.ativo){
+        if(idx>-1){todosProdutos[idx]=payload.new;}
+        else{todosProdutos.unshift(payload.new);}
+      }else{
+        if(idx>-1)todosProdutos.splice(idx,1);
+      }
+      renderProdutos();
+    })
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'produtos'},function(payload){
+      todosProdutos=todosProdutos.filter(function(p){return p.id!==payload.old.id});
+      renderProdutos();
+    })
+    .subscribe();
 }
 
 function renderProdutos(){

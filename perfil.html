@@ -655,11 +655,12 @@ var sb, userSession=null, perfilData=null;
 
 // Aguardar Supabase carregar
 function initSupabase(){
-  if(typeof window.supabase === 'undefined'){
-    setTimeout(initSupabase, 100);
+  var lib=window.supabase||window.Supabase;
+  if(!lib||!lib.createClient){
+    setTimeout(initSupabase,100);
     return;
   }
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  sb=lib.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{
       flowType:'pkce',
       detectSessionInUrl:true,
@@ -691,7 +692,7 @@ function getNivel(pts){
 
 // ── AUTH ──
 async function loginGoogle(){
-  var redirect='https://marsgames1.github.io/sitemarsgames/perfil.html';
+  var redirect=window.location.origin+window.location.pathname;
   showToast('Abrindo Google...');
   try{
     var{data,error}=await sb.auth.signInWithOAuth({
@@ -704,12 +705,12 @@ async function loginGoogle(){
     if(error)throw error;
   }catch(e){
     console.error('Google login erro:',e);
-    showToast('Erro: '+e.message);
+    showToast('Erro ao conectar com Google: '+e.message);
   }
 }
 
 async function loginDiscord(){
-  var redirect='https://marsgames1.github.io/sitemarsgames/perfil.html';
+  var redirect=window.location.origin+window.location.pathname;
   showToast('Abrindo Discord...');
   try{
     var{data,error}=await sb.auth.signInWithOAuth({
@@ -734,7 +735,7 @@ async function checkAuth(){
   // Escutar mudanças de auth PRIMEIRO — captura eventos de redirect
   sb.auth.onAuthStateChange(async function(event,session){
     console.log('Auth event:', event, session?'com sessão':'sem sessão');
-    if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session){
+    if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED'||event==='INITIAL_SESSION')&&session){
       userSession=session;
       document.getElementById('login-screen').style.display='none';
       document.getElementById('perfil-content').style.display='block';
