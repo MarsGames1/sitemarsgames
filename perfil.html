@@ -453,6 +453,49 @@ body.tema-claro .section-loader{color:var(--muted)}
 .tab.active{color:var(--green);border-bottom-color:var(--green)}
 .tab-content{display:none;animation:fadeUp .3s ease both}
 .tab-content.active{display:block}
+.tab-tickets{color:var(--amber)!important;border-bottom-color:transparent}
+.tab-tickets.active{color:var(--amber)!important;border-bottom-color:var(--amber)!important}
+/* MarsTickets */
+.tickets-hero{
+  background:linear-gradient(135deg,rgba(255,183,0,.08),rgba(255,183,0,.03));
+  border:1px solid rgba(255,183,0,.2);border-radius:16px;padding:24px;
+  display:flex;align-items:center;gap:20px;margin-bottom:20px;
+}
+.tickets-icon-big{font-size:48px;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(255,183,0,.5))}
+.tickets-hero-info{}
+.tickets-hero-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.tickets-hero-count{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--amber);line-height:1}
+.tickets-hero-sub{font-size:11px;color:#666;margin-top:6px;font-weight:600}
+.tickets-reset-row{
+  display:flex;align-items:center;gap:8px;margin-top:10px;
+  font-size:10px;font-weight:700;color:var(--muted);
+}
+.tickets-reset-timer{color:var(--green);font-family:'Orbitron',sans-serif;font-size:11px}
+.tickets-info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+@media(min-width:500px){.tickets-info-grid{grid-template-columns:repeat(4,1fr)}}
+.tinfo-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.tinfo-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--green);line-height:1}
+.tinfo-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.tickets-como-ganhar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.tickets-como-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.tickets-nivel-list{display:flex;flex-direction:column;gap:8px}
+.tickets-nivel-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.tickets-nivel-nome{font-size:11px;font-weight:700}
+.tickets-nivel-bonus{font-size:11px;font-weight:900;color:var(--amber)}
+.tickets-historico-list{display:flex;flex-direction:column;gap:6px}
+.tickets-hist-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:8px;
+  background:var(--card);border:1px solid var(--border);
+}
+.tickets-hist-icon{font-size:18px;flex-shrink:0}
+.tickets-hist-desc{font-size:11px;font-weight:700;color:#ccc;flex:1}
+.tickets-hist-date{font-size:9px;color:var(--muted)}
+.tickets-hist-val{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--amber);flex-shrink:0}
 
 /* BENEFÍCIOS */
 .beneficios-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
@@ -722,6 +765,7 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab" onclick="showTab('pedidos',this)">Meus Pedidos</div>
     <div class="tab" onclick="showTab('favoritos',this)">Favoritos</div>
     <div class="tab" onclick="showTab('pontos',this)">Histórico de Pontos</div>
+    <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab" onclick="showTab('editar',this)">Editar Perfil</div>
   </div>
 
@@ -794,6 +838,83 @@ body.tema-claro .section-loader{color:var(--muted)}
   <div class="tab-content" id="tab-pontos">
     <div class="section-loader" id="ptsLoader"><div class="spinner"></div> Carregando histórico...</div>
     <div class="pts-list" id="ptsList" style="display:none"></div>
+  </div>
+
+  <!-- MARSTICKETS -->
+  <div class="tab-content" id="tab-tickets">
+    <!-- Hero com contador -->
+    <div class="tickets-hero">
+      <div class="tickets-icon-big">🎟️</div>
+      <div class="tickets-hero-info">
+        <div class="tickets-hero-label">Meus MarsTickets</div>
+        <div class="tickets-hero-count" id="ticketsCount">0</div>
+        <div class="tickets-hero-sub">Use para participar dos sorteios</div>
+        <div class="tickets-reset-row">
+          ↻ Renovação em: <span class="tickets-reset-timer" id="ticketsResetTimer">carregando...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="tickets-info-grid">
+      <div class="tinfo-card">
+        <div class="tinfo-val" id="ticketsTotalAcumulado">0</div>
+        <div class="tinfo-lbl">Total ganho</div>
+      </div>
+      <div class="tinfo-card">
+        <div class="tinfo-val" id="ticketsUsadosSorteio">0</div>
+        <div class="tinfo-lbl">Usados em sorteios</div>
+      </div>
+      <div class="tinfo-card">
+        <div class="tinfo-val" id="ticketsSorteiosParticipados">0</div>
+        <div class="tinfo-lbl">Sorteios entrados</div>
+      </div>
+      <div class="tinfo-card">
+        <div class="tinfo-val" id="ticketsBonusPorSemana" style="color:var(--amber)">+1</div>
+        <div class="tinfo-lbl">Bônus/semana</div>
+      </div>
+    </div>
+
+    <!-- Como ganhar mais -->
+    <div class="tickets-como-ganhar">
+      <div class="tickets-como-title">Como ganhar mais tickets por semana</div>
+      <div class="tickets-nivel-list">
+        <div class="tickets-nivel-item">
+          <span class="tickets-nivel-nome" style="color:var(--bronze)">🥉 Bronze</span>
+          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
+        </div>
+        <div class="tickets-nivel-item">
+          <span class="tickets-nivel-nome" style="color:var(--prata)">🥈 Prata</span>
+          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
+        </div>
+        <div class="tickets-nivel-item">
+          <span class="tickets-nivel-nome" style="color:var(--ouro)">🥇 Ouro</span>
+          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+        </div>
+        <div class="tickets-nivel-item">
+          <span class="tickets-nivel-nome" style="color:var(--esm)">💚 Esmeralda</span>
+          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+        </div>
+        <div class="tickets-nivel-item">
+          <span class="tickets-nivel-nome" style="color:var(--dia)">💎 Diamante</span>
+          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(255,183,0,.05);border:1px solid rgba(255,183,0,.15);font-size:10px;color:#888;font-weight:600;line-height:1.6">
+        ✨ Tickets acumulam semana a semana. Se você tem 3 e passa a semana, ganha mais tickets do seu nível — nunca perde o saldo atual!
+      </div>
+    </div>
+
+    <!-- Histórico de tickets -->
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">Histórico de tickets</div>
+    <div id="ticketsHistoricoList" class="tickets-historico-list">
+      <div class="section-loader"><div class="spinner"></div> Carregando...</div>
+    </div>
+    <div style="margin-top:16px;text-align:center">
+      <a href="sorteio.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;background:linear-gradient(135deg,var(--mars),#ff6b2b);color:#fff;font-weight:900;font-size:12px;text-decoration:none;letter-spacing:.5px;transition:box-shadow .2s" onmouseover="this.style.boxShadow='0 6px 20px rgba(232,66,26,.4)'" onmouseout="this.style.boxShadow='none'">
+        🎲 Participar dos sorteios
+      </a>
+    </div>
   </div>
 
   <!-- EDITAR PERFIL -->
@@ -1351,6 +1472,93 @@ function showTab(id,el){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
   document.getElementById('tab-'+id).classList.add('active');
   if(el)el.classList.add('active');
+  if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
+}
+
+/* ── MARSTICKETS ── */
+async function carregarTicketsPerfil(user){
+  var{data}=await sb.from('tickets').select('*').eq('user_email',user.email).maybeSingle();
+
+  /* Sem registro: cria com base no nível */
+  if(!data){
+    var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
+    var pts=(mp.data&&mp.data.pontos)||0;
+    var bonus=pts>=5000?3:pts>=1000?2:pts>=500?2:1;
+    var{data:novo}=await sb.from('tickets').insert({
+      user_id:user.id,user_email:user.email,
+      quantidade:bonus,total_acumulado:bonus,
+      ultima_renovacao:new Date().toISOString()
+    }).select().single();
+    data=novo;
+  }
+  if(!data)return;
+
+  var qtd=data.quantidade||0;
+  var total=data.total_acumulado||0;
+
+  /* Atualiza hero */
+  document.getElementById('ticketsCount').textContent=qtd;
+  document.getElementById('ticketsTotalAcumulado').textContent=total;
+
+  /* Bonus semanal baseado no nível */
+  var nivel=getNivel(perfilData?perfilData.pontos||0:0);
+  var bonus=nivel.nome==='Diamante'?3:nivel.nome==='Esmeralda'?2:nivel.nome==='Ouro'?2:1;
+  document.getElementById('ticketsBonusPorSemana').textContent='+'+bonus;
+
+  /* Timer renovação */
+  var ultima=new Date(data.ultima_renovacao||new Date());
+  var proxRenovacao=new Date(ultima);
+  proxRenovacao.setDate(proxRenovacao.getDate()+7);
+
+  function atualizarTimer(){
+    var diff=proxRenovacao-new Date();
+    if(diff<=0){document.getElementById('ticketsResetTimer').textContent='Renovando...';return}
+    var d=Math.floor(diff/86400000);
+    var h=Math.floor((diff%86400000)/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var txt=d>0?d+'d '+pad2(h)+'h '+pad2(m)+'m':pad2(h)+'h '+pad2(m)+'m '+pad2(Math.floor((diff%60000)/1000))+'s';
+    document.getElementById('ticketsResetTimer').textContent=txt;
+  }
+  function pad2(n){return String(n).padStart(2,'0')}
+  atualizarTimer();
+  setInterval(atualizarTimer,1000);
+
+  /* Participações */
+  var{data:parts,count}=await sb.from('sorteio_participacoes')
+    .select('*',{count:'exact'}).eq('user_email',user.email);
+  var totalUsados=(parts||[]).reduce(function(s,p){return s+(p.tickets_usados||0)},0);
+  document.getElementById('ticketsUsadosSorteio').textContent=totalUsados;
+  document.getElementById('ticketsSorteiosParticipados').textContent=count||0;
+
+  /* Histórico */
+  var hist=[];
+  // Participações em sorteios
+  if(parts&&parts.length){
+    parts.forEach(function(p){
+      hist.push({icon:'🎲',desc:'Participou de sorteio',val:-p.tickets_usados,data:p.created_at});
+    });
+  }
+  // Renovações (simulado com base na data)
+  hist.push({icon:'✨',desc:'Tickets semanais adicionados',val:'+'+bonus,data:data.ultima_renovacao});
+  hist.sort(function(a,b){return new Date(b.data)-new Date(a.data)});
+
+  var listEl=document.getElementById('ticketsHistoricoList');
+  if(!hist.length){
+    listEl.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:11px">Nenhuma movimentação ainda.</div>';
+    return;
+  }
+  listEl.innerHTML=hist.map(function(h){
+    var ganho=String(h.val).startsWith('+');
+    var dt=h.data?new Date(h.data).toLocaleDateString('pt-BR'):'—';
+    return '<div class="tickets-hist-item">'+
+      '<div class="tickets-hist-icon">'+h.icon+'</div>'+
+      '<div>'+
+        '<div class="tickets-hist-desc">'+h.desc+'</div>'+
+        '<div class="tickets-hist-date">'+dt+'</div>'+
+      '</div>'+
+      '<div class="tickets-hist-val" style="color:'+(ganho?'var(--green)':'var(--amber)')+'">'+h.val+'</div>'+
+    '</div>';
+  }).join('');
 }
 
 // ── HELPERS ──

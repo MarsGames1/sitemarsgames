@@ -498,21 +498,33 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     display:flex;align-items:center;gap:0;flex:1;justify-content:center;
   }
   .nav-link{
-    padding:8px 12px;border-radius:8px;font-size:11px;font-weight:700;
-    color:#777;text-decoration:none;letter-spacing:.5px;
+    padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;
+    color:#999;text-decoration:none;letter-spacing:.3px;
     transition:color .15s,background .15s;white-space:nowrap;cursor:pointer;position:relative;
   }
-  .nav-link:hover{color:#ccc;background:rgba(255,255,255,.05)}
+  .nav-link:hover{color:#fff;background:rgba(255,255,255,.06)}
   .nav-link.active{color:var(--green)}
   .nav-link.active::after{
     content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
     width:20px;height:2px;background:var(--green);border-radius:1px;
   }
+  /* Sorteios — destaque especial sem emoji */
+  .nav-link-sorteio{
+    color:var(--mars)!important;
+    background:rgba(232,66,26,.07);
+    border:1px solid rgba(232,66,26,.2);
+    border-radius:8px;
+  }
+  .nav-link-sorteio:hover{
+    color:#fff!important;
+    background:rgba(232,66,26,.15)!important;
+    border-color:rgba(232,66,26,.5)!important;
+  }
   /* Dropdown */
   .nav-dropdown{position:relative}
   .nav-dropdown-toggle{
     display:flex;align-items:center;gap:5px;
-    padding:8px 12px;border-radius:8px;font-size:11px;font-weight:700;
+    padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;
     color:#777;letter-spacing:.5px;cursor:pointer;
     transition:color .15s,background .15s;white-space:nowrap;
     background:none;border:none;font-family:'Montserrat',sans-serif;
@@ -2398,7 +2410,7 @@ footer::before{
   <div class="nav-links">
     <a class="nav-link active" href="index.html">Loja</a>
     <a class="nav-link nav-link-sorteio" href="sorteio.html" id="navSorteioLink">
-      <span class="nav-sorteio-dot"></span>🎲 Sorteios
+      Sorteios
     </a>
     <a class="nav-link" href="promocoes.html">Promoções</a>
     <a class="nav-link" href="combos.html">Bundles</a>
