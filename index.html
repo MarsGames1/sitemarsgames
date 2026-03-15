@@ -95,23 +95,22 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .nav-login:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.07)}
 .nav-login svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav-login-label{display:none}
-/* Avatar logado na navbar */
+/* Avatar pós-login na navbar */
 .nav-user-avatar{
-  display:flex;align-items:center;justify-content:center;
   width:36px;height:36px;border-radius:50%;
   border:2px solid var(--green);
-  overflow:hidden;cursor:pointer;text-decoration:none;
-  flex-shrink:0;position:relative;
-  box-shadow:0 0 8px rgba(0,255,85,.35);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
+  box-shadow:0 0 10px rgba(0,255,85,.4);
   transition:box-shadow .2s,border-color .2s;
 }
-.nav-user-avatar:hover{box-shadow:0 0 14px rgba(0,255,85,.6);border-color:#00ff55}
-.nav-user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.nav-user-avatar:hover{box-shadow:0 0 18px rgba(0,255,85,.7)}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 #navAvatarFallback{
   width:100%;height:100%;border-radius:50%;
   background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
   display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--green);
+  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:var(--green);
 }
 /* Pontos — oculto no mobile */
 .nav-points{display:none}
@@ -2111,9 +2110,9 @@ footer::before{
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span class="nav-login-label">Entrar</span>
     </a>
-    <!-- Avatar do usuário logado (oculto por padrão) -->
+    <!-- Avatar pós-login -->
     <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" style="display:none" title="Meu perfil">
-      <img id="navAvatarImg" src="" alt="">
+      <img id="navAvatarImg" src="" alt="" style="display:none">
       <div id="navAvatarFallback"></div>
     </a>
     <!-- Carrinho -->
@@ -3223,7 +3222,15 @@ footer::before{
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{
+    flowType:'implicit',
+    detectSessionInUrl:true,
+    persistSession:true,
+    autoRefreshToken:true,
+    storageKey:'mg_auth'
+  }
+});
 var todosProdutos=[],catAtual='todos',buscaAtual='',carrinho=[],prodModalAtual=null;
 
 /* ── COUNTDOWN ── */
@@ -3413,55 +3420,38 @@ function showToast(msg){
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
 }
 
-/* ── AUTH NAVBAR — mostra avatar após login ── */
-(function(){
-  async function checkNavAuth(){
-    try{
-      var{data:{session}}=await sb.auth.getSession();
-      atualizarNavbar(session);
-    }catch(e){}
-  }
-
-  function atualizarNavbar(session){
-    var btnLogin=document.getElementById('navLogin');
-    var btnAvatar=document.getElementById('navUserAvatar');
-    var imgAvatar=document.getElementById('navAvatarImg');
-    var fallback=document.getElementById('navAvatarFallback');
-    if(!btnLogin||!btnAvatar)return;
-
-    if(session&&session.user){
-      var user=session.user;
-      var avatarUrl=user.user_metadata&&user.user_metadata.avatar_url?user.user_metadata.avatar_url:'';
-      var nome=user.user_metadata&&user.user_metadata.full_name?user.user_metadata.full_name:user.email||'';
-      var inicial=(nome.trim()[0]||'U').toUpperCase();
-
-      btnLogin.style.display='none';
-      btnAvatar.style.display='flex';
-
-      if(avatarUrl){
-        imgAvatar.src=avatarUrl;
-        imgAvatar.style.display='block';
-        fallback.style.display='none';
-      } else {
-        imgAvatar.style.display='none';
-        fallback.style.display='flex';
-        fallback.textContent=inicial;
-      }
-    } else {
-      btnLogin.style.display='flex';
-      btnAvatar.style.display='none';
-    }
-  }
-
-  // Escuta mudanças de sessão em tempo real
-  sb.auth.onAuthStateChange(function(event,session){
-    atualizarNavbar(session);
-  });
-
-  checkNavAuth();
-})();
-
 carregarProdutos();
+
+/* ── AUTH NAVBAR ── */
+function atualizarNavbar(session){
+  var btnLogin  = document.getElementById('navLogin');
+  var btnAvatar = document.getElementById('navUserAvatar');
+  var imgAvatar = document.getElementById('navAvatarImg');
+  var fallback  = document.getElementById('navAvatarFallback');
+  if(!btnLogin || !btnAvatar) return;
+  if(session && session.user){
+    var meta = session.user.user_metadata || {};
+    var avatarUrl = meta.avatar_url || '';
+    var nome = meta.full_name || meta.name || session.user.email || '';
+    var inicial = (nome.trim()[0] || 'U').toUpperCase();
+    btnLogin.style.display  = 'none';
+    btnAvatar.style.display = 'flex';
+    if(avatarUrl){
+      imgAvatar.src = avatarUrl;
+      imgAvatar.style.display = 'block';
+      fallback.style.display  = 'none';
+    } else {
+      imgAvatar.style.display = 'none';
+      fallback.style.display  = 'flex';
+      fallback.textContent    = inicial;
+    }
+  } else {
+    btnLogin.style.display  = 'flex';
+    btnAvatar.style.display = 'none';
+  }
+}
+sb.auth.onAuthStateChange(function(_event, session){ atualizarNavbar(session); });
+sb.auth.getSession().then(function(r){ atualizarNavbar(r.data ? r.data.session : null); });
 
 
 /* ── POP-UP DE SAÍDA ── */

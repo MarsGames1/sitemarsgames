@@ -20,16 +20,27 @@
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes borderPulseEsm{
-  0%,100%{box-shadow:0 0 0 0 rgba(80,200,120,0),0 0 8px 2px rgba(80,200,120,.4)}
-  50%{box-shadow:0 0 0 4px rgba(80,200,120,.15),0 0 18px 4px rgba(80,200,120,.7)}
-}
-@keyframes borderSpinDia{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
 @keyframes orbit{0%{transform:rotate(0deg) translateX(3px) rotate(0deg)}100%{transform:rotate(360deg) translateX(3px) rotate(-360deg)}}
+@keyframes bronzePulse{
+  0%,100%{box-shadow:0 0 6px 1px rgba(205,159,106,.5)}
+  50%{box-shadow:0 0 18px 5px rgba(205,159,106,.9),0 0 4px 2px rgba(255,200,120,.5)}
+}
+@keyframes prataShimmer{
+  0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.4),2px -2px 12px rgba(255,255,255,.6)}
+  50%{box-shadow:-2px 2px 16px 4px rgba(200,200,230,.6),-2px -2px 12px rgba(255,255,255,.7)}
+}
+@keyframes ouroPulse{
+  0%,100%{box-shadow:0 0 10px 2px rgba(255,215,0,.5)}
+  50%{box-shadow:0 0 26px 7px rgba(255,215,0,.85),0 0 8px 3px rgba(255,165,0,.5)}
+}
+@keyframes esmPulse{
+  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.55)}
+  50%{box-shadow:0 0 24px 7px rgba(80,200,120,.9),0 0 10px 4px rgba(0,255,100,.4)}
+}
+@keyframes diaRotate{to{transform:rotate(360deg)}}
+@keyframes diaPulse{
+  0%,100%{opacity:.85}50%{opacity:1}
+}
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
 /* ── TEMA CLARO ── */
@@ -178,57 +189,85 @@ body.tema-claro .pstat-val{color:var(--mars)}
 }
 .perfil-hero::before{content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(232,66,26,.04),transparent 60%);pointer-events:none}
-.perfil-avatar-wrap{position:relative;flex-shrink:0}
-.perfil-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;
-  border:3px solid var(--border2);background:var(--dim);transition:border-color .3s}
-.perfil-avatar-fallback{width:80px;height:80px;border-radius:50%;
-  background:linear-gradient(135deg,rgba(232,66,26,.2),rgba(0,255,85,.1));
-  border:3px solid var(--border2);display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;color:var(--green);
-  transition:border-color .3s}
+/* ══ AVATAR + BORDAS DE NÍVEL ══ */
+.perfil-avatar-wrap{position:relative;flex-shrink:0;width:86px;height:86px}
 
-/* ── Bordas por nível ── */
-.avatar-bronze .perfil-avatar,
-.avatar-bronze .perfil-avatar-fallback{border-color:var(--bronze)}
-
-.avatar-prata .perfil-avatar,
-.avatar-prata .perfil-avatar-fallback{border-color:var(--prata);
-  box-shadow:0 0 8px rgba(232,232,232,.25)}
-
-.avatar-ouro .perfil-avatar,
-.avatar-ouro .perfil-avatar-fallback{border-color:var(--ouro);
-  box-shadow:0 0 10px rgba(255,215,0,.35)}
-
-/* Esmeralda — brilho pulsante */
-.avatar-esmeralda .perfil-avatar,
-.avatar-esmeralda .perfil-avatar-fallback{
-  border-color:var(--esm);border-width:3px;
-  animation:borderPulseEsm 2s ease-in-out infinite;
-}
-
-/* Diamante — gradiente holográfico animado */
-.avatar-diamante{
-  position:relative;border-radius:50%;padding:3px;
-  background:linear-gradient(135deg,#b9f2ff,#7b61ff,#00ffff,#ffffff,#b9f2ff);
-  background-size:300% 300%;
-  animation:borderSpinDia 3s ease infinite;
-  box-shadow:0 0 18px rgba(185,242,255,.45), 0 0 32px rgba(123,97,255,.3);
-}
-.avatar-diamante .perfil-avatar,
-.avatar-diamante .perfil-avatar-fallback{
-  border:none !important;
-  margin:0;
-  border-radius:50%;
-  width:80px;height:80px;
-  display:block;
-}
-/* Garante que o fallback (letra) fique centralizado dentro do wrap */
-.avatar-diamante .perfil-avatar-fallback{
+/* Anel externo — camada giratória/decorativa */
+.avatar-ring{
+  position:absolute;inset:0;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
 }
-.nivel-badge-wrap{position:absolute;bottom:-4px;right:-4px;
+
+/* Inner — clipa o conteúdo */
+.avatar-inner{
+  width:80px;height:80px;border-radius:50%;overflow:hidden;
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--dim);
+}
+.perfil-avatar{width:100%;height:100%;object-fit:cover;border:none;display:block}
+.perfil-avatar-fallback{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,rgba(232,66,26,.2),rgba(0,255,85,.1));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;color:var(--green);
+}
+
+/* ── Bronze: anel laranja-mel com brilho quente pulsante ── */
+.avatar-bronze .avatar-inner{
+  outline:3px solid var(--bronze);
+  outline-offset:0;
+  animation:bronzePulse 2.5s ease-in-out infinite;
+}
+
+/* ── Prata: anel prateado com shimmer ── */
+.avatar-prata .avatar-inner{
+  outline:3px solid var(--prata);
+  outline-offset:0;
+  animation:prataShimmer 3s ease-in-out infinite;
+}
+
+/* ── Ouro: anel dourado pulsante intenso ── */
+.avatar-ouro .avatar-inner{
+  outline:3px solid var(--ouro);
+  outline-offset:0;
+  animation:ouroPulse 2s ease-in-out infinite;
+}
+
+/* ── Esmeralda: anel verde energia pulsante ── */
+.avatar-esmeralda .avatar-inner{
+  outline:3px solid var(--esm);
+  outline-offset:0;
+  animation:esmPulse 1.8s ease-in-out infinite;
+}
+
+/* ── Diamante: anel cônico giratório ── */
+.avatar-diamante .avatar-ring{
+  background:conic-gradient(
+    from 0deg,
+    #b9f2ff,#7b61ff,#ffffff,#00ffff,#e0b0ff,#ffffff,#b9f2ff
+  );
+  animation:diaRotate 2.5s linear infinite;
+  box-shadow:0 0 22px rgba(185,242,255,.65),0 0 44px rgba(123,97,255,.4);
+}
+/* Máscara circular — cria o anel escondendo o centro */
+.avatar-diamante .avatar-ring::before{
+  content:'';
+  position:absolute;inset:3px;
+  border-radius:50%;
+  background:var(--bg);
+  z-index:0;
+}
+.avatar-diamante .avatar-inner{
+  position:relative;z-index:1;
+}
+
+.nivel-badge-wrap{
+  position:absolute;bottom:-2px;right:-2px;
   width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);
-  display:flex;align-items:center;justify-content:center;font-size:14px}
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  z-index:3;
+}
 .perfil-info{flex:1;min-width:200px}
 .perfil-nome{font-family:'Orbitron',sans-serif;font-size:clamp(16px,2.5vw,22px);
   font-weight:900;color:#fff;margin-bottom:4px}
@@ -497,8 +536,12 @@ body.tema-claro .pstat-val{color:var(--mars)}
   <!-- Hero -->
   <div class="perfil-hero">
     <div class="perfil-avatar-wrap" id="avatarWrap">
-      <img class="perfil-avatar" id="perfilAvatar" src="" alt="" onerror="this.style.display='none';document.getElementById('perfilAvatarFallback').style.display='flex'">
-      <div class="perfil-avatar-fallback" id="perfilAvatarFallback" style="display:none" id="perfilAvatarFallback"></div>
+      <div class="avatar-ring" id="avatarRing">
+        <div class="avatar-inner">
+          <img class="perfil-avatar" id="perfilAvatar" src="" alt="" onerror="this.style.display='none';document.getElementById('perfilAvatarFallback').style.display='flex'">
+          <div class="perfil-avatar-fallback" id="perfilAvatarFallback" style="display:none"></div>
+        </div>
+      </div>
       <div class="nivel-badge-wrap" id="nivelBadge" style="background:#131318"></div>
     </div>
     <div class="perfil-info">
