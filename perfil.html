@@ -206,15 +206,26 @@ body.tema-claro .pstat-val{color:var(--mars)}
   animation:borderPulseEsm 2s ease-in-out infinite;
 }
 
-/* Diamante — gradiente holográfico via pseudo-elemento no wrap */
+/* Diamante — gradiente holográfico animado */
 .avatar-diamante{
   position:relative;border-radius:50%;padding:3px;
   background:linear-gradient(135deg,#b9f2ff,#7b61ff,#00ffff,#ffffff,#b9f2ff);
   background-size:300% 300%;
   animation:borderSpinDia 3s ease infinite;
+  box-shadow:0 0 18px rgba(185,242,255,.45), 0 0 32px rgba(123,97,255,.3);
 }
 .avatar-diamante .perfil-avatar,
-.avatar-diamante .perfil-avatar-fallback{border:none;margin:0}
+.avatar-diamante .perfil-avatar-fallback{
+  border:none !important;
+  margin:0;
+  border-radius:50%;
+  width:80px;height:80px;
+  display:block;
+}
+/* Garante que o fallback (letra) fique centralizado dentro do wrap */
+.avatar-diamante .perfil-avatar-fallback{
+  display:flex;align-items:center;justify-content:center;
+}
 .nivel-badge-wrap{position:absolute;bottom:-4px;right:-4px;
   width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);
   display:flex;align-items:center;justify-content:center;font-size:14px}

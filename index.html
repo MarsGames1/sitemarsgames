@@ -95,6 +95,24 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .nav-login:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.07)}
 .nav-login svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav-login-label{display:none}
+/* Avatar logado na navbar */
+.nav-user-avatar{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--green);
+  overflow:hidden;cursor:pointer;text-decoration:none;
+  flex-shrink:0;position:relative;
+  box-shadow:0 0 8px rgba(0,255,85,.35);
+  transition:box-shadow .2s,border-color .2s;
+}
+.nav-user-avatar:hover{box-shadow:0 0 14px rgba(0,255,85,.6);border-color:#00ff55}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+#navAvatarFallback{
+  width:100%;height:100%;border-radius:50%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--green);
+}
 /* Pontos — oculto no mobile */
 .nav-points{display:none}
 /* oculto no mobile, aparece no desktop via media query */
@@ -2093,6 +2111,11 @@ footer::before{
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span class="nav-login-label">Entrar</span>
     </a>
+    <!-- Avatar do usuário logado (oculto por padrão) -->
+    <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" style="display:none" title="Meu perfil">
+      <img id="navAvatarImg" src="" alt="">
+      <div id="navAvatarFallback"></div>
+    </a>
     <!-- Carrinho -->
     <button class="nav-cart" onclick="toggleCart()" aria-label="Carrinho">
       <svg class="nav-cart-icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -3389,6 +3412,54 @@ function showToast(msg){
   var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
 }
+
+/* ── AUTH NAVBAR — mostra avatar após login ── */
+(function(){
+  async function checkNavAuth(){
+    try{
+      var{data:{session}}=await sb.auth.getSession();
+      atualizarNavbar(session);
+    }catch(e){}
+  }
+
+  function atualizarNavbar(session){
+    var btnLogin=document.getElementById('navLogin');
+    var btnAvatar=document.getElementById('navUserAvatar');
+    var imgAvatar=document.getElementById('navAvatarImg');
+    var fallback=document.getElementById('navAvatarFallback');
+    if(!btnLogin||!btnAvatar)return;
+
+    if(session&&session.user){
+      var user=session.user;
+      var avatarUrl=user.user_metadata&&user.user_metadata.avatar_url?user.user_metadata.avatar_url:'';
+      var nome=user.user_metadata&&user.user_metadata.full_name?user.user_metadata.full_name:user.email||'';
+      var inicial=(nome.trim()[0]||'U').toUpperCase();
+
+      btnLogin.style.display='none';
+      btnAvatar.style.display='flex';
+
+      if(avatarUrl){
+        imgAvatar.src=avatarUrl;
+        imgAvatar.style.display='block';
+        fallback.style.display='none';
+      } else {
+        imgAvatar.style.display='none';
+        fallback.style.display='flex';
+        fallback.textContent=inicial;
+      }
+    } else {
+      btnLogin.style.display='flex';
+      btnAvatar.style.display='none';
+    }
+  }
+
+  // Escuta mudanças de sessão em tempo real
+  sb.auth.onAuthStateChange(function(event,session){
+    atualizarNavbar(session);
+  });
+
+  checkNavAuth();
+})();
 
 carregarProdutos();
 
