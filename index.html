@@ -3935,10 +3935,12 @@ sb.auth.onAuthStateChange(function(event, session){
     atualizarNavbar(null);
   }
 });
-/* Fallback direto */
-sb.auth.getSession().then(function(r){
-  if(r.data && r.data.session) atualizarNavbar(r.data.session);
-});
+/* Fallback direto - aguarda um pouco para a sessão ser restaurada */
+setTimeout(function(){
+  sb.auth.getSession().then(function(r){
+    if(r.data && r.data.session) atualizarNavbar(r.data.session);
+  });
+}, 100);
 
 
 /* ── POP-UP DE SAÍDA ── */

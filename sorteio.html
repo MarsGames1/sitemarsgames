@@ -1362,7 +1362,7 @@ async function atualizarNavbar(session){
   }
 }
 sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
-sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});
+setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});}, 100);
 </script>
 </body>
 </html>
