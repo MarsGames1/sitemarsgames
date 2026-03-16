@@ -4150,7 +4150,7 @@ function initThree() {
     pos[i*3]   = (Math.random() - .5) * 8;
     pos[i*3+1] = (Math.random() - .5) * 8;
     pos[i*3+2] = (Math.random() - .5) * 8;
-    var c = palette[Math.floor(Math.random() * palette.length)];
+    var c = Math.random() < 0.85 ? [1,1,1] : palette[Math.floor(Math.random() * (palette.length-1))];
     col[i*3] = c[0]; col[i*3+1] = c[1]; col[i*3+2] = c[2];
   }
   var geo = new THREE.BufferGeometry();
