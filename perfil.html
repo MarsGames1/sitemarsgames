@@ -1524,9 +1524,9 @@ async function carregarPedidos(userId){
       if(list)list.innerHTML='<div class="sem-pedidos">Você ainda não fez nenhum pedido.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Ver catálogo</a></div>';
       return;
     }
-    /* Para cada pedido pago/aprovado sem chaves, busca em estoque_chaves */
+    /* Para TODOS os pedidos sem chaves, busca em estoque_chaves (inclui pendentes com chave entregue) */
     var pedidosSemChave=data.filter(function(p){
-      return (p.status==='pago'||p.status==='aprovado'||p.status==='entregue')&&(!p.chaves_entregues||p.chaves_entregues.length===0);
+      return !p.chaves_entregues||p.chaves_entregues.length===0;
     });
     if(pedidosSemChave.length>0){
       var tkn2=sessionStorage.getItem('mg_access_token')||SUPABASE_KEY;
@@ -1538,9 +1538,13 @@ async function carregarPedidos(userId){
           if(chRes.ok){
             var chRows=await chRes.json();
             if(chRows&&chRows.length>0){
-              /* Injeta as chaves no pedido para exibição */
+              /* Injeta as chaves e atualiza status para pago */
               var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
-              if(pedIdx>=0) data[pedIdx].chaves_entregues=chRows;
+              if(pedIdx>=0){
+                data[pedIdx].chaves_entregues=chRows;
+                /* Se tinha chave entregue, o pedido está pago mesmo que status diga pendente */
+                if(data[pedIdx].status==='pendente') data[pedIdx].status='pago';
+              }
             }
           }
         }catch(ce){console.warn('[chaves pedido]',ce);}
@@ -1558,14 +1562,8 @@ async function carregarPedidos(userId){
         chavesHtml='<div style="width:100%;margin-top:12px;border-top:1px solid rgba(0,255,85,.1);padding-top:12px">';
         chavesHtml+=chavesValidas.map(function(c){
           var conteudo=esc(c.conteudo||'');
-          var isPar=c.tipo==='login_senha';
-          var partes=isPar?(c.conteudo||'').split('|'):null;
-          var corpo=isPar
-            ?'<div style="font-size:9px;color:var(--muted);margin-bottom:2px">Login</div>'+
-              '<div style="font-family:monospace;font-size:11px;color:var(--green);word-break:break-all;margin-bottom:6px">'+esc(partes[0]||'')+'</div>'+
-              '<div style="font-size:9px;color:var(--muted);margin-bottom:2px">Senha</div>'+
-              '<div style="font-family:monospace;font-size:11px;color:var(--green);word-break:break-all">'+esc(partes[1]||'')+'</div>'
-            :'<div style="font-family:monospace;font-size:11px;color:var(--green);word-break:break-all">'+conteudo+'</div>';
+          /* Exibe a chave/credencial completa — login|senha ou chave de ativação */
+          var corpo='<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--green);word-break:break-all;line-height:1.6">'+conteudo+'</div>';
           return '<div style="background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.15);border-radius:8px;padding:10px 12px;margin-bottom:6px">'+
             '<div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,255,85,.5);margin-bottom:8px">🔑 Sua chave</div>'+
             corpo+
