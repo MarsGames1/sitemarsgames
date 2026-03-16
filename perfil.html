@@ -1532,7 +1532,7 @@ async function carregarPedidos(userId){
             '<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">🔑 '+label+' — '+esc(c.produto_nome||p.produto_nome||'')+'</div>'+
             '<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--green);background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.15);border-radius:6px;padding:6px 10px;word-break:break-all;display:flex;align-items:center;justify-content:space-between;gap:8px">'+
               '<span>'+conteudo+'</span>'+
-              '<button onclick="navigator.clipboard.writeText(\''+conteudo+'\').then(function(){showToast(\'Copiado! ✓\')})" style="flex-shrink:0;padding:4px 10px;border-radius:5px;background:var(--green);border:none;color:#000;font-weight:900;font-size:10px;cursor:pointer">Copiar</button>'+
+              '<button onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'" style="flex-shrink:0;padding:4px 10px;border-radius:5px;background:var(--green);border:none;color:#000;font-weight:900;font-size:10px;cursor:pointer">Copiar</button>'+
             '</div>'+
           '</div>';
         }).join('');
@@ -1552,8 +1552,9 @@ async function carregarPedidos(userId){
       '</div>';
     }).join('');
   }catch(e){
+    console.error('[carregarPedidos] ERRO:',e);
     if(loader)loader.style.display='none';
-    if(list){list.style.display='flex';list.innerHTML='<div class="sem-pedidos">Erro ao carregar pedidos.</div>';}
+    if(list){list.style.display='flex';list.innerHTML='<div class="sem-pedidos">Você ainda não fez nenhum pedido.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Ver catálogo</a></div>';}
   }
 }
 
