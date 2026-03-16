@@ -3835,12 +3835,14 @@ async function checkout() {
   if (carrinho.length === 0) return;
   const btn = document.getElementById('checkoutBtn');
   btn.disabled = true;
-  btn.textContent = '⏳ Processando...';
+  btn.textContent = '⏳ Gerando Pix...';
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
       showToast('Faça login para finalizar a compra!');
       setTimeout(() => window.location.href = 'perfil.html', 1200);
+      btn.disabled = false;
+      btn.textContent = '🚀 Finalizar via Pix / Cartão';
       return;
     }
     const itens = carrinho.map(p => ({
@@ -3850,10 +3852,22 @@ async function checkout() {
       quantidade: 1,
       imagem: p.imagem || ''
     }));
-    sessionStorage.setItem('mg_carrinho_pendente', JSON.stringify(itens));
+    sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
     sessionStorage.setItem('mg_user_email', session.user.email);
-    const initPoint = await iniciarPagamento(itens, session.user);
-    window.location.href = initPoint;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/mp-criar-pix`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({ itens })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erro ao gerar Pix');
+
+    sessionStorage.setItem('mg_pix_data',     JSON.stringify(data));
+    sessionStorage.setItem('mg_external_ref',  data.reference);
+    sessionStorage.setItem('mg_pedido_id',     data.pedido_id);
+
+    window.location.href = 'pix-checkout.html';
   } catch (error) {
     console.error('Erro no checkout:', error);
     showToast('Erro: ' + (error.message || 'Tente novamente'));

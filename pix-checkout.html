@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagar com Pix - MarsGames</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--gold:#ffb800;}
+body{background:#07070c;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.02) 1px,transparent 1px);background-size:48px 48px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes confettiDrop{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes countdown{from{stroke-dashoffset:0}to{stroke-dashoffset:283}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 16px rgba(0,255,85,.1)}50%{box-shadow:0 0 40px rgba(0,255,85,.35)}}
+
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:100}
+.cp{position:absolute;border-radius:2px;opacity:0}
+
+.card{position:relative;z-index:1;background:#0f0f16;border:1px solid rgba(0,255,85,.11);border-radius:28px;padding:40px;width:100%;max-width:460px;text-align:center;animation:fadeUp .5s ease both;box-shadow:0 40px 100px rgba(0,0,0,.85);}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--green),transparent);border-radius:0 0 4px 4px;}
+
+/* ESTADOS */
+#stateLoading, #statePix, #stateSuccess, #stateError{display:none}
+#stateLoading.show, #statePix.show, #stateSuccess.show, #stateError.show{display:block}
+
+/* LOADING */
+.loader{width:56px;height:56px;border:3px solid rgba(0,255,85,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px;}
+
+/* HEADER PIX */
+.pix-header{margin-bottom:24px;}
+.pix-logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:4px;}
+.pix-logo span{color:var(--green)}
+.pix-sub{font-size:12px;color:#555;font-weight:600;}
+
+/* VALOR */
+.valor-box{background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.1);border-radius:12px;padding:14px;margin-bottom:20px;}
+.valor-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:4px;}
+.valor-num{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--green);}
+.valor-prod{font-size:11px;color:#666;margin-top:4px;font-weight:600;}
+
+/* QR CODE */
+.qr-wrap{position:relative;display:inline-block;margin:0 auto 20px;}
+.qr-img{width:200px;height:200px;border-radius:12px;border:3px solid rgba(0,255,85,.2);background:#fff;display:block;}
+.qr-timer{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);background:#0f0f16;border:1px solid rgba(0,255,85,.2);border-radius:99px;padding:3px 12px;font-size:10px;font-weight:900;color:var(--green);white-space:nowrap;}
+
+/* STATUS POLLING */
+.poll-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;font-size:12px;font-weight:700;color:#555;}
+.poll-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;flex-shrink:0;}
+
+/* COPIA E COLA */
+.pix-copy-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:16px;text-align:left;}
+.pix-copy-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:6px;}
+.pix-copy-code{font-family:monospace;font-size:9px;color:#888;word-break:break-all;line-height:1.6;max-height:44px;overflow:hidden;}
+.btn-copy{width:100%;padding:13px;border-radius:10px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);color:var(--green);font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-bottom:10px;}
+.btn-copy:hover{background:rgba(0,255,85,.14)}
+.btn-copy.copiado{background:rgba(0,255,85,.18);border-color:var(--green);}
+
+/* INSTRUÇÕES */
+.instrucoes{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:14px;margin-bottom:20px;text-align:left;}
+.inst-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:10px;}
+.inst-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.inst-item:last-child{margin-bottom:0}
+.inst-num{width:20px;height:20px;border-radius:50%;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--green);flex-shrink:0;}
+.inst-text{font-size:11px;color:#666;font-weight:600;line-height:1.5;}
+
+/* SUCESSO */
+.success-icon{width:80px;height:80px;border-radius:50%;background:rgba(0,255,85,.1);border:2px solid rgba(0,255,85,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:pop .5s ease both, glowPulse 3s ease-in-out 1s infinite;}
+.success-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;}
+.success-title span{color:var(--green)}
+.success-sub{font-size:13px;color:#666;font-weight:600;margin-bottom:24px;line-height:1.6;}
+
+/* CHAVE */
+.chave-box{background:linear-gradient(135deg,rgba(232,66,26,.07),rgba(255,107,43,.04));border:1px dashed rgba(232,66,26,.3);border-radius:12px;padding:16px;margin-bottom:14px;text-align:left;position:relative;overflow:hidden;}
+.chave-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.4),transparent);}
+.chave-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,107,43,.65);margin-bottom:10px;}
+.chave-field-label{font-size:9px;color:#555;margin-bottom:3px;font-weight:600;}
+.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all;background:rgba(255,107,43,.06);border:1px solid rgba(255,107,43,.1);border-radius:8px;padding:8px 10px;margin-bottom:6px;background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.03) 50%,transparent);background-size:200% 100%;animation:shimmer 3s ease infinite;}
+.btn-copiar-chave{width:100%;padding:9px;border-radius:8px;background:linear-gradient(135deg,var(--mars),var(--orange));border:none;color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity .2s;margin-top:6px;}
+.btn-copiar-chave.ok{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;}
+
+/* PTS BADGE */
+.pts-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,184,0,.07);border:1px solid rgba(255,184,0,.2);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:900;color:var(--gold);margin-bottom:20px;}
+
+/* BOTÕES FINAIS */
+.btn-primary{display:flex;align-items:center;justify-content:center;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;color:#000;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 20px rgba(0,255,85,.18);margin-bottom:10px;}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(0,255,85,.35);transform:translateY(-2px)}
+.btn-secondary{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.07);color:#555;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;text-decoration:none;transition:border-color .2s,color .2s;}
+.btn-secondary:hover{border-color:rgba(255,255,255,.18);color:#ccc}
+
+/* ERRO */
+.erro-box{background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.2);border-radius:10px;padding:14px;font-size:12px;color:#ff8888;line-height:1.6;margin-bottom:16px;}
+</style>
+</head>
+<body>
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<div class="card">
+
+  <!-- LOADING -->
+  <div id="stateLoading">
+    <div class="loader"></div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;margin-bottom:8px">Gerando Pix</div>
+    <div style="font-size:12px;color:#555;font-weight:600">Preparando seu QR Code...</div>
+  </div>
+
+  <!-- PIX -->
+  <div id="statePix">
+    <div class="pix-header">
+      <div class="pix-logo">Mars<span>Games</span></div>
+      <div class="pix-sub">Pague com Pix — confirmação instantânea</div>
+    </div>
+
+    <div class="valor-box">
+      <div class="valor-label">Total a pagar</div>
+      <div class="valor-num" id="valorNum">R$ 0,00</div>
+      <div class="valor-prod" id="valorProd"></div>
+    </div>
+
+    <div class="qr-wrap">
+      <img class="qr-img" id="qrImg" src="" alt="QR Code Pix">
+      <div class="qr-timer" id="qrTimer">⏱ 30:00</div>
+    </div>
+
+    <div class="poll-status">
+      <div class="poll-dot"></div>
+      <span id="pollMsg">Aguardando pagamento...</span>
+    </div>
+
+    <div class="pix-copy-box">
+      <div class="pix-copy-label">Pix Copia e Cola</div>
+      <div class="pix-copy-code" id="pixCode">—</div>
+    </div>
+    <button class="btn-copy" id="btnCopy" onclick="copiarPix()">📋 Copiar código Pix</button>
+
+    <div class="instrucoes">
+      <div class="inst-title">Como pagar</div>
+      <div class="inst-item"><div class="inst-num">1</div><div class="inst-text">Abra o app do seu banco</div></div>
+      <div class="inst-item"><div class="inst-num">2</div><div class="inst-text">Escaneie o QR Code ou use o Pix Copia e Cola</div></div>
+      <div class="inst-item"><div class="inst-num">3</div><div class="inst-text">Confirme o pagamento — sua chave aparece aqui automaticamente ✅</div></div>
+    </div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div id="stateSuccess">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Pix <span>Confirmado!</span></div>
+    <div class="success-sub" id="successSub">Sua chave está pronta. Bons jogos! 🎮</div>
+
+    <div id="chavesSection"></div>
+
+    <div class="pts-badge" id="ptsBadge" style="display:none">
+      ⭐ +<span id="ptsGanhos">0</span> MarsPoints ganhos!
+    </div>
+
+    <a class="btn-primary" href="perfil.html">🎮 Ver meus pedidos</a>
+    <a class="btn-secondary" href="index.html">Continuar comprando</a>
+  </div>
+
+  <!-- ERRO -->
+  <div id="stateError">
+    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;margin-bottom:8px">Erro ao gerar Pix</div>
+    <div class="erro-box" id="erroMsg">Não foi possível gerar o QR Code.</div>
+    <a class="btn-primary" href="index.html">Tentar novamente</a>
+  </div>
+
+</div>
+
+<script>
+const SUPA_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
+
+// Dados salvos pelo index.html antes de abrir essa página
+const pixData    = JSON.parse(sessionStorage.getItem('mg_pix_data') || 'null');
+const userEmail  = sessionStorage.getItem('mg_user_email') || '';
+
+function show(id) {
+  ['stateLoading','statePix','stateSuccess','stateError'].forEach(s => {
+    document.getElementById(s).classList.remove('show');
+  });
+  document.getElementById(id).classList.add('show');
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── CONFETTI ──
+function confetti() {
+  const wrap = document.getElementById('confettiWrap');
+  const cores = ['#00ff55','#00cc44','#e8421a','#ffb800','#7b61ff','#00ffff','#fff'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'cp';
+    const cor = cores[Math.floor(Math.random()*cores.length)];
+    const tam = 5 + Math.random()*8;
+    el.style.cssText = `left:${Math.random()*100}%;top:-20px;width:${tam}px;height:${tam}px;`
+      + `background:${cor};border-radius:${Math.random()>.5?'50%':'3px'};`
+      + `animation:confettiDrop ${2+Math.random()*2.5}s ease-in ${Math.random()*1.5}s forwards;`;
+    wrap.appendChild(el);
+  }
+}
+
+// ── TIMER COUNTDOWN ──
+let timerInterval = null;
+function iniciarTimer(minutos) {
+  let total = minutos * 60;
+  const el = document.getElementById('qrTimer');
+  timerInterval = setInterval(() => {
+    total--;
+    if (total <= 0) { clearInterval(timerInterval); el.textContent = '⏱ Expirado'; return; }
+    const m = String(Math.floor(total/60)).padStart(2,'0');
+    const s = String(total%60).padStart(2,'0');
+    el.textContent = `⏱ ${m}:${s}`;
+    if (total <= 300) el.style.color = '#ff8888'; // vermelho nos últimos 5min
+  }, 1000);
+}
+
+// ── COPIAR PIX ──
+function copiarPix() {
+  const code = document.getElementById('pixCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('copiado');
+    setTimeout(() => { btn.textContent = '📋 Copiar código Pix'; btn.classList.remove('copiado'); }, 2500);
+  });
+}
+
+// ── EXIBIR SUCESSO COM CHAVES ──
+function mostrarSucesso(chaves, valor) {
+  clearInterval(timerInterval);
+  confetti();
+  localStorage.removeItem('mg_cart');
+  localStorage.removeItem('mg_cart_saved');
+
+  const sec = document.getElementById('chavesSection');
+  if (chaves && chaves.length > 0) {
+    sec.innerHTML = chaves.map((c, idx) => {
+      if (c.conteudo === 'ERRO_ESTOQUE' || c.tipo === 'erro') {
+        return `<div class="chave-box"><div class="chave-label">⚠️ ${esc(c.produto_nome)}</div>
+          <div style="font-size:11px;color:#666">Entrega em processamento. Acesse Meus Pedidos.</div></div>`;
+      }
+      let corpo = '';
+      if (c.tipo === 'login_senha') {
+        const p = (c.conteudo||'').split('|');
+        corpo = `<div class="chave-field-label">Login / Email</div><div class="chave-code">${esc(p[0])}</div>
+                 <div class="chave-field-label">Senha</div><div class="chave-code">${esc(p[1])}</div>`;
+      } else {
+        corpo = `<div class="chave-field-label">Chave de ativação</div><div class="chave-code">${esc(c.conteudo)}</div>`;
+      }
+      return `<div class="chave-box">
+        <div class="chave-label">🔑 ${esc(c.produto_nome||'Sua chave')}</div>
+        ${corpo}
+        <div style="font-size:10px;color:#505050;margin-top:6px">📋 Copie e guarde em local seguro!</div>
+        <button class="btn-copiar-chave" id="cbtn${idx}" onclick="copiarChave('${esc(c.conteudo)}',${idx})">📋 Copiar chave</button>
+      </div>`;
+    }).join('');
+  }
+
+  const pts = Math.floor(Number(valor||0) * 10);
+  if (pts > 0) {
+    document.getElementById('ptsBadge').style.display = 'inline-flex';
+    document.getElementById('ptsGanhos').textContent = pts.toLocaleString('pt-BR');
+  }
+
+  show('stateSuccess');
+}
+
+function copiarChave(texto, idx) {
+  navigator.clipboard.writeText(texto).then(() => {
+    const btn = document.getElementById('cbtn' + idx);
+    if (btn) { btn.textContent = '✓ Copiado!'; btn.classList.add('ok'); }
+    setTimeout(() => { if (btn) { btn.textContent = '📋 Copiar chave'; btn.classList.remove('ok'); } }, 2500);
+  });
+}
+
+// ── POLLING: consulta se o Pix foi pago ──
+let pollTentativas = 0;
+const POLL_MAX = 60; // 60 x 3s = 3 minutos
+let pollAtivo = true;
+
+async function pollPagamento(paymentId, reference) {
+  if (!pollAtivo) return;
+  pollTentativas++;
+
+  try {
+    const res = await fetch(SUPA_URL + '/functions/v1/mp-confirmar-pagamento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment_id: paymentId, reference })
+    });
+    const d = await res.json();
+    console.log('[poll]', pollTentativas, d);
+
+    if (d.aprovado) {
+      pollAtivo = false;
+      mostrarSucesso(d.chaves, pixData?.valor);
+      return;
+    }
+  } catch(e) {
+    console.error('[poll] erro:', e);
+  }
+
+  if (pollTentativas < POLL_MAX) {
+    setTimeout(() => pollPagamento(paymentId, reference), 3000);
+  } else {
+    // Expirou — mantém tela do Pix mas muda mensagem
+    document.getElementById('pollMsg').textContent = 'Pix expirado. Tente novamente.';
+    document.getElementById('pollMsg').style.color = '#ff8888';
+    document.querySelector('.poll-dot').style.background = '#ff5555';
+    document.querySelector('.poll-dot').style.animation = 'none';
+  }
+}
+
+// ── INIT ──
+async function init() {
+  show('stateLoading');
+
+  // Se já temos os dados do Pix (gerado pelo index.html), usa direto
+  if (pixData && pixData.qr_code) {
+    renderPix(pixData);
+    return;
+  }
+
+  // Se não tem dados, redireciona para o início
+  show('stateError');
+  document.getElementById('erroMsg').textContent = 'Sessão expirada. Volte ao carrinho e tente novamente.';
+}
+
+function renderPix(data) {
+  // QR Code
+  if (data.qr_code_base64) {
+    document.getElementById('qrImg').src = 'data:image/png;base64,' + data.qr_code_base64;
+  }
+
+  // Valor
+  document.getElementById('valorNum').textContent = 'R$ ' + Number(data.valor||0).toFixed(2).replace('.',',');
+
+  // Produto
+  const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+  if (itens.length) {
+    document.getElementById('valorProd').textContent = itens.map(i => i.nome).join(', ');
+  }
+
+  // Pix code
+  if (data.qr_code) {
+    document.getElementById('pixCode').textContent = data.qr_code;
+  }
+
+  // Timer
+  iniciarTimer(data.expira_em || 30);
+
+  // Salva reference
+  if (data.reference) sessionStorage.setItem('mg_external_ref', data.reference);
+
+  show('statePix');
+
+  // Inicia polling
+  pollPagamento(data.payment_id, data.reference);
+}
+
+init();
+</script>
+</body>
+</html>
