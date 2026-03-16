@@ -110,7 +110,7 @@ async function init(){
   async function buscarPedido() {
     tentativas++;
     const { data: pedido } = await sb.from('pedidos').select('*').eq('reference', ref).maybeSingle();
-    if (pedido && pedido.status === 'aprovado') {
+    if (pedido && (pedido.status === 'aprovado' || pedido.status === 'pago')) {
       chaveSection.innerHTML = '';
       lancarConfetti();
       localStorage.removeItem('mg_cart');
