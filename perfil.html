@@ -21,26 +21,25 @@
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 @keyframes orbit{0%{transform:rotate(0deg) translateX(3px) rotate(0deg)}100%{transform:rotate(360deg) translateX(3px) rotate(-360deg)}}
+/* ══ ANIMAÇÕES DE NÍVEL ══ */
 @keyframes bronzePulse{
-  0%,100%{box-shadow:0 0 6px 1px rgba(205,159,106,.5)}
-  50%{box-shadow:0 0 18px 5px rgba(205,159,106,.9),0 0 4px 2px rgba(255,200,120,.5)}
+  0%,100%{box-shadow:0 0 6px rgba(205,159,106,.5)}
+  50%{box-shadow:0 0 20px rgba(205,159,106,.9),0 0 40px rgba(205,159,106,.3)}
 }
 @keyframes prataShimmer{
-  0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.4),2px -2px 12px rgba(255,255,255,.6)}
-  50%{box-shadow:-2px 2px 16px 4px rgba(200,200,230,.6),-2px -2px 12px rgba(255,255,255,.7)}
+  0%,100%{box-shadow:0 0 8px rgba(232,232,232,.5),0 0 20px rgba(255,255,255,.2)}
+  50%{box-shadow:0 0 20px rgba(232,232,232,.9),0 0 40px rgba(255,255,255,.4)}
 }
 @keyframes ouroPulse{
-  0%,100%{box-shadow:0 0 10px 2px rgba(255,215,0,.5)}
-  50%{box-shadow:0 0 26px 7px rgba(255,215,0,.85),0 0 8px 3px rgba(255,165,0,.5)}
+  0%,100%{box-shadow:0 0 10px rgba(255,215,0,.6),0 0 20px rgba(255,165,0,.3)}
+  50%{box-shadow:0 0 28px rgba(255,215,0,1),0 0 50px rgba(255,165,0,.5)}
 }
 @keyframes esmPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.55)}
-  50%{box-shadow:0 0 24px 7px rgba(80,200,120,.9),0 0 10px 4px rgba(0,255,100,.4)}
+  0%,100%{box-shadow:0 0 10px rgba(80,200,120,.6),0 0 20px rgba(0,255,100,.2)}
+  50%{box-shadow:0 0 28px rgba(80,200,120,1),0 0 50px rgba(0,255,100,.5)}
 }
-@keyframes diaRotate{to{transform:rotate(360deg)}}
-@keyframes diaPulse{
-  0%,100%{opacity:.85}50%{opacity:1}
-}
+@keyframes diaRotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes diaPulse{0%,100%{opacity:.8}50%{opacity:1}}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
 @keyframes navBronzePulse{
@@ -408,54 +407,50 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ── Bronze: borda âmbar com pulso quente ── */
+/* ══ BORDAS POR NÍVEL ══ */
+
+/* 🥉 Bronze — borda sólida marrom com glow quente */
 .avatar-bronze .avatar-inner{
-  border:3px solid var(--bronze);
+  border:3px solid #cd9f6a;
   animation:bronzePulse 2.5s ease-in-out infinite;
 }
-/* ── Prata: borda prateada com shimmer ── */
+
+/* 🥈 Prata — borda prateada com shimmer frio */
 .avatar-prata .avatar-inner{
-  border:3px solid var(--prata);
+  border:3px solid #e8e8e8;
   animation:prataShimmer 3s ease-in-out infinite;
 }
-/* ── Ouro: borda dourada com pulso expansivo ── */
+
+/* 🥇 Ouro — borda dourada com glow expansivo */
 .avatar-ouro .avatar-inner{
-  border:3px solid var(--ouro);
+  border:3px solid #FFD700;
   animation:ouroPulse 2s ease-in-out infinite;
 }
-/* ── Esmeralda: borda verde-energia pulsante ── */
+
+/* 💚 Esmeralda — borda verde neon pulsante */
 .avatar-esmeralda .avatar-inner{
-  border:3px solid var(--esm);
-  animation:esmPulse 1.8s ease-in-out infinite;
+  border:3px solid #50c878;
+  animation:esmPulse 1.5s ease-in-out infinite;
 }
 
-/* ── Diamante: disco conic-gradient girando + inner sem borda ── */
+/* 💎 Diamante — anel holográfico girando */
 .avatar-diamante .avatar-ring{
   background:conic-gradient(
     from 0deg,
-    #b9f2ff 0%,#a78bfa 15%,#ffffff 28%,
-    #00ffff 42%,#e0b0ff 58%,#ffffff 72%,
-    #7b61ff 85%,#b9f2ff 100%
+    #b9f2ff 0%, #a78bfa 12%, #ffffff 25%,
+    #00ffff 37%, #e0b0ff 50%, #ffffff 62%,
+    #7b61ff 75%, #b9f2ff 87%, #a78bfa 100%
   );
-  animation:diaRotate 2.5s linear infinite;
-  box-shadow:
-    0 0 18px rgba(185,242,255,.6),
-    0 0 36px rgba(123,97,255,.35);
+  animation:diaRotate 2s linear infinite;
+  box-shadow:0 0 20px rgba(185,242,255,.7),0 0 40px rgba(123,97,255,.4);
 }
-/* Máscara: cobre o centro do disco deixando só o anel visível */
 .avatar-diamante .avatar-ring::before{
-  content:'';
-  position:absolute;
-  width:80px;height:80px;
-  border-radius:50%;
-  background:var(--bg);
-  z-index:0;
+  content:'';position:absolute;
+  inset:4px;border-radius:50%;
+  background:var(--card);z-index:0;
 }
 .avatar-diamante .avatar-inner{
-  border:none;
-  position:relative;
-  z-index:1;
-  box-shadow:0 0 0 1px rgba(185,242,255,.2);
+  border:none;position:relative;z-index:1;
 }
 
 /* Badge de nível */
@@ -1172,11 +1167,17 @@ function initSupabase(){
   }
   sb=lib.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{
-      flowType:'implicit',
+      flowType:'pkce',
       detectSessionInUrl:true,
       persistSession:true,
       autoRefreshToken:true,
-      storageKey:'mg_auth'
+      storageKey:'mg_auth',
+      // Safari precisa de storage customizado (localStorage pode falhar em modo privado)
+      storage:{
+        getItem:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+        setItem:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},
+        removeItem:function(k){try{localStorage.removeItem(k)}catch(e){}}
+      }
     }
   });
   checkAuth();
@@ -1213,7 +1214,11 @@ async function loginGoogle(){
       provider:'google',
       options:{
         redirectTo:redirect,
-        queryParams:{prompt:'select_account'}
+        queryParams:{
+          prompt:'select_account',
+          access_type:'online'
+        },
+        scopes:'email profile'
       }
     });
     if(error)throw error;
@@ -1279,12 +1284,26 @@ function mostrarLoading(){
 async function checkAuth(){
   /* Trata erro do redirect OAuth na URL */
   var hash=window.location.hash;
-  if(hash.includes('error')){
-    var msg=decodeURIComponent((hash.match(/error_description=([^&]+)/)||['','Erro ao entrar'])[1]).replace(/[+]/g,' ');
+  var params=new URLSearchParams(window.location.search);
+  
+  if(hash.includes('error')||params.get('error')){
+    var msg=decodeURIComponent(
+      (hash.match(/error_description=([^&]+)/)||['',''])[1] ||
+      params.get('error_description') || 'Erro ao entrar'
+    ).replace(/[+]/g,' ');
     history.replaceState(null,'',window.location.pathname);
     mostrarLogin();
     setTimeout(function(){ showToast('Erro: '+msg); }, 400);
     return;
+  }
+
+  // PKCE flow — trocar code por sessão
+  var code=params.get('code');
+  if(code){
+    try{
+      await sb.auth.exchangeCodeForSession(code);
+    }catch(e){ console.log('exchange error:',e.message); }
+    history.replaceState(null,'',window.location.pathname);
   }
 
   mostrarLoading();
