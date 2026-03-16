@@ -1504,6 +1504,22 @@ async function carregarPedidos(userId){
       return;
     }
     list.innerHTML=data.map(function(p){
+      var chavesHtml='';
+      if(p.chaves_entregues && p.chaves_entregues.length>0){
+        chavesHtml='<div style="width:100%;margin-top:10px;border-top:1px solid var(--border);padding-top:10px">';
+        chavesHtml+=p.chaves_entregues.map(function(c){
+          var conteudo=esc(c.conteudo||'');
+          var label=c.tipo==='login_senha'?'Login/Senha':'Chave';
+          return '<div style="margin-bottom:6px">'+
+            '<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">🔑 '+label+' — '+esc(c.produto_nome||p.produto_nome||'')+'</div>'+
+            '<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--green);background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.15);border-radius:6px;padding:6px 10px;word-break:break-all;display:flex;align-items:center;justify-content:space-between;gap:8px">'+
+              '<span>'+conteudo+'</span>'+
+              '<button onclick="navigator.clipboard.writeText(\''+conteudo+'\').then(function(){showToast(\'Copiado! ✓\')})" style="flex-shrink:0;padding:4px 10px;border-radius:5px;background:var(--green);border:none;color:#000;font-weight:900;font-size:10px;cursor:pointer">Copiar</button>'+
+            '</div>'+
+          '</div>';
+        }).join('');
+        chavesHtml+='</div>';
+      }
       return '<div class="pedido-card">'+
         (p.produto_img?'<img class="pedido-img" src="'+esc(p.produto_img)+'" alt="">':'<div class="pedido-img"></div>')+
         '<div class="pedido-info">'+
@@ -1514,6 +1530,7 @@ async function carregarPedidos(userId){
         '<span class="pedido-status '+(p.status==='entregue'||p.status==='pago'?'status-entregue':'status-pendente')+'">'+
           (p.status||'pendente')+
         '</span>'+
+        chavesHtml+
       '</div>';
     }).join('');
   }catch(e){

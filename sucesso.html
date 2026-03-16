@@ -126,14 +126,32 @@ function mostrarPedidos(pedidos){
       +'</div>';
   }).join('');
   var chavesSec=document.getElementById('chaveSection');
-  var chaves=pedidos.filter(function(p){return p.chaves && p.chaves.length>0});
+  var chaves=pedidos.filter(function(p){return p.chaves_entregues && p.chaves_entregues.length>0});
   if(chaves.length>0){
     chavesSec.innerHTML=chaves.flatMap(function(p){
-      return p.chaves.map(function(c){
+      return p.chaves_entregues.map(function(c){
+        var corpo='';
+        if(c.tipo==='login_senha'){
+          var partes=(c.conteudo||'').split('|');
+          corpo='<div style="margin-bottom:8px">'
+            +'<div style="font-size:9px;color:#666;margin-bottom:3px">Login:</div>'
+            +'<div class="chave-code">'+esc(partes[0]||'')+'</div>'
+            +'</div>'
+            +'<div>'
+            +'<div style="font-size:9px;color:#666;margin-bottom:3px">Senha:</div>'
+            +'<div class="chave-code">'+esc(partes[1]||'')+'</div>'
+            +'</div>';
+        } else {
+          corpo='<div class="chave-code">'+esc(c.conteudo||'')+'</div>';
+        }
         return '<div class="chave-box">'
-          +'<div class="chave-label">🔑 Chave — '+esc(c.produto_nome)+'</div>'
-          +'<div class="chave-code">'+esc(c.chave)+'</div>'
+          +'<div class="chave-label">🔑 '+esc(c.produto_nome||'Chave')+'</div>'
+          +corpo
+          +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">'
           +'<div class="chave-info">Anote ou copie sua chave agora!</div>'
+          +'<button onclick="navigator.clipboard.writeText(\''+esc(c.conteudo||'')+'\').then(function(){this.textContent=\'✓ Copiado\'}.bind(this))" '
+          +'style="padding:4px 12px;border-radius:6px;background:var(--orange);border:none;color:#000;font-weight:900;font-size:10px;cursor:pointer">Copiar</button>'
+          +'</div>'
           +'</div>';
       }).join('');
     }).join('');
