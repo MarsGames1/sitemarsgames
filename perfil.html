@@ -1297,11 +1297,13 @@ async function checkAuth(){
     return;
   }
 
-  // PKCE flow — trocar code por sessão
+  // PKCE flow — trocar code por sessão (só se vier do OAuth, não do MP)
   var code=params.get('code');
-  if(code){
+  var fromMP=params.get('pagamento')||params.get('collection_status')||params.get('payment_id');
+  if(code && !fromMP){
     try{
-      await sb.auth.exchangeCodeForSession(code);
+      var{data:sessData,error:sessErr}=await sb.auth.exchangeCodeForSession(code);
+      if(sessErr) console.log('exchange error:',sessErr.message);
     }catch(e){ console.log('exchange error:',e.message); }
     history.replaceState(null,'',window.location.pathname);
   }

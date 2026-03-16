@@ -200,15 +200,15 @@ async function init(){
     tentativas++;
     var{data:pedidos}=await sb.from('pedidos')
       .select('*')
-      .eq('cliente_email',session.user.email)
+      .or('cliente_email.eq.'+session.user.email+',user_id.eq.'+session.user.id)
       .eq('status','pago')
       .order('created_at',{ascending:false})
       .limit(5);
 
-    // Verificar pedidos dos últimos 10 minutos
+    // Verificar pedidos dos últimos 15 minutos
     var agora=Date.now();
     var recentes=pedidos?pedidos.filter(function(p){
-      return agora-new Date(p.created_at).getTime()<10*60*1000;
+      return agora-new Date(p.created_at).getTime()<15*60*1000;
     }):[];
 
     if(recentes.length>0){
