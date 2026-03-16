@@ -54,7 +54,7 @@ p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
 <script>
 const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}});
 const reference = sessionStorage.getItem('mg_external_ref');
 const userEmail = sessionStorage.getItem('mg_user_email');
 let checking = true;
