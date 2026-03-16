@@ -2424,7 +2424,7 @@ footer::before{
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
       <div class="nav-search-expand" id="navSearchExpand">
-        <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value)" onblur="recolherSearch()">
+        <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value);var l=document.getElementById('searchInputLoja');if(l)l.value=this.value" onblur="recolherSearch()">
         <button class="nav-search-btn" aria-label="Buscar">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
@@ -3207,7 +3207,7 @@ footer::before{
       </span>
       <input class="search-input" id="searchInputLoja" type="text"
         placeholder="Buscar jogo..."
-        oninput="buscar(this.value)">
+        oninput="buscar(this.value);var n=document.getElementById('searchInput');if(n)n.value=this.value">
     </div>
   </div>
   <div class="prods-grid" id="prodsGrid">
@@ -3769,7 +3769,15 @@ function filtrarCat(cat,el){
   renderProdutos();
   document.querySelector('.store-wrap').scrollIntoView({behavior:'smooth'});
 }
-function buscar(q){buscaAtual=q;renderProdutos()}
+function buscar(q){
+  buscaAtual=q;
+  renderProdutos();
+  /* Rola para os resultados se tiver texto */
+  if(q && q.length>0){
+    var store=document.querySelector('.store-wrap');
+    if(store) store.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
 
 /* ── MODAL ── */
 function abrirModal(id){
