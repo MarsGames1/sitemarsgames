@@ -1542,14 +1542,14 @@ async function carregarPedidos(userId){
         chavesHtml+='</div>';
       }
       return '<div class="pedido-card">'+
-        (p.produto_img?'<img class="pedido-img" src="'+esc(p.produto_img)+'" alt="">':'<div class="pedido-img"></div>')+
+        (function(){var img=p.produto_img||(p.itens&&p.itens[0]&&p.itens[0].imagem)||'';return img?'<img class="pedido-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'" loading="lazy">':'<div class="pedido-img"></div>';})()+
         '<div class="pedido-info">'+
           '<div class="pedido-nome">'+esc(p.produto_nome||'Produto')+'</div>'+
           '<div class="pedido-data">'+fmtDate(p.created_at)+'</div>'+
         '</div>'+
         '<div class="pedido-preco">R$ '+Number(p.valor||0).toFixed(2).replace('.',',')+'</div>'+
-        '<span class="pedido-status '+(p.status==='entregue'||p.status==='pago'?'status-entregue':'status-pendente')+'">'+
-          (p.status||'pendente')+
+        '<span class="pedido-status '+(p.status==='entregue'||p.status==='pago'||p.status==='aprovado'?'status-entregue':'status-pendente')+'">'+
+          (p.status==='aprovado'?'pago':p.status==='entregue'?'entregue':p.status==='pago'?'pago':'pendente')+
         '</span>'+
         chavesHtml+
       '</div>';
