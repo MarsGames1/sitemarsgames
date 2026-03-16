@@ -3,66 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MarsGames — Processando pagamento</title>
+<title>MarsGames — Pagamento confirmado</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0a0e;--card:#131318;--green:#00ff55;--mars:#e8421a;--orange:#ff6b2b;--border:#252530;--muted:#555}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes checkPop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
-@keyframes confetti{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+:root{--bg:#07070c;--card:#0f0f16;--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--border:#1e1e2a;--muted:#555;--gold:#ffb800;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes checkPop{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.18) rotate(4deg)}80%{transform:scale(.96)}100%{transform:scale(1) rotate(0deg)}}
+@keyframes ringPulse{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.65);opacity:0}}
+@keyframes confettiDrop{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-body{background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
-.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:0}
-.confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;opacity:0}
-.card{position:relative;z-index:1;background:var(--card);border:1px solid rgba(0,255,85,.2);border-radius:24px;padding:48px 40px;width:90%;max-width:480px;text-align:center;animation:fadeUp .6s ease both;box-shadow:0 32px 80px rgba(0,0,0,.7)}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--green),transparent);border-radius:24px 24px 0 0}
-.icon-wrap{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:36px}
-.icon-wrap.loading{background:rgba(0,255,85,.1);border:2px solid rgba(0,255,85,.2);animation:pulse 1.5s ease-in-out infinite}
-.icon-wrap.success{background:rgba(0,255,85,.1);border:2px solid rgba(0,255,85,.3);animation:checkPop .5s cubic-bezier(.23,1,.32,1) both}
-.icon-wrap.error{background:rgba(232,66,26,.1);border:2px solid rgba(232,66,26,.3)}
-.spinner{width:36px;height:36px;border:3px solid rgba(0,255,85,.15);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
-.title{font-family:'Orbitron',sans-serif;font-size:clamp(18px,4vw,24px);font-weight:900;color:#fff;margin-bottom:8px}
-.title span{color:var(--green)}
-.subtitle{font-size:13px;color:#888;font-weight:600;line-height:1.6;margin-bottom:28px}
-.steps{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left}
-.step{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes badgePop{0%{transform:scale(0) translateY(8px);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 16px rgba(0,255,85,.1)}50%{box-shadow:0 0 36px rgba(0,255,85,.3),0 0 72px rgba(0,255,85,.07)}}
+@keyframes dots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.022) 1px,transparent 1px);background-size:48px 48px;z-index:0;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:1}
+.cp{position:absolute;border-radius:2px;opacity:0}
+.card{position:relative;z-index:2;background:var(--card);border:1px solid rgba(0,255,85,.11);border-radius:28px;padding:52px 44px 44px;width:100%;max-width:500px;text-align:center;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) both;box-shadow:0 40px 100px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.025);}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--green) 40%,var(--green2) 60%,transparent);border-radius:0 0 4px 4px;}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% -10%,rgba(0,255,85,.05) 0%,transparent 60%);border-radius:28px;pointer-events:none;}
+/* ICON */
+.icon-ring{position:relative;width:96px;height:96px;margin:0 auto 28px;}
+.i-ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(0,255,85,.1);}
+.i-spin{position:absolute;inset:-4px;border-radius:50%;border:2.5px solid transparent;border-top-color:var(--green);animation:spin .9s linear infinite;}
+.i-pulse{position:absolute;inset:0;border-radius:50%;border:2px solid var(--green);animation:ringPulse 1.8s ease-out infinite;display:none;}
+.i-inner{position:absolute;inset:8px;border-radius:50%;background:rgba(0,255,85,.07);border:1px solid rgba(0,255,85,.15);display:flex;align-items:center;justify-content:center;font-size:36px;transition:all .4s cubic-bezier(.23,1,.32,1);}
+.i-inner.success{background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.28);animation:checkPop .55s cubic-bezier(.23,1,.32,1) both,glowPulse 3s ease-in-out 1s infinite;}
+.i-inner.error{background:rgba(232,66,26,.09);border-color:rgba(232,66,26,.28);}
+.spinner-el{width:38px;height:38px;border:3px solid rgba(0,255,85,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;}
+/* STEPS */
+.steps{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.055);border-radius:14px;padding:16px 20px;margin-bottom:28px;text-align:left;}
+.step{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);transition:all .3s;}
 .step:last-child{border-bottom:none}
-.step-dot{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#555;flex-shrink:0}
-.step-text{font-size:13px;color:#555;font-weight:600}
+.step-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid #272736;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#444;transition:all .3s;}
+.step-text{font-size:12px;color:#444;font-weight:700;transition:color .3s;}
 .step.done .step-dot{background:var(--green);border-color:var(--green);color:#000}
 .step.done .step-text{color:var(--green)}
-.step.active .step-dot{border-color:var(--green);color:var(--green)}
-.step.active .step-text{color:#ccc}
-.pedido-box{background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.12);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left;display:none}
-.pedido-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.pedido-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.step.active .step-dot{border-color:var(--green);color:var(--green);background:rgba(0,255,85,.07)}
+.step.active .step-text{color:#bbb}
+/* TITLE */
+.title{font-family:'Orbitron',sans-serif;font-size:clamp(18px,4vw,26px);font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:.4px;}
+.title .hl{color:var(--green)}
+.subtitle{font-size:13px;color:#666;font-weight:600;line-height:1.7;margin-bottom:28px}
+.loading-dots::after{content:'.';animation:dots 1.5s steps(4,end) infinite;}
+/* PTS BADGE */
+.pts-badge{display:none;align-items:center;gap:8px;justify-content:center;background:linear-gradient(135deg,rgba(255,184,0,.07),rgba(255,184,0,.03));border:1px solid rgba(255,184,0,.22);border-radius:99px;padding:8px 20px;font-size:12px;font-weight:900;color:var(--gold);margin-bottom:20px;animation:badgePop .5s cubic-bezier(.23,1,.32,1) both;letter-spacing:.5px;}
+/* PEDIDO */
+.pedido-box{background:rgba(0,255,85,.03);border:1px solid rgba(0,255,85,.09);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left;display:none;animation:slideIn .4s ease both .2s;}
+.pedido-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.pedido-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
 .pedido-item:last-child{border-bottom:none}
-.pedido-item-img{width:40px;height:40px;border-radius:6px;object-fit:cover;background:#1a1a22;flex-shrink:0}
-.pedido-item-nome{font-size:11px;font-weight:700;color:#eee;flex:1}
-.pedido-item-val{font-size:12px;font-weight:900;color:var(--green)}
-.chave-box{background:rgba(232,66,26,.06);border:1px dashed rgba(232,66,26,.3);border-radius:10px;padding:14px;margin-bottom:16px}
-.chave-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all}
-.chave-info{font-size:10px;color:#666;margin-top:4px;font-weight:600}
-.copy-btn{padding:4px 12px;border-radius:6px;background:var(--orange);border:none;color:#000;font-weight:900;font-size:10px;cursor:pointer;margin-top:8px}
-.pts-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:900;color:var(--green);margin-bottom:20px;display:none}
+.pedido-item-img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:#1a1a22;border:1px solid rgba(255,255,255,.05);flex-shrink:0;}
+.pedido-item-nome{font-size:12px;font-weight:700;color:#ddd;flex:1}
+.pedido-item-val{font-size:13px;font-weight:900;color:var(--green)}
+/* CHAVE */
+.chave-box{background:linear-gradient(135deg,rgba(232,66,26,.065),rgba(255,107,43,.035));border:1px dashed rgba(232,66,26,.32);border-radius:12px;padding:16px;margin-bottom:14px;text-align:left;position:relative;overflow:hidden;animation:slideIn .4s ease both;}
+.chave-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.38),transparent);}
+.chave-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,107,43,.65);margin-bottom:10px;}
+.chave-row{margin-bottom:8px}
+.chave-field-label{font-size:9px;color:#555;font-weight:600;margin-bottom:3px}
+.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all;line-height:1.5;background:rgba(255,107,43,.055);border:1px solid rgba(255,107,43,.1);border-radius:8px;padding:8px 10px;background-image:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.035) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 3s ease infinite;}
+.chave-warn{font-size:10px;color:#505050;font-weight:600;margin-top:8px;display:flex;align-items:center;gap:5px;}
+.copy-btn{width:100%;margin-top:10px;padding:9px;border-radius:8px;background:linear-gradient(135deg,var(--mars),var(--orange));border:none;color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s;}
+.copy-btn:hover{opacity:.88;transform:translateY(-1px)}
+.copy-btn.copiado{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
+/* BTNS */
 .btns{display:flex;flex-direction:column;gap:10px}
-.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--green),#00cc44);color:#000;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s}
-.btn-primary:hover{box-shadow:0 0 24px rgba(0,255,85,.4)}
-.btn-secondary{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:10px;background:transparent;border:1px solid var(--border);color:#888;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s}
-.btn-secondary:hover{border-color:#555;color:#fff}
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 24px rgba(0,255,85,.18);}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(0,255,85,.38);transform:translateY(-2px)}
+.btn-secondary{display:flex;align-items:center;justify-content:center;padding:13px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.07);color:#666;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
+.btn-secondary:hover{border-color:rgba(255,255,255,.18);color:#ccc}
 </style>
 </head>
 <body>
 <div class="confetti-wrap" id="confettiWrap"></div>
-<div class="card" id="card">
-  <div class="icon-wrap loading" id="iconWrap"><div class="spinner"></div></div>
-  <div class="title" id="titulo">Processando <span>pagamento</span></div>
-  <div class="subtitle" id="subtitulo">Aguardando confirmação do Mercado Pago...<br>Isso pode levar alguns segundos.</div>
+<div class="card">
+
+  <div class="icon-ring">
+    <div class="i-ring"></div>
+    <div class="i-spin" id="iSpin"></div>
+    <div class="i-pulse" id="iPulse"></div>
+    <div class="i-inner" id="iInner"><div class="spinner-el"></div></div>
+  </div>
+
+  <div class="title" id="titulo">Processando <span class="hl">pagamento</span></div>
+  <div class="subtitle" id="subtitulo">Aguardando confirmação do Mercado Pago<span class="loading-dots"></span></div>
 
   <div class="steps" id="stepsBox">
     <div class="step done" id="s1"><div class="step-dot">✓</div><div class="step-text">Pagamento enviado</div></div>
@@ -77,47 +109,51 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;min-hei
 
   <div id="chaveSection"></div>
 
-  <div class="pts-badge" id="ptsBadge">⭐ <span id="ptsGanhos">0</span> MarsPoints ganhos!</div>
+  <div class="pts-badge" id="ptsBadge">⭐ +<span id="ptsGanhos">0</span> MarsPoints ganhos!</div>
 
   <div class="btns" id="btns" style="display:none">
     <a class="btn-primary" href="perfil.html">🎮 Ver meus pedidos</a>
     <a class="btn-secondary" href="index.html">Continuar comprando</a>
   </div>
 </div>
+
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
 function lancarConfetti(){
   var wrap=document.getElementById('confettiWrap');
-  var cores=['#00ff55','#e8421a','#ffb300','#7b61ff','#00ffff','#fff'];
-  for(var i=0;i<60;i++){
-    var el=document.createElement('div');
-    el.className='confetti-piece';
-    el.style.cssText='left:'+Math.random()*100+'%;top:-20px;background:'+cores[Math.floor(Math.random()*cores.length)]+';animation:confetti '+(2+Math.random()*3)+'s ease-in '+(Math.random()*2)+'s forwards;transform:rotate('+Math.random()*360+'deg);width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px';
+  var cores=['#00ff55','#00cc44','#e8421a','#ffb800','#7b61ff','#00ffff','#fff','#ff6b2b'];
+  function criarPeca(delay){
+    var el=document.createElement('div');el.className='cp';
+    var cor=cores[Math.floor(Math.random()*cores.length)];
+    var tam=5+Math.random()*9;var dur=2.2+Math.random()*2.8;
+    var circle=Math.random()>.5;
+    el.style.cssText='left:'+Math.random()*100+'%;top:-20px;width:'+tam+'px;height:'+tam+'px;'+
+      'background:'+cor+';border-radius:'+(circle?'50%':'3px')+';'+
+      'animation:confettiDrop '+dur+'s cubic-bezier(.25,.46,.45,.94) '+delay+'s forwards;';
     wrap.appendChild(el);
   }
+  for(var i=0;i<90;i++) criarPeca(Math.random()*1.8);
+  setTimeout(function(){for(var j=0;j<40;j++) criarPeca(Math.random()*1.2);},600);
 }
 
 function mostrarSucesso(pedido){
   lancarConfetti();
-  localStorage.removeItem('mg_cart');
-  localStorage.removeItem('mg_cart_saved');
-
-  document.getElementById('iconWrap').className='icon-wrap success';
-  document.getElementById('iconWrap').textContent='✅';
-  document.getElementById('titulo').innerHTML='Pagamento <span style="color:var(--green)">Confirmado!</span>';
-  document.getElementById('subtitulo').textContent='Sua compra foi processada com sucesso. Obrigado por escolher a MarsGames!';
+  localStorage.removeItem('mg_cart');localStorage.removeItem('mg_cart_saved');
+  document.getElementById('iSpin').style.animation='none';
+  document.getElementById('iPulse').style.display='block';
+  var inner=document.getElementById('iInner');
+  inner.className='i-inner success';inner.innerHTML='✅';
+  document.getElementById('titulo').innerHTML='Pagamento <span class="hl">Confirmado!</span>';
+  document.getElementById('subtitulo').textContent='Sua chave está pronta. Bons jogos! 🎮';
   document.getElementById('stepsBox').style.display='none';
   document.getElementById('btns').style.display='flex';
 
-  // Itens do pedido
   var itens=pedido.itens||[];
   if(itens.length>0){
-    var box=document.getElementById('pedidoBox');
-    box.style.display='block';
+    document.getElementById('pedidoBox').style.display='block';
     document.getElementById('pedidoItens').innerHTML=itens.map(function(i){
       return '<div class="pedido-item">'
         +(i.imagem?'<img class="pedido-item-img" src="'+esc(i.imagem)+'" alt="">':'<div class="pedido-item-img"></div>')
@@ -127,39 +163,41 @@ function mostrarSucesso(pedido){
     }).join('');
   }
 
-  // Chaves entregues
   var chaves=pedido.chaves_entregues||[];
   var chaveSec=document.getElementById('chaveSection');
   if(chaves.length>0){
-    chaveSec.innerHTML=chaves.map(function(c){
+    chaveSec.innerHTML=chaves.map(function(c,idx){
       if(c.tipo==='erro'||c.conteudo==='ERRO_ESTOQUE'){
-        return '<div class="chave-box"><div class="chave-label">⚠️ '+esc(c.produto_nome)+'</div>'
-          +'<div class="chave-code" style="color:#888;font-size:11px">Entrega em processamento. Verifique em Meus Pedidos em instantes.</div></div>';
+        return '<div class="chave-box" style="animation-delay:'+idx*.1+'s">'
+          +'<div class="chave-label">⚠️ '+esc(c.produto_nome)+'</div>'
+          +'<div style="font-size:11px;color:#666;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'
+          +'Entrega em processamento. Acesse Meus Pedidos em instantes.</div></div>';
       }
       var corpo='';
       if(c.tipo==='login_senha'){
         var p=(c.conteudo||'').split('|');
-        corpo='<div style="margin-bottom:6px"><div style="font-size:9px;color:#666;margin-bottom:2px">Login:</div>'
+        corpo='<div class="chave-row"><div class="chave-field-label">Login / Email</div>'
           +'<div class="chave-code">'+esc(p[0]||'')+'</div></div>'
-          +'<div><div style="font-size:9px;color:#666;margin-bottom:2px">Senha:</div>'
+          +'<div class="chave-row"><div class="chave-field-label">Senha</div>'
           +'<div class="chave-code">'+esc(p[1]||'')+'</div></div>';
       } else {
-        corpo='<div class="chave-code">'+esc(c.conteudo||'')+'</div>';
+        corpo='<div class="chave-row"><div class="chave-field-label">Chave de ativação</div>'
+          +'<div class="chave-code">'+esc(c.conteudo||'')+'</div></div>';
       }
-      return '<div class="chave-box">'
-        +'<div class="chave-label">🔑 '+esc(c.produto_nome||'Chave')+'</div>'
+      return '<div class="chave-box" style="animation-delay:'+idx*.12+'s">'
+        +'<div class="chave-label">🔑 '+esc(c.produto_nome||'Sua chave')+'</div>'
         +corpo
-        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">'
-        +'<div class="chave-info">Anote ou copie sua chave!</div>'
-        +'<button class="copy-btn" onclick="copiar(\''+esc(c.conteudo||'')+'\',this)">Copiar</button>'
-        +'</div></div>';
+        +'<div class="chave-warn">📋 Copie e guarde sua chave em local seguro!</div>'
+        +'<button class="copy-btn" id="cbtn'+idx+'" onclick="copiar(\''+esc(c.conteudo||'')+'\','+idx+')">📋 Copiar chave</button>'
+        +'</div>';
     }).join('');
   } else {
-    chaveSec.innerHTML='<div class="chave-box"><div class="chave-label">Chave</div>'
-      +'<div class="chave-code" style="color:#888;font-size:11px">Disponível em Meus Pedidos.</div></div>';
+    chaveSec.innerHTML='<div class="chave-box">'
+      +'<div class="chave-label">Chave</div>'
+      +'<div style="font-size:11px;color:#555;padding:8px">Acesse Meus Pedidos para ver sua chave.</div>'
+      +'</div>';
   }
 
-  // MarsPoints
   var pts=Math.floor(Number(pedido.valor||0)*10);
   if(pts>0){
     var badge=document.getElementById('ptsBadge');
@@ -169,78 +207,81 @@ function mostrarSucesso(pedido){
 }
 
 function mostrarErro(){
-  document.getElementById('iconWrap').className='icon-wrap error';
-  document.getElementById('iconWrap').textContent='⏳';
+  document.getElementById('iSpin').style.animation='none';
+  var inner=document.getElementById('iInner');inner.className='i-inner error';inner.innerHTML='⏳';
   document.getElementById('titulo').innerHTML='Pagamento <span style="color:var(--orange)">em análise</span>';
   document.getElementById('subtitulo').textContent='O Mercado Pago ainda está processando. Sua chave aparecerá em Meus Pedidos assim que confirmado.';
   document.getElementById('stepsBox').style.display='none';
   document.getElementById('btns').style.display='flex';
 }
 
-function copiar(texto,btn){
+function copiar(texto,idx){
   navigator.clipboard.writeText(texto).then(function(){
-    btn.textContent='✓ Copiado';
-    setTimeout(function(){btn.textContent='Copiar'},2000);
+    var btn=document.getElementById('cbtn'+idx);
+    if(btn){btn.textContent='✓ Copiado!';btn.classList.add('copiado');}
+    setTimeout(function(){if(btn){btn.textContent='📋 Copiar chave';btn.classList.remove('copiado');}},2500);
   });
+}
+
+/* ── FALLBACK: busca e entrega chave direto do estoque_chaves ── */
+async function tentarEntregarFallback(sb,pedido){
+  if(pedido.chaves_entregues&&pedido.chaves_entregues.length>0) return pedido;
+  var itens=pedido.itens||[];
+  if(!itens.length) return pedido;
+  var novas=[];
+  for(var i=0;i<itens.length;i++){
+    var item=itens[i];
+    var{data:ch}=await sb.from('estoque_chaves')
+      .select('id,conteudo,tipo,produto_nome')
+      .eq('produto_id',item.id)
+      .eq('status','disponivel')
+      .order('created_at',{ascending:true})
+      .limit(1)
+      .maybeSingle();
+    if(ch){
+      await sb.from('estoque_chaves').update({status:'entregue',entregue_em:new Date().toISOString(),pedido_id:pedido.id}).eq('id',ch.id);
+      novas.push({produto_nome:ch.produto_nome||item.nome,conteudo:ch.conteudo,tipo:ch.tipo||'key'});
+    }
+  }
+  if(novas.length>0){
+    await sb.from('pedidos').update({chaves_entregues:novas,status:'aprovado'}).eq('id',pedido.id);
+    pedido.chaves_entregues=novas;pedido.status='aprovado';
+  }
+  return pedido;
 }
 
 async function init(){
-  var urlParams=new URLSearchParams(window.location.search);
-  var ref=urlParams.get('ref')||sessionStorage.getItem('mg_external_ref');
+  var p=new URLSearchParams(window.location.search);
+  var ref=p.get('ref')||p.get('external_reference')||sessionStorage.getItem('mg_external_ref');
+  if(!ref){mostrarErro();return;}
+  sessionStorage.setItem('mg_external_ref',ref);
 
-  if(!ref){
-    mostrarErro();
-    return;
-  }
+  var _m={};var _s={getItem:function(k){return _m[k]??null},setItem:function(k,v){_m[k]=v},removeItem:function(k){delete _m[k]}};
+  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:false,autoRefreshToken:false,storage:_s}});
 
-  // Persiste o ref para caso o usuário recarregue a página
-  sessionStorage.setItem('mg_external_ref', ref);
-
-  var _mem={};
-  var _stor={getItem:function(k){return _mem[k]??null},setItem:function(k,v){_mem[k]=v},removeItem:function(k){delete _mem[k]}};
-  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
-    auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:false,autoRefreshToken:false,storage:_stor}
-  });
-
-  var tentativas=0;
-  var maxTentativas=30; // 30 x 3s = 90s
-
+  var tentativas=0,max=30;
   async function verificar(){
     tentativas++;
-    try {
+    try{
       var res=await sb.from('pedidos').select('*').eq('reference',ref).maybeSingle();
       var pedido=res.data;
-
-      if(pedido && (pedido.status==='aprovado'||pedido.status==='pago')){
-        // Atualiza steps
-        document.getElementById('s2').className='step done';
-        document.getElementById('s2').querySelector('.step-dot').textContent='✓';
-        document.getElementById('s3').className='step done';
-        document.getElementById('s3').querySelector('.step-dot').textContent='✓';
-        setTimeout(function(){mostrarSucesso(pedido)},500);
+      if(pedido&&(pedido.status==='aprovado'||pedido.status==='pago')){
+        document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
+        document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
+        pedido=await tentarEntregarFallback(sb,pedido);
+        setTimeout(function(){mostrarSucesso(pedido);},500);
         return;
       }
-
-      // Pedido existe mas ainda pendente
-      if(pedido && pedido.status==='pendente'){
+      if(pedido&&pedido.status==='pendente'){
         document.getElementById('subtitulo').textContent='Pagamento recebido, entregando sua chave...';
-        document.getElementById('s2').className='step done';
-        document.getElementById('s2').querySelector('.step-dot').textContent='✓';
+        document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
         document.getElementById('s3').className='step active';
       }
-
-    } catch(e){ console.error(e); }
-
-    if(tentativas<maxTentativas){
-      setTimeout(verificar,3000);
-    } else {
-      mostrarErro();
-    }
+    }catch(e){console.error(e);}
+    if(tentativas<max) setTimeout(verificar,3000); else mostrarErro();
   }
-
   verificar();
 }
-
 init();
 </script>
 </body>
