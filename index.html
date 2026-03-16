@@ -3454,6 +3454,49 @@ footer::before{
   </div>
 </section>
 
+
+<!-- ══ FILTROS DE CATEGORIA ══ -->
+<div class="cats-wrap">
+  <div class="cats-scroll" id="catsScroll">
+    <button class="cat-pill active" data-cat="todos" onclick="setCat('todos',this)"><span class="cat-emoji">🎮</span> Todos</button>
+    <button class="cat-pill" data-cat="Ação / RPG" onclick="setCat('Ação / RPG',this)"><span class="cat-emoji">⚔️</span> Ação / RPG</button>
+    <button class="cat-pill" data-cat="Luta / Tiros" onclick="setCat('Luta / Tiros',this)"><span class="cat-emoji">🔫</span> Luta / Tiros</button>
+    <button class="cat-pill" data-cat="Terror / Indie" onclick="setCat('Terror / Indie',this)"><span class="cat-emoji">👻</span> Terror</button>
+    <button class="cat-pill" data-cat="Simulação / Sobrevivência" onclick="setCat('Simulação / Sobrevivência',this)"><span class="cat-emoji">🌍</span> Simulação</button>
+    <button class="cat-pill" data-cat="Esportes" onclick="setCat('Esportes',this)"><span class="cat-emoji">⚽</span> Esportes</button>
+    <button class="cat-pill" data-cat="Combos e Bundles" onclick="setCat('Combos e Bundles',this)"><span class="cat-emoji">📦</span> Combos</button>
+    <button class="cat-pill" data-cat="promo" onclick="setCat('promo',this)"><span class="cat-emoji">🔥</span> Promoções</button>
+  </div>
+</div>
+
+<!-- ══ LOJA ══ -->
+<div class="store-wrap">
+  <div class="store-head">
+    <div>
+      <div class="store-title-main">CATÁLOGO COMPLETO</div>
+      <div class="store-count-text" id="storeCount">carregando...</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input class="search-input" id="searchInputLoja" type="text" placeholder="Buscar jogo..."
+        oninput="buscar(this.value);var n=document.getElementById('searchInput');if(n)n.value=this.value">
+    </div>
+  </div>
+  <div class="prods-grid" id="prodsGrid">
+    <div class="loader-wrap"><div class="spinner"></div> Carregando jogos...</div>
+  </div>
+  <div style="text-align:center;margin-top:28px">
+    <a href="catalogo.html" style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;border:1px solid #323240;background:rgba(255,255,255,.03);color:#888;font-size:11px;font-weight:700;letter-spacing:.5px;text-decoration:none;transition:all .2s"
+       onmouseover="this.style.borderColor='#555';this.style.color='#fff'"
+       onmouseout="this.style.borderColor='';this.style.color=''">
+      Ver catálogo completo →
+    </a>
+  </div>
+</div>
+
+
 <!-- ══ CARRINHO ══ -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
@@ -4193,25 +4236,16 @@ if(document.readyState === 'complete'){
   <div class="exit-timer-wrap">
     <div class="exit-timer-label">Oferta expira em</div>
     <div class="exit-timer-display" id="exitTimerDisplay">05:00</div>
-    <div class="exit-timer-bar-wrap">
-      <div class="exit-timer-bar" id="exitTimerBar"></div>
-    </div>
+    <div class="exit-timer-bar-wrap"><div class="exit-timer-bar" id="exitTimerBar"></div></div>
   </div>
-  <button class="exit-btn-aceitar" onclick="aceitarExitOffer()">
-    Quero o desconto!
-  </button>
-  <button class="exit-btn-recusar" onclick="fecharExitPopup()">
-    Não, obrigado — prefiro pagar mais
-  </button>
+  <button class="exit-btn-aceitar" onclick="aceitarExitOffer()">Quero o desconto!</button>
+  <button class="exit-btn-recusar" onclick="fecharExitPopup()">Não, obrigado — prefiro pagar mais</button>
 </div>
-
 
 <!-- MODO SURPRESA -->
 <button class="surpresa-btn" onclick="modeSurpresa()" title="Jogo surpresa!">
-  🎲
-  <span class="surpresa-tooltip">Jogo surpresa!</span>
+  🎲<span class="surpresa-tooltip">Jogo surpresa!</span>
 </button>
-
 
 <!-- ══ INDICAÇÃO ══ -->
 <div class="indicacao-section" id="indicacaoSection" style="display:none">
@@ -4223,9 +4257,20 @@ if(document.readyState === 'complete'){
       <div class="indicacao-link-wrap">
         <input class="indicacao-link" id="indicacaoLink" readonly value="Faça login para ver seu link">
         <button class="indicacao-copy-btn" onclick="copiarIndicacao()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           Copiar
         </button>
       </div>
       <div class="indicacao-pts">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        +50 MarsPoints para você e seu amigo
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+</body>
+</html>
