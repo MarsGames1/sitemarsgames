@@ -255,9 +255,10 @@ async function init(){
   var ref=p.get('ref')||p.get('external_reference')||sessionStorage.getItem('mg_external_ref');
   var pedidoId=sessionStorage.getItem('mg_pedido_id');
   var userEmail=sessionStorage.getItem('mg_user_email');
+  var userId=sessionStorage.getItem('mg_user_id');
   var itensSalvos=sessionStorage.getItem('mg_itens_pendentes');
 
-  if(!ref && !pedidoId && !userEmail){mostrarErro();return;}
+  if(!ref && !pedidoId && !userEmail && !userId){mostrarErro();return;}
   if(ref) sessionStorage.setItem('mg_external_ref',ref);
 
   var _m={};var _s={getItem:function(k){return _m[k]??null},setItem:function(k,v){_m[k]=v},removeItem:function(k){delete _m[k]}};
@@ -266,7 +267,7 @@ async function init(){
   var tentativas=0,max=30;
 
   async function buscarPedido(){
-    /* 1. Por reference */
+    /* 1. Por reference — mais confiável */
     if(ref){
       var r1=await sb.from('pedidos').select('*').eq('reference',ref).maybeSingle();
       if(r1.data) return r1.data;
@@ -276,10 +277,15 @@ async function init(){
       var r2=await sb.from('pedidos').select('*').eq('id',pedidoId).maybeSingle();
       if(r2.data) return r2.data;
     }
-    /* 3. Por email — pedido mais recente */
-    if(userEmail){
-      var r3=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    /* 3. Por user_id — pedido mais recente */
+    if(userId){
+      var r3=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(1).maybeSingle();
       if(r3.data) return r3.data;
+    }
+    /* 4. Por email — último recurso */
+    if(userEmail){
+      var r4=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false}).limit(1).maybeSingle();
+      if(r4.data) return r4.data;
     }
     return null;
   }
@@ -288,23 +294,37 @@ async function init(){
     tentativas++;
     try{
       var pedido=await buscarPedido();
-      if(pedido&&(pedido.status==='aprovado'||pedido.status==='pago')){
-        document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
-        document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
-        /* Se o pedido não tem itens mas temos salvo no session, injeta */
+      if(pedido){
+        /* Injeta itens do sessionStorage se pedido não tiver */
         if((!pedido.itens||!pedido.itens.length)&&itensSalvos){
           try{pedido.itens=JSON.parse(itensSalvos);}catch(e){}
         }
-        pedido=await tentarEntregarFallback(sb,pedido);
-        setTimeout(function(){mostrarSucesso(pedido);},500);
-        return;
+        if(pedido.status==='aprovado'||pedido.status==='pago'||pedido.status==='entregue'){
+          document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
+          document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
+          pedido=await tentarEntregarFallback(sb,pedido);
+          /* Limpa sessionStorage após entrega bem-sucedida */
+          ['mg_pix_data','mg_external_ref','mg_pedido_id','mg_itens_pendentes'].forEach(function(k){sessionStorage.removeItem(k);});
+          setTimeout(function(){mostrarSucesso(pedido);},500);
+          return;
+        }
+        if(pedido.status==='pendente'){
+          document.getElementById('subtitulo').textContent='Pagamento recebido, entregando sua chave...';
+          document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
+          document.getElementById('s3').className='step active';
+          /* Tenta entregar mesmo com status pendente após 3+ tentativas */
+          if(tentativas>=3){
+            var tentativa=await tentarEntregarFallback(sb,pedido);
+            if(tentativa.chaves_entregues&&tentativa.chaves_entregues.length>0){
+              document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
+              ['mg_pix_data','mg_external_ref','mg_pedido_id','mg_itens_pendentes'].forEach(function(k){sessionStorage.removeItem(k);});
+              setTimeout(function(){mostrarSucesso(tentativa);},500);
+              return;
+            }
+          }
+        }
       }
-      if(pedido&&pedido.status==='pendente'){
-        document.getElementById('subtitulo').textContent='Pagamento recebido, entregando sua chave...';
-        document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
-        document.getElementById('s3').className='step active';
-      }
-    }catch(e){console.error(e);}
+    }catch(e){console.error('[verificar]',e);}
     if(tentativas<max) setTimeout(verificar,3000); else mostrarErro();
   }
   verificar();

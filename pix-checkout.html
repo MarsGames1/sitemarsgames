@@ -301,12 +301,17 @@ async function pollPagamento(paymentId, ref) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ payment_id: paymentId, reference: ref })
     });
-    const d = await res.json();
-    console.log('[poll edge]', pollTentativas, d);
-    if (d.aprovado) {
-      pollAtivo = false;
-      irParaSucesso(d.reference || ref);
-      return;
+    if (res.ok) {
+      const d = await res.json();
+      console.log('[poll edge]', pollTentativas, d);
+      if (d.aprovado) {
+        pollAtivo = false;
+        irParaSucesso(d.reference || ref);
+        return;
+      }
+    } else {
+      // Edge function com erro (ex: 500) — vai direto para fallback do banco
+      console.warn('[poll edge] status:', res.status, '— usando fallback DB');
     }
   } catch(e) { console.warn('[poll edge]', e); }
 
