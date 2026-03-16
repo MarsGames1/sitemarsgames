@@ -55,7 +55,9 @@ p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
 const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}});
-const reference = sessionStorage.getItem('mg_external_ref');
+const _urlParams = new URLSearchParams(window.location.search);
+const reference = _urlParams.get('external_reference') || _urlParams.get('collection_id') || sessionStorage.getItem('mg_external_ref');
+if (reference) sessionStorage.setItem('mg_external_ref', reference);
 let checking = true;
 let tentativas = 0;
 const MAX_TENTATIVAS = 40; // 40 x 3s = 2 minutos
