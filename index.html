@@ -2303,7 +2303,12 @@ footer::before{
     radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.3) 0%,transparent 100%);opacity:.6}
 
 /* ══ ANIMATION ENGINE ══ */
-#mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
+#mars-canvas{
+  position:fixed;inset:0;
+  z-index:3;
+  pointer-events:none;
+  opacity:0;transition:opacity 2s ease;
+}
 #mars-canvas.ready{opacity:1}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
@@ -2505,14 +2510,13 @@ footer::before{
     <video
       id="heroVideo"
       muted
+      autoplay
       loop
       playsinline
-      preload="none"
+      preload="auto"
       aria-hidden="true"
     >
-      <!-- Coloque aqui a URL do seu vídeo (WebM preferido, MP4 fallback) -->
-      <!-- <source src="SEU_VIDEO.webm" type="video/webm"> -->
-      <!-- <source src="SEU_VIDEO.mp4" type="video/mp4"> -->
+      <source src="https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/forza.webm" type="video/webm">
     </video>
     <div class="hero-video-overlay"></div>
   </div>
@@ -3935,16 +3939,23 @@ sb.auth.onAuthStateChange(function(event, session){
     atualizarNavbar(null).catch(function(){});
   }
 });
-/* Fallback robusto — tenta múltiplas vezes */
-(function tentarSessao(tentativa){
+/* Auth — lê sessão imediatamente e com retry */
+sb.auth.getSession().then(function(r){
+  if(r.data && r.data.session){
+    atualizarNavbar(r.data.session);
+  }
+});
+/* Retry caso localStorage ainda não tenha sido lido */
+setTimeout(function(){
   sb.auth.getSession().then(function(r){
-    if(r.data && r.data.session){
-      atualizarNavbar(r.data.session).catch(function(){});
-    } else if(tentativa < 5){
-      setTimeout(function(){ tentarSessao(tentativa+1); }, 300 * tentativa);
-    }
+    if(r.data && r.data.session) atualizarNavbar(r.data.session);
   });
-})(1);
+}, 500);
+setTimeout(function(){
+  sb.auth.getSession().then(function(r){
+    if(r.data && r.data.session) atualizarNavbar(r.data.session);
+  });
+}, 1500);
 
 
 /* ── POP-UP DE SAÍDA ── */
@@ -4078,43 +4089,36 @@ window.addEventListener('resize',function(){
   function initVideo(){
     var video = document.getElementById('heroVideo');
     if(!video) return;
-
-    // ▶ CONFIGURE AQUI: URL do seu vídeo hospedado no CDN
-    // Recomendado: Cloudflare R2, Bunny CDN ou Backblaze B2 (gratuito/barato)
-    // Formato ideal: WebM VP9 (menor tamanho) + MP4 H.264 como fallback
-    var WEBM_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/forza.webm';
-    var MP4_URL  = '';
-
-    if(!WEBM_URL && !MP4_URL) return; // nada configurado ainda, mantém bg estático
-
-    // Injeta sources dinamicamente — zero download antes disso
-    if(WEBM_URL){ var s1=document.createElement('source');s1.src=WEBM_URL;s1.type='video/webm';video.appendChild(s1); }
-    if(MP4_URL){  var s2=document.createElement('source');s2.src=MP4_URL;s2.type='video/mp4';video.appendChild(s2); }
-
-    video.load();
-
+    // Source já está no HTML — só precisa dar play e fazer fade-in
     var played = false;
-    video.addEventListener('canplay', function(){
-      if(played) return; played = true;
-      video.classList.add('ready'); // fade-in suave
+    function tryPlay(){
+      if(played) return;
+      played = true;
+      video.classList.add('ready');
       video.play().catch(function(){});
-    }, {once:true});
-
-    // Se demorar >5s, desiste silenciosamente (mantém bg estático)
-    setTimeout(function(){ if(!played){ video.src=''; } }, 5000);
+    }
+    video.addEventListener('canplay', tryPlay, {once:true});
+    video.addEventListener('loadeddata', tryPlay, {once:true});
+    // Forçar após 1s se canplay não disparar
+    setTimeout(function(){
+      if(!played){ tryPlay(); }
+    }, 1000);
   }
 
-  if('requestIdleCallback' in window){
-    requestIdleCallback(initVideo, {timeout: 2500});
+  // Iniciar vídeo após load
+  if(document.readyState === 'complete'){
+    setTimeout(initVideo, 300);
   } else {
-    window.addEventListener('load', function(){ setTimeout(initVideo, 400); });
+    window.addEventListener('load', function(){ setTimeout(initVideo, 300); });
   }
 })();
 
 /* ══ THREE.JS STARS ══ */
 function loadScript(src, cb) {
   var s = document.createElement('script');
-  s.src = src; s.onload = cb;
+  s.src = src;
+  s.onload = cb;
+  s.onerror = function(){ console.warn('Falha ao carregar:', src); };
   document.head.appendChild(s);
 }
 function initThree() {
@@ -4168,16 +4172,20 @@ function initThree() {
   })();
   canvas.classList.add('ready');
 }
-// Three.js carregamento — dispara assim que DOM estiver pronto
-function iniciarAnimacao(){
+// Three.js — carrega após page load para não bloquear
+function dispararThree(){
   loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function(){
-    setTimeout(initThree, 100);
+    if(typeof THREE !== 'undefined'){
+      initThree();
+    } else {
+      console.warn('THREE não carregou');
+    }
   });
 }
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', iniciarAnimacao);
+if(document.readyState === 'complete'){
+  dispararThree();
 } else {
-  iniciarAnimacao();
+  window.addEventListener('load', dispararThree);
 }
 </script>
 
