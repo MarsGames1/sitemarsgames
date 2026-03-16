@@ -176,10 +176,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 
 <script>
 const SUPA_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
+const SUPA_KEY  = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 
-// Dados salvos pelo index.html antes de abrir essa página
+// Dados salvos pelo checkout.html
 const pixData    = JSON.parse(sessionStorage.getItem('mg_pix_data') || 'null');
 const userEmail  = sessionStorage.getItem('mg_user_email') || '';
+const reference  = sessionStorage.getItem('mg_external_ref') || '';
+const pedidoId   = sessionStorage.getItem('mg_pedido_id') || '';
+
+// Cliente Supabase leve para consultar pedidos diretamente
+const _mem = {};
+const _store = { getItem: k => _mem[k]??null, setItem:(k,v)=>_mem[k]=v, removeItem:k=>delete _mem[k] };
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
+  auth:{ flowType:'implicit', detectSessionInUrl:false, persistSession:false, autoRefreshToken:false, storage:_store }
+});
 
 function show(id) {
   ['stateLoading','statePix','stateSuccess','stateError'].forEach(s => {
@@ -206,7 +216,7 @@ function confetti() {
   }
 }
 
-// ── TIMER COUNTDOWN ──
+// ── TIMER ──
 let timerInterval = null;
 function iniciarTimer(minutos) {
   let total = minutos * 60;
@@ -217,7 +227,7 @@ function iniciarTimer(minutos) {
     const m = String(Math.floor(total/60)).padStart(2,'0');
     const s = String(total%60).padStart(2,'0');
     el.textContent = `⏱ ${m}:${s}`;
-    if (total <= 300) el.style.color = '#ff8888'; // vermelho nos últimos 5min
+    if (total <= 300) el.style.color = '#ff8888';
   }, 1000);
 }
 
@@ -232,137 +242,126 @@ function copiarPix() {
   });
 }
 
-// ── EXIBIR SUCESSO COM CHAVES ──
-function mostrarSucesso(chaves, valor) {
+// ── REDIRECIONA PARA SUCESSO ──
+// Toda lógica de exibição de chave fica em sucesso.html
+// pix-checkout só detecta o pagamento e redireciona
+function irParaSucesso(ref) {
   clearInterval(timerInterval);
   confetti();
   localStorage.removeItem('mg_cart');
   localStorage.removeItem('mg_cart_saved');
+  const refFinal = ref || reference || pedidoId || '';
 
-  const sec = document.getElementById('chavesSection');
-  if (chaves && chaves.length > 0) {
-    sec.innerHTML = chaves.map((c, idx) => {
-      if (c.conteudo === 'ERRO_ESTOQUE' || c.tipo === 'erro') {
-        return `<div class="chave-box"><div class="chave-label">⚠️ ${esc(c.produto_nome)}</div>
-          <div style="font-size:11px;color:#666">Entrega em processamento. Acesse Meus Pedidos.</div></div>`;
-      }
-      let corpo = '';
-      if (c.tipo === 'login_senha') {
-        const p = (c.conteudo||'').split('|');
-        corpo = `<div class="chave-field-label">Login / Email</div><div class="chave-code">${esc(p[0])}</div>
-                 <div class="chave-field-label">Senha</div><div class="chave-code">${esc(p[1])}</div>`;
-      } else {
-        corpo = `<div class="chave-field-label">Chave de ativação</div><div class="chave-code">${esc(c.conteudo)}</div>`;
-      }
-      return `<div class="chave-box">
-        <div class="chave-label">🔑 ${esc(c.produto_nome||'Sua chave')}</div>
-        ${corpo}
-        <div style="font-size:10px;color:#505050;margin-top:6px">📋 Copie e guarde em local seguro!</div>
-        <button class="btn-copiar-chave" id="cbtn${idx}" onclick="copiarChave('${esc(c.conteudo)}',${idx})">📋 Copiar chave</button>
-      </div>`;
-    }).join('');
-  }
+  // Pequena animação de sucesso antes de redirecionar
+  document.getElementById('pollMsg').textContent = 'Pagamento confirmado! Redirecionando...';
+  document.getElementById('pollMsg').style.color = '#00ff55';
+  document.querySelector('.poll-dot').style.background = '#00ff55';
+  document.querySelector('.poll-dot').style.animation = 'none';
 
-  const pts = Math.floor(Number(valor||0) * 10);
-  if (pts > 0) {
-    document.getElementById('ptsBadge').style.display = 'inline-flex';
-    document.getElementById('ptsGanhos').textContent = pts.toLocaleString('pt-BR');
-  }
-
-  show('stateSuccess');
+  setTimeout(() => {
+    window.location.href = 'sucesso.html?ref=' + encodeURIComponent(refFinal);
+  }, 1200);
 }
 
-function copiarChave(texto, idx) {
-  navigator.clipboard.writeText(texto).then(() => {
-    const btn = document.getElementById('cbtn' + idx);
-    if (btn) { btn.textContent = '✓ Copiado!'; btn.classList.add('ok'); }
-    setTimeout(() => { if (btn) { btn.textContent = '📋 Copiar chave'; btn.classList.remove('ok'); } }, 2500);
-  });
-}
-
-// ── POLLING: consulta se o Pix foi pago ──
+// ── POLLING: edge function + consulta direta ao banco ──
 let pollTentativas = 0;
-const POLL_MAX = 60; // 60 x 3s = 3 minutos
+const POLL_MAX = 60;
 let pollAtivo = true;
 
-async function pollPagamento(paymentId, reference) {
+async function buscarPedidoPago() {
+  try {
+    if (reference) {
+      const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', reference).maybeSingle();
+      if (data && (data.status === 'pago' || data.status === 'aprovado' || data.status === 'entregue')) return data;
+    }
+    if (pedidoId) {
+      const { data } = await sb.from('pedidos').select('id,status,reference').eq('id', pedidoId).maybeSingle();
+      if (data && (data.status === 'pago' || data.status === 'aprovado' || data.status === 'entregue')) return data;
+    }
+    if (userEmail) {
+      const { data } = await sb.from('pedidos').select('id,status,reference')
+        .eq('cliente_email', userEmail)
+        .in('status', ['pago','aprovado','entregue'])
+        .order('created_at', { ascending: false })
+        .limit(1).maybeSingle();
+      if (data) return data;
+    }
+  } catch(e) { console.warn('[buscarPedido]', e); }
+  return null;
+}
+
+async function pollPagamento(paymentId, ref) {
   if (!pollAtivo) return;
   pollTentativas++;
 
+  // 1. Tenta edge function (aciona entrega automática no servidor)
   try {
     const res = await fetch(SUPA_URL + '/functions/v1/mp-confirmar-pagamento', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ payment_id: paymentId, reference })
+      body: JSON.stringify({ payment_id: paymentId, reference: ref })
     });
     const d = await res.json();
-    console.log('[poll]', pollTentativas, d);
-
+    console.log('[poll edge]', pollTentativas, d);
     if (d.aprovado) {
       pollAtivo = false;
-      mostrarSucesso(d.chaves, pixData?.valor);
+      irParaSucesso(d.reference || ref);
       return;
     }
-  } catch(e) {
-    console.error('[poll] erro:', e);
-  }
+  } catch(e) { console.warn('[poll edge]', e); }
+
+  // 2. Fallback direto no banco — funciona mesmo se o webhook do MP falhar
+  try {
+    const pedido = await buscarPedidoPago();
+    if (pedido) {
+      console.log('[poll db] pedido pago:', pedido.id, pedido.status);
+      pollAtivo = false;
+      irParaSucesso(pedido.reference || ref);
+      return;
+    }
+  } catch(e) { console.warn('[poll db]', e); }
 
   if (pollTentativas < POLL_MAX) {
-    setTimeout(() => pollPagamento(paymentId, reference), 3000);
+    setTimeout(() => pollPagamento(paymentId, ref), 3000);
   } else {
-    // Expirou — mantém tela do Pix mas muda mensagem
-    document.getElementById('pollMsg').textContent = 'Pix expirado. Tente novamente.';
-    document.getElementById('pollMsg').style.color = '#ff8888';
-    document.querySelector('.poll-dot').style.background = '#ff5555';
+    // Expirou: manda para sucesso.html mesmo assim — lá ele tenta buscar o pedido
+    document.getElementById('pollMsg').textContent = 'Verificando pagamento...';
+    document.getElementById('pollMsg').style.color = '#ffb800';
+    document.querySelector('.poll-dot').style.background = '#ffb800';
     document.querySelector('.poll-dot').style.animation = 'none';
+    setTimeout(() => {
+      window.location.href = 'sucesso.html?ref=' + encodeURIComponent(reference || pedidoId || '');
+    }, 2000);
   }
 }
 
 // ── INIT ──
 async function init() {
   show('stateLoading');
-
-  // Se já temos os dados do Pix (gerado pelo index.html), usa direto
   if (pixData && pixData.qr_code) {
     renderPix(pixData);
     return;
   }
-
-  // Se não tem dados, redireciona para o início
   show('stateError');
   document.getElementById('erroMsg').textContent = 'Sessão expirada. Volte ao carrinho e tente novamente.';
 }
 
 function renderPix(data) {
-  // QR Code
   if (data.qr_code_base64) {
     document.getElementById('qrImg').src = 'data:image/png;base64,' + data.qr_code_base64;
   }
-
-  // Valor
   document.getElementById('valorNum').textContent = 'R$ ' + Number(data.valor||0).toFixed(2).replace('.',',');
-
-  // Produto
   const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
   if (itens.length) {
     document.getElementById('valorProd').textContent = itens.map(i => i.nome).join(', ');
   }
-
-  // Pix code
   if (data.qr_code) {
     document.getElementById('pixCode').textContent = data.qr_code;
   }
-
-  // Timer
   iniciarTimer(data.expira_em || 30);
-
-  // Salva reference
   if (data.reference) sessionStorage.setItem('mg_external_ref', data.reference);
-
   show('statePix');
-
-  // Inicia polling
-  pollPagamento(data.payment_id, data.reference);
+  pollPagamento(data.payment_id, data.reference || reference);
 }
 
 init();
