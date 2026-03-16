@@ -2301,6 +2301,30 @@ footer::before{
 #mars-canvas.ready{opacity:1}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
+
+/* ── Avatar navbar base ── */
+.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:40px;height:40px}
+.nav-avatar-ring{position:absolute;inset:-3px;border-radius:50%;z-index:0}
+.nav-user-avatar{
+  width:36px;height:36px;border-radius:50%;
+  border:2.5px solid #444;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
+  position:relative;z-index:1;
+  background:#131318;
+}
+.nav-user-avatar img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  border-radius:50%;
+}
+#navAvatarFallback{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
+}
+
 @keyframes navBronzePulse{0%,100%{box-shadow:0 0 6px 2px rgba(205,159,106,.6)}50%{box-shadow:0 0 18px 6px rgba(205,159,106,1)}}
 @keyframes navPrataShimmer{0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.5)}50%{box-shadow:0 0 20px 7px rgba(232,232,232,.9)}}
 @keyframes navOuroPulse{0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.6)}50%{box-shadow:0 0 22px 8px rgba(255,215,0,1)}}

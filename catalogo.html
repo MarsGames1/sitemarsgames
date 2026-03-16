@@ -315,7 +315,15 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storageKey:'mg_auth',persistSession:true}});
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{
+    flowType:'implicit',
+    detectSessionInUrl:true,
+    persistSession:true,
+    autoRefreshToken:true,
+    storageKey:'mg_auth'
+  }
+});
 var todosProdutos=[],catAtual='todos',buscaAtual='';
 var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
 
