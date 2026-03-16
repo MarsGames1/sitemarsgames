@@ -327,10 +327,20 @@ function toggleCart(){
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
 async function iniciarPagamento(itens, user) {
-  const { data: { session } } = await sb.auth.getSession();
+  /* Garante que a sessão existe e o token é válido */
+  const { data: sessData, error: sessErr } = await sb.auth.getSession();
+  if(sessErr || !sessData.session) {
+    throw new Error('Sessão expirada. Faça login novamente.');
+  }
+  const token = sessData.session.access_token;
+  if(!token) throw new Error('Token inválido. Faça login novamente.');
+
   const response = await fetch(`${SUPABASE_URL}/functions/v1/mercadopago-criar-preferencia`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify({ itens: itens })
   });
   const data = await response.json();
