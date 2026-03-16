@@ -363,8 +363,7 @@ async function checkout() {
     const pedidoTemp = await criarPedidoTemp(itens, session.user);
     const initPoint = await iniciarPagamento(itens, session.user, pedidoTemp.reference);
     sessionStorage.setItem('mg_external_ref', pedidoTemp.reference);
-    window.open(initPoint, '_blank');
-    window.location.href = 'aguardando-pagamento.html';
+    window.location.href = initPoint;
   } catch (error) {
     console.error('Erro no checkout:', error);
     showToast('Erro: ' + (error.message || 'Tente novamente'));

@@ -91,10 +91,10 @@ setTimeout(() => {
     checking = false;
     const btn = document.getElementById('nextBtn');
     btn.classList.add('active');
-    btn.href = 'sucesso.html';
+    btn.href = 'sucesso.html?ref=' + (reference || '');
     btn.innerHTML = 'Verificar manualmente →';
   }
-}, 30000);
+}, 60000);
 
 function redirectToSuccess(e) {
   e.preventDefault();

@@ -3832,9 +3832,8 @@ async function checkout() {
     const initPoint = await iniciarPagamento(itens, session.user, pedidoTemp.reference);
     // Salvar referência
     sessionStorage.setItem('mg_external_ref', pedidoTemp.reference);
-    // Abrir Mercado Pago e redirecionar para página de aguardo
-    window.open(initPoint, '_blank');
-    window.location.href = 'aguardando-pagamento.html';
+    // Redirecionar direto para o Mercado Pago (evita bloqueio de popup)
+    window.location.href = initPoint;
   } catch (error) {
     console.error('Erro no checkout:', error);
     showToast('Erro: ' + (error.message || 'Tente novamente'));

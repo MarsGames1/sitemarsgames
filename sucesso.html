@@ -87,29 +87,47 @@ function lancarConfetti(){
 }
 
 async function init(){
-  lancarConfetti();
-  localStorage.removeItem('mg_cart');
-  localStorage.removeItem('mg_cart_saved');
   const urlParams = new URLSearchParams(window.location.search);
   const ref = urlParams.get('ref') || sessionStorage.getItem('mg_external_ref');
-  if (!ref) return;
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const { data: pedido } = await sb.from('pedidos').select('*').eq('reference', ref).maybeSingle();
-  if (pedido) {
-    mostrarPedidos([pedido]);
-  } else {
-    const chaveSection = document.getElementById('chaveSection');
-    chaveSection.innerHTML = '<div class="chave-loading"><div class="spin"></div> Processando seu pedido...</div>';
-    setTimeout(async () => {
-      const { data } = await sb.from('pedidos').select('*').eq('reference', ref).maybeSingle();
-      if (data) {
-        chaveSection.innerHTML = '';
-        mostrarPedidos([data]);
-      } else {
-        chaveSection.innerHTML = `<div class="chave-box"><div class="chave-label">Status do pedido</div><div class="chave-code">Pagamento confirmado!</div><div class="chave-info">Sua chave estará disponível em instantes.</div></div>`;
-      }
-    }, 5000);
+  const chaveSection = document.getElementById('chaveSection');
+
+  // Sem referência — pagamento não foi iniciado
+  if (!ref) {
+    document.querySelector('.title').innerHTML = 'Pedido <span>não encontrado</span>';
+    document.querySelector('.subtitle').textContent = 'Não encontramos um pagamento associado a esta sessão.';
+    document.querySelector('.check-wrap .check-icon').textContent = '❌';
+    return;
   }
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}
+  });
+
+  chaveSection.innerHTML = '<div class="chave-loading"><div class="spin"></div> Verificando pagamento...</div>';
+
+  // Tenta até 3x com intervalo de 3s
+  var tentativas = 0;
+  async function buscarPedido() {
+    tentativas++;
+    const { data: pedido } = await sb.from('pedidos').select('*').eq('reference', ref).maybeSingle();
+    if (pedido && pedido.status === 'aprovado') {
+      chaveSection.innerHTML = '';
+      lancarConfetti();
+      localStorage.removeItem('mg_cart');
+      localStorage.removeItem('mg_cart_saved');
+      mostrarPedidos([pedido]);
+    } else if (tentativas < 5) {
+      setTimeout(buscarPedido, 3000);
+    } else {
+      // Pagamento ainda não confirmado pelo webhook
+      chaveSection.innerHTML = '<div class="chave-box"><div class="chave-label">Aguardando confirmação</div>'
+        + '<div class="chave-code" style="font-size:12px;color:#888">Seu pagamento está sendo processado.</div>'
+        + '<div class="chave-info" style="margin-top:8px">Assim que confirmado, a chave aparecerá em <a href="perfil.html" style="color:var(--orange)">Meus Pedidos</a>.</div></div>';
+      document.querySelector('.title').innerHTML = 'Pagamento <span>em análise</span>';
+      document.querySelector('.subtitle').textContent = 'O Mercado Pago ainda está processando. Você receberá a chave em breve.';
+    }
+  }
+  buscarPedido();
 }
 
 function mostrarPedidos(pedidos){
