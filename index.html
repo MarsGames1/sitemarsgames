@@ -2305,11 +2305,11 @@ footer::before{
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{
   position:fixed;inset:0;
-  z-index:10;
+  z-index:0;
   pointer-events:none;
   opacity:0;transition:opacity 2s ease;
 }
-#mars-canvas.ready{opacity:1}
+#mars-canvas.ready{opacity:0.35}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
 
@@ -2789,28 +2789,7 @@ footer::before{
         <div style="color:#ffb300;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · Fev 2025</div>
       </div>
     </div>
-    </div>
-
   </div>
-    </div>
-    <div class="boa-cover boa-cover-1" onclick="window.location.href='#'" title="Crimson Desert">
-      <img src="https://static.wixstatic.com/media/afd2cb_ad2ff235a4ed408e9a9243f8a17db44e~mv2.jpg" alt="Crimson Desert" loading="lazy" decoding="async">
-      <div class="boa-cover-tag">
-        <div class="boa-cover-name">Crimson Desert</div>
-        <div style="color:#e8421a;font-size:8px;font-weight:900;letter-spacing:1px">EM BREVE · Mar 2026</div>
-      </div>
-    </div>
-    <div class="boa-cover boa-cover-2" onclick="window.location.href='produto.html?nome=Resident+Evil+Requiem'" title="Resident Evil Requiem">
-      <img src="https://static.wixstatic.com/media/afd2cb_f0edeae3e635404b9dabb6b4183e9d0b~mv2.jpg" alt="Resident Evil Requiem" loading="lazy" decoding="async">
-      <div class="boa-cover-tag">
-        <div class="boa-cover-name">Resident Evil Requiem</div>
-        <div style="color:#00ff55;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · Disponível</div>
-      </div>
-    </div>
-    </div>
-
-  </div>
-    </div>
     <div class="boa-cover boa-cover-1" onclick="window.location.href='catalogo.html'" title="Crimson Desert">
       <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/3321460/library_600x900.jpg" alt="Crimson Desert" loading="lazy" decoding="async"
            >
@@ -2826,7 +2805,6 @@ footer::before{
         <div class="boa-cover-name">Resident Evil Requiem</div>
         <div style="color:#00ff55;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · 27 Fev 2026</div>
       </div>
-    </div>
     </div>
   </div>
 
@@ -3710,6 +3688,20 @@ function ativarRealtimeProdutos(){
       renderProdutos();
     })
     .subscribe();
+}
+
+function setCat(cat, el){
+  catAtual = cat;
+  buscaAtual = '';
+  var searchLoja = document.getElementById('searchInputLoja');
+  if(searchLoja) searchLoja.value = '';
+  var searchNav = document.getElementById('searchInput');
+  if(searchNav) searchNav.value = '';
+  document.querySelectorAll('.cat-pill').forEach(function(p){ p.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  renderProdutos();
+  var store = document.querySelector('.store-wrap');
+  if(store) store.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function renderProdutos(){
