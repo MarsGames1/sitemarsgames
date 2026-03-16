@@ -408,25 +408,36 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ── Bronze: borda âmbar com pulso quente ── */
-.avatar-bronze .avatar-inner{
-  border:3px solid var(--bronze);
-  animation:bronzePulse 2.5s ease-in-out infinite;
+/* ── Bronze: borda + glow no wrap (clip-path no inner corta box-shadow) ── */
+.avatar-bronze .avatar-inner{border:3px solid var(--bronze)}
+.avatar-bronze .perfil-avatar-wrap{animation:bronzePulse 2.5s ease-in-out infinite}
+@keyframes bronzePulse{
+  0%,100%{box-shadow:0 0 0 2px rgba(205,159,106,.6),0 0 12px 3px rgba(205,159,106,.4)}
+  50%{box-shadow:0 0 0 3px rgba(205,159,106,1),0 0 22px 8px rgba(205,159,106,.7)}
 }
-/* ── Prata: borda prateada com shimmer ── */
-.avatar-prata .avatar-inner{
-  border:3px solid var(--prata);
-  animation:prataShimmer 3s ease-in-out infinite;
+
+/* ── Prata ── */
+.avatar-prata .avatar-inner{border:3px solid var(--prata)}
+.avatar-prata .perfil-avatar-wrap{animation:prataShimmer 3s ease-in-out infinite}
+@keyframes prataShimmer{
+  0%,100%{box-shadow:0 0 0 2px rgba(232,232,232,.5),0 0 14px 4px rgba(232,232,232,.3)}
+  50%{box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 26px 8px rgba(232,232,232,.6)}
 }
-/* ── Ouro: borda dourada com pulso expansivo ── */
-.avatar-ouro .avatar-inner{
-  border:3px solid var(--ouro);
-  animation:ouroPulse 2s ease-in-out infinite;
+
+/* ── Ouro ── */
+.avatar-ouro .avatar-inner{border:3px solid var(--ouro)}
+.avatar-ouro .perfil-avatar-wrap{animation:ouroPulse 2s ease-in-out infinite}
+@keyframes ouroPulse{
+  0%,100%{box-shadow:0 0 0 2px rgba(255,215,0,.6),0 0 14px 4px rgba(255,215,0,.4)}
+  50%{box-shadow:0 0 0 3px rgba(255,215,0,1),0 0 28px 10px rgba(255,215,0,.7)}
 }
-/* ── Esmeralda: borda verde-energia pulsante ── */
-.avatar-esmeralda .avatar-inner{
-  border:3px solid var(--esm);
-  animation:esmPulse 1.8s ease-in-out infinite;
+
+/* ── Esmeralda ── */
+.avatar-esmeralda .avatar-inner{border:3px solid var(--esm)}
+.avatar-esmeralda .perfil-avatar-wrap{animation:esmPulse 1.8s ease-in-out infinite}
+@keyframes esmPulse{
+  0%,100%{box-shadow:0 0 0 2px rgba(80,200,120,.6),0 0 14px 4px rgba(80,200,120,.4)}
+  50%{box-shadow:0 0 0 3px rgba(80,200,120,1),0 0 28px 10px rgba(80,200,120,.7)}
 }
 
 /* ── Diamante: disco conic-gradient girando + inner sem borda ── */
