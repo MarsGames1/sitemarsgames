@@ -304,14 +304,17 @@ async function buscarPedidoPago() {
     if (reference) {
       const p = await dbGet('pedidos', { reference });
       console.log('[db] por reference:', reference, '→', p);
-      if (p && statusOk.includes(p.status)) return p;
-      if (p && p.status === 'pendente') {
-        // Chave pode ter sido entregue mas pedido não foi atualizado (edge crashou)
-        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
-        if (ch) {
-          console.log('[db] chave entregue detectada, corrigindo pedido:', p.id);
-          await dbUpdate('pedidos', p.id, { status: 'entregue' });
-          return Object.assign({}, p, { status: 'entregue' });
+      if (p) {
+        if (statusOk.includes(p.status)) return p;
+        // Chave pode já ter sido entregue mas status do pedido não atualizado
+        if (p.status === 'pendente') {
+          const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
+          if (ch) {
+            await dbUpdate('pedidos', p.id, { status: 'entregue' });
+            return Object.assign({}, p, { status: 'entregue' });
+          }
+          // Pedido pendente mas edge dando 500 — retorna mesmo assim para sucesso.html tratar
+          return p;
         }
       }
     }
@@ -320,12 +323,15 @@ async function buscarPedidoPago() {
     if (pedidoId) {
       const p = await dbGet('pedidos', { id: pedidoId });
       console.log('[db] por pedidoId:', pedidoId, '→', p);
-      if (p && statusOk.includes(p.status)) return p;
-      if (p && p.status === 'pendente') {
-        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
-        if (ch) {
-          await dbUpdate('pedidos', p.id, { status: 'entregue' });
-          return Object.assign({}, p, { status: 'entregue' });
+      if (p) {
+        if (statusOk.includes(p.status)) return p;
+        if (p.status === 'pendente') {
+          const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
+          if (ch) {
+            await dbUpdate('pedidos', p.id, { status: 'entregue' });
+            return Object.assign({}, p, { status: 'entregue' });
+          }
+          return p;
         }
       }
     }
@@ -376,12 +382,22 @@ async function pollPagamento(paymentId, ref) {
   try {
     const pedido = await buscarPedidoPago();
     if (pedido) {
-      console.log('[poll db] pedido pago:', pedido.id, pedido.status);
+      console.log('[poll db] pedido encontrado:', pedido.id, pedido.status);
       pollAtivo = false;
-      irParaSucesso(pedido.reference || ref);
+      irParaSucesso(pedido.reference || ref || pedido.id);
       return;
     }
   } catch(e) { console.warn('[poll db]', e); }
+
+  // 3. Se edge deu 500 e temos reference/pedidoId, manda para sucesso.html
+  // (sucesso.html tenta entregar a chave diretamente do estoque)
+  if (pollTentativas >= 3 && (reference || pedidoId)) {
+    const pedidoRef = reference || pedidoId;
+    console.log('[poll] 3+ tentativas com 500 — redirecionando para sucesso.html com ref:', pedidoRef);
+    pollAtivo = false;
+    irParaSucesso(pedidoRef);
+    return;
+  }
 
   if (pollTentativas < POLL_MAX) {
     setTimeout(() => pollPagamento(paymentId, ref), 3000);
