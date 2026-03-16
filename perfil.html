@@ -1490,8 +1490,11 @@ async function carregarPedidos(userId){
   if(loader)loader.style.display='flex';
   if(list)list.style.display='none';
   try{
-    /* Busca por email (mais confiável — user_id pode não existir na tabela) */
-    var userEmail=currentUser&&currentUser.email?currentUser.email:'';
+    /* Busca por email — obtém da sessão atual */
+    var sessionData=await sb.auth.getSession();
+    var userEmail=sessionData&&sessionData.data&&sessionData.data.session?sessionData.data.session.user.email:'';
+    /* Fallback: tenta pelo sessionStorage (fluxo pós-checkout) */
+    if(!userEmail) userEmail=sessionStorage.getItem('mg_user_email')||'';
     if(!userEmail){
       if(loader)loader.style.display='none';
       if(list){list.style.display='flex';list.innerHTML='<div class="sem-pedidos">Faça login para ver seus pedidos.</div>';}
