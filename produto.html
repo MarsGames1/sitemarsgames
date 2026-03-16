@@ -736,7 +736,7 @@ async function comprarAgora(){
   if(btn){btn.disabled=true;btn.innerHTML='⏳ Processando...';}
   try{
     var itens=[{id:produto.id,nome:produto.nome,preco:Number(produto.preco),quantidade:1,imagem:produto.imagem||''}];
-    var res=await fetch('https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',{
+    var res=await fetch('https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/mercadopago-criar-preferencia',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
       body:JSON.stringify({itens:itens})

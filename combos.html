@@ -337,7 +337,7 @@ async function criarPedidoTemp(itens, user) {
 }
 async function iniciarPagamento(itens, user, externalRef) {
   const { data: { session } } = await sb.auth.getSession();
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-preferencia`, {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/mercadopago-criar-preferencia`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
     body: JSON.stringify({ itens: itens, user_email: user.email, user_id: user.id, external_reference: externalRef })
