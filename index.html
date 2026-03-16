@@ -2297,7 +2297,7 @@ footer::before{
 
 
 /* ══ STARS ══ */
-.stars-bg{position:fixed;inset:0;z-index:1;pointer-events:none;
+.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
     radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.4) 0%,transparent 100%),
     radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.3) 0%,transparent 100%);opacity:.6}
@@ -3935,12 +3935,16 @@ sb.auth.onAuthStateChange(function(event, session){
     atualizarNavbar(null).catch(function(){});
   }
 });
-/* Fallback direto - aguarda um pouco para a sessão ser restaurada */
-setTimeout(function(){
+/* Fallback robusto — tenta múltiplas vezes */
+(function tentarSessao(tentativa){
   sb.auth.getSession().then(function(r){
-    if(r.data && r.data.session) atualizarNavbar(r.data.session).catch(function(){});
+    if(r.data && r.data.session){
+      atualizarNavbar(r.data.session).catch(function(){});
+    } else if(tentativa < 5){
+      setTimeout(function(){ tentarSessao(tentativa+1); }, 300 * tentativa);
+    }
   });
-}, 100);
+})(1);
 
 
 /* ── POP-UP DE SAÍDA ── */
@@ -4157,20 +4161,23 @@ function initThree() {
   });
   (function animate() {
     requestAnimationFrame(animate);
-    pts.rotation.y += .0003;
-    pts.rotation.x += .0001;
+    pts.rotation.y += .0015;
+    pts.rotation.x += .0005;
+    pts.rotation.z += .0002;
     renderer.render(scene, cam);
   })();
   canvas.classList.add('ready');
 }
-// Three.js carregamento com fallback
-try {
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function() {
-    if (window.requestIdleCallback) requestIdleCallback(initThree, {timeout: 3000});
-    else setTimeout(initThree, 500);
+// Three.js carregamento — dispara assim que DOM estiver pronto
+function iniciarAnimacao(){
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function(){
+    setTimeout(initThree, 100);
   });
-} catch(e) {
-  console.warn('Three.js não carregou, usando apenas CSS stars');
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', iniciarAnimacao);
+} else {
+  iniciarAnimacao();
 }
 </script>
 
