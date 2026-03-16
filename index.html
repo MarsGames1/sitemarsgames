@@ -2296,6 +2296,12 @@ footer::before{
 }
 
 
+/* ══ STARS ══ */
+.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.3) 0%,transparent 100%);opacity:.6}
+
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
 #mars-canvas.ready{opacity:1}
@@ -4118,6 +4124,67 @@ window.addEventListener('resize',function(){
     window.addEventListener('load', function(){ setTimeout(initVideo, 400); });
   }
 })();
+
+/* ══ THREE.JS STARS ══ */
+function loadScript(src, cb) {
+  var s = document.createElement('script');
+  s.src = src; s.onload = cb;
+  document.head.appendChild(s);
+}
+function initThree() {
+  if (typeof THREE === 'undefined') return;
+  var canvas = document.getElementById('mars-canvas');
+  if (!canvas) return;
+  var W = window.innerWidth, H = window.innerHeight;
+  var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: false});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  renderer.setSize(W, H);
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(60, W / H, 0.1, 100);
+  cam.position.z = 2;
+  var N = 1800;
+  var pos = new Float32Array(N * 3);
+  var col = new Float32Array(N * 3);
+  var palette = [[1,.4,.2],[0,1,.33],[1,.7,.1],[.6,.4,1],[1,1,1]];
+  for (var i = 0; i < N; i++) {
+    pos[i*3]   = (Math.random() - .5) * 8;
+    pos[i*3+1] = (Math.random() - .5) * 8;
+    pos[i*3+2] = (Math.random() - .5) * 8;
+    var c = palette[Math.floor(Math.random() * palette.length)];
+    col[i*3] = c[0]; col[i*3+1] = c[1]; col[i*3+2] = c[2];
+  }
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  var spriteCanvas = document.createElement('canvas');
+  spriteCanvas.width = spriteCanvas.height = 32;
+  var ctx2d = spriteCanvas.getContext('2d');
+  var grad = ctx2d.createRadialGradient(16,16,0,16,16,16);
+  grad.addColorStop(0,'rgba(255,255,255,1)');
+  grad.addColorStop(.4,'rgba(255,255,255,.6)');
+  grad.addColorStop(1,'rgba(255,255,255,0)');
+  ctx2d.fillStyle = grad; ctx2d.fillRect(0,0,32,32);
+  var sprite = new THREE.CanvasTexture(spriteCanvas);
+  var mat = new THREE.PointsMaterial({size:.08,map:sprite,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false});
+  var pts = new THREE.Points(geo, mat);
+  scene.add(pts);
+  window.addEventListener('resize', function() {
+    W = window.innerWidth; H = window.innerHeight;
+    cam.aspect = W/H; cam.updateProjectionMatrix();
+    renderer.setSize(W, H);
+  });
+  (function animate() {
+    requestAnimationFrame(animate);
+    pts.rotation.y += .0003;
+    pts.rotation.x += .0001;
+    renderer.render(scene, cam);
+  })();
+  canvas.classList.add('ready');
+}
+loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function() {
+  if (window.requestIdleCallback) requestIdleCallback(initThree, {timeout: 3000});
+  else setTimeout(initThree, 500);
+});
 </script>
 
 <!-- ══ POP-UP DE SAÍDA ══ -->
