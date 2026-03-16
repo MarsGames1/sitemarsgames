@@ -24,8 +24,9 @@ p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 .check-icon{display:none;margin:0 auto 24px;width:64px;height:64px;background:rgba(0,255,85,0.1);border-radius:50%;align-items:center;justify-content:center;font-size:32px;color:#00ff55;}
 .btn{display:inline-flex;padding:14px 28px;border-radius:10px;background:#00ff55;color:#000;font-weight:900;text-decoration:none;text-transform:uppercase;font-size:12px;letter-spacing:1px;transition:box-shadow 0.2s;opacity:0.6;pointer-events:none;}
-.btn.active{opacity:1;pointer-events:all;}
+.btn.active{opacity:1;pointer-events:all;cursor:pointer;}
 .btn.active:hover{box-shadow:0 0 24px rgba(0,255,85,0.4);}
+.debug-box{margin-top:16px;padding:10px 14px;background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.2);border-radius:8px;font-size:10px;color:#888;text-align:left;display:none;line-height:1.8;}
 </style>
 </head>
 <body>
@@ -33,7 +34,7 @@ p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
   <div class="spinner" id="spinner"></div>
   <div class="check-icon" id="checkIcon">✓</div>
   <h1>Aguardando pagamento</h1>
-  <p>Assim que o pagamento for confirmado, sua chave aparecerá automaticamente.</p>
+  <p id="statusText">Assim que o pagamento for confirmado, sua chave aparecerá automaticamente.</p>
   <div class="steps">
     <div class="step completed" id="step1">
       <div class="step-number">1</div>
@@ -48,79 +49,180 @@ p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
       <div class="step-text">Gerando sua chave</div>
     </div>
   </div>
-  <a href="sucesso.html" class="btn" id="nextBtn" onclick="redirectToSuccess(event)">Ver minha chave →</a>
+  <a href="sucesso.html" class="btn" id="nextBtn">Ver minha chave →</a>
+  <div class="debug-box" id="debugBox"></div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-// Storage em memória — evita bloqueio de Tracking Prevention em browsers restritivos
-const _memStorage = {};
-const _noopStorage = {
-  getItem: k => _memStorage[k] ?? null,
-  setItem: (k,v) => { _memStorage[k] = v; },
-  removeItem: k => { delete _memStorage[k]; }
+
+/* Storage em memória — evita bloqueio de Tracking Prevention */
+const _mem = {};
+const _stor = {
+  getItem: k => _mem[k] ?? null,
+  setItem: (k,v) => { _mem[k] = v; },
+  removeItem: k => { delete _mem[k]; }
 };
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: {
-    flowType: 'implicit',
-    detectSessionInUrl: false,
-    persistSession: false,
-    autoRefreshToken: false,
-    storage: _noopStorage
-  }
+  auth: { flowType:'implicit', detectSessionInUrl:false, persistSession:false, autoRefreshToken:false, storage:_stor }
 });
-const _urlParams = new URLSearchParams(window.location.search);
-const reference = _urlParams.get('external_reference') || _urlParams.get('collection_id') || sessionStorage.getItem('mg_external_ref');
-if (reference) sessionStorage.setItem('mg_external_ref', reference);
-let checking = true;
-let tentativas = 0;
-const MAX_TENTATIVAS = 40; // 40 x 3s = 2 minutos
 
-function updateStep(step, status) {
-  const el = document.getElementById(step);
-  if (status === 'completed') el.classList.add('completed');
+/* ── LÊ TODOS OS PARÂMETROS QUE O MERCADO PAGO ENVIA NA URL ── */
+const qp = new URLSearchParams(window.location.search);
+const extRef      = qp.get('external_reference');   // nosso reference (se configurado)
+const collectionId = qp.get('collection_id');        // payment_id do MP
+const paymentId   = qp.get('payment_id');            // idem, às vezes diferente
+const collStatus  = qp.get('collection_status');     // approved / pending / rejected
+const mpStatus    = qp.get('status');                // idem
+
+/* Referência salva antes do redirect (pelo index.html) */
+const savedRef = sessionStorage.getItem('mg_external_ref');
+
+/* Email salvo no checkout */
+const userEmail = sessionStorage.getItem('mg_user_email');
+
+/* Log de diagnóstico */
+console.log('[MarsGames] URL params:', {extRef, collectionId, paymentId, collStatus, mpStatus, savedRef, userEmail});
+
+/* Marca o reference definitivo para sucesso.html */
+const refParaSucesso = extRef || collectionId || paymentId || savedRef || '';
+if (refParaSucesso) sessionStorage.setItem('mg_external_ref', refParaSucesso);
+
+let tentativas = 0;
+const MAX_TENTATIVAS = 40;
+let checking = true;
+let pedidoEncontrado = null;
+
+function completarStep(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('completed');
 }
 
-setTimeout(() => { if (checking) updateStep('step2', 'completed'); }, 3000);
+setTimeout(() => { if (checking) completarStep('step2'); }, 3000);
+
+/* ── REDIRECIONA PARA SUCESSO ── */
+function irParaSucesso(ref) {
+  checking = false;
+  document.getElementById('spinner').style.display = 'none';
+  const ci = document.getElementById('checkIcon');
+  ci.style.display = 'flex';
+  completarStep('step2');
+  completarStep('step3');
+  const url = 'sucesso.html?ref=' + encodeURIComponent(ref || refParaSucesso);
+  sessionStorage.setItem('mg_external_ref', ref || refParaSucesso);
+  setTimeout(() => { window.location.href = url; }, 800);
+}
+
+/* ── ATIVA BOTÃO MANUAL ── */
+function ativarBotaoManual(msg) {
+  checking = false;
+  const btn = document.getElementById('nextBtn');
+  btn.classList.add('active');
+  btn.href = 'sucesso.html?ref=' + encodeURIComponent(refParaSucesso);
+  btn.innerHTML = msg || 'Ver minha chave →';
+  btn.onclick = function(e) {
+    e.preventDefault();
+    sessionStorage.setItem('mg_external_ref', refParaSucesso);
+    window.location.href = btn.href;
+  };
+  document.getElementById('statusText').textContent = 'Clique abaixo para ver o status da sua compra.';
+}
+
+/* ── BUSCA MULTI-ESTRATÉGIA ── */
+async function buscarPedido() {
+  /* Estratégia 1: external_reference exato */
+  if (extRef) {
+    const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', extRef).maybeSingle();
+    if (data) return data;
+  }
+
+  /* Estratégia 2: reference salvo no sessionStorage antes do redirect */
+  if (savedRef && savedRef !== extRef) {
+    const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', savedRef).maybeSingle();
+    if (data) return data;
+  }
+
+  /* Estratégia 3: payment_id / collection_id do MP como reference */
+  if (collectionId) {
+    const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', collectionId).maybeSingle();
+    if (data) return data;
+  }
+  if (paymentId && paymentId !== collectionId) {
+    const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', paymentId).maybeSingle();
+    if (data) return data;
+  }
+
+  /* Estratégia 4: busca por email do cliente — pega pedido mais recente */
+  if (userEmail) {
+    const { data } = await sb.from('pedidos')
+      .select('id,status,reference')
+      .eq('cliente_email', userEmail)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data) return data;
+  }
+
+  return null;
+}
 
 async function verificarPedido() {
-  if (!checking || !reference) return;
+  if (!checking) return;
   tentativas++;
 
-  try {
-    const { data } = await sb.from('pedidos').select('status').eq('reference', reference).maybeSingle();
+  /* Se o MP já disse que foi aprovado na URL, redireciona direto */
+  if (collStatus === 'approved' || mpStatus === 'approved') {
+    document.getElementById('statusText').textContent = 'Pagamento aprovado! Gerando sua chave...';
+    completarStep('step2');
+    completarStep('step3');
+    irParaSucesso(refParaSucesso);
+    return;
+  }
 
-    if (data && (data.status === 'aprovado' || data.status === 'pago')) {
-      checking = false;
-      document.getElementById('spinner').style.display = 'none';
-      document.getElementById('checkIcon').style.display = 'flex';
-      updateStep('step2', 'completed');
-      updateStep('step3', 'completed');
-      setTimeout(() => {
-        window.location.href = 'sucesso.html?ref=' + reference;
-      }, 800);
-      return;
+  try {
+    const pedido = await buscarPedido();
+
+    if (pedido) {
+      pedidoEncontrado = pedido;
+      const ref = pedido.reference || refParaSucesso;
+
+      if (pedido.status === 'aprovado' || pedido.status === 'pago') {
+        irParaSucesso(ref);
+        return;
+      }
+
+      /* Pedido existe mas pendente — continua polling */
+      if (pedido.status === 'pendente') {
+        document.getElementById('statusText').textContent = 'Pedido registrado, aguardando confirmação do banco...';
+        completarStep('step2');
+        document.getElementById('step3').classList.add('active');
+      }
+    } else {
+      /* Sem pedido encontrado ainda — normal nos primeiros segundos */
+      if (tentativas > 5) {
+        document.getElementById('statusText').textContent = 'Verificando confirmação do pagamento...';
+      }
     }
-  } catch(e) { console.error(e); }
+  } catch(e) {
+    console.error('[MarsGames] Erro:', e);
+  }
 
   if (tentativas < MAX_TENTATIVAS) {
     setTimeout(verificarPedido, 3000);
   } else {
-    checking = false;
-    const btn = document.getElementById('nextBtn');
-    btn.classList.add('active');
-    btn.href = 'sucesso.html?ref=' + (reference || '');
-    btn.innerHTML = 'Verificar manualmente →';
+    /* Esgotou o tempo — se há algum sinal do MP, deixa prosseguir */
+    if (collectionId || paymentId || refParaSucesso) {
+      ativarBotaoManual('Verificar minha compra →');
+    } else {
+      ativarBotaoManual('Ir para Meus Pedidos →');
+      document.getElementById('nextBtn').href = 'perfil.html';
+    }
   }
 }
 
 verificarPedido();
-
-function redirectToSuccess(e) {
-  e.preventDefault();
-  window.location.href = e.target.href;
-}
 </script>
 </body>
 </html>

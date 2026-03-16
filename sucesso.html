@@ -253,21 +253,48 @@ async function tentarEntregarFallback(sb,pedido){
 async function init(){
   var p=new URLSearchParams(window.location.search);
   var ref=p.get('ref')||p.get('external_reference')||sessionStorage.getItem('mg_external_ref');
-  if(!ref){mostrarErro();return;}
-  sessionStorage.setItem('mg_external_ref',ref);
+  var pedidoId=sessionStorage.getItem('mg_pedido_id');
+  var userEmail=sessionStorage.getItem('mg_user_email');
+  var itensSalvos=sessionStorage.getItem('mg_itens_pendentes');
+
+  if(!ref && !pedidoId && !userEmail){mostrarErro();return;}
+  if(ref) sessionStorage.setItem('mg_external_ref',ref);
 
   var _m={};var _s={getItem:function(k){return _m[k]??null},setItem:function(k,v){_m[k]=v},removeItem:function(k){delete _m[k]}};
   var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:false,autoRefreshToken:false,storage:_s}});
 
   var tentativas=0,max=30;
+
+  async function buscarPedido(){
+    /* 1. Por reference */
+    if(ref){
+      var r1=await sb.from('pedidos').select('*').eq('reference',ref).maybeSingle();
+      if(r1.data) return r1.data;
+    }
+    /* 2. Por pedido_id direto */
+    if(pedidoId){
+      var r2=await sb.from('pedidos').select('*').eq('id',pedidoId).maybeSingle();
+      if(r2.data) return r2.data;
+    }
+    /* 3. Por email — pedido mais recente */
+    if(userEmail){
+      var r3=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false}).limit(1).maybeSingle();
+      if(r3.data) return r3.data;
+    }
+    return null;
+  }
+
   async function verificar(){
     tentativas++;
     try{
-      var res=await sb.from('pedidos').select('*').eq('reference',ref).maybeSingle();
-      var pedido=res.data;
+      var pedido=await buscarPedido();
       if(pedido&&(pedido.status==='aprovado'||pedido.status==='pago')){
         document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
         document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
+        /* Se o pedido não tem itens mas temos salvo no session, injeta */
+        if((!pedido.itens||!pedido.itens.length)&&itensSalvos){
+          try{pedido.itens=JSON.parse(itensSalvos);}catch(e){}
+        }
         pedido=await tentarEntregarFallback(sb,pedido);
         setTimeout(function(){mostrarSucesso(pedido);},500);
         return;

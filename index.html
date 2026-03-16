@@ -3823,7 +3823,11 @@ async function iniciarPagamento(itens, user) {
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Erro ao criar pagamento');
+  /* Salva TUDO antes de sair para o MP */
   if (data.reference) sessionStorage.setItem('mg_external_ref', data.reference);
+  if (data.pedido_id)  sessionStorage.setItem('mg_pedido_id',   data.pedido_id);
+  /* Salva itens para o fallback de entrega no sucesso.html */
+  sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
   return data.init_point;
 }
 
