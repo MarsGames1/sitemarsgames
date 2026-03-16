@@ -56,8 +56,9 @@ const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}});
 const reference = sessionStorage.getItem('mg_external_ref');
-const userEmail = sessionStorage.getItem('mg_user_email');
 let checking = true;
+let tentativas = 0;
+const MAX_TENTATIVAS = 40; // 40 x 3s = 2 minutos
 
 function updateStep(step, status) {
   const el = document.getElementById(step);
@@ -67,34 +68,37 @@ function updateStep(step, status) {
 setTimeout(() => { if (checking) updateStep('step2', 'completed'); }, 3000);
 
 async function verificarPedido() {
-  if (!reference) return;
-  const { data } = await sb.from('pedidos').select('*').eq('reference', reference).maybeSingle();
-  if (data) {
-    checking = false;
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('checkIcon').style.display = 'flex';
-    updateStep('step2', 'completed');
-    updateStep('step3', 'completed');
-    const btn = document.getElementById('nextBtn');
-    btn.classList.add('active');
-    btn.href = 'sucesso.html?ref=' + reference;
-    sessionStorage.setItem('mg_pedido_ok', JSON.stringify(data));
+  if (!checking || !reference) return;
+  tentativas++;
+
+  try {
+    const { data } = await sb.from('pedidos').select('status').eq('reference', reference).maybeSingle();
+
+    if (data && (data.status === 'aprovado' || data.status === 'pago')) {
+      checking = false;
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('checkIcon').style.display = 'flex';
+      updateStep('step2', 'completed');
+      updateStep('step3', 'completed');
+      setTimeout(() => {
+        window.location.href = 'sucesso.html?ref=' + reference;
+      }, 800);
+      return;
+    }
+  } catch(e) { console.error(e); }
+
+  if (tentativas < MAX_TENTATIVAS) {
+    setTimeout(verificarPedido, 3000);
   } else {
-    setTimeout(verificarPedido, 2000);
-  }
-}
-
-verificarPedido();
-
-setTimeout(() => {
-  if (checking) {
     checking = false;
     const btn = document.getElementById('nextBtn');
     btn.classList.add('active');
     btn.href = 'sucesso.html?ref=' + (reference || '');
     btn.innerHTML = 'Verificar manualmente →';
   }
-}, 60000);
+}
+
+verificarPedido();
 
 function redirectToSuccess(e) {
   e.preventDefault();
