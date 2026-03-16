@@ -69,13 +69,17 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { flowType:'implicit', detectSessionInUrl:false, persistSession:false, autoRefreshToken:false, storage:_stor }
 });
 
-/* ── LÊ TODOS OS PARÂMETROS QUE O MERCADO PAGO ENVIA NA URL ── */
+/* ── LÊ TODOS OS PARÂMETROS POSSÍVEIS DA URL ── */
 const qp = new URLSearchParams(window.location.search);
-const extRef      = qp.get('external_reference');   // nosso reference (se configurado)
-const collectionId = qp.get('collection_id');        // payment_id do MP
-const paymentId   = qp.get('payment_id');            // idem, às vezes diferente
-const collStatus  = qp.get('collection_status');     // approved / pending / rejected
-const mpStatus    = qp.get('status');                // idem
+
+// Parâmetro ?ref=MGS-xxx que NÓS colocamos na back_url (principal)
+const refDaUrl     = qp.get('ref');
+// Parâmetros que o MP adiciona no redirect
+const extRef       = qp.get('external_reference');
+const collectionId = qp.get('collection_id');
+const paymentId    = qp.get('payment_id');
+const collStatus   = qp.get('collection_status');
+const mpStatus     = qp.get('status');
 
 /* Referência salva antes do redirect (pelo index.html) */
 const savedRef = sessionStorage.getItem('mg_external_ref');
@@ -83,12 +87,11 @@ const savedRef = sessionStorage.getItem('mg_external_ref');
 /* Email salvo no checkout */
 const userEmail = sessionStorage.getItem('mg_user_email');
 
-/* Log de diagnóstico */
-console.log('[MarsGames] URL params:', {extRef, collectionId, paymentId, collStatus, mpStatus, savedRef, userEmail});
-
-/* Marca o reference definitivo para sucesso.html */
-const refParaSucesso = extRef || collectionId || paymentId || savedRef || '';
+/* Reference definitivo — prioridade: nosso ?ref= > external_reference do MP > savedRef > IDs do MP */
+const refParaSucesso = refDaUrl || extRef || savedRef || collectionId || paymentId || '';
 if (refParaSucesso) sessionStorage.setItem('mg_external_ref', refParaSucesso);
+
+console.log('[MarsGames]', {refDaUrl, extRef, collectionId, paymentId, collStatus, mpStatus, savedRef, userEmail, refParaSucesso});
 
 let tentativas = 0;
 const MAX_TENTATIVAS = 40;
@@ -172,7 +175,7 @@ async function verificarPedido() {
   if (!checking) return;
   tentativas++;
 
-  /* Se o MP já disse que foi aprovado na URL, redireciona direto */
+  /* Se o MP já disse que foi aprovado na URL (cartão com auto_return), redireciona direto */
   if (collStatus === 'approved' || mpStatus === 'approved') {
     document.getElementById('statusText').textContent = 'Pagamento aprovado! Gerando sua chave...';
     completarStep('step2');
@@ -193,30 +196,39 @@ async function verificarPedido() {
         return;
       }
 
-      /* Pedido existe mas pendente — continua polling */
       if (pedido.status === 'pendente') {
-        document.getElementById('statusText').textContent = 'Pedido registrado, aguardando confirmação do banco...';
+        document.getElementById('statusText').textContent = 'Pix gerado! Aguardando confirmação do pagamento...';
         completarStep('step2');
-        document.getElementById('step3').classList.add('active');
+        document.getElementById('step3').querySelector('.step-number').textContent = '3';
+      }
+
+      if (pedido.status === 'cancelado') {
+        checking = false;
+        document.getElementById('statusText').textContent = 'Pagamento não confirmado. Tente novamente.';
+        ativarBotaoManual('Tentar novamente →');
+        document.getElementById('nextBtn').href = 'index.html';
+        return;
       }
     } else {
-      /* Sem pedido encontrado ainda — normal nos primeiros segundos */
-      if (tentativas > 5) {
-        document.getElementById('statusText').textContent = 'Verificando confirmação do pagamento...';
+      if (tentativas === 1) {
+        document.getElementById('statusText').textContent = 'Registrando seu pedido...';
+      } else if (tentativas > 3) {
+        document.getElementById('statusText').textContent = 'Aguardando confirmação do Pix...';
       }
     }
   } catch(e) {
-    console.error('[MarsGames] Erro:', e);
+    console.error('[MarsGames] Erro polling:', e);
   }
 
   if (tentativas < MAX_TENTATIVAS) {
-    setTimeout(verificarPedido, 3000);
+    /* Primeiros 60s: verifica a cada 3s. Depois: a cada 5s */
+    const intervalo = tentativas <= 20 ? 3000 : 5000;
+    setTimeout(verificarPedido, intervalo);
   } else {
-    /* Esgotou o tempo — se há algum sinal do MP, deixa prosseguir */
-    if (collectionId || paymentId || refParaSucesso) {
+    if (refParaSucesso) {
       ativarBotaoManual('Verificar minha compra →');
     } else {
-      ativarBotaoManual('Ir para Meus Pedidos →');
+      ativarBotaoManual('Ver meus pedidos →');
       document.getElementById('nextBtn').href = 'perfil.html';
     }
   }
