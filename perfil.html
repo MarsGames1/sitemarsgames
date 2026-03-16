@@ -370,6 +370,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   position:relative;
   flex-shrink:0;
   width:86px;height:86px;
+  border-radius:50%;
   display:flex;align-items:center;justify-content:center;
 }
 
@@ -408,36 +409,36 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ── Bronze: borda + glow no wrap (clip-path no inner corta box-shadow) ── */
-.avatar-bronze .avatar-inner{border:3px solid var(--bronze)}
+/* ── Bronze: borda no inner + glow no wrap ── */
+.avatar-bronze .avatar-inner{border:3px solid #cd9f6a}
 .avatar-bronze .perfil-avatar-wrap{animation:bronzePulse 2.5s ease-in-out infinite}
 @keyframes bronzePulse{
-  0%,100%{box-shadow:0 0 0 2px rgba(205,159,106,.6),0 0 12px 3px rgba(205,159,106,.4)}
-  50%{box-shadow:0 0 0 3px rgba(205,159,106,1),0 0 22px 8px rgba(205,159,106,.7)}
+  0%,100%{box-shadow:0 0 0 3px rgba(205,159,106,.7),0 0 16px 6px rgba(205,159,106,.5)}
+  50%{box-shadow:0 0 0 4px rgba(205,159,106,1),0 0 32px 12px rgba(205,159,106,.8)}
 }
 
 /* ── Prata ── */
-.avatar-prata .avatar-inner{border:3px solid var(--prata)}
+.avatar-prata .avatar-inner{border:3px solid #e8e8e8}
 .avatar-prata .perfil-avatar-wrap{animation:prataShimmer 3s ease-in-out infinite}
 @keyframes prataShimmer{
-  0%,100%{box-shadow:0 0 0 2px rgba(232,232,232,.5),0 0 14px 4px rgba(232,232,232,.3)}
-  50%{box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 26px 8px rgba(232,232,232,.6)}
+  0%,100%{box-shadow:0 0 0 3px rgba(232,232,232,.7),0 0 16px 6px rgba(200,200,220,.4)}
+  50%{box-shadow:0 0 0 4px #fff,0 0 32px 12px rgba(232,232,232,.8)}
 }
 
 /* ── Ouro ── */
-.avatar-ouro .avatar-inner{border:3px solid var(--ouro)}
+.avatar-ouro .avatar-inner{border:3px solid #FFD700}
 .avatar-ouro .perfil-avatar-wrap{animation:ouroPulse 2s ease-in-out infinite}
 @keyframes ouroPulse{
-  0%,100%{box-shadow:0 0 0 2px rgba(255,215,0,.6),0 0 14px 4px rgba(255,215,0,.4)}
-  50%{box-shadow:0 0 0 3px rgba(255,215,0,1),0 0 28px 10px rgba(255,215,0,.7)}
+  0%,100%{box-shadow:0 0 0 3px rgba(255,215,0,.7),0 0 16px 6px rgba(255,215,0,.5)}
+  50%{box-shadow:0 0 0 4px #FFD700,0 0 36px 14px rgba(255,215,0,.8)}
 }
 
 /* ── Esmeralda ── */
-.avatar-esmeralda .avatar-inner{border:3px solid var(--esm)}
+.avatar-esmeralda .avatar-inner{border:3px solid #50c878}
 .avatar-esmeralda .perfil-avatar-wrap{animation:esmPulse 1.8s ease-in-out infinite}
 @keyframes esmPulse{
-  0%,100%{box-shadow:0 0 0 2px rgba(80,200,120,.6),0 0 14px 4px rgba(80,200,120,.4)}
-  50%{box-shadow:0 0 0 3px rgba(80,200,120,1),0 0 28px 10px rgba(80,200,120,.7)}
+  0%,100%{box-shadow:0 0 0 3px rgba(80,200,120,.7),0 0 16px 6px rgba(80,200,120,.5)}
+  50%{box-shadow:0 0 0 4px #50c878,0 0 36px 14px rgba(80,200,120,.8)}
 }
 
 /* ── Diamante: disco conic-gradient girando + inner sem borda ── */
@@ -1286,47 +1287,44 @@ function mostrarLoading(){
 
 async function checkAuth() {
   mostrarLoading();
-  // Verificar se voltou de OAuth
-  const loginInProgress = sessionStorage.getItem('mg_login_in_progress');
-  const hash = window.location.hash;
-  if (hash && (hash.includes('access_token') || hash.includes('error'))) {
-    if (hash.includes('error')) {
-      const msg = decodeURIComponent((hash.match(/error_description=([^&]+)/) || ['', 'Erro'])[1]);
+  sessionStorage.removeItem('mg_login_in_progress');
+
+  /* Deixa o Supabase processar o hash #access_token automaticamente
+     via flowType:'implicit' — ele dispara SIGNED_IN quando pronto */
+  sb.auth.onAuthStateChange(function(event, session){
+    if(event === 'SIGNED_IN' && session){
       history.replaceState(null, '', window.location.pathname);
+      userSession = session;
+      mostrarPerfil();
+      carregarPerfil(session.user);
+    }
+    if(event === 'SIGNED_OUT'){
+      userSession = null;
       mostrarLogin();
-      setTimeout(() => showToast('Erro: ' + msg), 400);
-      sessionStorage.removeItem('mg_login_in_progress');
-      return;
     }
-    // Login bem-sucedido, processar sessão
-    try {
-      const { data, error } = await sb.auth.getSession();
-      if (data?.session) {
-        history.replaceState(null, '', window.location.pathname);
-        userSession = data.session;
+    if(event === 'INITIAL_SESSION'){
+      if(session){
+        userSession = session;
         mostrarPerfil();
-        carregarPerfil(data.session.user);
-        sessionStorage.removeItem('mg_login_in_progress');
-        return;
+        carregarPerfil(session.user);
+      } else {
+        // Só mostra login se não houver hash de auth na URL
+        if(!window.location.hash.includes('access_token')){
+          mostrarLogin();
+        }
       }
-    } catch (e) {
-      console.error('Erro ao processar retorno:', e);
     }
-  }
-  // Se estava em processo de login, aguardar um pouco
-  if (loginInProgress) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    sessionStorage.removeItem('mg_login_in_progress');
-  }
-  // Verificação normal
-  const { data } = await sb.auth.getSession();
-  if (data?.session) {
-    userSession = data.session;
-    mostrarPerfil();
-    carregarPerfil(data.session.user);
-  } else {
-    mostrarLogin();
-  }
+  });
+
+  /* Verificação direta como fallback */
+  try {
+    const { data } = await sb.auth.getSession();
+    if(data?.session){
+      userSession = data.session;
+      mostrarPerfil();
+      carregarPerfil(data.session.user);
+    }
+  } catch(e){}
 }
 
 async function carregarPerfil(user){

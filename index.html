@@ -2305,7 +2305,7 @@ footer::before{
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{
   position:fixed;inset:0;
-  z-index:3;
+  z-index:10;
   pointer-events:none;
   opacity:0;transition:opacity 2s ease;
 }
@@ -3930,32 +3930,29 @@ async function atualizarNavbar(session){
     wrap.style.display     = 'none';
   }
 }
-/* Lê sessão assim que sb é criado */
-sb.auth.onAuthStateChange(function(event, session){
-  if(event==='INITIAL_SESSION'||event==='SIGNED_IN'||event==='TOKEN_REFRESHED'){
-    atualizarNavbar(session).catch(function(){});
-  }
-  if(event==='SIGNED_OUT'){
-    atualizarNavbar(null).catch(function(){});
-  }
-});
-/* Auth — lê sessão imediatamente e com retry */
-sb.auth.getSession().then(function(r){
-  if(r.data && r.data.session){
-    atualizarNavbar(r.data.session);
-  }
-});
-/* Retry caso localStorage ainda não tenha sido lido */
-setTimeout(function(){
+/* Auth — lê sessão com retry robusto */
+(function iniciarAuth(){
+  // Lê imediatamente
   sb.auth.getSession().then(function(r){
     if(r.data && r.data.session) atualizarNavbar(r.data.session);
   });
-}, 500);
-setTimeout(function(){
-  sb.auth.getSession().then(function(r){
-    if(r.data && r.data.session) atualizarNavbar(r.data.session);
+  // Escuta mudanças (INITIAL_SESSION, SIGNED_IN, etc)
+  sb.auth.onAuthStateChange(function(event, session){
+    if(event==='SIGNED_OUT'){
+      atualizarNavbar(null);
+    } else if(session){
+      atualizarNavbar(session);
+    }
   });
-}, 1500);
+  // Retries para quando localStorage demora
+  [300, 800, 2000].forEach(function(ms){
+    setTimeout(function(){
+      sb.auth.getSession().then(function(r){
+        if(r.data && r.data.session) atualizarNavbar(r.data.session);
+      });
+    }, ms);
+  });
+})();
 
 
 /* ── POP-UP DE SAÍDA ── */
