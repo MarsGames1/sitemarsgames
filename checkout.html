@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finalizar compra - MarsGames</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--gold:#ffb800;}
+body{background:#07070c;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.02) 1px,transparent 1px);background-size:48px 48px;z-index:0;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,85,.3)}50%{box-shadow:0 0 0 8px rgba(0,255,85,0)}}
+
+.card{position:relative;z-index:1;background:#0f0f16;border:1px solid rgba(0,255,85,.11);border-radius:28px;padding:40px;width:100%;max-width:460px;animation:fadeUp .45s ease both;box-shadow:0 40px 100px rgba(0,0,0,.85);}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--green),transparent);border-radius:0 0 4px 4px;}
+
+/* HEADER */
+.logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px;}
+.logo span{color:var(--green)}
+.sub-title{font-size:11px;color:#444;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;}
+
+/* RESUMO DO PEDIDO */
+.resumo{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px 18px;margin-bottom:24px;}
+.resumo-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:12px;}
+.item-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.item-row:last-of-type{border-bottom:none}
+.item-img{width:40px;height:40px;border-radius:8px;object-fit:cover;background:#1a1a28;flex-shrink:0;}
+.item-nome{flex:1;font-size:11px;font-weight:700;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-preco{font-size:12px;font-weight:900;color:var(--green);white-space:nowrap;}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:4px;border-top:1px solid rgba(255,255,255,.08);}
+.total-label{font-size:10px;font-weight:700;color:#555;letter-spacing:1px;text-transform:uppercase;}
+.total-valor{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green);}
+
+/* METODOS */
+.metodos-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:12px;}
+
+.metodo{position:relative;display:flex;align-items:center;gap:16px;padding:18px 20px;border:1.5px solid rgba(255,255,255,.07);border-radius:16px;margin-bottom:10px;cursor:pointer;transition:border-color .2s,background .2s;}
+.metodo:hover:not(.disabled){border-color:rgba(0,255,85,.3);background:rgba(0,255,85,.03);}
+.metodo.selected{border-color:var(--green);background:rgba(0,255,85,.05);}
+.metodo.disabled{opacity:.35;cursor:not-allowed;}
+
+.metodo-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.metodo-icon.pix{background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.15);}
+.metodo-icon.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);}
+
+.metodo-info{flex:1;min-width:0;}
+.metodo-nome{font-size:13px;font-weight:900;color:#eee;margin-bottom:3px;}
+.metodo-desc{font-size:11px;color:#555;font-weight:600;line-height:1.4;}
+
+.metodo-badge{font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:99px;}
+.metodo-badge.instant{background:rgba(0,255,85,.1);color:var(--green);border:1px solid rgba(0,255,85,.2);}
+.metodo-badge.soon{background:rgba(255,255,255,.04);color:#444;border:1px solid rgba(255,255,255,.06);}
+
+.metodo-radio{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
+.metodo.selected .metodo-radio{border-color:var(--green);}
+.metodo-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--green);transform:scale(0);transition:transform .2s;}
+.metodo.selected .metodo-radio-dot{transform:scale(1);}
+
+/* BOTÃO PRINCIPAL */
+.btn-pagar{width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;color:#000;font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:box-shadow .2s,transform .15s,opacity .2s;box-shadow:0 4px 24px rgba(0,255,85,.2);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-pagar:hover:not(:disabled){box-shadow:0 8px 36px rgba(0,255,85,.38);transform:translateY(-2px);}
+.btn-pagar:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-pagar .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.btn-pagar.loading .spinner{display:block;}
+.btn-pagar.loading .btn-txt{display:none;}
+
+/* SEGURANÇA */
+.seguranca{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;font-size:10px;color:#333;font-weight:600;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a28;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;font-weight:700;color:#eee;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">Mars<span>Games</span></div>
+  <div class="sub-title">Finalizar compra</div>
+
+  <!-- RESUMO -->
+  <div class="resumo">
+    <div class="resumo-title">Resumo do pedido</div>
+    <div id="itensList"></div>
+    <div class="total-row">
+      <div class="total-label">Total</div>
+      <div class="total-valor" id="totalValor">R$ 0,00</div>
+    </div>
+  </div>
+
+  <!-- MÉTODOS -->
+  <div class="metodos-title">Forma de pagamento</div>
+
+  <div class="metodo selected" id="metodo-pix" onclick="selecionarMetodo('pix')">
+    <div class="metodo-icon pix">⚡</div>
+    <div class="metodo-info">
+      <div class="metodo-nome">Pix</div>
+      <div class="metodo-desc">QR Code gerado na hora — aprovação instantânea</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <span class="metodo-badge instant">Instantâneo</span>
+      <div class="metodo-radio"><div class="metodo-radio-dot"></div></div>
+    </div>
+  </div>
+
+  <div class="metodo disabled" id="metodo-cartao">
+    <div class="metodo-icon card">💳</div>
+    <div class="metodo-info">
+      <div class="metodo-nome">Cartão de crédito</div>
+      <div class="metodo-desc">Em breve — até 12x sem juros</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <span class="metodo-badge soon">Em breve</span>
+      <div class="metodo-radio"></div>
+    </div>
+  </div>
+
+  <!-- BOTÃO -->
+  <button class="btn-pagar" id="btnPagar" onclick="pagar()">
+    <div class="spinner"></div>
+    <span class="btn-txt">⚡ Pagar com Pix</span>
+  </button>
+
+  <div class="seguranca">🔒 Pagamento 100% seguro via Mercado Pago</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6anRsZ2hwc3lneGtpdmd3Z3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDg2MjEsImV4cCI6MjA1OTcyNDYyMX0.VHNkuBNkNkDFAkV3HiNl0zGSbEiWDVmYZ5PGJ9pBmOA';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'mg_auth' }
+});
+
+// Lê itens do sessionStorage (salvos por index/produto/combos/promocoes antes de redirecionar)
+const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+let metodoSelecionado = 'pix';
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Renderiza itens e total
+function renderResumo() {
+  if (!itens.length) {
+    // Sem itens — volta ao início
+    window.location.href = 'index.html';
+    return;
+  }
+  const total = itens.reduce((s, p) => s + Number(p.preco), 0);
+  document.getElementById('itensList').innerHTML = itens.map(p =>
+    `<div class="item-row">
+      <img class="item-img" src="${esc(p.imagem||'')}" onerror="this.src=''" alt="">
+      <div class="item-nome">${esc(p.nome)}</div>
+      <div class="item-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>
+    </div>`
+  ).join('');
+  document.getElementById('totalValor').textContent =
+    'R$ ' + total.toFixed(2).replace('.', ',');
+}
+
+function selecionarMetodo(metodo) {
+  // Cartão desabilitado
+  if (metodo === 'cartao') return;
+  metodoSelecionado = metodo;
+  document.querySelectorAll('.metodo').forEach(el => el.classList.remove('selected'));
+  document.getElementById('metodo-' + metodo).classList.add('selected');
+}
+
+async function pagar() {
+  const btn = document.getElementById('btnPagar');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      showToast('Faça login para finalizar a compra!');
+      setTimeout(() => window.location.href = 'perfil.html', 1200);
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      return;
+    }
+
+    // Por enquanto só Pix — chama a edge function que gera o QR Code
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/mp-criar-pix`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({ itens })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erro ao gerar Pix');
+
+    // Salva tudo no sessionStorage para o pix-checkout.html usar
+    sessionStorage.setItem('mg_pix_data',    JSON.stringify(data));
+    sessionStorage.setItem('mg_external_ref', data.reference || '');
+    sessionStorage.setItem('mg_pedido_id',    data.pedido_id  || '');
+    sessionStorage.setItem('mg_user_email',   session.user.email || '');
+
+    window.location.href = 'pix-checkout.html';
+
+  } catch (error) {
+    console.error('[checkout] Erro:', error);
+    showToast('Erro: ' + (error.message || 'Tente novamente'));
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+renderResumo();
+</script>
+</body>
+</html>
