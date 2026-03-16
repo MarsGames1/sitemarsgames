@@ -813,21 +813,12 @@ function removerCarrinho(id){
   carrinho=carrinho.filter(function(x){return x.id!==id});
   salvarCarrinho();atualizarCarrinho();
 }
-async function criarPedidoTemp(itens, user) {
-  const reference = 'PED-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
-  const valor = itens.reduce((s, i) => s + i.preco, 0);
-  const { data, error } = await sb.from('pedidos_temp').insert({
-    user_id: user.id, user_email: user.email, itens: itens, valor: valor, reference: reference
-  }).select().single();
-  if (error) throw error;
-  return data;
-}
-async function iniciarPagamento(itens, user, externalRef) {
+async function iniciarPagamento(itens, user) {
   const { data: { session } } = await sb.auth.getSession();
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-preferencia`, {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/mercadopago-criar-preferencia`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
-    body: JSON.stringify({ itens: itens, user_email: user.email, user_id: user.id, external_reference: externalRef })
+    body: JSON.stringify({ itens: itens })
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Erro ao criar pagamento');
@@ -847,9 +838,7 @@ async function checkout() {
     const itens = carrinho.map(p => ({ id: p.id, nome: p.nome, preco: Number(p.preco), quantidade: 1, imagem: p.imagem || '' }));
     sessionStorage.setItem('mg_carrinho_pendente', JSON.stringify(itens));
     sessionStorage.setItem('mg_user_email', session.user.email);
-    const pedidoTemp = await criarPedidoTemp(itens, session.user);
-    const initPoint = await iniciarPagamento(itens, session.user, pedidoTemp.reference);
-    sessionStorage.setItem('mg_external_ref', pedidoTemp.reference);
+    const initPoint = await iniciarPagamento(itens, session.user);
     window.location.href = initPoint;
   } catch (error) {
     console.error('Erro no checkout:', error);

@@ -421,20 +421,6 @@ function toggleCart(){
   if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
-async function criarPedidoTemp(itens, user) {
-  const reference = 'PED-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
-  const valor = itens.reduce((s, i) => s + i.preco, 0);
-  const { data, error } = await sb.from('pedidos_temp').insert({
-    user_id: user.id,
-    user_email: user.email,
-    itens: itens,
-    valor: valor,
-    reference: reference
-  }).select().single();
-  if (error) throw error;
-  return data;
-}
-
 async function iniciarPagamento(itens, user, externalRef) {
   const { data: { session } } = await sb.auth.getSession();
   const token = session?.access_token;
@@ -445,10 +431,7 @@ async function iniciarPagamento(itens, user, externalRef) {
       'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify({
-      itens: itens,
-      user_email: user.email,
-      user_id: user.id,
-      external_reference: externalRef
+      itens: itens
     })
   });
   const data = await response.json();
@@ -476,9 +459,7 @@ async function checkout() {
     }));
     sessionStorage.setItem('mg_carrinho_pendente', JSON.stringify(itens));
     sessionStorage.setItem('mg_user_email', session.user.email);
-    const pedidoTemp = await criarPedidoTemp(itens, session.user);
-    const initPoint = await iniciarPagamento(itens, session.user, pedidoTemp.reference);
-    sessionStorage.setItem('mg_external_ref', pedidoTemp.reference);
+    const initPoint = await iniciarPagamento(itens, session.user);
     window.location.href = initPoint;
   } catch (error) {
     console.error('Erro no checkout:', error);
