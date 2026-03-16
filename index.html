@@ -2297,7 +2297,7 @@ footer::before{
 
 
 /* ══ STARS ══ */
-.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+.stars-bg{position:fixed;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
     radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.4) 0%,transparent 100%),
     radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.3) 0%,transparent 100%);opacity:.6}
@@ -3929,16 +3929,16 @@ async function atualizarNavbar(session){
 /* Lê sessão assim que sb é criado */
 sb.auth.onAuthStateChange(function(event, session){
   if(event==='INITIAL_SESSION'||event==='SIGNED_IN'||event==='TOKEN_REFRESHED'){
-    atualizarNavbar(session);
+    atualizarNavbar(session).catch(function(){});
   }
   if(event==='SIGNED_OUT'){
-    atualizarNavbar(null);
+    atualizarNavbar(null).catch(function(){});
   }
 });
 /* Fallback direto - aguarda um pouco para a sessão ser restaurada */
 setTimeout(function(){
   sb.auth.getSession().then(function(r){
-    if(r.data && r.data.session) atualizarNavbar(r.data.session);
+    if(r.data && r.data.session) atualizarNavbar(r.data.session).catch(function(){});
   });
 }, 100);
 
