@@ -1490,11 +1490,19 @@ async function carregarPedidos(userId){
   if(loader)loader.style.display='flex';
   if(list)list.style.display='none';
   try{
-    var{data,error}=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false});
+    /* Busca por user_id OU por email — compatível com pedidos antigos sem user_id */
+    var userEmail=currentUser&&currentUser.email?currentUser.email:'';
+    var{data:d1}=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false});
+    var{data:d2}=userEmail?await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false}):{data:[]};
+    /* Merge sem duplicatas */
+    var ids=new Set();
+    var data=[];
+    [...(d1||[]),...(d2||[])].forEach(function(p){if(!ids.has(p.id)){ids.add(p.id);data.push(p);}});
+    data.sort(function(a,b){return new Date(b.created_at)-new Date(a.created_at);});
     if(loader)loader.style.display='none';
     if(list)list.style.display='flex';
     if(document.getElementById('statPedidos'))document.getElementById('statPedidos').textContent=data?data.length:0;
-    if(error||!data||data.length===0){
+    if(!data||data.length===0){
       if(list)list.innerHTML='<div class="sem-pedidos">Você ainda não fez nenhum pedido.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Ver catálogo</a></div>';
       return;
     }

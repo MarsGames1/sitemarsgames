@@ -9,108 +9,172 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#07070c;--card:#0f0f16;--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--border:#1e1e2a;--muted:#555;--gold:#ffb800;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes checkPop{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.18) rotate(4deg)}80%{transform:scale(.96)}100%{transform:scale(1) rotate(0deg)}}
-@keyframes ringPulse{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.65);opacity:0}}
-@keyframes confettiDrop{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+:root{--bg:#07070c;--card:#0d0d14;--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--border:#1e1e2a;--muted:#555;--gold:#ffb800;}
+
+/* ── ANIMAÇÕES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes checkDraw{0%{stroke-dashoffset:80}100%{stroke-dashoffset:0}}
+@keyframes ringExpand{0%{transform:scale(.6);opacity:0}60%{opacity:1}100%{transform:scale(1.8);opacity:0}}
+@keyframes ringExpand2{0%{transform:scale(.6);opacity:0}60%{opacity:.6}100%{transform:scale(2.4);opacity:0}}
+@keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-120vh) scale(.4) rotate(540deg);opacity:0}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
-@keyframes badgePop{0%{transform:scale(0) translateY(8px);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-@keyframes glowPulse{0%,100%{box-shadow:0 0 16px rgba(0,255,85,.1)}50%{box-shadow:0 0 36px rgba(0,255,85,.3),0 0 72px rgba(0,255,85,.07)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 40px rgba(0,255,85,.15),0 0 0 1px rgba(0,255,85,.08)}50%{box-shadow:0 0 80px rgba(0,255,85,.35),0 0 0 1px rgba(0,255,85,.2)}}
+@keyframes badgePop{0%{transform:scale(0) translateY(12px);opacity:0}65%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes dots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+@keyframes titleReveal{0%{opacity:0;letter-spacing:.4em;transform:translateY(10px)}100%{opacity:1;letter-spacing:.02em;transform:translateY(0)}}
+@keyframes starPop{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.3) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.022) 1px,transparent 1px);background-size:48px 48px;z-index:0;}
+
+/* Grid bg */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.018) 1px,transparent 1px);background-size:48px 48px;z-index:0;}
+
+/* Glow sweep bg ao mostrar sucesso */
+.bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(0,255,85,.07) 0%,transparent 70%);opacity:0;transition:opacity 1.2s ease;}
+.bg-glow.on{opacity:1;}
+
+/* Partículas */
 .confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:1}
 .cp{position:absolute;border-radius:2px;opacity:0}
-.card{position:relative;z-index:2;background:var(--card);border:1px solid rgba(0,255,85,.11);border-radius:28px;padding:52px 44px 44px;width:100%;max-width:500px;text-align:center;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) both;box-shadow:0 40px 100px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.025);}
-.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--green) 40%,var(--green2) 60%,transparent);border-radius:0 0 4px 4px;}
-.card::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% -10%,rgba(0,255,85,.05) 0%,transparent 60%);border-radius:28px;pointer-events:none;}
-/* ICON */
-.icon-ring{position:relative;width:96px;height:96px;margin:0 auto 28px;}
-.i-ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(0,255,85,.1);}
-.i-spin{position:absolute;inset:-4px;border-radius:50%;border:2.5px solid transparent;border-top-color:var(--green);animation:spin .9s linear infinite;}
-.i-pulse{position:absolute;inset:0;border-radius:50%;border:2px solid var(--green);animation:ringPulse 1.8s ease-out infinite;display:none;}
-.i-inner{position:absolute;inset:8px;border-radius:50%;background:rgba(0,255,85,.07);border:1px solid rgba(0,255,85,.15);display:flex;align-items:center;justify-content:center;font-size:36px;transition:all .4s cubic-bezier(.23,1,.32,1);}
-.i-inner.success{background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.28);animation:checkPop .55s cubic-bezier(.23,1,.32,1) both,glowPulse 3s ease-in-out 1s infinite;}
-.i-inner.error{background:rgba(232,66,26,.09);border-color:rgba(232,66,26,.28);}
-.spinner-el{width:38px;height:38px;border:3px solid rgba(0,255,85,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;}
-/* STEPS */
-.steps{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.055);border-radius:14px;padding:16px 20px;margin-bottom:28px;text-align:left;}
-.step{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);transition:all .3s;}
-.step:last-child{border-bottom:none}
-.step-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid #272736;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#444;transition:all .3s;}
-.step-text{font-size:12px;color:#444;font-weight:700;transition:color .3s;}
-.step.done .step-dot{background:var(--green);border-color:var(--green);color:#000}
-.step.done .step-text{color:var(--green)}
-.step.active .step-dot{border-color:var(--green);color:var(--green);background:rgba(0,255,85,.07)}
-.step.active .step-text{color:#bbb}
-/* TITLE */
-.title{font-family:'Orbitron',sans-serif;font-size:clamp(18px,4vw,26px);font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:.4px;}
+
+/* ── CARD ── */
+.card{position:relative;z-index:2;background:var(--card);border:1px solid rgba(0,255,85,.1);border-radius:32px;padding:52px 44px 44px;width:100%;max-width:500px;text-align:center;animation:fadeUp .7s cubic-bezier(.23,1,.32,1) both;box-shadow:0 60px 120px rgba(0,0,0,.9);}
+.card-top-line{position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--green) 40%,var(--green2) 60%,transparent);border-radius:0 0 4px 4px;opacity:.7;}
+
+/* ── ÍCONE CENTRAL ── */
+.icon-wrap{position:relative;width:110px;height:110px;margin:0 auto 32px;display:flex;align-items:center;justify-content:center;}
+/* Anéis pulsantes */
+.ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(0,255,85,.15);}
+.ring-pulse{position:absolute;border-radius:50%;border:1.5px solid var(--green);opacity:0;}
+.ring-pulse.r1{inset:-8px;animation:ringExpand 2s ease-out .3s infinite;}
+.ring-pulse.r2{inset:-16px;animation:ringExpand2 2s ease-out .7s infinite;}
+/* Spinner de loading */
+.arc{position:absolute;inset:-4px;border-radius:50%;border:2.5px solid transparent;border-top-color:var(--green);animation:spin .85s linear infinite;}
+/* Círculo de sucesso */
+.icon-circle{width:78px;height:78px;border-radius:50%;background:rgba(0,255,85,.06);border:1.5px solid rgba(0,255,85,.18);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;transition:all .4s cubic-bezier(.23,1,.32,1);}
+.icon-circle.success{background:rgba(0,255,85,.09);border-color:rgba(0,255,85,.4);animation:glowPulse 2.5s ease-in-out 1s infinite;}
+.icon-circle.error{background:rgba(232,66,26,.08);border-color:rgba(232,66,26,.3);}
+/* Check SVG animado */
+.check-svg{width:36px;height:36px;display:none;}
+.check-svg .check-path{stroke:#00ff55;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke-dasharray:80;stroke-dashoffset:80;animation:checkDraw .5s cubic-bezier(.23,1,.32,1) .1s forwards;}
+/* Spinner dentro do círculo */
+.spinner-el{width:36px;height:36px;border:3px solid rgba(0,255,85,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;}
+
+/* ── TÍTULO / SUBTÍTULO ── */
+.title{font-family:'Orbitron',sans-serif;font-size:clamp(20px,4.5vw,28px);font-weight:900;color:#fff;margin-bottom:10px;letter-spacing:.02em;}
 .title .hl{color:var(--green)}
-.subtitle{font-size:13px;color:#666;font-weight:600;line-height:1.7;margin-bottom:28px}
+.title .hl-fire{background:linear-gradient(135deg,var(--mars),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.subtitle{font-size:13px;color:#555;font-weight:600;line-height:1.7;margin-bottom:28px;}
 .loading-dots::after{content:'.';animation:dots 1.5s steps(4,end) infinite;}
-/* PTS BADGE */
-.pts-badge{display:none;align-items:center;gap:8px;justify-content:center;background:linear-gradient(135deg,rgba(255,184,0,.07),rgba(255,184,0,.03));border:1px solid rgba(255,184,0,.22);border-radius:99px;padding:8px 20px;font-size:12px;font-weight:900;color:var(--gold);margin-bottom:20px;animation:badgePop .5s cubic-bezier(.23,1,.32,1) both;letter-spacing:.5px;}
-/* PEDIDO */
-.pedido-box{background:rgba(0,255,85,.03);border:1px solid rgba(0,255,85,.09);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left;display:none;animation:slideIn .4s ease both .2s;}
-.pedido-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+
+/* Mensagem especial de parabéns */
+.parabens-msg{display:none;margin-bottom:20px;animation:fadeIn .8s ease .3s both;}
+.parabens-line{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,255,85,.5);margin-bottom:8px;}
+.parabens-text{font-size:15px;font-weight:700;color:#ccc;line-height:1.6;}
+.parabens-text strong{color:#fff;}
+
+/* ── STEPS ── */
+.steps{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:16px 20px;margin-bottom:28px;text-align:left;}
+.step{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.035);transition:all .3s;}
+.step:last-child{border-bottom:none}
+.step-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.03);border:1px solid #252535;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#333;transition:all .3s;}
+.step-text{font-size:12px;color:#444;font-weight:700;transition:color .3s;}
+.step.done .step-dot{background:var(--green);border-color:var(--green);color:#000;}
+.step.done .step-text{color:var(--green);}
+.step.active .step-dot{border-color:var(--green);color:var(--green);background:rgba(0,255,85,.07);}
+.step.active .step-text{color:#aaa;}
+
+/* ── PEDIDO ── */
+.pedido-box{background:rgba(0,255,85,.025);border:1px solid rgba(0,255,85,.08);border-radius:14px;padding:16px;margin-bottom:18px;text-align:left;display:none;animation:slideIn .5s ease both .15s;}
+.pedido-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(0,255,85,.35);margin-bottom:12px;}
 .pedido-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
 .pedido-item:last-child{border-bottom:none}
-.pedido-item-img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:#1a1a22;border:1px solid rgba(255,255,255,.05);flex-shrink:0;}
-.pedido-item-nome{font-size:12px;font-weight:700;color:#ddd;flex:1}
-.pedido-item-val{font-size:13px;font-weight:900;color:var(--green)}
-/* CHAVE */
-.chave-box{background:linear-gradient(135deg,rgba(232,66,26,.065),rgba(255,107,43,.035));border:1px dashed rgba(232,66,26,.32);border-radius:12px;padding:16px;margin-bottom:14px;text-align:left;position:relative;overflow:hidden;animation:slideIn .4s ease both;}
-.chave-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.38),transparent);}
-.chave-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,107,43,.65);margin-bottom:10px;}
-.chave-row{margin-bottom:8px}
-.chave-field-label{font-size:9px;color:#555;font-weight:600;margin-bottom:3px}
-.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all;line-height:1.5;background:rgba(255,107,43,.055);border:1px solid rgba(255,107,43,.1);border-radius:8px;padding:8px 10px;background-image:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.035) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 3s ease infinite;}
-.chave-warn{font-size:10px;color:#505050;font-weight:600;margin-top:8px;display:flex;align-items:center;gap:5px;}
-.copy-btn{width:100%;margin-top:10px;padding:9px;border-radius:8px;background:linear-gradient(135deg,var(--mars),var(--orange));border:none;color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s;}
-.copy-btn:hover{opacity:.88;transform:translateY(-1px)}
-.copy-btn.copiado{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
-/* BTNS */
-.btns{display:flex;flex-direction:column;gap:10px}
-.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 24px rgba(0,255,85,.18);}
-.btn-primary:hover{box-shadow:0 8px 32px rgba(0,255,85,.38);transform:translateY(-2px)}
-.btn-secondary{display:flex;align-items:center;justify-content:center;padding:13px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.07);color:#666;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
-.btn-secondary:hover{border-color:rgba(255,255,255,.18);color:#ccc}
+.pedido-item-img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#151520;border:1px solid rgba(255,255,255,.06);flex-shrink:0;}
+.pedido-item-nome{font-size:12px;font-weight:700;color:#ddd;flex:1;}
+.pedido-item-val{font-size:13px;font-weight:900;color:var(--green);}
+
+/* ── CHAVE ── */
+.chave-box{background:linear-gradient(135deg,rgba(232,66,26,.06),rgba(255,107,43,.03));border:1px dashed rgba(232,66,26,.25);border-radius:14px;padding:18px;margin-bottom:14px;text-align:left;position:relative;overflow:hidden;animation:slideIn .5s ease both;}
+.chave-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(255,107,43,.35),transparent);}
+.chave-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,107,43,.55);margin-bottom:12px;}
+.chave-row{margin-bottom:10px;}
+.chave-field-label{font-size:9px;color:#444;font-weight:700;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;}
+.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all;line-height:1.5;background:rgba(255,107,43,.05);border:1px solid rgba(255,107,43,.12);border-radius:8px;padding:10px 12px;background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.04) 50%,transparent);background-size:200% 100%;animation:shimmer 3s ease infinite;}
+.chave-warn{font-size:10px;color:#444;font-weight:600;margin-top:10px;display:flex;align-items:center;gap:6px;}
+.copy-btn{width:100%;margin-top:10px;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--mars),var(--orange));border:none;color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s,box-shadow .2s;box-shadow:0 4px 20px rgba(232,66,26,.2);}
+.copy-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 6px 28px rgba(232,66,26,.35);}
+.copy-btn.copiado{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;box-shadow:0 4px 20px rgba(0,255,85,.25);}
+
+/* ── PTS BADGE ── */
+.pts-badge{display:none;align-items:center;gap:8px;justify-content:center;background:linear-gradient(135deg,rgba(255,184,0,.08),rgba(255,184,0,.03));border:1px solid rgba(255,184,0,.2);border-radius:99px;padding:9px 22px;font-size:12px;font-weight:900;color:var(--gold);margin-bottom:20px;animation:badgePop .6s cubic-bezier(.23,1,.32,1) both;letter-spacing:.5px;}
+.pts-star{animation:starPop .5s cubic-bezier(.23,1,.32,1) .3s both;display:inline-block;}
+
+/* ── BOTÕES ── */
+.btns{display:flex;flex-direction:column;gap:10px;}
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 24px rgba(0,255,85,.2);}
+.btn-primary:hover{box-shadow:0 8px 40px rgba(0,255,85,.42);transform:translateY(-2px);}
+.btn-secondary{display:flex;align-items:center;justify-content:center;padding:13px;border-radius:14px;background:transparent;border:1px solid rgba(255,255,255,.07);color:#555;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
+.btn-secondary:hover{border-color:rgba(255,255,255,.18);color:#ccc;}
 </style>
 </head>
 <body>
+<div class="bg-glow" id="bgGlow"></div>
 <div class="confetti-wrap" id="confettiWrap"></div>
-<div class="card">
 
-  <div class="icon-ring">
-    <div class="i-ring"></div>
-    <div class="i-spin" id="iSpin"></div>
-    <div class="i-pulse" id="iPulse"></div>
-    <div class="i-inner" id="iInner"><div class="spinner-el"></div></div>
+<div class="card">
+  <div class="card-top-line"></div>
+
+  <!-- Ícone animado -->
+  <div class="icon-wrap">
+    <div class="ring"></div>
+    <div class="ring-pulse r1" id="rPulse1"></div>
+    <div class="ring-pulse r2" id="rPulse2"></div>
+    <div class="arc" id="arc"></div>
+    <div class="icon-circle" id="iconCircle">
+      <!-- Spinner enquanto processa -->
+      <div class="spinner-el" id="spinnerEl"></div>
+      <!-- Check SVG animado (aparece no sucesso) -->
+      <svg class="check-svg" id="checkSvg" viewBox="0 0 40 40">
+        <polyline class="check-path" points="8,21 17,30 32,12"/>
+      </svg>
+    </div>
   </div>
 
+  <!-- Título -->
   <div class="title" id="titulo">Processando <span class="hl">pagamento</span></div>
   <div class="subtitle" id="subtitulo">Aguardando confirmação do Mercado Pago<span class="loading-dots"></span></div>
 
+  <!-- Mensagem especial de parabéns (aparece no sucesso) -->
+  <div class="parabens-msg" id="parabensmsg">
+    <div class="parabens-line">🎮 Missão cumprida</div>
+    <div class="parabens-text">Parabéns, <strong id="nomeCliente">jogador</strong>! Sua chave está pronta.<br>Bons jogos e que venham as conquistas! 🚀</div>
+  </div>
+
+  <!-- Steps de progresso -->
   <div class="steps" id="stepsBox">
     <div class="step done" id="s1"><div class="step-dot">✓</div><div class="step-text">Pagamento enviado</div></div>
     <div class="step active" id="s2"><div class="step-dot">2</div><div class="step-text">Confirmando pagamento</div></div>
     <div class="step" id="s3"><div class="step-dot">3</div><div class="step-text">Entregando sua chave</div></div>
   </div>
 
+  <!-- Jogos comprados -->
   <div class="pedido-box" id="pedidoBox">
     <div class="pedido-label">Seus jogos</div>
     <div id="pedidoItens"></div>
   </div>
 
+  <!-- Chaves -->
   <div id="chaveSection"></div>
 
-  <div class="pts-badge" id="ptsBadge">⭐ +<span id="ptsGanhos">0</span> MarsPoints ganhos!</div>
+  <!-- MarsPoints -->
+  <div class="pts-badge" id="ptsBadge"><span class="pts-star">⭐</span> +<span id="ptsGanhos">0</span> MarsPoints ganhos!</div>
 
+  <!-- Botões finais -->
   <div class="btns" id="btns" style="display:none">
     <a class="btn-primary" href="perfil.html">🎮 Ver meus pedidos</a>
     <a class="btn-secondary" href="index.html">Continuar comprando</a>
@@ -142,12 +206,24 @@ function lancarConfetti(){
 function mostrarSucesso(pedido){
   lancarConfetti();
   localStorage.removeItem('mg_cart');localStorage.removeItem('mg_cart_saved');
-  document.getElementById('iSpin').style.animation='none';
-  document.getElementById('iPulse').style.display='block';
-  var inner=document.getElementById('iInner');
-  inner.className='i-inner success';inner.innerHTML='✅';
+  /* Ativa glow de fundo */
+  document.getElementById('bgGlow').classList.add('on');
+  /* Para o spinner e arco */
+  document.getElementById('arc').style.animation='none';
+  document.getElementById('spinnerEl').style.display='none';
+  /* Mostra check SVG animado */
+  document.getElementById('checkSvg').style.display='block';
+  /* Ativa círculo de sucesso */
+  document.getElementById('iconCircle').className='icon-circle success';
+  /* Título épico */
   document.getElementById('titulo').innerHTML='Pagamento <span class="hl">Confirmado!</span>';
-  document.getElementById('subtitulo').textContent='Sua chave está pronta. Bons jogos! 🎮';
+  document.getElementById('subtitulo').style.display='none';
+  /* Mensagem de parabéns personalizada */
+  var email=sessionStorage.getItem('mg_user_email')||'';
+  var nome=email?email.split('@')[0].split('.')[0]:'jogador';
+  nome=nome.charAt(0).toUpperCase()+nome.slice(1);
+  document.getElementById('nomeCliente').textContent=nome;
+  document.getElementById('parabensmsg').style.display='block';
   document.getElementById('stepsBox').style.display='none';
   document.getElementById('btns').style.display='flex';
 
@@ -207,8 +283,10 @@ function mostrarSucesso(pedido){
 }
 
 function mostrarErro(){
-  document.getElementById('iSpin').style.animation='none';
-  var inner=document.getElementById('iInner');inner.className='i-inner error';inner.innerHTML='⏳';
+  document.getElementById('arc').style.animation='none';
+  document.getElementById('spinnerEl').style.display='none';
+  document.getElementById('iconCircle').className='icon-circle error';
+  document.getElementById('iconCircle').innerHTML='<span style="font-size:30px">⏳</span>';
   document.getElementById('titulo').innerHTML='Pagamento <span style="color:var(--orange)">em análise</span>';
   document.getElementById('subtitulo').textContent='O Mercado Pago ainda está processando. Sua chave aparecerá em Meus Pedidos assim que confirmado.';
   document.getElementById('stepsBox').style.display='none';
@@ -394,8 +472,15 @@ async function init(){
           if(resultado&&resultado.aprovado){
             document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
             document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
-            /* Monta pedido com as chaves retornadas pela edge */
-            pedido.chaves_entregues=resultado.chaves||[];
+            var chavesEdge=resultado.chaves||[];
+            /* Filtra chaves válidas (sem ERRO_ESTOQUE) */
+            var chavesValidas=chavesEdge.filter(function(ch){return ch.conteudo&&ch.conteudo!=='ERRO_ESTOQUE';});
+            if(chavesValidas.length>0){
+              pedido.chaves_entregues=chavesValidas;
+            } else {
+              /* Edge não entregou — tenta fallback direto no estoque */
+              pedido=await tentarEntregarFallback(sb,pedido);
+            }
             pedido.status='aprovado';
             ['mg_pix_data','mg_external_ref','mg_pedido_id','mg_itens_pendentes'].forEach(function(k){sessionStorage.removeItem(k);});
             setTimeout(function(){mostrarSucesso(pedido);},500);
