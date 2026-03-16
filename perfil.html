@@ -1212,7 +1212,7 @@ async function loginGoogle() {
       provider: 'google',
       options: {
         redirectTo: redirect,
-        queryParams: { prompt: 'select_account' }
+        queryParams: { prompt: 'select_account', access_type: 'offline' }
       }
     });
     if (error) throw error;
@@ -1245,13 +1245,12 @@ async function logout(){
   _fazendoLogout=true;
   var btn=document.getElementById('btnLogout');
   if(btn){btn.textContent='Saindo...';btn.disabled=true;}
-  try{ await sb.auth.signOut(); }catch(e){ console.error(e); }
-  /* Limpa storage manualmente */
-  Object.keys(localStorage).forEach(function(k){
-    if(k.startsWith('sb-')||k.startsWith('supabase')||k==='mg_auth')localStorage.removeItem(k);
-  });
+  try{
+    await sb.auth.signOut({scope:'local'});
+  }catch(e){ console.error(e); }
   perfilData=null; userSession=null; _fazendoLogout=false;
   mostrarLogin();
+  if(btn){btn.textContent='Sair';btn.disabled=false;}
 }
 
 function mostrarLogin(){

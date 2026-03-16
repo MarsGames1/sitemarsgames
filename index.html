@@ -3996,8 +3996,19 @@ async function atualizarNavbar(session){
     wrap.style.display     = 'none';
   }
 }
-sb.auth.onAuthStateChange(function(_event, session){ atualizarNavbar(session); });
-sb.auth.getSession().then(function(r){ atualizarNavbar(r.data ? r.data.session : null); });
+/* Lê sessão assim que sb é criado */
+sb.auth.onAuthStateChange(function(event, session){
+  if(event==='INITIAL_SESSION'||event==='SIGNED_IN'||event==='TOKEN_REFRESHED'){
+    atualizarNavbar(session);
+  }
+  if(event==='SIGNED_OUT'){
+    atualizarNavbar(null);
+  }
+});
+/* Fallback direto */
+sb.auth.getSession().then(function(r){
+  if(r.data && r.data.session) atualizarNavbar(r.data.session);
+});
 
 
 /* ── POP-UP DE SAÍDA ── */
