@@ -1497,7 +1497,23 @@ async function carregarPedidos(userId){
       if(list){list.style.display='flex';list.innerHTML='<div class="sem-pedidos">Faça login para ver seus pedidos.</div>';}
       return;
     }
-    var{data,error}=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false});
+    /* Tenta via sb (sessão normal) */
+    var data=null,error=null;
+    var sbRes=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false});
+    data=sbRes.data; error=sbRes.error;
+    console.log('[pedidos] via sb — email:',userEmail,'qtd:',data?.length,'error:',error?.message);
+
+    /* Se sb falhou (RLS / aba anônima / storage bloqueado), tenta via REST com token do sessionStorage */
+    if(error||!data||data.length===0){
+      var tkn=sessionStorage.getItem('mg_access_token')||SUPABASE_KEY;
+      try{
+        var url=SUPABASE_URL+'/rest/v1/pedidos?cliente_email=eq.'+encodeURIComponent(userEmail)+'&order=created_at.desc';
+        var r=await fetch(url,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+tkn,'Accept':'application/json'}});
+        if(r.ok){var rows=await r.json();if(rows&&rows.length>0){data=rows;error=null;}}
+        console.log('[pedidos] via REST — qtd:',data?.length);
+      }catch(fe){console.warn('[pedidos REST]',fe);}
+    }
+
     if(loader)loader.style.display='none';
     if(list)list.style.display='flex';
     if(document.getElementById('statPedidos'))document.getElementById('statPedidos').textContent=data?data.length:0;
