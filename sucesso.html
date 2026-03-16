@@ -266,26 +266,45 @@ async function init(){
 
   var tentativas=0,max=30;
 
+  async function corrigirStatusSeChaveEntregue(pedido){
+    /* Edge function pode ter entregue a chave mas crashado antes de atualizar pedido.status */
+    if(!pedido || pedido.status!=='pendente') return pedido;
+    try{
+      var{data:ch}=await sb.from('estoque_chaves')
+        .select('*').eq('pedido_id',pedido.id).eq('status','entregue').limit(1).maybeSingle();
+      if(ch){
+        /* Chave já foi entregue — corrige status e retorna pedido como aprovado */
+        await sb.from('pedidos').update({status:'entregue'}).eq('id',pedido.id);
+        pedido=Object.assign({},pedido,{status:'entregue'});
+        /* Busca todas as chaves entregues deste pedido para exibir */
+        var{data:todasChaves}=await sb.from('estoque_chaves')
+          .select('conteudo,tipo,produto_nome').eq('pedido_id',pedido.id).eq('status','entregue');
+        if(todasChaves&&todasChaves.length>0) pedido.chaves_entregues=todasChaves;
+      }
+    }catch(e){console.warn('[corrigirStatus]',e);}
+    return pedido;
+  }
+
   async function buscarPedido(){
     /* 1. Por reference — mais confiável */
     if(ref){
       var r1=await sb.from('pedidos').select('*').eq('reference',ref).maybeSingle();
-      if(r1.data) return r1.data;
+      if(r1.data){r1.data=await corrigirStatusSeChaveEntregue(r1.data);return r1.data;}
     }
     /* 2. Por pedido_id direto */
     if(pedidoId){
       var r2=await sb.from('pedidos').select('*').eq('id',pedidoId).maybeSingle();
-      if(r2.data) return r2.data;
+      if(r2.data){r2.data=await corrigirStatusSeChaveEntregue(r2.data);return r2.data;}
     }
     /* 3. Por user_id — pedido mais recente */
     if(userId){
       var r3=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(1).maybeSingle();
-      if(r3.data) return r3.data;
+      if(r3.data){r3.data=await corrigirStatusSeChaveEntregue(r3.data);return r3.data;}
     }
     /* 4. Por email — último recurso */
     if(userEmail){
       var r4=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false}).limit(1).maybeSingle();
-      if(r4.data) return r4.data;
+      if(r4.data){r4.data=await corrigirStatusSeChaveEntregue(r4.data);return r4.data;}
     }
     return null;
   }

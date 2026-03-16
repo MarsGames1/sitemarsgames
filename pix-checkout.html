@@ -270,13 +270,34 @@ let pollAtivo = true;
 
 async function buscarPedidoPago() {
   try {
+    // Verifica por status do pedido
     if (reference) {
       const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', reference).maybeSingle();
       if (data && (data.status === 'pago' || data.status === 'aprovado' || data.status === 'entregue')) return data;
+      // Pedido existe mas status ainda é pendente — verifica se chave já foi entregue
+      // (edge function pode ter entregado a chave mas crashado antes de atualizar o pedido)
+      if (data && data.status === 'pendente') {
+        const { data: chaveEntregue } = await sb.from('estoque_chaves')
+          .select('id').eq('pedido_id', data.id).eq('status', 'entregue').limit(1).maybeSingle();
+        if (chaveEntregue) {
+          console.log('[poll db] chave entregue detectada em estoque_chaves — pedido_id:', data.id);
+          // Corrige o status do pedido no banco
+          await sb.from('pedidos').update({ status: 'entregue' }).eq('id', data.id);
+          return Object.assign({}, data, { status: 'entregue' });
+        }
+      }
     }
     if (pedidoId) {
       const { data } = await sb.from('pedidos').select('id,status,reference').eq('id', pedidoId).maybeSingle();
       if (data && (data.status === 'pago' || data.status === 'aprovado' || data.status === 'entregue')) return data;
+      if (data && data.status === 'pendente') {
+        const { data: chaveEntregue } = await sb.from('estoque_chaves')
+          .select('id').eq('pedido_id', data.id).eq('status', 'entregue').limit(1).maybeSingle();
+        if (chaveEntregue) {
+          await sb.from('pedidos').update({ status: 'entregue' }).eq('id', data.id);
+          return Object.assign({}, data, { status: 'entregue' });
+        }
+      }
     }
     if (userEmail) {
       const { data } = await sb.from('pedidos').select('id,status,reference')
