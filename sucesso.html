@@ -261,8 +261,12 @@ async function init(){
   if(!ref && !pedidoId && !userEmail && !userId){mostrarErro();return;}
   if(ref) sessionStorage.setItem('mg_external_ref',ref);
 
+  var accessToken=sessionStorage.getItem('mg_access_token')||'';
+  var refreshToken=sessionStorage.getItem('mg_refresh_token')||'';
   var _m={};var _s={getItem:function(k){return _m[k]??null},setItem:function(k,v){_m[k]=v},removeItem:function(k){delete _m[k]}};
-  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:false,autoRefreshToken:false,storage:_s}});
+  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:true,autoRefreshToken:false,storage:_s}});
+  /* Injeta a sessão do usuário para que o RLS permita leitura dos seus pedidos */
+  if(accessToken&&refreshToken){sb.auth.setSession({access_token:accessToken,refresh_token:refreshToken}).catch(function(){});}
 
   var tentativas=0,max=30;
 

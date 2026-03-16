@@ -216,6 +216,8 @@ async function pagar() {
     sessionStorage.setItem('mg_pedido_id',    data.pedido_id  || '');
     sessionStorage.setItem('mg_user_email',   session.user.email || '');
     sessionStorage.setItem('mg_user_id',      session.user.id || '');
+    sessionStorage.setItem('mg_access_token',  session.access_token  || '');
+    sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
 
     window.location.href = 'pix-checkout.html';
 

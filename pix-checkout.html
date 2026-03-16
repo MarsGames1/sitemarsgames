@@ -179,17 +179,29 @@ const SUPA_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPA_KEY  = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 
 // Dados salvos pelo checkout.html
-const pixData    = JSON.parse(sessionStorage.getItem('mg_pix_data') || 'null');
-const userEmail  = sessionStorage.getItem('mg_user_email') || '';
-const reference  = sessionStorage.getItem('mg_external_ref') || '';
-const pedidoId   = sessionStorage.getItem('mg_pedido_id') || '';
+const pixData     = JSON.parse(sessionStorage.getItem('mg_pix_data') || 'null');
+const userEmail   = sessionStorage.getItem('mg_user_email') || '';
+const reference   = sessionStorage.getItem('mg_external_ref') || '';
+const pedidoId    = sessionStorage.getItem('mg_pedido_id') || '';
+const accessToken  = sessionStorage.getItem('mg_access_token')  || '';
+const refreshToken = sessionStorage.getItem('mg_refresh_token') || '';
 
-// Cliente Supabase leve para consultar pedidos diretamente
+// Cliente Supabase autenticado com o token do usuário (necessário para RLS)
 const _mem = {};
-const _store = { getItem: k => _mem[k]??null, setItem:(k,v)=>_mem[k]=v, removeItem:k=>delete _mem[k] };
+const _store = {
+  getItem:    k => _mem[k] ?? null,
+  setItem:    (k,v) => { _mem[k] = v; },
+  removeItem: k => { delete _mem[k]; }
+};
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
-  auth:{ flowType:'implicit', detectSessionInUrl:false, persistSession:false, autoRefreshToken:false, storage:_store }
+  auth:{ flowType:'implicit', detectSessionInUrl:false, persistSession:true, autoRefreshToken:false, storage:_store }
 });
+// Injeta a sessão do usuário para que RLS permita leitura dos seus pedidos
+if (accessToken) {
+  if (refreshToken) {
+    sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).catch(() => {});
+  }
+}
 
 function show(id) {
   ['stateLoading','statePix','stateSuccess','stateError'].forEach(s => {
