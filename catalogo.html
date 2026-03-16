@@ -413,32 +413,70 @@ function toggleCart(){
   if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
-async function checkout(){
-  if(carrinho.length===0)return;
-  var r=await sb.auth.getSession();
-  if(!r.data||!r.data.session){
-    showToast('Faça login para finalizar!');
-    setTimeout(function(){window.location.href='perfil.html'},1200);
-    return;
-  }
-  var session=r.data.session;
-  var btn=document.getElementById('checkoutBtn');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Processando...';}
-  try{
-    var itens=carrinho.map(function(p){
-      return{id:p.id,nome:p.nome,preco:Number(p.preco),quantidade:1,imagem:p.imagem||''};
-    });
-    var res=await fetch('https://rzjtlghpsygxkivgwgws.supabase.co/functions/v1/criar-preferencia',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({itens:itens})
-    });
-    var data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Erro ao processar pagamento');
-    window.location.href=data.init_point;
-  }catch(err){
-    showToast('Erro: '+err.message);
-    if(btn){btn.disabled=false;btn.textContent='🚀 Finalizar compra';}
+async function criarPedidoTemp(itens, user) {
+  const reference = 'PED-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+  const valor = itens.reduce((s, i) => s + i.preco, 0);
+  const { data, error } = await sb.from('pedidos_temp').insert({
+    user_id: user.id,
+    user_email: user.email,
+    itens: itens,
+    valor: valor,
+    reference: reference
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function iniciarPagamento(itens, user, externalRef) {
+  const { data: { session } } = await sb.auth.getSession();
+  const token = session?.access_token;
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/criar-preferencia`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      itens: itens,
+      user_email: user.email,
+      user_id: user.id,
+      external_reference: externalRef
+    })
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Erro ao criar pagamento');
+  return data.init_point;
+}
+
+async function checkout() {
+  if (carrinho.length === 0) return;
+  const btn = document.getElementById('checkoutBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Processando...'; }
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      showToast('Faça login para finalizar a compra!');
+      setTimeout(() => window.location.href = 'perfil.html', 1200);
+      return;
+    }
+    const itens = carrinho.map(p => ({
+      id: p.id,
+      nome: p.nome,
+      preco: Number(p.preco),
+      quantidade: 1,
+      imagem: p.imagem || ''
+    }));
+    sessionStorage.setItem('mg_carrinho_pendente', JSON.stringify(itens));
+    sessionStorage.setItem('mg_user_email', session.user.email);
+    const pedidoTemp = await criarPedidoTemp(itens, session.user);
+    const initPoint = await iniciarPagamento(itens, session.user, pedidoTemp.reference);
+    sessionStorage.setItem('mg_external_ref', pedidoTemp.reference);
+    window.open(initPoint, '_blank');
+    window.location.href = 'aguardando-pagamento.html';
+  } catch (error) {
+    console.error('Erro no checkout:', error);
+    showToast('Erro: ' + (error.message || 'Tente novamente'));
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 Finalizar compra'; }
   }
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
