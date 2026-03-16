@@ -262,27 +262,54 @@ async function init(){
   if(ref) sessionStorage.setItem('mg_external_ref',ref);
 
   var accessToken=sessionStorage.getItem('mg_access_token')||'';
-  var refreshToken=sessionStorage.getItem('mg_refresh_token')||'';
+
+  /* REST helpers — passam o token diretamente, sem depender do RLS ou timing de setSession */
+  function dbToken(){return accessToken||SUPABASE_KEY;}
+  function dbHeaders(){return{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+dbToken(),'Accept':'application/json','Content-Type':'application/json'};}
+
+  async function dbQuery(table,filters){
+    try{
+      var params=Object.entries(filters).map(function(e){return e[0]+'=eq.'+encodeURIComponent(e[1]);}).join('&');
+      var r=await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+params+'&limit=1',{headers:dbHeaders()});
+      if(!r.ok){console.warn('[dbQuery] '+table+' status:',r.status);return null;}
+      var rows=await r.json();
+      return Array.isArray(rows)&&rows.length>0?rows[0]:null;
+    }catch(e){console.warn('[dbQuery]',e);return null;}
+  }
+
+  async function dbQueryMulti(table,filters){
+    try{
+      var params=Object.entries(filters).map(function(e){return e[0]+'=eq.'+encodeURIComponent(e[1]);}).join('&');
+      var r=await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+params,{headers:dbHeaders()});
+      if(!r.ok) return [];
+      return await r.json()||[];
+    }catch(e){return [];}
+  }
+
+  async function dbUpdate(table,id,data){
+    try{
+      await fetch(SUPABASE_URL+'/rest/v1/'+table+'?id=eq.'+id,{
+        method:'PATCH',headers:Object.assign({},dbHeaders(),{'Prefer':'return=minimal'}),
+        body:JSON.stringify(data)
+      });
+    }catch(e){console.warn('[dbUpdate]',e);}
+  }
+
+  /* sb ainda é criado para tentarEntregarFallback que usa sb.from() */
   var _m={};var _s={getItem:function(k){return _m[k]??null},setItem:function(k,v){_m[k]=v},removeItem:function(k){delete _m[k]}};
-  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:true,autoRefreshToken:false,storage:_s}});
-  /* Injeta a sessão do usuário para que o RLS permita leitura dos seus pedidos */
-  if(accessToken&&refreshToken){sb.auth.setSession({access_token:accessToken,refresh_token:refreshToken}).catch(function(){});}
+  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:false,autoRefreshToken:false,storage:_s}});
 
   var tentativas=0,max=30;
 
   async function corrigirStatusSeChaveEntregue(pedido){
-    /* Edge function pode ter entregue a chave mas crashado antes de atualizar pedido.status */
-    if(!pedido || pedido.status!=='pendente') return pedido;
+    if(!pedido||pedido.status!=='pendente') return pedido;
     try{
-      var{data:ch}=await sb.from('estoque_chaves')
-        .select('*').eq('pedido_id',pedido.id).eq('status','entregue').limit(1).maybeSingle();
+      var ch=await dbQuery('estoque_chaves',{pedido_id:pedido.id,status:'entregue'});
+      console.log('[corrigir] chave entregue para pedido',pedido.id,':',ch);
       if(ch){
-        /* Chave já foi entregue — corrige status e retorna pedido como aprovado */
-        await sb.from('pedidos').update({status:'entregue'}).eq('id',pedido.id);
+        await dbUpdate('pedidos',pedido.id,{status:'entregue'});
         pedido=Object.assign({},pedido,{status:'entregue'});
-        /* Busca todas as chaves entregues deste pedido para exibir */
-        var{data:todasChaves}=await sb.from('estoque_chaves')
-          .select('conteudo,tipo,produto_nome').eq('pedido_id',pedido.id).eq('status','entregue');
+        var todasChaves=await dbQueryMulti('estoque_chaves',{pedido_id:pedido.id,status:'entregue'});
         if(todasChaves&&todasChaves.length>0) pedido.chaves_entregues=todasChaves;
       }
     }catch(e){console.warn('[corrigirStatus]',e);}
@@ -290,25 +317,36 @@ async function init(){
   }
 
   async function buscarPedido(){
+    var p=null;
     /* 1. Por reference — mais confiável */
     if(ref){
-      var r1=await sb.from('pedidos').select('*').eq('reference',ref).maybeSingle();
-      if(r1.data){r1.data=await corrigirStatusSeChaveEntregue(r1.data);return r1.data;}
+      p=await dbQuery('pedidos',{reference:ref});
+      console.log('[buscar] por reference:',ref,'→',p);
+      if(p){return await corrigirStatusSeChaveEntregue(p);}
     }
-    /* 2. Por pedido_id direto */
+    /* 2. Por pedido_id */
     if(pedidoId){
-      var r2=await sb.from('pedidos').select('*').eq('id',pedidoId).maybeSingle();
-      if(r2.data){r2.data=await corrigirStatusSeChaveEntregue(r2.data);return r2.data;}
+      p=await dbQuery('pedidos',{id:pedidoId});
+      console.log('[buscar] por pedidoId:',pedidoId,'→',p);
+      if(p){return await corrigirStatusSeChaveEntregue(p);}
     }
-    /* 3. Por user_id — pedido mais recente */
+    /* 3. Por user_id */
     if(userId){
-      var r3=await sb.from('pedidos').select('*').eq('user_id',userId).order('created_at',{ascending:false}).limit(1).maybeSingle();
-      if(r3.data){r3.data=await corrigirStatusSeChaveEntregue(r3.data);return r3.data;}
+      try{
+        var r=await fetch(SUPABASE_URL+'/rest/v1/pedidos?user_id=eq.'+encodeURIComponent(userId)+'&order=created_at.desc&limit=1',{headers:dbHeaders()});
+        if(r.ok){var rows=await r.json();p=rows&&rows.length>0?rows[0]:null;}
+        console.log('[buscar] por userId:',userId,'→',p);
+        if(p){return await corrigirStatusSeChaveEntregue(p);}
+      }catch(e){}
     }
-    /* 4. Por email — último recurso */
+    /* 4. Por email */
     if(userEmail){
-      var r4=await sb.from('pedidos').select('*').eq('cliente_email',userEmail).order('created_at',{ascending:false}).limit(1).maybeSingle();
-      if(r4.data){r4.data=await corrigirStatusSeChaveEntregue(r4.data);return r4.data;}
+      try{
+        var r2=await fetch(SUPABASE_URL+'/rest/v1/pedidos?cliente_email=eq.'+encodeURIComponent(userEmail)+'&order=created_at.desc&limit=1',{headers:dbHeaders()});
+        if(r2.ok){var rows2=await r2.json();p=rows2&&rows2.length>0?rows2[0]:null;}
+        console.log('[buscar] por email:',userEmail,'→',p);
+        if(p){return await corrigirStatusSeChaveEntregue(p);}
+      }catch(e){}
     }
     return null;
   }

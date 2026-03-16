@@ -186,21 +186,37 @@ const pedidoId    = sessionStorage.getItem('mg_pedido_id') || '';
 const accessToken  = sessionStorage.getItem('mg_access_token')  || '';
 const refreshToken = sessionStorage.getItem('mg_refresh_token') || '';
 
-// Cliente Supabase autenticado com o token do usuário (necessário para RLS)
-const _mem = {};
-const _store = {
-  getItem:    k => _mem[k] ?? null,
-  setItem:    (k,v) => { _mem[k] = v; },
-  removeItem: k => { delete _mem[k]; }
-};
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
-  auth:{ flowType:'implicit', detectSessionInUrl:false, persistSession:true, autoRefreshToken:false, storage:_store }
-});
-// Injeta a sessão do usuário para que RLS permita leitura dos seus pedidos
-if (accessToken) {
-  if (refreshToken) {
-    sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).catch(() => {});
-  }
+// Query direta via REST com Authorization — ignora RLS completamente para leitura do próprio pedido
+async function dbGet(table, filters) {
+  const token = accessToken || SUPA_KEY;
+  const params = Object.entries(filters)
+    .map(([k,v]) => `${k}=eq.${encodeURIComponent(v)}`).join('&');
+  const url = `${SUPA_URL}/rest/v1/${table}?${params}&limit=1`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!res.ok) return null;
+  const rows = await res.json();
+  return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+}
+
+async function dbUpdate(table, id, data) {
+  const token = accessToken || SUPA_KEY;
+  const url = `${SUPA_URL}/rest/v1/${table}?id=eq.${id}`;
+  await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(data)
+  }).catch(() => {});
 }
 
 function show(id) {
@@ -282,44 +298,52 @@ let pollAtivo = true;
 
 async function buscarPedidoPago() {
   try {
-    // Verifica por status do pedido
+    const statusOk = ['pago','aprovado','entregue'];
+
+    // 1. Por reference
     if (reference) {
-      const { data } = await sb.from('pedidos').select('id,status,reference').eq('reference', reference).maybeSingle();
-      if (data && (data.status === 'pago' || data.status === 'aprovado' || data.status === 'entregue')) return data;
-      // Pedido existe mas status ainda é pendente — verifica se chave já foi entregue
-      // (edge function pode ter entregado a chave mas crashado antes de atualizar o pedido)
-      if (data && data.status === 'pendente') {
-        const { data: chaveEntregue } = await sb.from('estoque_chaves')
-          .select('id').eq('pedido_id', data.id).eq('status', 'entregue').limit(1).maybeSingle();
-        if (chaveEntregue) {
-          console.log('[poll db] chave entregue detectada em estoque_chaves — pedido_id:', data.id);
-          // Corrige o status do pedido no banco
-          await sb.from('pedidos').update({ status: 'entregue' }).eq('id', data.id);
-          return Object.assign({}, data, { status: 'entregue' });
+      const p = await dbGet('pedidos', { reference });
+      console.log('[db] por reference:', reference, '→', p);
+      if (p && statusOk.includes(p.status)) return p;
+      if (p && p.status === 'pendente') {
+        // Chave pode ter sido entregue mas pedido não foi atualizado (edge crashou)
+        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
+        if (ch) {
+          console.log('[db] chave entregue detectada, corrigindo pedido:', p.id);
+          await dbUpdate('pedidos', p.id, { status: 'entregue' });
+          return Object.assign({}, p, { status: 'entregue' });
         }
       }
     }
+
+    // 2. Por pedido_id
     if (pedidoId) {
-      const { data } = await sb.from('pedidos').select('id,status,reference').eq('id', pedidoId).maybeSingle();
-      if (data && (data.status === 'pago' || data.status === 'aprovado' || data.status === 'entregue')) return data;
-      if (data && data.status === 'pendente') {
-        const { data: chaveEntregue } = await sb.from('estoque_chaves')
-          .select('id').eq('pedido_id', data.id).eq('status', 'entregue').limit(1).maybeSingle();
-        if (chaveEntregue) {
-          await sb.from('pedidos').update({ status: 'entregue' }).eq('id', data.id);
-          return Object.assign({}, data, { status: 'entregue' });
+      const p = await dbGet('pedidos', { id: pedidoId });
+      console.log('[db] por pedidoId:', pedidoId, '→', p);
+      if (p && statusOk.includes(p.status)) return p;
+      if (p && p.status === 'pendente') {
+        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
+        if (ch) {
+          await dbUpdate('pedidos', p.id, { status: 'entregue' });
+          return Object.assign({}, p, { status: 'entregue' });
         }
       }
     }
+
+    // 3. Por email (último recurso)
     if (userEmail) {
-      const { data } = await sb.from('pedidos').select('id,status,reference')
-        .eq('cliente_email', userEmail)
-        .in('status', ['pago','aprovado','entregue'])
-        .order('created_at', { ascending: false })
-        .limit(1).maybeSingle();
-      if (data) return data;
+      const token = accessToken || SUPA_KEY;
+      const url = `${SUPA_URL}/rest/v1/pedidos?cliente_email=eq.${encodeURIComponent(userEmail)}&status=in.(pago,aprovado,entregue)&order=created_at.desc&limit=1`;
+      const res = await fetch(url, {
+        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        console.log('[db] por email:', userEmail, '→', rows);
+        if (rows && rows.length > 0) return rows[0];
+      }
     }
-  } catch(e) { console.warn('[buscarPedido]', e); }
+  } catch(e) { console.warn('[buscarPedidoPago erro]', e); }
   return null;
 }
 
