@@ -351,6 +351,25 @@ async function init(){
     return null;
   }
 
+  async function confirmarViaEdge(pedido){
+    /* Chama a edge function para confirmar pagamento e entregar chave */
+    try{
+      var pixData=JSON.parse(sessionStorage.getItem('mg_pix_data')||'null');
+      var paymentId=pixData&&pixData.payment_id?pixData.payment_id:null;
+      var res=await fetch(SUPABASE_URL+'/functions/v1/mp-confirmar-pagamento',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({payment_id:paymentId,reference:pedido.reference||ref})
+      });
+      if(res.ok){
+        var d=await res.json();
+        console.log('[edge confirmar]',d);
+        if(d.aprovado) return d;
+      }
+    }catch(e){console.warn('[edge confirmar erro]',e);}
+    return null;
+  }
+
   async function verificar(){
     tentativas++;
     try{
@@ -364,14 +383,24 @@ async function init(){
           document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
           document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
           pedido=await tentarEntregarFallback(sb,pedido);
-          /* Limpa sessionStorage após entrega bem-sucedida */
           ['mg_pix_data','mg_external_ref','mg_pedido_id','mg_itens_pendentes'].forEach(function(k){sessionStorage.removeItem(k);});
           setTimeout(function(){mostrarSucesso(pedido);},500);
           return;
         }
         if(pedido.status==='pendente'){
-          /* Pedido pendente = pagamento ainda não confirmado pelo MP — continua aguardando */
           document.getElementById('subtitulo').textContent='Aguardando confirmação do Mercado Pago...';
+          /* Chama a edge function para acionar confirmação e entrega da chave */
+          var resultado=await confirmarViaEdge(pedido);
+          if(resultado&&resultado.aprovado){
+            document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
+            document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
+            /* Monta pedido com as chaves retornadas pela edge */
+            pedido.chaves_entregues=resultado.chaves||[];
+            pedido.status='aprovado';
+            ['mg_pix_data','mg_external_ref','mg_pedido_id','mg_itens_pendentes'].forEach(function(k){sessionStorage.removeItem(k);});
+            setTimeout(function(){mostrarSucesso(pedido);},500);
+            return;
+          }
         }
       }
     }catch(e){console.error('[verificar]',e);}
