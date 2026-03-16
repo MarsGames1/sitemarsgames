@@ -1289,8 +1289,8 @@ async function checkAuth() {
   mostrarLoading();
   sessionStorage.removeItem('mg_login_in_progress');
 
-  /* Deixa o Supabase processar o hash #access_token automaticamente
-     via flowType:'implicit' — ele dispara SIGNED_IN quando pronto */
+  // Supabase processa o #access_token automaticamente com flowType:'implicit'
+  // Escutar eventos em vez de ler o hash manualmente
   sb.auth.onAuthStateChange(function(event, session){
     if(event === 'SIGNED_IN' && session){
       history.replaceState(null, '', window.location.pathname);
@@ -1307,16 +1307,13 @@ async function checkAuth() {
         userSession = session;
         mostrarPerfil();
         carregarPerfil(session.user);
-      } else {
-        // Só mostra login se não houver hash de auth na URL
-        if(!window.location.hash.includes('access_token')){
-          mostrarLogin();
-        }
+      } else if(!window.location.hash.includes('access_token')){
+        mostrarLogin();
       }
     }
   });
 
-  /* Verificação direta como fallback */
+  // Fallback: leitura direta da sessão
   try {
     const { data } = await sb.auth.getSession();
     if(data?.session){

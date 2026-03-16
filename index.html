@@ -3930,22 +3930,16 @@ async function atualizarNavbar(session){
     wrap.style.display     = 'none';
   }
 }
-/* Auth — lê sessão com retry robusto */
+/* Lê sessão assim que sb é criado */
 (function iniciarAuth(){
-  // Lê imediatamente
   sb.auth.getSession().then(function(r){
     if(r.data && r.data.session) atualizarNavbar(r.data.session);
   });
-  // Escuta mudanças (INITIAL_SESSION, SIGNED_IN, etc)
   sb.auth.onAuthStateChange(function(event, session){
-    if(event==='SIGNED_OUT'){
-      atualizarNavbar(null);
-    } else if(session){
-      atualizarNavbar(session);
-    }
+    if(event==='SIGNED_OUT'){ atualizarNavbar(null); }
+    else if(session){ atualizarNavbar(session); }
   });
-  // Retries para quando localStorage demora
-  [300, 800, 2000].forEach(function(ms){
+  [300,800,2000].forEach(function(ms){
     setTimeout(function(){
       sb.auth.getSession().then(function(r){
         if(r.data && r.data.session) atualizarNavbar(r.data.session);
@@ -4171,7 +4165,7 @@ function initThree() {
 }
 // Three.js — carrega após page load para não bloquear
 function dispararThree(){
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function(){
+  loadScript('https://unpkg.com/three@0.128.0/build/three.min.js', function(){
     if(typeof THREE !== 'undefined'){
       initThree();
     } else {
