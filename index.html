@@ -4163,10 +4163,15 @@ function initThree() {
   })();
   canvas.classList.add('ready');
 }
-loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function() {
-  if (window.requestIdleCallback) requestIdleCallback(initThree, {timeout: 3000});
-  else setTimeout(initThree, 500);
-});
+// Three.js carregamento com fallback
+try {
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', function() {
+    if (window.requestIdleCallback) requestIdleCallback(initThree, {timeout: 3000});
+    else setTimeout(initThree, 500);
+  });
+} catch(e) {
+  console.warn('Three.js não carregou, usando apenas CSS stars');
+}
 </script>
 
 <!-- ══ POP-UP DE SAÍDA ══ -->
