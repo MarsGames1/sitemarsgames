@@ -297,46 +297,42 @@ const POLL_MAX = 60;
 let pollAtivo = true;
 
 async function buscarPedidoPago() {
+  // Só retorna pedido se pagamento estiver CONFIRMADO
+  // Status válidos: pago, aprovado, entregue
+  // OU pedido pendente mas com chave já entregue (edge crashou após entregar)
+  const statusOk = ['pago','aprovado','entregue'];
   try {
-    const statusOk = ['pago','aprovado','entregue'];
-
     // 1. Por reference
     if (reference) {
       const p = await dbGet('pedidos', { reference });
-      console.log('[db] por reference:', reference, '→', p);
-      if (p) {
-        if (statusOk.includes(p.status)) return p;
-        // Chave pode já ter sido entregue mas status do pedido não atualizado
-        if (p.status === 'pendente') {
-          const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
-          if (ch) {
-            await dbUpdate('pedidos', p.id, { status: 'entregue' });
-            return Object.assign({}, p, { status: 'entregue' });
-          }
-          // Pedido pendente mas edge dando 500 — retorna mesmo assim para sucesso.html tratar
-          return p;
+      console.log('[db] reference:', reference, '→ status:', p?.status);
+      if (p && statusOk.includes(p.status)) return p;
+      if (p && p.status === 'pendente') {
+        // Só redireciona se chave já foi entregue pelo servidor (edge crashou depois)
+        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
+        console.log('[db] chave entregue?', ch ? 'SIM' : 'não');
+        if (ch) {
+          await dbUpdate('pedidos', p.id, { status: 'entregue' });
+          return Object.assign({}, p, { status: 'entregue' });
         }
       }
     }
 
     // 2. Por pedido_id
-    if (pedidoId) {
+    if (pedidoId && pedidoId !== reference) {
       const p = await dbGet('pedidos', { id: pedidoId });
-      console.log('[db] por pedidoId:', pedidoId, '→', p);
-      if (p) {
-        if (statusOk.includes(p.status)) return p;
-        if (p.status === 'pendente') {
-          const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
-          if (ch) {
-            await dbUpdate('pedidos', p.id, { status: 'entregue' });
-            return Object.assign({}, p, { status: 'entregue' });
-          }
-          return p;
+      console.log('[db] pedidoId:', pedidoId, '→ status:', p?.status);
+      if (p && statusOk.includes(p.status)) return p;
+      if (p && p.status === 'pendente') {
+        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
+        if (ch) {
+          await dbUpdate('pedidos', p.id, { status: 'entregue' });
+          return Object.assign({}, p, { status: 'entregue' });
         }
       }
     }
 
-    // 3. Por email (último recurso)
+    // 3. Por email — só busca com status confirmado
     if (userEmail) {
       const token = accessToken || SUPA_KEY;
       const url = `${SUPA_URL}/rest/v1/pedidos?cliente_email=eq.${encodeURIComponent(userEmail)}&status=in.(pago,aprovado,entregue)&order=created_at.desc&limit=1`;
@@ -345,7 +341,7 @@ async function buscarPedidoPago() {
       });
       if (res.ok) {
         const rows = await res.json();
-        console.log('[db] por email:', userEmail, '→', rows);
+        console.log('[db] email:', userEmail, '→', rows?.length, 'resultado(s) pagos');
         if (rows && rows.length > 0) return rows[0];
       }
     }
@@ -389,15 +385,7 @@ async function pollPagamento(paymentId, ref) {
     }
   } catch(e) { console.warn('[poll db]', e); }
 
-  // 3. Se edge deu 500 e temos reference/pedidoId, manda para sucesso.html
-  // (sucesso.html tenta entregar a chave diretamente do estoque)
-  if (pollTentativas >= 3 && (reference || pedidoId)) {
-    const pedidoRef = reference || pedidoId;
-    console.log('[poll] 3+ tentativas com 500 — redirecionando para sucesso.html com ref:', pedidoRef);
-    pollAtivo = false;
-    irParaSucesso(pedidoRef);
-    return;
-  }
+  // Continua tentando — não redireciona sem confirmação real do pagamento
 
   if (pollTentativas < POLL_MAX) {
     setTimeout(() => pollPagamento(paymentId, ref), 3000);

@@ -370,17 +370,8 @@ async function init(){
           return;
         }
         if(pedido.status==='pendente'){
-          document.getElementById('subtitulo').textContent='Pagamento recebido, entregando sua chave...';
-          document.getElementById('s2').className='step done';document.getElementById('s2').querySelector('.step-dot').textContent='✓';
-          document.getElementById('s3').className='step active';
-          /* Tenta entregar direto do estoque — edge function crashou mas pagamento foi confirmado */
-          var tentativa=await tentarEntregarFallback(sb,pedido);
-          if(tentativa.chaves_entregues&&tentativa.chaves_entregues.length>0){
-            document.getElementById('s3').className='step done';document.getElementById('s3').querySelector('.step-dot').textContent='✓';
-            ['mg_pix_data','mg_external_ref','mg_pedido_id','mg_itens_pendentes'].forEach(function(k){sessionStorage.removeItem(k);});
-            setTimeout(function(){mostrarSucesso(tentativa);},500);
-            return;
-          }
+          /* Pedido pendente = pagamento ainda não confirmado pelo MP — continua aguardando */
+          document.getElementById('subtitulo').textContent='Aguardando confirmação do Mercado Pago...';
         }
       }
     }catch(e){console.error('[verificar]',e);}
