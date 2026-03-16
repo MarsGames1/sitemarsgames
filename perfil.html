@@ -21,25 +21,26 @@
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 @keyframes orbit{0%{transform:rotate(0deg) translateX(3px) rotate(0deg)}100%{transform:rotate(360deg) translateX(3px) rotate(-360deg)}}
-/* ══ ANIMAÇÕES DE NÍVEL ══ */
 @keyframes bronzePulse{
-  0%,100%{box-shadow:0 0 6px rgba(205,159,106,.5)}
-  50%{box-shadow:0 0 20px rgba(205,159,106,.9),0 0 40px rgba(205,159,106,.3)}
+  0%,100%{box-shadow:0 0 6px 1px rgba(205,159,106,.5)}
+  50%{box-shadow:0 0 18px 5px rgba(205,159,106,.9),0 0 4px 2px rgba(255,200,120,.5)}
 }
 @keyframes prataShimmer{
-  0%,100%{box-shadow:0 0 8px rgba(232,232,232,.5),0 0 20px rgba(255,255,255,.2)}
-  50%{box-shadow:0 0 20px rgba(232,232,232,.9),0 0 40px rgba(255,255,255,.4)}
+  0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.4),2px -2px 12px rgba(255,255,255,.6)}
+  50%{box-shadow:-2px 2px 16px 4px rgba(200,200,230,.6),-2px -2px 12px rgba(255,255,255,.7)}
 }
 @keyframes ouroPulse{
-  0%,100%{box-shadow:0 0 10px rgba(255,215,0,.6),0 0 20px rgba(255,165,0,.3)}
-  50%{box-shadow:0 0 28px rgba(255,215,0,1),0 0 50px rgba(255,165,0,.5)}
+  0%,100%{box-shadow:0 0 10px 2px rgba(255,215,0,.5)}
+  50%{box-shadow:0 0 26px 7px rgba(255,215,0,.85),0 0 8px 3px rgba(255,165,0,.5)}
 }
 @keyframes esmPulse{
-  0%,100%{box-shadow:0 0 10px rgba(80,200,120,.6),0 0 20px rgba(0,255,100,.2)}
-  50%{box-shadow:0 0 28px rgba(80,200,120,1),0 0 50px rgba(0,255,100,.5)}
+  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.55)}
+  50%{box-shadow:0 0 24px 7px rgba(80,200,120,.9),0 0 10px 4px rgba(0,255,100,.4)}
 }
-@keyframes diaRotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes diaPulse{0%,100%{opacity:.8}50%{opacity:1}}
+@keyframes diaRotate{to{transform:rotate(360deg)}}
+@keyframes diaPulse{
+  0%,100%{opacity:.85}50%{opacity:1}
+}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
 @keyframes navBronzePulse{
@@ -407,50 +408,54 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ══ BORDAS POR NÍVEL ══ */
-
-/* 🥉 Bronze — borda sólida marrom com glow quente */
+/* ── Bronze: borda âmbar com pulso quente ── */
 .avatar-bronze .avatar-inner{
-  border:3px solid #cd9f6a;
+  border:3px solid var(--bronze);
   animation:bronzePulse 2.5s ease-in-out infinite;
 }
-
-/* 🥈 Prata — borda prateada com shimmer frio */
+/* ── Prata: borda prateada com shimmer ── */
 .avatar-prata .avatar-inner{
-  border:3px solid #e8e8e8;
+  border:3px solid var(--prata);
   animation:prataShimmer 3s ease-in-out infinite;
 }
-
-/* 🥇 Ouro — borda dourada com glow expansivo */
+/* ── Ouro: borda dourada com pulso expansivo ── */
 .avatar-ouro .avatar-inner{
-  border:3px solid #FFD700;
+  border:3px solid var(--ouro);
   animation:ouroPulse 2s ease-in-out infinite;
 }
-
-/* 💚 Esmeralda — borda verde neon pulsante */
+/* ── Esmeralda: borda verde-energia pulsante ── */
 .avatar-esmeralda .avatar-inner{
-  border:3px solid #50c878;
-  animation:esmPulse 1.5s ease-in-out infinite;
+  border:3px solid var(--esm);
+  animation:esmPulse 1.8s ease-in-out infinite;
 }
 
-/* 💎 Diamante — anel holográfico girando */
+/* ── Diamante: disco conic-gradient girando + inner sem borda ── */
 .avatar-diamante .avatar-ring{
   background:conic-gradient(
     from 0deg,
-    #b9f2ff 0%, #a78bfa 12%, #ffffff 25%,
-    #00ffff 37%, #e0b0ff 50%, #ffffff 62%,
-    #7b61ff 75%, #b9f2ff 87%, #a78bfa 100%
+    #b9f2ff 0%,#a78bfa 15%,#ffffff 28%,
+    #00ffff 42%,#e0b0ff 58%,#ffffff 72%,
+    #7b61ff 85%,#b9f2ff 100%
   );
-  animation:diaRotate 2s linear infinite;
-  box-shadow:0 0 20px rgba(185,242,255,.7),0 0 40px rgba(123,97,255,.4);
+  animation:diaRotate 2.5s linear infinite;
+  box-shadow:
+    0 0 18px rgba(185,242,255,.6),
+    0 0 36px rgba(123,97,255,.35);
 }
+/* Máscara: cobre o centro do disco deixando só o anel visível */
 .avatar-diamante .avatar-ring::before{
-  content:'';position:absolute;
-  inset:4px;border-radius:50%;
-  background:var(--card);z-index:0;
+  content:'';
+  position:absolute;
+  width:80px;height:80px;
+  border-radius:50%;
+  background:var(--bg);
+  z-index:0;
 }
 .avatar-diamante .avatar-inner{
-  border:none;position:relative;z-index:1;
+  border:none;
+  position:relative;
+  z-index:1;
+  box-shadow:0 0 0 1px rgba(185,242,255,.2);
 }
 
 /* Badge de nível */
@@ -1167,17 +1172,11 @@ function initSupabase(){
   }
   sb=lib.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{
-      flowType:'pkce',
+      flowType:'implicit',
       detectSessionInUrl:true,
       persistSession:true,
       autoRefreshToken:true,
-      storageKey:'mg_auth',
-      // Safari precisa de storage customizado (localStorage pode falhar em modo privado)
-      storage:{
-        getItem:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
-        setItem:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},
-        removeItem:function(k){try{localStorage.removeItem(k)}catch(e){}}
-      }
+      storageKey:'mg_auth'
     }
   });
   checkAuth();
@@ -1205,44 +1204,38 @@ function getNivel(pts){
 }
 
 // ── AUTH ──
-async function loginGoogle(){
-  /* URL exata cadastrada no Supabase e no Google Cloud */
-  var redirect='https://marsgames1.github.io/sitemarsgames/perfil.html';
+async function loginGoogle() {
+  const redirect = window.location.origin + window.location.pathname;
   showToast('Abrindo Google...');
-  try{
-    var{data,error}=await sb.auth.signInWithOAuth({
-      provider:'google',
-      options:{
-        redirectTo:redirect,
-        queryParams:{
-          prompt:'select_account',
-          access_type:'online'
-        },
-        scopes:'email profile'
+  try {
+    const { data, error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirect,
+        queryParams: { prompt: 'select_account' }
       }
     });
-    if(error)throw error;
-  }catch(e){
-    console.error('Google login erro:',e);
-    showToast('Erro: '+e.message);
+    if (error) throw error;
+    sessionStorage.setItem('mg_login_in_progress', 'true');
+  } catch (e) {
+    console.error('Google login erro:', e);
+    showToast('Erro: ' + e.message);
   }
 }
 
-async function loginDiscord(){
-  var redirect='https://marsgames1.github.io/sitemarsgames/perfil.html';
+async function loginDiscord() {
+  const redirect = window.location.origin + window.location.pathname;
   showToast('Abrindo Discord...');
-  try{
-    var{data,error}=await sb.auth.signInWithOAuth({
-      provider:'discord',
-      options:{
-        redirectTo:redirect,
-        skipBrowserRedirect:false
-      }
+  try {
+    const { data, error } = await sb.auth.signInWithOAuth({
+      provider: 'discord',
+      options: { redirectTo: redirect }
     });
-    if(error)throw error;
-  }catch(e){
-    console.error('Discord login erro:',e);
-    showToast('Erro: '+e.message);
+    if (error) throw error;
+    sessionStorage.setItem('mg_login_in_progress', 'true');
+  } catch (e) {
+    console.error('Discord login erro:', e);
+    showToast('Erro: ' + e.message);
   }
 }
 var _fazendoLogout=false;
@@ -1281,74 +1274,49 @@ function mostrarLoading(){
   document.getElementById('perfil-content').style.display='none';
 }
 
-async function checkAuth(){
-  /* Trata erro do redirect OAuth na URL */
-  var hash=window.location.hash;
-  var params=new URLSearchParams(window.location.search);
-  
-  if(hash.includes('error')||params.get('error')){
-    var msg=decodeURIComponent(
-      (hash.match(/error_description=([^&]+)/)||['',''])[1] ||
-      params.get('error_description') || 'Erro ao entrar'
-    ).replace(/[+]/g,' ');
-    history.replaceState(null,'',window.location.pathname);
-    mostrarLogin();
-    setTimeout(function(){ showToast('Erro: '+msg); }, 400);
-    return;
-  }
-
-  // PKCE flow — trocar code por sessão (só se vier do OAuth, não do MP)
-  var code=params.get('code');
-  var fromMP=params.get('pagamento')||params.get('collection_status')||params.get('payment_id');
-  if(code && !fromMP){
-    try{
-      var{data:sessData,error:sessErr}=await sb.auth.exchangeCodeForSession(code);
-      if(sessErr) console.log('exchange error:',sessErr.message);
-    }catch(e){ console.log('exchange error:',e.message); }
-    history.replaceState(null,'',window.location.pathname);
-  }
-
+async function checkAuth() {
   mostrarLoading();
-  var _resolvido=false;
-
-  function _entrar(session){
-    if(_resolvido) return;
-    _resolvido=true;
-    userSession=session;
-    history.replaceState(null,'',window.location.pathname);
-    mostrarPerfil();
-    carregarPerfil(session.user);
+  // Verificar se voltou de OAuth
+  const loginInProgress = sessionStorage.getItem('mg_login_in_progress');
+  const hash = window.location.hash;
+  if (hash && (hash.includes('access_token') || hash.includes('error'))) {
+    if (hash.includes('error')) {
+      const msg = decodeURIComponent((hash.match(/error_description=([^&]+)/) || ['', 'Erro'])[1]);
+      history.replaceState(null, '', window.location.pathname);
+      mostrarLogin();
+      setTimeout(() => showToast('Erro: ' + msg), 400);
+      sessionStorage.removeItem('mg_login_in_progress');
+      return;
+    }
+    // Login bem-sucedido, processar sessão
+    try {
+      const { data, error } = await sb.auth.getSession();
+      if (data?.session) {
+        history.replaceState(null, '', window.location.pathname);
+        userSession = data.session;
+        mostrarPerfil();
+        carregarPerfil(data.session.user);
+        sessionStorage.removeItem('mg_login_in_progress');
+        return;
+      }
+    } catch (e) {
+      console.error('Erro ao processar retorno:', e);
+    }
   }
-  function _sair(){
-    if(_resolvido) return;
-    _resolvido=true;
+  // Se estava em processo de login, aguardar um pouco
+  if (loginInProgress) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    sessionStorage.removeItem('mg_login_in_progress');
+  }
+  // Verificação normal
+  const { data } = await sb.auth.getSession();
+  if (data?.session) {
+    userSession = data.session;
+    mostrarPerfil();
+    carregarPerfil(data.session.user);
+  } else {
     mostrarLogin();
   }
-
-  sb.auth.onAuthStateChange(function(event, session){
-    if(event==='INITIAL_SESSION'){
-      if(session) _entrar(session); else _sair();
-    }
-    if(event==='SIGNED_IN' && session){
-      if(userSession && userSession.user.id !== session.user.id) perfilData=null;
-      _resolvido=false; /* permite re-entrar na troca de conta */
-      _entrar(session);
-    }
-    if(event==='TOKEN_REFRESHED' && session){ userSession=session; }
-    if(event==='SIGNED_OUT' && !_fazendoLogout){ perfilData=null; userSession=null; mostrarLogin(); }
-  });
-
-  /* Tenta getSession imediatamente em paralelo — não espera só o evento */
-  sb.auth.getSession().then(function(r){
-    if(_resolvido) return;
-    if(r.data&&r.data.session) _entrar(r.data.session);
-    else _sair();
-  }).catch(function(){ if(!_resolvido) _sair(); });
-
-  /* Fallback final: se em 3s nada resolveu, vai para login */
-  setTimeout(function(){
-    if(!_resolvido) _sair();
-  }, 3000);
 }
 
 async function carregarPerfil(user){
