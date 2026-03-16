@@ -54,7 +54,22 @@ p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
 <script>
 const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}});
+// Storage em memória — evita bloqueio de Tracking Prevention em browsers restritivos
+const _memStorage = {};
+const _noopStorage = {
+  getItem: k => _memStorage[k] ?? null,
+  setItem: (k,v) => { _memStorage[k] = v; },
+  removeItem: k => { delete _memStorage[k]; }
+};
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    flowType: 'implicit',
+    detectSessionInUrl: false,
+    persistSession: false,
+    autoRefreshToken: false,
+    storage: _noopStorage
+  }
+});
 const _urlParams = new URLSearchParams(window.location.search);
 const reference = _urlParams.get('external_reference') || _urlParams.get('collection_id') || sessionStorage.getItem('mg_external_ref');
 if (reference) sessionStorage.setItem('mg_external_ref', reference);

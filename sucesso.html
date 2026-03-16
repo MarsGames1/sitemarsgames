@@ -196,8 +196,10 @@ async function init(){
   // Persiste o ref para caso o usuário recarregue a página
   sessionStorage.setItem('mg_external_ref', ref);
 
+  var _mem={};
+  var _stor={getItem:function(k){return _mem[k]??null},setItem:function(k,v){_mem[k]=v},removeItem:function(k){delete _mem[k]}};
   var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
-    auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}
+    auth:{flowType:'implicit',detectSessionInUrl:false,persistSession:false,autoRefreshToken:false,storage:_stor}
   });
 
   var tentativas=0;
