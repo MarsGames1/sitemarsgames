@@ -553,11 +553,11 @@ body.tema-claro .exit-sub{color:#666}
   .nav-dropdown-toggle{
     display:flex;align-items:center;gap:5px;
     padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;
-    color:#777;letter-spacing:.5px;cursor:pointer;
+    color:#fff;letter-spacing:.5px;cursor:pointer;
     transition:color .15s,background .15s;white-space:nowrap;
     background:none;border:none;font-family:'Montserrat',sans-serif;
   }
-  .nav-dropdown-toggle:hover,.nav-dropdown:hover .nav-dropdown-toggle{color:#ccc;background:rgba(255,255,255,.05)}
+  .nav-dropdown-toggle:hover,.nav-dropdown:hover .nav-dropdown-toggle{color:#fff;background:rgba(255,255,255,.06)}
   .nav-dropdown-toggle svg{transition:transform .2s}
   .nav-dropdown:hover .nav-dropdown-toggle svg{transform:rotate(180deg)}
   .nav-dropdown-menu{
@@ -576,7 +576,7 @@ body.tema-claro .exit-sub{color:#666}
   .nav-dropdown-toggle.open svg{transform:rotate(180deg)}
   .nav-dropdown-item{
     display:block;padding:9px 14px;border-radius:8px;
-    font-size:13px;font-weight:700;color:#888;
+    font-size:13px;font-weight:700;color:#fff;
     text-decoration:none;letter-spacing:.5px;
     cursor:pointer;transition:color .12s,background .12s;white-space:nowrap;
   }
@@ -590,33 +590,53 @@ body.tema-claro .exit-sub{color:#666}
   .nav-search{display:flex!important;align-items:center;position:relative}
   .nav-search-icon-btn{
     width:34px;height:34px;border-radius:8px;border:1px solid var(--border2);
-    background:rgba(255,255,255,.03);color:#666;cursor:pointer;
+    background:rgba(255,255,255,.03);color:#fff;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
     transition:border-color .2s,color .2s,background .2s;flex-shrink:0;
   }
-  .nav-search-icon-btn:hover{border-color:#555;color:#fff;background:rgba(255,255,255,.06)}
+  .nav-search-icon-btn:hover{border-color:#888;color:#fff;background:rgba(255,255,255,.06)}
   .nav-search-icon-btn svg{pointer-events:none}
   .nav-search-expand{
     position:absolute;right:0;top:50%;transform:translateY(-50%);
     display:flex;align-items:center;gap:0;
     border-radius:8px;border:1px solid rgba(232,66,26,.4);
     background:rgba(10,10,14,.97);backdrop-filter:blur(16px);
-    overflow:hidden;width:0;opacity:0;pointer-events:none;
+    overflow:visible;width:0;opacity:0;pointer-events:none;
     transition:width .25s cubic-bezier(.4,0,.2,1),opacity .2s;
     z-index:50;
   }
-  .nav-search-expand.open{width:200px;opacity:1;pointer-events:all}
+  .nav-search-expand.open{width:240px;opacity:1;pointer-events:all}
   .nav-search-expand input{
     background:none;border:none;outline:none;
-    padding:7px 12px;font-size:11px;color:#ccc;
+    padding:7px 12px;font-size:11px;color:#fff;
     font-family:'Montserrat',sans-serif;width:100%;
   }
-  .nav-search-expand input::placeholder{color:#555}
+  .nav-search-expand input::placeholder{color:#666}
   .nav-search-btn{
     padding:7px 10px;background:none;border:none;
-    color:#555;cursor:pointer;transition:color .15s;display:flex;align-items:center;flex-shrink:0;
+    color:#888;cursor:pointer;transition:color .15s;display:flex;align-items:center;flex-shrink:0;
   }
-  .nav-search-btn:hover{color:#ccc}
+  .nav-search-btn:hover{color:#fff}
+  /* Dropdown de sugestões */
+  .nav-search-suggestions{
+    position:absolute;top:calc(100% + 6px);right:0;left:0;
+    background:rgba(13,13,18,.98);border:1px solid rgba(232,66,26,.25);
+    border-radius:10px;overflow:hidden;
+    box-shadow:0 12px 32px rgba(0,0,0,.6);
+    display:none;z-index:999;
+  }
+  .nav-search-suggestions.open{display:block}
+  .nav-sugg-item{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 12px;cursor:pointer;text-decoration:none;
+    transition:background .12s;border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  .nav-sugg-item:last-child{border-bottom:none}
+  .nav-sugg-item:hover{background:rgba(232,66,26,.1)}
+  .nav-sugg-img{width:32px;height:32px;border-radius:5px;object-fit:cover;background:var(--dim);flex-shrink:0}
+  .nav-sugg-nome{font-size:11px;font-weight:700;color:#eee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nav-sugg-preco{font-size:10px;font-weight:900;color:var(--green);margin-top:1px}
+  .nav-sugg-empty{padding:14px 12px;font-size:10px;color:#555;font-weight:600;text-align:center}
   .nav-points{
     display:flex;align-items:center;gap:5px;
     font-size:10px;font-weight:700;color:#ffb300;letter-spacing:.5px;
@@ -3117,10 +3137,14 @@ footer::before{
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
       <div class="nav-search-expand" id="navSearchExpand">
-        <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value);var l=document.getElementById('searchInputLoja');if(l)l.value=this.value" onblur="recolherSearch()">
+        <input type="text" id="searchInput" placeholder="Buscar jogo..." autocomplete="off"
+          oninput="buscar(this.value);navBuscarSugestoes(this.value);var l=document.getElementById('searchInputLoja');if(l)l.value=this.value"
+          onblur="recolherSearch()"
+          onkeydown="if(event.key==='Escape'){recolherSearch();this.blur()}">
         <button class="nav-search-btn" aria-label="Buscar">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
+        <div class="nav-search-suggestions" id="navSuggestions"></div>
       </div>
     </div>
     <!-- Discord -->
@@ -4321,14 +4345,45 @@ function toggleNavSearch(){
   var exp=document.getElementById('navSearchExpand');
   if(!exp)return;
   var open=exp.classList.contains('open');
-  if(open){exp.classList.remove('open');}
+  if(open){exp.classList.remove('open');fecharNavSugg();}
   else{exp.classList.add('open');setTimeout(function(){var i=document.getElementById('searchInput');if(i)i.focus();},60);}
 }
 function recolherSearch(){
   var inp=document.getElementById('searchInput');
   if(inp&&!inp.value){
-    setTimeout(function(){var exp=document.getElementById('navSearchExpand');if(exp)exp.classList.remove('open');},180);
+    setTimeout(function(){
+      var exp=document.getElementById('navSearchExpand');if(exp)exp.classList.remove('open');
+      fecharNavSugg();
+    },180);
   }
+}
+function fecharNavSugg(){
+  var s=document.getElementById('navSuggestions');
+  if(s){s.classList.remove('open');s.innerHTML='';}
+}
+function navBuscarSugestoes(q){
+  var sugg=document.getElementById('navSuggestions');
+  if(!sugg)return;
+  q=(q||'').trim();
+  if(q.length<2){sugg.classList.remove('open');sugg.innerHTML='';return;}
+  var resultados=(typeof todosProdutos!=='undefined'?todosProdutos:[])
+    .filter(function(p){
+      return p.ativo!==false&&(p.nome||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
+    }).slice(0,6);
+  if(resultados.length===0){
+    sugg.innerHTML='<div class="nav-sugg-empty">Nenhum resultado para "'+esc(q)+'"</div>';
+  } else {
+    sugg.innerHTML=resultados.map(function(p){
+      return '<a class="nav-sugg-item" href="produto.html?id='+p.id+'" onmousedown="event.preventDefault()">'+
+        '<img class="nav-sugg-img" src="'+(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
+        '<div style="min-width:0;flex:1">'+
+          '<div class="nav-sugg-nome">'+esc(p.nome)+'</div>'+
+          '<div class="nav-sugg-preco">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+        '</div>'+
+      '</a>';
+    }).join('');
+  }
+  sugg.classList.add('open');
 }
 
 /* ── COUNTDOWN — Forza Horizon 6 ── */
