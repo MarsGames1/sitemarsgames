@@ -434,13 +434,13 @@ body.tema-claro .exit-sub{color:#666}
     position:relative;
     padding:10px 16px;
     isolation:isolate;
-    border:1.35px solid transparent!important;
+    border:1.28px solid transparent!important;
     background-clip:padding-box;
   }
   .nav-link-sorteio::before{
     content:'';
     position:absolute;
-    inset:-1.35px;
+    inset:-1.28px;
     border-radius:9px;
     background:linear-gradient(
       90deg,
@@ -453,13 +453,13 @@ body.tema-claro .exit-sub{color:#666}
       rgba(90,40,0,.4) 100%
     );
     background-size:200% 100%;
-    animation:sorteioShimmer 2.4s linear infinite;
+    animation:sorteioShimmer 2.64s linear infinite;
     z-index:-1;
   }
   .nav-link-sorteio::after{
     content:'';
     position:absolute;
-    inset:1.35px;
+    inset:1.28px;
     border-radius:7px;
     background:#0a0a0e;
     z-index:-1;
@@ -468,7 +468,7 @@ body.tema-claro .exit-sub{color:#666}
     color:#ffe090!important;
   }
   .nav-link-sorteio:hover::before{
-    animation-duration:1.2s;
+    animation-duration:1.32s;
     background:linear-gradient(
       90deg,
       rgba(100,40,0,.4) 0%,
@@ -1011,7 +1011,7 @@ footer::before{
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
   padding-top:20px;border-top:1px solid var(--border);
 }
-.footer-copy{font-size:10px;color:#222;font-weight:600;letter-spacing:.5px}
+.footer-copy{font-size:10px;color:#444;font-weight:600;letter-spacing:.5px}
 .footer-pay{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .pay-badge{
   background:var(--surface);border:1px solid var(--border);border-radius:6px;
@@ -1444,7 +1444,7 @@ footer::before{
   display:inline-flex;align-items:center;gap:8px;
   font-size:10px;font-weight:700;letter-spacing:4px;
   text-transform:uppercase;color:rgba(255,255,255,.3);
-  margin-bottom:14px;font-family:'Montserrat',sans-serif;
+  margin-bottom:0;font-family:'Montserrat',sans-serif;
 }
 .cats-explore-eyebrow::before,.cats-explore-eyebrow::after{
   content:'';display:inline-block;width:32px;height:1px;
@@ -2925,12 +2925,12 @@ footer::before{
 <!-- ══ EXPLORAR CATEGORIAS ══ -->
 <section class="cats-explore-section">
   <div class="cats-explore-head">
-    <div class="cats-explore-eyebrow">Escolha seu gênero</div>
     <div class="cats-explore-title">
       <span class="et-base">Explorar Categorias</span>
       <span class="et-r" aria-hidden="true">Explorar Categorias</span>
       <span class="et-c" aria-hidden="true">Explorar Categorias</span>
     </div>
+    <div class="cats-explore-eyebrow" style="margin-top:14px;margin-bottom:0">Escolha seu gênero</div>
 
   </div>
 
@@ -4232,9 +4232,9 @@ function initThree() {
     requestAnimationFrame(animate);
     var t = clock.getElapsedTime();
     /* Rotação contínua suave em Y + oscilação sinusoidal em X/Z — sensação de flutuar */
-    galaxy.rotation.y =  t * 0.012;
-    galaxy.rotation.x =  Math.sin(t * 0.0035) * 0.18;
-    galaxy.rotation.z =  Math.sin(t * 0.0022) * 0.12;
+    galaxy.rotation.y =  t * 0.01296;
+    galaxy.rotation.x =  Math.sin(t * 0.00378) * 0.1944;
+    galaxy.rotation.z =  Math.sin(t * 0.002376) * 0.1296;
     /* Twinkle suave */
     l1.material.opacity = 0.48 + 0.07 * Math.sin(t * 0.27 + 0.8);
     l3.material.opacity = 0.85 + 0.06 * Math.sin(t * 0.18 + 1.5);
