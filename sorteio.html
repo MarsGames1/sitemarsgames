@@ -345,37 +345,37 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 
 /* Active states */
 .sorteio-tab.active-diario{
-  border-color:rgba(232,66,26,.6);
-  color:var(--diario);
-  background:rgba(232,66,26,.08);
-  box-shadow:0 0 20px rgba(232,66,26,.12),inset 0 0 20px rgba(232,66,26,.04);
+  border-color:rgba(232,66,26,.8);
+  color:#ff7755;
+  background:rgba(232,66,26,.14);
+  box-shadow:0 0 24px rgba(232,66,26,.18),inset 0 0 20px rgba(232,66,26,.06);
 }
 .sorteio-tab.active-diario::before{
-  background:linear-gradient(90deg,transparent,rgba(232,66,26,.08),transparent);
+  background:linear-gradient(90deg,transparent,rgba(232,66,26,.1),transparent);
   background-size:200% 100%;
   animation:tabShimmer 2s linear infinite;
   opacity:1;
 }
 .sorteio-tab.active-semanal{
-  border-color:rgba(255,179,0,.6);
-  color:var(--semanal);
-  background:rgba(255,179,0,.08);
-  box-shadow:0 0 20px rgba(255,179,0,.1),inset 0 0 20px rgba(255,179,0,.04);
+  border-color:rgba(255,179,0,.8);
+  color:#ffcc44;
+  background:rgba(255,179,0,.14);
+  box-shadow:0 0 24px rgba(255,179,0,.15),inset 0 0 20px rgba(255,179,0,.06);
 }
 .sorteio-tab.active-semanal::before{
-  background:linear-gradient(90deg,transparent,rgba(255,179,0,.08),transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,179,0,.1),transparent);
   background-size:200% 100%;
   animation:tabShimmer 2s linear infinite;
   opacity:1;
 }
 .sorteio-tab.active-mensal{
-  border-color:rgba(185,242,255,.4);
-  color:var(--mensal);
-  background:rgba(185,242,255,.06);
-  box-shadow:0 0 20px rgba(185,242,255,.08),inset 0 0 20px rgba(185,242,255,.03);
+  border-color:rgba(185,242,255,.7);
+  color:#ccf2ff;
+  background:rgba(185,242,255,.1);
+  box-shadow:0 0 24px rgba(185,242,255,.12),inset 0 0 20px rgba(185,242,255,.04);
 }
 .sorteio-tab.active-mensal::before{
-  background:linear-gradient(90deg,transparent,rgba(185,242,255,.06),transparent);
+  background:linear-gradient(90deg,transparent,rgba(185,242,255,.08),transparent);
   background-size:200% 100%;
   animation:tabShimmer 2.5s linear infinite;
   opacity:1;
@@ -1089,37 +1089,57 @@ async function carregarSorteio(tipo){
   document.getElementById('loading-sorteio').style.display='block';
   document.getElementById('sorteio-content').style.display='none';
   document.getElementById('sem-sorteio').style.display='none';
+  document.getElementById('sorteio-encerrado').style.display='none';
 
-  /* Tenta primeiro com ativo=true, depois sem filtro de status como fallback */
-  var {data:sorteios,error} = await sb.from('sorteios_periodicos')
+  /* Busca APENAS sorteios ativos */
+  var {data:sorteios} = await sb.from('sorteios_periodicos')
     .select('*').eq('tipo',tipo).eq('ativo',true)
     .order('created_at',{ascending:false}).limit(1);
 
-  /* Fallback: tenta com status='ativo' se não encontrou */
-  if((!sorteios||sorteios.length===0)&&!error){
+  /* Fallback: status='ativo' */
+  if(!sorteios||sorteios.length===0){
     var r2=await sb.from('sorteios_periodicos')
       .select('*').eq('tipo',tipo).eq('status','ativo')
       .order('created_at',{ascending:false}).limit(1);
     if(r2.data&&r2.data.length>0) sorteios=r2.data;
   }
 
-  /* Último fallback: qualquer sorteio deste tipo não encerrado */
-  if(!sorteios||sorteios.length===0){
-    var r3=await sb.from('sorteios_periodicos')
-      .select('*').eq('tipo',tipo).is('vencedor_email',null)
-      .order('created_at',{ascending:false}).limit(1);
-    if(r3.data&&r3.data.length>0) sorteios=r3.data;
-  }
-
   document.getElementById('loading-sorteio').style.display='none';
 
+  /* Nenhum sorteio ativo — verifica se existe um encerrado recente */
   if(!sorteios||sorteios.length===0){
-    mostrarSemSorteio(tipo);
+    var {data:recente}=await sb.from('sorteios_periodicos')
+      .select('*').eq('tipo',tipo).not('status','eq','rascunho')
+      .order('created_at',{ascending:false}).limit(1);
+
+    if(recente&&recente.length>0){
+      var s=recente[0];
+      if(s.vencedor_email){
+        /* Tinha vencedor — mostra tela de vencedor */
+        mostrarEncerrado(s,'vencedor');
+      } else if(!s.ativo){
+        /* Foi pausado/encerrado sem vencedor */
+        mostrarEncerrado(s,'pausado');
+      } else {
+        mostrarSemSorteio(tipo);
+      }
+    } else {
+      mostrarSemSorteio(tipo);
+    }
     carregarHistorico(tipo);
     return;
   }
 
   sorteioAtual=sorteios[0];
+
+  /* Se encontrou mas já está encerrado — mostra encerrado */
+  if(!sorteioAtual.ativo||sorteioAtual.status==='encerrado'){
+    if(sorteioAtual.vencedor_email) mostrarEncerrado(sorteioAtual,'vencedor');
+    else mostrarEncerrado(sorteioAtual,'pausado');
+    carregarHistorico(tipo);
+    return;
+  }
+
   renderSorteio(sorteioAtual);
   document.getElementById('sorteio-content').style.display='block';
 
