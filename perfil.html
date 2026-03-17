@@ -95,35 +95,77 @@
 }
 .nav-nivel-prata .nav-user-avatar{border:none!important;animation:navPrataGlow 2.8s ease-in-out infinite}
 
-/* ── Ouro: triplo anel dourado + faísca ── */
-.nav-nivel-ouro .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#6a3800,#e8a800,#ffdd00,#ffe880,#ffd000,#c07800,#6a3800);
-  animation:navOuroRotate 2s linear infinite;
-  filter:blur(.3px);
+/* ── Ouro: anel duplo + faísca orbitando + glow pulsante ── */
+@keyframes navOuroSpark{
+  0%  {transform:rotate(0deg)   translateX(22px) rotate(0deg)  ;opacity:1}
+  40% {opacity:1}
+  60% {opacity:.6}
+  100%{transform:rotate(360deg) translateX(22px) rotate(-360deg);opacity:1}
 }
-.nav-nivel-ouro .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none}
+.nav-nivel-ouro .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#4a2400,#c87800,#ffdd00,#fff5a0,#ffe000,#b06000,#4a2400);
+  animation:navOuroRotate 2s linear infinite;
+  filter:blur(.25px);
+  box-shadow:0 0 8px rgba(255,200,0,.35);
+}
+.nav-nivel-ouro .nav-avatar-ring::before{
+  content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none;
+  box-shadow:inset 0 0 6px rgba(255,180,0,.15);
+}
 .nav-nivel-ouro .nav-avatar-ring::after{
-  content:'';position:absolute;inset:-6px;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.7) 62%,rgba(255,255,180,.9) 68%,transparent 78%);
-  animation:navOuroRotate 2.5s linear infinite reverse;
-  filter:blur(.5px);
+  content:'✦';
+  position:absolute;inset:-4px;border-radius:50%;
+  display:flex;align-items:flex-start;justify-content:center;
+  font-size:7px;color:rgba(255,245,100,1);
+  text-shadow:0 0 6px rgba(255,220,0,1),0 0 12px rgba(255,160,0,.8);
+  animation:navOuroSpark 2.8s linear infinite;
+  pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 55%,rgba(255,230,80,.5) 65%,rgba(255,255,160,.8) 70%,transparent 80%);
+  filter:blur(.4px);
 }
 .nav-nivel-ouro .nav-user-avatar{border:none!important;animation:navOuroGlow 2s ease-in-out infinite}
 
-/* ── Esmeralda: triplo anel verde + halo externo ── */
+/* ── Esmeralda: anel duplo cristalino + halo triplo + pulso neon ── */
+@keyframes navEsmInnerPulse{
+  0%,100%{opacity:.4;transform:rotate(0deg)  scale(1)}
+  50%    {opacity:.85;transform:rotate(180deg) scale(1.03)}
+}
 .nav-nivel-esmeralda .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#002010,#00aa44,#00ff77,#80ffcc,#00ff88,#009933,#002010);
-  animation:navEsmRotate 1.5s linear infinite;
-  filter:blur(.2px);
+  background:conic-gradient(from 0deg,
+    #001a0a 0%,#00aa44 18%,#00ff88 30%,
+    #b0ffd8 38%,#00ffaa 44%,#00cc55 55%,
+    #007733 65%,#00ff77 75%,#80ffc0 82%,
+    #009944 90%,#001a0a 100%
+  );
+  animation:navEsmRotate 1.6s linear infinite;
+  filter:blur(.15px);
+  box-shadow:0 0 10px rgba(0,255,100,.4);
 }
-.nav-nivel-esmeralda .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none}
+.nav-nivel-esmeralda .nav-avatar-ring::before{
+  content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;
+  box-shadow:inset 0 0 0 1.5px rgba(0,255,120,.25),inset 0 0 8px rgba(0,200,80,.15);
+}
 .nav-nivel-esmeralda .nav-avatar-ring::after{
-  content:'';position:absolute;inset:-7px;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.6) 46%,rgba(150,255,180,.85) 55%,transparent 68%);
-  animation:navEsmRotateRev 2.2s linear infinite;
-  filter:blur(1px);
+  content:'';position:absolute;inset:-9px;border-radius:50%;
+  background:conic-gradient(from 0deg,
+    transparent 0%,
+    rgba(0,255,100,.0) 20%,
+    rgba(0,255,120,.55) 33%,
+    rgba(180,255,200,.9) 40%,
+    rgba(0,255,120,.55) 47%,
+    transparent 58%,
+    rgba(0,200,80,.0) 75%,
+    rgba(0,255,100,.3) 88%,
+    rgba(100,255,160,.7) 93%,
+    transparent 100%
+  );
+  animation:navEsmRotateRev 1.8s linear infinite;
+  filter:blur(1.2px);
 }
-.nav-nivel-esmeralda .nav-user-avatar{border:none!important;animation:navEsmGlow 1.8s ease-in-out infinite}
+.nav-nivel-esmeralda .nav-user-avatar{
+  border:none!important;
+  animation:navEsmGlow 1.8s ease-in-out infinite;
+}
 
 /* ── Diamante: arco-íris cósmico máximo ── */
 .nav-nivel-diamante .nav-avatar-ring{
@@ -1309,23 +1351,23 @@ body.tema-claro .section-loader{color:var(--muted)}
       <div class="tickets-nivel-list">
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--bronze)">🥉 Bronze</span>
-          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--prata)">🥈 Prata</span>
-          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--ouro)">🥇 Ouro</span>
-          <span class="tickets-nivel-bonus">+4 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--esm)">💚 Esmeralda</span>
-          <span class="tickets-nivel-bonus">+6 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--dia)">💎 Diamante</span>
-          <span class="tickets-nivel-bonus">+8 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
         </div>
       </div>
       <div style="margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(255,183,0,.05);border:1px solid rgba(255,183,0,.15);font-size:10px;color:#888;font-weight:600;line-height:1.6">
@@ -1713,19 +1755,18 @@ async function carregarPerfil(user){
   /* Mostra dados do Google imediatamente enquanto busca o banco */
   var fallback={id:user.id,email:user.email,nome:nome,avatar_url:avatar,
     pontos:0,total_gasto:0,total_pedidos:0,total_avaliacoes:0,
-    rpg_comprados:0,promo_comprados:0,indicacoes:0,total_comentarios:0};
+    rpg_comprados:0,promo_comprados:0,indicacoes:0};
   renderPerfil(fallback);
 
   try{
     /* Busca perfil e pontos em paralelo */
-    var [perfilRes, mpRes, commRes] = await Promise.all([
+    var [perfilRes, mpRes] = await Promise.all([
       sb.from('perfis').upsert(
         {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
-      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle(),
-      sb.from('comentarios').select('id',{count:'exact',head:true}).eq('user_id',user.id)
+      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle()
     ]);
 
     var perfil=perfilRes.data||fallback;
@@ -1734,8 +1775,6 @@ async function carregarPerfil(user){
       perfil.pontos=mpRes.data.pontos||0;
       perfil.historico=mpRes.data.historico||[];
     }
-    /* Injeta contagem de comentários */
-    perfil.total_comentarios=(commRes&&commRes.count)||0;
     perfilData=perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
@@ -2034,7 +2073,6 @@ var CONQUISTAS=[
   {id:'dez_compras',     icon:'👑', nome:'Veterano',           desc:'Comprou 10 jogos na MarsGames',               titulo:'Veterano Mars',       pts:200, req:function(p){return(p.total_pedidos||0)>=10}},
   {id:'primeira_aval',   icon:'⭐', nome:'Crítico',            desc:'Avaliou um jogo pela primeira vez',           titulo:'Crítico Gamer',       pts:20,  req:function(p){return(p.total_avaliacoes||0)>=1}},
   {id:'cinco_aval',      icon:'🏅', nome:'Influencer',         desc:'Fez 5 avaliações verificadas',                titulo:'Influencer Mars',     pts:80,  req:function(p){return(p.total_avaliacoes||0)>=5}},
-  {id:'primeiro_comentario', icon:'💬', nome:'Voz da Galáxia', desc:'Fez seu primeiro comentário na MarsGames',   titulo:'Comentarista Mars',   pts:15,  req:function(p){return(p.total_comentarios||0)>=1}},
   {id:'fiel',            icon:'🔥', nome:'Fã de RPG',          desc:'Comprou 3 jogos da categoria Ação/RPG',       titulo:'Caçador de RPG',      pts:60,  req:function(p){return(p.rpg_comprados||0)>=3}},
   {id:'caçador',         icon:'💰', nome:'Caçador de Ofertas', desc:'Comprou 5 jogos em promoção',                 titulo:'Caçador de Ofertas',  pts:80,  req:function(p){return(p.promo_comprados||0)>=5}},
   {id:'social',          icon:'🤝', nome:'Embaixador',         desc:'Indicou um amigo que fez a primeira compra',  titulo:'Embaixador Mars',     pts:150, req:function(p){return(p.indicacoes||0)>=1}},
@@ -2343,7 +2381,7 @@ async function carregarTicketsPerfil(user){
   if(!data){
     var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
     var pts=(mp.data&&mp.data.pontos)||0;
-    var bonus=pts>=5000?8:pts>=1000?6:pts>=500?4:pts>=100?3:2;
+    var bonus=pts>=5000?3:pts>=1000?2:pts>=500?2:1;
     var{data:novo}=await sb.from('tickets').insert({
       user_id:user.id,user_email:user.email,
       quantidade:bonus,total_acumulado:bonus,
@@ -2362,7 +2400,7 @@ async function carregarTicketsPerfil(user){
 
   /* Bonus semanal baseado no nível */
   var nivel=getNivel(perfilData?perfilData.pontos||0:0);
-  var bonus=nivel.nome==='Diamante'?8:nivel.nome==='Esmeralda'?6:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:2;
+  var bonus=nivel.nome==='Diamante'?3:nivel.nome==='Esmeralda'?2:nivel.nome==='Ouro'?2:1;
   document.getElementById('ticketsBonusPorSemana').textContent='+'+bonus;
 
   /* Timer renovação */
