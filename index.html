@@ -596,37 +596,36 @@ body.tema-claro .exit-sub{color:#666}
   }
   .nav-search-icon-btn:hover{border-color:#888;color:#fff;background:rgba(255,255,255,.06)}
   .nav-search-icon-btn svg{pointer-events:none}
-  /* Campo que expande — position:fixed calculado via JS */
   .nav-search-expand{
-    position:fixed;top:16px;right:160px;
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
     display:flex;align-items:center;
     border-radius:8px;border:1px solid rgba(232,66,26,.5);
     background:rgba(10,10,14,.98);backdrop-filter:blur(20px);
-    width:0;opacity:0;pointer-events:none;
+    width:0;opacity:0;pointer-events:none;overflow:hidden;
     transition:width .25s cubic-bezier(.4,0,.2,1),opacity .2s;
-    z-index:500;overflow:hidden;height:36px;
+    z-index:400;height:36px;
   }
-  .nav-search-expand.open{width:220px;opacity:1;pointer-events:all}
+  .nav-search-expand.open{width:160px;opacity:1;pointer-events:all}
   .nav-search-expand input{
     background:none;border:none;outline:none;
-    padding:8px 12px;font-size:12px;color:#fff;
+    padding:8px 10px;font-size:11px;color:#fff;
     font-family:'Montserrat',sans-serif;width:100%;min-width:0;
   }
   .nav-search-expand input::placeholder{color:#666}
   .nav-search-btn{
-    padding:7px 10px;background:none;border:none;
+    padding:6px 8px;background:none;border:none;
     color:#888;cursor:pointer;transition:color .15s;
     display:flex;align-items:center;flex-shrink:0;
   }
   .nav-search-btn:hover{color:#fff}
-  /* Sugestões — fixed, logo abaixo do expand */
+  /* Sugestões — ancoradas ao nav-search */
   .nav-search-suggestions{
-    position:fixed;top:56px;right:160px;
-    width:280px;
+    position:absolute;top:calc(100% + 8px);right:0;
+    width:260px;
     background:rgba(10,10,14,.99);border:1px solid rgba(232,66,26,.3);
     border-radius:10px;overflow:hidden;
     box-shadow:0 16px 40px rgba(0,0,0,.8);
-    display:none;z-index:500;
+    display:none;z-index:9999;
   }
   .nav-search-suggestions.open{display:block}
   .nav-sugg-item{
@@ -4347,28 +4346,10 @@ var todosProdutos=[],catAtual='todos',buscaAtual='',carrinho=[],prodModalAtual=n
 /* Busca compacta — expande ao clicar no ícone */
 function toggleNavSearch(){
   var exp=document.getElementById('navSearchExpand');
-  var sugg=document.getElementById('navSuggestions');
-  var btn=document.getElementById('navSearchToggle');
-  if(!exp||!btn)return;
+  if(!exp)return;
   var open=exp.classList.contains('open');
-  if(open){
-    exp.classList.remove('open');
-    fecharNavSugg();
-  } else {
-    var r=btn.getBoundingClientRect();
-    var rightOffset=(window.innerWidth-r.right)+'px';
-    exp.style.top=r.top+'px';
-    exp.style.right=rightOffset;
-    if(sugg){
-      sugg.style.top=(r.bottom+8)+'px';
-      sugg.style.right=rightOffset;
-    }
-    exp.classList.add('open');
-    setTimeout(function(){
-      var i=document.getElementById('searchInput');
-      if(i)i.focus();
-    },60);
-  }
+  if(open){exp.classList.remove('open');fecharNavSugg();}
+  else{exp.classList.add('open');setTimeout(function(){var i=document.getElementById('searchInput');if(i)i.focus();},60);}
 }
 function recolherSearch(){
   var inp=document.getElementById('searchInput');
