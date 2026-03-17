@@ -739,6 +739,20 @@ async function init(){
 
   if(!data){showError();return}
   produto=data;
+
+  // Sincroniza favoritos do Supabase (por user_id) antes de renderizar
+  try{
+    var rs=await sb.auth.getSession();
+    if(rs.data&&rs.data.session){
+      var uid=rs.data.session.user.id;
+      var{data:favData}=await sb.from('favoritos').select('produto_id').eq('user_id',uid);
+      if(favData&&favData.length){
+        favoritos=favData.map(function(f){return f.produto_id});
+        localStorage.setItem('mg_favs',JSON.stringify(favoritos));
+      }
+    }
+  }catch(e){console.warn('fav load',e);}
+
   renderProduto(data);
   carregarRelacionados(data.categoria,data.id);
   carregarAvaliacoesProduto(data.nome);
@@ -901,7 +915,7 @@ async function toggleFavorito(){
   var txtEl=document.getElementById('btnFavText');
   var idx=favoritos.indexOf(produto.id);
 
-  // Tenta salvar no Supabase também se estiver logado
+  // Pega sessão — user.id é o UUID do auth
   var session=null;
   try{var r=await sb.auth.getSession();session=r.data&&r.data.session?r.data.session:null;}catch(e){}
 
@@ -912,20 +926,17 @@ async function toggleFavorito(){
     if(txtEl) txtEl.textContent='Favoritado ♥';
     showToast('❤️ Adicionado aos favoritos!');
 
-    // Salvar no Supabase
+    // Salvar no Supabase usando user_id (UUID) e produto_id (UUID)
     if(session){
       try{
         await sb.from('favoritos').upsert({
-          user_email:session.user.email,
-          produto_id:produto.id,
-          produto_nome:produto.nome,
-          produto_imagem:produto.imagem||'',
-          produto_preco:Number(produto.preco)
-        },{onConflict:'user_email,produto_id'});
+          user_id: session.user.id,       // UUID do usuário autenticado
+          produto_id: produto.id           // UUID do produto
+        },{onConflict:'user_id,produto_id'});
       }catch(e){console.warn('fav supabase',e);}
     }
 
-    // Depois de 1.5s, pergunta se quer ver favoritos
+    // Depois de 1.5s, convida a ver favoritos no perfil
     setTimeout(function(){
       showToast('Ver seus favoritos no perfil?');
       btn.onclick=function(){window.location.href='perfil.html#favoritos'};
@@ -939,12 +950,12 @@ async function toggleFavorito(){
     showToast('Removido dos favoritos');
     btn.onclick=toggleFavorito;
 
-    // Remover do Supabase
+    // Remover do Supabase usando user_id e produto_id
     if(session){
       try{
         await sb.from('favoritos').delete()
-          .eq('user_email',session.user.email)
-          .eq('produto_id',produto.id);
+          .eq('user_id', session.user.id)
+          .eq('produto_id', produto.id);
       }catch(e){console.warn('fav remove supabase',e);}
     }
   }
