@@ -2409,15 +2409,20 @@ footer::before{
   opacity:0;transition:opacity .2s;
 }
 .surpresa-btn:hover .surpresa-tooltip{opacity:1}
-@media(max-width:768px){.surpresa-btn{bottom:90px;right:16px;width:46px;height:46px;font-size:20px}}
+/* surpresa-btn oculto no mobile via regra acima */
 
-/* ── BOTÃO SORTEIO MOBILE FLUTUANTE ── */
+/* Esconde o botão surpresa no mobile */
+@media(max-width:768px){
+  .surpresa-btn{display:none!important}
+}
+
+/* ── BOTÃO SORTEIO MOBILE — lado direito, z-index baixo para não cobrir modais ── */
 .mob-sorteio-btn{
   display:none;
   position:fixed;
-  bottom:90px;
-  left:16px;
-  z-index:150;
+  bottom:24px;
+  right:16px;
+  z-index:140;
   align-items:center;
   gap:9px;
   padding:10px 16px 10px 12px;
@@ -2430,7 +2435,7 @@ footer::before{
   box-shadow:0 4px 20px rgba(0,0,0,.5);
   animation:mobSortFadeIn .5s ease both;
 }
-@keyframes mobSortFadeIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes mobSortFadeIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 .mob-sorteio-btn::before{
   content:'';position:absolute;inset:-1.5px;border-radius:41px;z-index:-1;
   background:linear-gradient(90deg,
@@ -2465,10 +2470,7 @@ footer::before{
 }
 @media(max-width:768px){
   .mob-sorteio-btn{display:flex}
-}
-
-
-/* ══ INDICAÇÃO ══ */
+}/* ══ INDICAÇÃO ══ */
 .indicacao-section{
   position:relative;z-index:1;
   padding:0 16px 48px;max-width:1280px;margin:0 auto;
@@ -3113,7 +3115,7 @@ footer::before{
     <a class="nav-link" href="promocoes.html">Promoções</a>
     <a class="nav-link" href="combos.html">Bundles</a>
     <a class="nav-link nav-link-chaves" href="#chv-section" id="navChavesLink" onclick="document.getElementById('chv-section')&&document.getElementById('chv-section').scrollIntoView({behavior:'smooth'});return false;">
-      <span class="chaves-icon">🎰</span>Chaves Aleatórias
+      Chaves Aleatórias
     </a>
     <div class="nav-dropdown" id="navDropdown">
       <button class="nav-dropdown-toggle" id="navDropdownToggle">
@@ -3126,7 +3128,7 @@ footer::before{
         <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação</a>
         <a class="nav-dropdown-item" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
         <a class="nav-dropdown-item" href="sorteio.html">🎲 Sorteios</a>
-        <a class="nav-dropdown-item" href="#chv-section" onclick="toggleMobileMenu&&toggleMobileMenu();setTimeout(function(){var s=document.getElementById('chv-section');if(s)s.scrollIntoView({behavior:'smooth'})},300);return false;">🎰 Chaves Aleatórias</a>
+        <a class="nav-dropdown-item" href="#chv-section" onclick="toggleMobileMenu&&toggleMobileMenu();setTimeout(function(){var s=document.getElementById('chv-section');if(s)s.scrollIntoView({behavior:'smooth'})},300);return false;">Chaves Aleatórias</a>
       </div>
     </div>
   </div>
