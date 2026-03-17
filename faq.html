@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsGames — Perguntas Frequentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0e;font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh}
+.navbar{position:sticky;top:0;z-index:200;background:rgba(10,10,14,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,66,26,.15);padding:0 16px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:#e8421a}
+.nav-back{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid #323240;background:rgba(255,255,255,.04);font-size:10px;font-weight:700;color:#aaa;text-decoration:none;transition:border-color .2s,color .2s}
+.nav-back:hover{border-color:#555;color:#fff}
+.pol-wrap{max-width:800px;margin:0 auto;padding:48px 20px 80px}
+.pol-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#e8421a;margin-bottom:10px}
+.pol-title{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,34px);font-weight:900;letter-spacing:2px;margin-bottom:8px}
+.pol-updated{font-size:10px;color:#555;font-weight:600;margin-bottom:40px}
+.faq-cat{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#00ff55;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #1a1a22}
+.faq-item{background:#131318;border:1px solid #252530;border-radius:12px;margin-bottom:8px;overflow:hidden}
+.faq-q{padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:background .2s}
+.faq-q:hover{background:rgba(255,255,255,.03)}
+.faq-q-text{font-size:13px;font-weight:700;color:#ddd;line-height:1.4}
+.faq-arrow{font-size:12px;color:#555;transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg);color:#00ff55}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.23,1,.32,1)}
+.faq-item.open .faq-a{max-height:400px}
+.faq-a-inner{padding:0 20px 18px;font-size:13px;color:#888;font-weight:600;line-height:1.8;border-top:1px solid #1a1a22}
+.faq-a-inner strong{color:#ccc}
+.faq-a-inner a{color:#00ff55;text-decoration:none}
+.pol-contact{background:rgba(232,66,26,.06);border:1px solid rgba(232,66,26,.2);border-radius:12px;padding:20px;margin-top:40px;text-align:center}
+.pol-contact p{color:#888;font-size:12px;margin-bottom:8px}
+.pol-contact a{color:#00ff55;text-decoration:none;font-weight:700}
+footer{border-top:1px solid #1a1a22;padding:24px 20px;text-align:center;font-size:10px;color:#333;font-weight:600}
+footer a{color:#555;text-decoration:none;margin:0 8px}
+footer a:hover{color:#888}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-text">Mars<span>Games</span></div>
+  </a>
+  <a class="nav-back" href="index.html">← Voltar à Loja</a>
+</nav>
+
+<div class="pol-wrap">
+  <div class="pol-eyebrow">MarsGames — Suporte</div>
+  <h1 class="pol-title">Perguntas Frequentes</h1>
+  <div class="pol-updated">Encontre respostas rápidas para as dúvidas mais comuns</div>
+
+  <div class="faq-cat">Sobre os Produtos</div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">O que são os jogos Steam Offline vendidos na MarsGames?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      São jogos para PC que podem ser jogados <strong>sem conexão permanente com a internet</strong>. Você ativa a chave na Steam, configura o modo offline e joga à vontade — mesmo sem internet. São jogos originais e legítimos, apenas com a diferença de não precisarem de conexão constante.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Preciso ter uma conta Steam para usar os produtos?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Sim. Você precisa de uma conta Steam (gratuita) para ativar a chave. A conta pode ser nova ou já existente. Basta acessar <a href="https://store.steampowered.com" target="_blank">store.steampowered.com</a>, criar uma conta e ativar a chave recebida.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Os jogos funcionam no meu computador?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Cada jogo tem seus próprios requisitos mínimos de hardware. Antes de comprar, verifique os <strong>requisitos do sistema</strong> na página do produto. A MarsGames não se responsabiliza por incompatibilidades de hardware. Em caso de dúvida, consulte nossa equipe no Discord antes de comprar.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Posso usar a chave em mais de um computador?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      A chave é ativada uma única vez na conta Steam. Após ativada, o jogo fica vinculado à sua conta e pode ser acessado em qualquer computador usando seu login Steam. <strong>Não é possível ativar a mesma chave em duas contas diferentes.</strong>
+    </div></div>
+  </div>
+
+  <div class="faq-cat">Compra e Pagamento</div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Quais formas de pagamento são aceitas?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Aceitamos <strong>PIX, cartão de crédito/débito, boleto bancário e PayPal</strong>, todos processados com segurança pelo Mercado Pago. O PIX é a forma mais rápida — a entrega é imediata após o pagamento.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">O site é seguro? Como funciona o pagamento?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Sim, totalmente seguro. O pagamento é processado pelo <strong>Mercado Pago</strong>, uma das maiores plataformas de pagamento da América Latina. A MarsGames <strong>nunca tem acesso aos dados do seu cartão</strong> — tudo é criptografado e processado diretamente pelo Mercado Pago.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Em quanto tempo recebo minha chave após o pagamento?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Para <strong>PIX e cartão</strong>: entrega imediata, geralmente em menos de 5 minutos.<br>
+      Para <strong>boleto</strong>: após a compensação bancária, que leva de 1 a 3 dias úteis.<br>
+      Você recebe a chave por e-mail e também pode acessá-la no seu perfil em "Meus Pedidos".
+    </div></div>
+  </div>
+
+  <div class="faq-cat">MarsPoints e Conta</div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">O que são MarsPoints e como ganho?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      MarsPoints são o sistema de fidelidade da MarsGames. Você acumula pontos ao fazer compras, participar de sorteios e completar conquistas. Os pontos avançam seu nível (Bronze → Prata → Ouro → Esmeralda → Diamante) e desbloqueiam benefícios exclusivos como cupons de desconto e tickets para sorteios.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Como funcionam os sorteios?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Os sorteios são realizados semanalmente com prêmios em jogos e créditos. Para participar, você usa <strong>MarsTickets</strong> — que são ganhos automaticamente a cada compra realizada. Quanto maior seu nível, mais tickets você recebe por compra. Os ganhadores são anunciados no Discord.
+    </div></div>
+  </div>
+
+  <div class="faq-cat">Problemas e Suporte</div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Minha chave não funcionou — o que fazer?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Entre em contato com nossa equipe pelo <a href="https://discord.gg/bKnR9accnw" target="_blank">Discord</a> e abra um ticket de suporte. Envie uma <strong>print do erro</strong> que apareceu ao tentar ativar a chave. Nossa equipe responde em até 24h e providencia reposição imediata para chaves com defeito comprovado.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Posso pedir reembolso?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      Sim, em casos de chave inválida, produto diferente do anunciado ou falha técnica comprovada. Por se tratar de produto digital entregue imediatamente, não aceitamos reembolso por arrependimento após a ativação. Consulte nossa <a href="reembolso.html">Política de Reembolso completa</a>.
+    </div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      <span class="faq-q-text">Onde encontro suporte da MarsGames?</span>
+      <span class="faq-arrow">▼</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">
+      O suporte principal é pelo <a href="https://discord.gg/bKnR9accnw" target="_blank"><strong>Discord da MarsGames</strong></a> — é o canal mais rápido, com resposta em até 2 horas. Você também pode enviar e-mail para <strong>suporte@marsgames.com.br</strong>. Funcionamos 24h por dia, 7 dias por semana.
+    </div></div>
+  </div>
+
+  <div class="pol-contact">
+    <p>Não encontrou o que procurava? Fale diretamente com a nossa equipe:</p>
+    <a href="https://discord.gg/bKnR9accnw" target="_blank">💬 Abrir ticket no Discord</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="mailto:suporte@marsgames.com.br">📧 suporte@marsgames.com.br</a>
+  </div>
+</div>
+
+<footer>
+  © 2026 MarsGames — Brasil &nbsp;|&nbsp;
+  <a href="termos.html">Termos</a>
+  <a href="reembolso.html">Reembolso</a>
+  <a href="privacidade.html">Privacidade</a>
+  <a href="envio.html">Entrega</a>
+  <a href="faq.html">FAQ</a>
+</footer>
+
+<script>
+function toggleFaq(el){
+  var item=el.parentElement;
+  var wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(i){i.classList.remove('open')});
+  if(!wasOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>

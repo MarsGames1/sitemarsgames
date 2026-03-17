@@ -422,70 +422,66 @@ body.tema-claro .exit-sub{color:#666}
     content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
     width:20px;height:2px;background:var(--green);border-radius:1px;
   }
-  /* Sorteios — faísca percorrendo a borda retangular */
+  /* Sorteios — mesma lógica dos anéis: conic girando + máscara interna */
   @keyframes sorteioSpin{to{transform:rotate(360deg)}}
-  @keyframes sorteioGlow{0%,100%{opacity:.8}50%{opacity:1}}
   .nav-link-sorteio{
     color:#ffc060!important;
     border:none!important;
     border-radius:8px;
     position:relative;
-    isolation:isolate;
     padding:10px 16px;
-    background:rgba(15,8,2,.95)!important;
+    isolation:isolate;
+    background:transparent!important;
+    z-index:0;
   }
-  /* Container do efeito de borda — clipado ao shape do botão */
+  /* Conic girando — igual ao avatar-ring, mas retangular */
   .nav-link-sorteio::before{
     content:'';
     position:absolute;
-    /* Sai para fora para o conic cobrir toda a borda */
+    /* Oversized para o conic cobrir bem os cantos */
     inset:-2px;
     border-radius:10px;
-    /* Conic grande girando: a faísca parece percorrer o contorno pois
-       o gradiente é muito estreito e passa por cada lado do retângulo */
     background:conic-gradient(
       from 0deg,
-      transparent   0deg,
-      transparent 290deg,
-      rgba(200,90,10,.5) 300deg,
-      rgba(255,150,30,.85) 315deg,
-      rgba(255,230,80,1)  325deg,
-      rgba(255,150,30,.85) 335deg,
-      rgba(200,90,10,.4) 345deg,
-      transparent 355deg,
+      #5a2800 0deg,
+      #c87820 60deg,
+      #ffdd00 90deg,
+      #ffe880 105deg,
+      #ffdd00 120deg,
+      #c87820 150deg,
+      #5a2800 210deg,
+      transparent 215deg,
       transparent 360deg
     );
-    animation:sorteioSpin 2s linear infinite;
+    animation:sorteioSpin 2.5s linear infinite;
     z-index:-1;
-    filter:blur(.4px);
   }
-  /* Fundo interno que esconde o interior do conic — dá aparência de só a borda acender */
+  /* Máscara interna — tapa o miolo, deixa só a borda acender */
   .nav-link-sorteio::after{
     content:'';
     position:absolute;
     inset:1.5px;
     border-radius:7px;
-    background:#0d0602;
+    background:#0a0a0e;
     z-index:-1;
   }
   .nav-link-sorteio:hover{
     color:#ffe090!important;
   }
   .nav-link-sorteio:hover::before{
-    animation-duration:1.3s;
+    animation-duration:1.4s;
     background:conic-gradient(
       from 0deg,
-      transparent   0deg,
-      transparent 280deg,
-      rgba(200,90,10,.6) 292deg,
-      rgba(255,160,30,.9) 308deg,
-      rgba(255,240,100,1) 320deg,
-      rgba(255,255,200,.9) 326deg,
-      rgba(255,160,30,.8) 338deg,
-      rgba(200,90,10,.4) 350deg,
+      #5a2800 0deg,
+      #e08020 55deg,
+      #ffee44 85deg,
+      #ffffff 100deg,
+      #ffee44 115deg,
+      #e08020 145deg,
+      #5a2800 200deg,
+      transparent 208deg,
       transparent 360deg
     );
-    filter:blur(.2px);
   }
   /* Dropdown */
   .nav-dropdown{position:relative}
@@ -3582,11 +3578,11 @@ footer::before{
       <div>
         <div class="footer-col-title">Políticas</div>
         <div class="footer-links">
-          <a class="footer-link" href="#">Termos e Condições</a>
-          <a class="footer-link" href="#">Política de Reembolso</a>
-          <a class="footer-link" href="#">Política de Privacidade</a>
-          <a class="footer-link" href="#">Política de Envio</a>
-          <a class="footer-link" href="#">Perguntas Frequentes</a>
+          <a class="footer-link" href="termos.html">Termos e Condições</a>
+          <a class="footer-link" href="reembolso.html">Política de Reembolso</a>
+          <a class="footer-link" href="privacidade.html">Política de Privacidade</a>
+          <a class="footer-link" href="envio.html">Política de Entrega</a>
+          <a class="footer-link" href="faq.html">Perguntas Frequentes</a>
         </div>
       </div>
       <div>
