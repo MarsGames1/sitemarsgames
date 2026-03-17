@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsGames — Quem Somos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes orb{0%{transform:rotate(0deg) translateX(120px) rotate(0deg)}100%{transform:rotate(360deg) translateX(120px) rotate(-360deg)}}
+body{background:#0a0a0e;font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh;overflow-x:hidden}
+.navbar{position:sticky;top:0;z-index:200;background:rgba(10,10,14,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,66,26,.15);padding:0 16px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:#e8421a}
+.nav-back{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid #323240;background:rgba(255,255,255,.04);font-size:10px;font-weight:700;color:#aaa;text-decoration:none;transition:border-color .2s,color .2s}
+.nav-back:hover{border-color:#555;color:#fff}
+
+/* HERO */
+.hero{
+  position:relative;min-height:60vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;padding:60px 20px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(232,66,26,.12) 0%,transparent 60%);
+}
+.hero-planet-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:260px;height:260px;pointer-events:none}
+.hero-planet{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#c0392b,#8b1a10 40%,#1a0504 80%);
+  box-shadow:0 0 60px rgba(232,66,26,.35),inset -16px -16px 32px rgba(0,0,0,.6);
+  animation:float 6s ease-in-out infinite;
+}
+.hero-orb-1{position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#00ff55;box-shadow:0 0 14px #00ff55;margin:-5px 0 0 -5px;animation:orb 5s linear infinite}
+.hero-orb-2{position:absolute;top:50%;left:50%;width:7px;height:7px;border-radius:50%;background:#ff6b2b;box-shadow:0 0 10px #ff6b2b;margin:-3.5px 0 0 -3.5px;animation:orb 8s linear infinite reverse}
+.hero-ring{position:absolute;top:50%;left:50%;width:220px;height:220px;border-radius:50%;border:1px dashed rgba(232,66,26,.18);margin:-110px 0 0 -110px}
+.hero-ring-2{position:absolute;top:50%;left:50%;width:170px;height:170px;border-radius:50%;border:1px dashed rgba(0,255,85,.12);margin:-85px 0 0 -85px}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:640px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,66,26,.1);border:1px solid rgba(232,66,26,.3);color:#ff6b2b;padding:6px 14px;border-radius:99px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#e8421a;animation:pulse 1.5s ease-in-out infinite}
+.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:900;letter-spacing:2px;line-height:1.1;margin-bottom:16px}
+.hero-title span{color:#00ff55}
+.hero-sub{font-size:14px;color:#888;font-weight:600;line-height:1.8;max-width:500px;margin:0 auto}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:700px;margin:48px auto 0;padding:0 20px}
+@media(min-width:600px){.stats-row{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:#131318;border:1px solid #252530;border-radius:14px;padding:20px;text-align:center}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:clamp(22px,3vw,32px);font-weight:900;color:#00ff55;line-height:1}
+.stat-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-top:6px}
+
+/* SEÇÕES */
+.about-wrap{max-width:900px;margin:0 auto;padding:60px 20px 80px}
+.about-section{margin-bottom:60px;animation:fadeUp .5s ease both}
+.about-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#e8421a;margin-bottom:8px}
+.about-title{font-family:'Orbitron',sans-serif;font-size:clamp(18px,2.5vw,26px);font-weight:900;letter-spacing:1px;margin-bottom:20px}
+.about-title span{color:#00ff55}
+.about-text{font-size:13px;color:#888;font-weight:600;line-height:1.9;margin-bottom:14px}
+.about-text strong{color:#ccc}
+
+/* VALORES */
+.values-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px}
+@media(min-width:700px){.values-grid{grid-template-columns:repeat(3,1fr)}}
+.value-card{background:#131318;border:1px solid #252530;border-radius:14px;padding:22px;transition:border-color .2s}
+.value-card:hover{border-color:rgba(0,255,85,.2)}
+.value-icon{font-size:28px;margin-bottom:12px;display:block}
+.value-name{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;color:#fff;margin-bottom:6px}
+.value-desc{font-size:11px;color:#666;font-weight:600;line-height:1.6}
+
+/* DISCORD CTA */
+.discord-cta{
+  background:linear-gradient(135deg,rgba(114,137,218,.08),rgba(114,137,218,.03));
+  border:1px solid rgba(114,137,218,.2);border-radius:18px;padding:36px;
+  text-align:center;margin-top:48px;
+}
+.discord-cta h3{font-family:'Orbitron',sans-serif;font-size:clamp(16px,2.5vw,22px);font-weight:900;margin-bottom:10px}
+.discord-cta p{font-size:13px;color:#888;font-weight:600;line-height:1.7;margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto}
+.discord-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:10px;background:#5865f2;color:#fff;text-decoration:none;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;transition:box-shadow .2s,transform .15s}
+.discord-btn:hover{box-shadow:0 6px 24px rgba(88,101,242,.4);transform:translateY(-2px)}
+.discord-btn svg{width:20px;height:20px;flex-shrink:0}
+
+footer{border-top:1px solid #1a1a22;padding:24px 20px;text-align:center;font-size:10px;color:#333;font-weight:600}
+footer a{color:#555;text-decoration:none;margin:0 8px}
+footer a:hover{color:#888}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-text">Mars<span>Games</span></div>
+  </a>
+  <a class="nav-back" href="index.html">← Voltar à Loja</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-planet-wrap">
+    <div class="hero-ring"></div>
+    <div class="hero-ring-2"></div>
+    <div class="hero-planet"></div>
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="hero-badge-dot"></div> Rio de Janeiro, Brasil</div>
+    <h1 class="hero-title">Somos a<br><span>MarsGames</span></h1>
+    <p class="hero-sub">A loja de jogos digitais que nasceu da paixão por games e pelo desejo de democratizar o acesso aos melhores títulos do mercado com preços justos.</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-val">500+</div><div class="stat-lbl">Clientes satisfeitos</div></div>
+  <div class="stat-card"><div class="stat-val">24h</div><div class="stat-lbl">Entrega imediata</div></div>
+  <div class="stat-card"><div class="stat-val">90%</div><div class="stat-lbl">Desconto máximo</div></div>
+  <div class="stat-card"><div class="stat-val">100%</div><div class="stat-lbl">Digital e seguro</div></div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="about-wrap">
+
+  <div class="about-section">
+    <div class="about-eyebrow">Nossa história</div>
+    <h2 class="about-title">De gamer para <span>gamer</span></h2>
+    <p class="about-text">A MarsGames nasceu no Rio de Janeiro com um objetivo claro: oferecer jogos originais para PC com preços acessíveis para o bolso brasileiro. Sabemos o quanto é difícil acompanhar os lançamentos internacionais com o câmbio em alta — e foi exatamente esse problema que nos motivou a criar essa loja.</p>
+    <p class="about-text">Trabalhamos com <strong>chaves de ativação Steam do tipo offline</strong>, que permitem jogar sem precisar de conexão permanente com a internet. São jogos 100% originais, entregues de forma imediata e com suporte ativo para garantir que sua experiência seja a melhor possível.</p>
+    <p class="about-text">Nossa comunidade cresce a cada dia no Discord, onde a galera compartilha dicas, participa de sorteios e garante os melhores preços em primeira mão.</p>
+  </div>
+
+  <div class="about-section">
+    <div class="about-eyebrow">Nossos valores</div>
+    <h2 class="about-title">O que nos <span>move</span></h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <span class="value-icon">🎮</span>
+        <div class="value-name">Paixão por Games</div>
+        <div class="value-desc">Somos gamers primeiro. Cada produto que vendemos é algo que nós mesmos jogaríamos.</div>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">💰</span>
+        <div class="value-name">Preço Justo</div>
+        <div class="value-desc">Até 90% de desconto nos melhores títulos. Acreditamos que todo brasileiro merece jogar bem.</div>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">⚡</span>
+        <div class="value-name">Entrega Imediata</div>
+        <div class="value-desc">Pagou, recebeu. Funcionamos 24h por dia, 7 dias por semana, incluindo feriados.</div>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">🔒</span>
+        <div class="value-name">Segurança Total</div>
+        <div class="value-desc">Pagamentos processados pelo Mercado Pago. Seus dados protegidos, sempre.</div>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">🤝</span>
+        <div class="value-name">Suporte Real</div>
+        <div class="value-desc">Time humano no Discord respondendo rápido. Sem bot, sem demora — suporte de verdade.</div>
+      </div>
+      <div class="value-card">
+        <span class="value-icon">🏆</span>
+        <div class="value-name">Comunidade</div>
+        <div class="value-desc">MarsPoints, sorteios e conquistas. Aqui você é recompensado por fazer parte da família.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="discord-cta">
+    <h3>Faça parte da família MarsGames</h3>
+    <p>Junte-se à nossa comunidade no Discord para receber ofertas exclusivas, participar dos sorteios semanais e estar sempre por dentro dos lançamentos.</p>
+    <a class="discord-btn" href="https://discord.gg/bKnR9accnw" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Entrar no Discord
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 MarsGames — Rio de Janeiro, Brasil &nbsp;|&nbsp;
+  <a href="termos.html">Termos</a>
+  <a href="reembolso.html">Reembolso</a>
+  <a href="privacidade.html">Privacidade</a>
+  <a href="faq.html">FAQ</a>
+</footer>
+</body>
+</html>

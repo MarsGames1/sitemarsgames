@@ -422,41 +422,42 @@ body.tema-claro .exit-sub{color:#666}
     content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
     width:20px;height:2px;background:var(--green);border-radius:1px;
   }
-  /* Sorteios — mesma lógica dos anéis: conic girando + máscara interna */
-  @keyframes sorteioSpin{to{transform:rotate(360deg)}}
+  /* Sorteios — shimmer deslizando na borda, elegante */
+  @keyframes sorteioShimmer{
+    0%  {background-position:200% center}
+    100%{background-position:-200% center}
+  }
   .nav-link-sorteio{
-    color:#ffc060!important;
-    border:none!important;
+    color:#ffb84d!important;
+    background:rgba(20,10,2,.0)!important;
     border-radius:8px;
     position:relative;
     padding:10px 16px;
     isolation:isolate;
-    background:transparent!important;
-    z-index:0;
+    /* Borda com gradiente deslizante */
+    border:1.5px solid transparent!important;
+    background-clip:padding-box;
   }
-  /* Conic girando — igual ao avatar-ring, mas retangular */
+  /* Borda animada via outline com shimmer */
   .nav-link-sorteio::before{
     content:'';
     position:absolute;
-    /* Oversized para o conic cobrir bem os cantos */
-    inset:-2px;
-    border-radius:10px;
-    background:conic-gradient(
-      from 0deg,
-      #5a2800 0deg,
-      #c87820 60deg,
-      #ffdd00 90deg,
-      #ffe880 105deg,
-      #ffdd00 120deg,
-      #c87820 150deg,
-      #5a2800 210deg,
-      transparent 215deg,
-      transparent 360deg
+    inset:-1.5px;
+    border-radius:9px;
+    background:linear-gradient(
+      90deg,
+      rgba(90,40,0,.4) 0%,
+      rgba(180,90,10,.7) 20%,
+      rgba(255,200,60,1) 40%,
+      rgba(255,240,120,1) 50%,
+      rgba(255,200,60,1) 60%,
+      rgba(180,90,10,.7) 80%,
+      rgba(90,40,0,.4) 100%
     );
-    animation:sorteioSpin 2.5s linear infinite;
+    background-size:200% 100%;
+    animation:sorteioShimmer 2s linear infinite;
     z-index:-1;
   }
-  /* Máscara interna — tapa o miolo, deixa só a borda acender */
   .nav-link-sorteio::after{
     content:'';
     position:absolute;
@@ -469,19 +470,18 @@ body.tema-claro .exit-sub{color:#666}
     color:#ffe090!important;
   }
   .nav-link-sorteio:hover::before{
-    animation-duration:1.4s;
-    background:conic-gradient(
-      from 0deg,
-      #5a2800 0deg,
-      #e08020 55deg,
-      #ffee44 85deg,
-      #ffffff 100deg,
-      #ffee44 115deg,
-      #e08020 145deg,
-      #5a2800 200deg,
-      transparent 208deg,
-      transparent 360deg
+    animation-duration:1s;
+    background:linear-gradient(
+      90deg,
+      rgba(100,40,0,.4) 0%,
+      rgba(220,110,10,.8) 18%,
+      rgba(255,220,80,1) 38%,
+      rgba(255,255,180,1) 50%,
+      rgba(255,220,80,1) 62%,
+      rgba(220,110,10,.8) 82%,
+      rgba(100,40,0,.4) 100%
     );
+    background-size:200% 100%;
   }
   /* Dropdown */
   .nav-dropdown{position:relative}
@@ -3568,11 +3568,11 @@ footer::before{
       <div>
         <div class="footer-col-title">Produtos</div>
         <div class="footer-links">
-          <span class="footer-link" onclick="filtrarCat('Ação / RPG')">Ação / RPG</span>
-          <span class="footer-link" onclick="filtrarCat('Luta / Tiros')">Luta / Tiros</span>
-          <span class="footer-link" onclick="filtrarCat('Terror / Indie')">Terror / Indie</span>
-          <span class="footer-link" onclick="filtrarCat('Steam Key / Outros')">Chaves Aleatórias</span>
-          <span class="footer-link" onclick="filtrarCat('Combos e Bundles')">Combos e Bundles</span>
+          <a class="footer-link" href="catalogo.html?cat=Ação+%2F+RPG">Ação / RPG</a>
+          <a class="footer-link" href="catalogo.html?cat=Luta+%2F+Tiros">Luta / Tiros</a>
+          <a class="footer-link" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
+          <a class="footer-link" href="catalogo.html?cat=Steam+Key+%2F+Outros">Chaves Aleatórias</a>
+          <a class="footer-link" href="catalogo.html?cat=Combos+e+Bundles">Combos e Bundles</a>
         </div>
       </div>
       <div>
@@ -3589,9 +3589,9 @@ footer::before{
         <div class="footer-col-title">Comunidade</div>
         <div class="footer-links">
           <a class="footer-link" href="https://discord.gg/bKnR9accnw" target="_blank">Discord</a>
-          <a class="footer-link" href="#">Quem somos</a>
-          <a class="footer-link" href="#">Indicação de amigos</a>
-          <a class="footer-link" href="#">MarsPoints</a>
+          <a class="footer-link" href="quem-somos.html">Quem somos</a>
+          <a class="footer-link" href="perfil.html#marstickets">MarsTickets</a>
+          <a class="footer-link" href="perfil.html#marspoints">MarsPoints</a>
         </div>
       </div>
     </div>

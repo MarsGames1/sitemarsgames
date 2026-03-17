@@ -1517,6 +1517,8 @@ function mostrarPerfil(){
   document.getElementById('perfil-content').style.display='block';
   var btn=document.getElementById('btnLogout');
   if(btn){btn.style.display='flex';btn.textContent='Sair';btn.disabled=false;}
+  /* Abre tab específica se vier pelo hash da URL */
+  setTimeout(abrirTabPeloHash, 200);
 }
 function mostrarLoading(){
   document.getElementById('loading-screen').style.display='flex';
@@ -2083,6 +2085,21 @@ function showTab(id,el){
   if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
   if(id==='marspoints-perfil' && userSession) carregarMarsPointsPerfil(userSession.user);
   if(id==='premios' && userSession) carregarPremios(userSession.user);
+}
+
+/* ── Abre tab pelo hash da URL (ex: perfil.html#marstickets) ── */
+function abrirTabPeloHash(){
+  var hash=window.location.hash.replace('#','').toLowerCase();
+  if(!hash) return;
+  if(hash==='marstickets'){
+    var tabEl=document.querySelector('.tab-tickets');
+    showTab('tickets', tabEl);
+    if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'center'});
+  } else if(hash==='marspoints'){
+    var tabEl=document.querySelector('.tab-marspoints');
+    showTab('marspoints-perfil', tabEl);
+    if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'center'});
+  }
 }
 
 /* ── PRÊMIOS DE SORTEIO ── */
