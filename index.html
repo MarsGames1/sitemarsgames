@@ -2419,6 +2419,132 @@ footer::before{
 }
 .nav-nivel-diamante .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
 .nav-nivel-diamante .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navDiaGlow 2.5s ease-in-out infinite}
+/* ═══════════════════════════════════════════════
+   MOBILE OVERHAUL — melhorias globais ≤ 768px
+═══════════════════════════════════════════════ */
+@media(max-width:767px){
+
+  /* ── Navbar ── */
+  .navbar{padding:0 14px;height:58px}
+  .nav-logo-text{font-size:14px;letter-spacing:1.5px}
+  .nav-right{gap:6px}
+  .nav-cart{min-width:40px;width:40px;height:40px;border-radius:8px}
+  .nav-hamburger{min-width:40px;width:40px;height:40px}
+  .nav-avatar-wrap{width:36px;height:36px}
+  .nav-user-avatar{width:32px;height:32px}
+
+  /* ── Mobile menu ── */
+  .nav-mobile-menu{top:58px;padding:12px 14px}
+  .nav-mobile-link{padding:13px 14px;font-size:14px;border-radius:10px}
+  .nav-mobile-section{font-size:9px;padding:10px 14px 4px;color:#555}
+  .nav-mobile-divider{margin:6px 0}
+  .nav-mobile-search input{font-size:14px;padding:13px 14px}
+
+  /* ── Hero ── */
+  .hero{min-height:96svh;align-items:flex-end}
+  .hero-content{padding:24px 16px 40px}
+  .hero-badge{font-size:8px;padding:5px 12px}
+  .hero-eyebrow{font-size:8px;letter-spacing:3px;margin-bottom:8px}
+  .hero-title{font-size:clamp(30px,10vw,52px);letter-spacing:1px;margin-bottom:6px}
+  .hero-sub{font-size:12px;margin:8px 0 16px;line-height:1.65}
+  .hero-btns{gap:8px}
+  .btn-mars{padding:13px 20px;font-size:10px;min-height:42px}
+  .countdown{gap:4px;margin-top:16px}
+  .count-block{min-width:38px;padding:5px 6px;border-radius:7px}
+  .count-val{font-size:15px}
+  .count-lbl{font-size:6px}
+  .count-sep{font-size:14px;padding-top:5px}
+  .hero-stats{grid-template-columns:repeat(2,1fr);gap:6px;margin-top:18px;max-width:100%}
+  .hero-stat{padding:10px 8px;border-radius:8px}
+  .hero-stat-val{font-size:15px}
+  .hero-stat-label{font-size:7px}
+
+  /* ── Pills de categoria ── */
+  .cats-wrap{padding:16px 14px 0}
+  .cat-pill{padding:8px 12px;font-size:9px;min-height:36px}
+
+  /* ── Carrossel Mais Vendidos ── */
+  .mv-section{padding:32px 0 36px}
+  .mv-outer{padding:0}
+  .mv-nav-l{left:2px}
+  .mv-nav-r{right:2px}
+  .mv-nav{width:38px;height:38px}
+  .mv-card{border-radius:10px}
+  .mv-name{font-size:11px;min-height:28px}
+  .mv-price{font-size:22px}
+  .mv-buy{padding:10px 6px;font-size:10px;min-height:38px}
+  .mv-info{padding:10px 10px 12px}
+
+  /* ── Boa da Semana ── */
+  .boa-section{padding:32px 14px 40px}
+  .boa-panel{padding:22px 18px;border-radius:16px}
+  .boa-titulo{font-size:clamp(24px,7vw,36px)}
+  .boa-off{font-size:clamp(36px,10vw,56px);margin-bottom:14px}
+  .boa-bullets{gap:5px;margin-bottom:18px}
+  .boa-bullet{font-size:10px}
+  .boa-btn{padding:12px 22px;font-size:10px;min-height:42px}
+  .boa-cover-mobile{flex:0 0 140px;height:187px;border-radius:8px}
+
+  /* ── Explorar Categorias ── */
+  .cats-explore-section{padding:32px 14px 36px}
+  .cats-explore-head{margin-bottom:24px}
+  .cats-explore-title{font-size:clamp(20px,7.5vw,36px);letter-spacing:2px}
+  .cats-explore-gallery{flex-direction:column;gap:10px}
+  .cex-card{height:180px!important;border-radius:12px;flex:none!important;transform:none!important}
+  .cex-card:nth-child(n){flex:none!important}
+  .cats-explore-gallery:hover .cex-card,
+  .cats-explore-gallery:hover .cex-card:hover{flex:none!important;transform:none!important}
+  .cex-content{padding:14px 16px 16px}
+  .cex-icon{font-size:22px;margin-bottom:6px}
+  .cex-name-main{font-size:20px}
+  .cex-name-sub{font-size:14px}
+  .cex-desc{font-size:10px;margin-bottom:10px}
+  .cex-btn{opacity:1!important;transform:none!important;padding:10px 8px;font-size:10px}
+
+  /* ── Chaves Aleatórias ── */
+  .chv-section{padding:32px 0 36px}
+  .chv-nav{width:34px;height:34px}
+
+  /* ── Ranking + Avaliações ── */
+  .rk-section{padding:32px 14px 36px}
+  .rk-inner{grid-template-columns:1fr;gap:32px}
+  .rk-title{font-size:clamp(18px,5vw,26px)}
+  .rk-card{padding:10px 12px;border-radius:8px}
+  .rk-name{font-size:12px}
+  .rk-price{font-size:12px}
+
+  /* ── Comunidade ── */
+  .com-section{padding:32px 14px 40px}
+  .com-banner{border-radius:16px;padding:22px 18px}
+  .com-text h2{font-size:clamp(16px,5vw,22px)}
+  .com-highlight{font-size:clamp(18px,6vw,28px)}
+
+  /* ── Footer ── */
+  .footer-inner{padding:32px 14px 24px}
+  .footer-grid{grid-template-columns:1fr;gap:24px}
+  .footer-logo{font-size:18px}
+  .footer-desc{font-size:11px;line-height:1.7}
+  .footer-col-title{font-size:8px;letter-spacing:2px;margin-bottom:10px}
+  .footer-link{font-size:11px;padding:3px 0}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
+  .footer-pay{justify-content:center;flex-wrap:wrap}
+
+  /* ── Botão surpresa ── */
+  .surpresa-btn{bottom:80px;right:14px;width:44px;height:44px;font-size:19px}
+
+  /* ── Promo banner ── */
+  .promo-banner{padding:8px 14px;gap:6px}
+  .promo-banner-text{font-size:9px}
+}
+
+/* Pequeno ajuste para 320px */
+@media(max-width:380px){
+  .hero-title{font-size:clamp(26px,9vw,40px)}
+  .hero-btns{flex-direction:column}
+  .btn-mars{width:100%;justify-content:center}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .cats-explore-title{font-size:clamp(18px,7vw,28px)}
+}
 </style>
 </head>
 <body>

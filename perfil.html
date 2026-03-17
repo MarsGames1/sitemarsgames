@@ -834,8 +834,149 @@ body.tema-claro .section-loader{color:var(--muted)}
 #mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
 #mars-canvas.ready{opacity:1}
 
-/* ══ ANÉIS DE NÍVEL NA NAVBAR ══ */
 
+/* ═══════════════════════════════════════════════
+   PERFIL — MOBILE OVERHAUL ≤ 768px
+═══════════════════════════════════════════════ */
+@media(max-width:767px){
+
+  /* ── Navbar ── */
+  .navbar{padding:0 14px;height:58px}
+  .nav-logo-text{font-size:14px;letter-spacing:1.5px}
+  .nav-right{gap:6px}
+  .nav-btn{padding:7px 10px;font-size:9px}
+  .nav-avatar-wrap{width:36px;height:36px}
+  .nav-user-avatar{width:32px;height:32px}
+
+  /* ── Login card ── */
+  .login-card{padding:28px 20px;border-radius:18px;max-width:100%}
+  .login-logo{font-size:20px}
+  .login-sub{font-size:9px}
+  .login-desc{font-size:11px;margin-bottom:20px}
+  .login-btn{padding:13px 16px;gap:10px}
+  .login-btn-icon{width:34px;height:34px}
+  .login-btn-title{font-size:11px}
+  .login-perks{gap:12px;margin:14px 0}
+  .login-perk-icon{font-size:18px}
+  .login-perk-txt{font-size:8px}
+
+  /* ── Perfil hero ── */
+  #perfil-content{padding:20px 14px 80px}
+  .perfil-hero{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:22px 18px;
+    border-radius:16px;
+    gap:16px;
+    margin-bottom:20px;
+  }
+  .perfil-avatar-wrap{width:96px;height:96px}
+  .avatar-ring{width:96px;height:96px}
+  .avatar-inner{width:88px;height:88px}
+  .avatar-bronze .avatar-ring::before,
+  .avatar-prata .avatar-ring::before,
+  .avatar-ouro .avatar-ring::before,
+  .avatar-esmeralda .avatar-ring::before{width:86px;height:86px}
+  .avatar-diamante .avatar-ring::before{width:88px;height:88px}
+  .perfil-avatar-fallback{font-size:30px}
+  .perfil-info{min-width:unset;width:100%}
+  .perfil-nome{font-size:18px;text-align:center}
+  .perfil-email{font-size:10px;text-align:center}
+  .perfil-titulo{justify-content:center;font-size:9px}
+  .perfil-nivel-row{justify-content:center}
+  .perfil-pts{text-align:center;font-size:10px}
+  .progresso-wrap{margin-top:12px}
+
+  /* ── Stats ── */
+  .perfil-stats{
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin-left:0;
+    width:100%;
+  }
+  .pstat{padding:10px 8px;border-radius:8px}
+  .pstat-val{font-size:16px}
+  .pstat-lbl{font-size:7px;letter-spacing:1px}
+
+  /* ── Tabs ── */
+  .tabs-wrap{margin-bottom:16px}
+  .tab{padding:10px 12px;font-size:10px;letter-spacing:.2px}
+
+  /* ── Benefícios ── */
+  .beneficios-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .benef-card{padding:12px 10px;border-radius:10px}
+  .benef-emoji{font-size:20px;margin-bottom:6px}
+  .benef-nome{font-size:9px}
+  .benef-pts{font-size:8px}
+  .benef-desc{font-size:10px}
+
+  /* ── Cupom ── */
+  .cupom-box{padding:16px;border-radius:12px;gap:12px}
+  .cupom-code{font-size:18px;letter-spacing:2px}
+  .cupom-copy{padding:9px 14px;font-size:9px}
+
+  /* ── MarsTickets ── */
+  .tickets-hero{padding:18px 16px;gap:14px;border-radius:14px}
+  .tickets-icon-big{font-size:36px}
+  .tickets-hero-count{font-size:28px}
+  .tickets-hero-sub{font-size:10px}
+  .tickets-info-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .tinfo-card{padding:12px 10px;border-radius:8px}
+  .tinfo-val{font-size:16px}
+  .tickets-como-ganhar{padding:16px;border-radius:12px}
+  .tickets-nivel-item{padding:9px 12px}
+  .tickets-nivel-nome{font-size:10px}
+
+  /* ── Conquistas ── */
+  .conquistas-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .conquista-card{padding:12px 10px;border-radius:10px}
+  .conquista-icon{font-size:24px;margin-bottom:4px}
+  .conquista-nome{font-size:9px}
+  .conquista-desc{font-size:8px}
+
+  /* ── Pedidos ── */
+  .pedido-card{padding:12px;gap:10px;border-radius:10px}
+  .pedido-img{width:44px;height:44px;border-radius:6px}
+  .pedido-nome{font-size:11px}
+  .pedido-preco{font-size:13px}
+
+  /* ── Favoritos ── */
+  .favs-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .fav-body{padding:8px}
+  .fav-name{font-size:9px}
+  .fav-price{font-size:12px}
+
+  /* ── Histórico de pontos ── */
+  .pts-item{padding:11px 12px;border-radius:8px}
+  .pts-item-desc{font-size:10px}
+  .pts-item-date{font-size:8px}
+  .pts-item-val{font-size:13px}
+
+  /* ── Editar perfil ── */
+  .edit-form{padding:18px 16px;border-radius:12px;max-width:100%}
+  .edit-input{font-size:13px;padding:10px 12px;margin-bottom:12px}
+  .edit-btn{width:100%;justify-content:center;padding:12px}
+
+  /* ── Título seletor ── */
+  .titulo-seletor{padding:16px;border-radius:12px}
+  .titulo-opcao{padding:10px 12px}
+  .titulo-opcao-nome{font-size:10px}
+
+  /* ── Toast ── */
+  #toast{font-size:9px;padding:10px 16px;bottom:18px;max-width:88vw;text-align:center;white-space:normal}
+
+  /* ── MarsPoints tab ── */
+  .rk-card{padding:10px 12px;border-radius:8px}
+}
+
+@media(max-width:380px){
+  .perfil-hero{padding:18px 14px}
+  .perfil-stats{grid-template-columns:repeat(3,1fr)}
+  .beneficios-grid{grid-template-columns:1fr 1fr}
+  .conquistas-grid{grid-template-columns:1fr 1fr}
+  .tabs .tab{padding:9px 10px;font-size:9px}
+}
 </style>
 </head>
 <body>
