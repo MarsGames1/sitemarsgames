@@ -666,6 +666,20 @@ body.tema-claro .section-loader{color:var(--muted)}
 .status-pendente{color:var(--amber);background:rgba(255,179,0,.08);border-color:rgba(255,179,0,.25)}
 .sem-pedidos{text-align:center;padding:48px 20px;color:var(--muted);font-size:12px;font-weight:600}
 
+/* ── AVALIAÇÃO ── */
+.aval-wrap{width:100%;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)}
+.aval-titulo{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,183,0,.7);margin-bottom:10px}
+.aval-estrelas{display:flex;gap:4px;margin-bottom:10px}
+.aval-estrela{font-size:22px;cursor:pointer;opacity:.25;transition:opacity .15s,transform .15s;line-height:1;user-select:none}
+.aval-estrela.hover,.aval-estrela.ativa{opacity:1;transform:scale(1.15)}
+.aval-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;resize:none;outline:none;min-height:60px;transition:border-color .2s;line-height:1.5}
+.aval-textarea:focus{border-color:rgba(255,183,0,.4)}
+.aval-textarea::placeholder{color:#555}
+.aval-btn{margin-top:8px;padding:8px 18px;border-radius:8px;background:rgba(255,183,0,.12);border:1px solid rgba(255,183,0,.3);color:#ffb700;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;width:100%}
+.aval-btn:hover:not(:disabled){background:rgba(255,183,0,.22)}
+.aval-btn:disabled{opacity:.4;cursor:not-allowed}
+.aval-enviada{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,183,0,.06);border:1px solid rgba(255,183,0,.2);border-radius:8px;font-size:11px;font-weight:700;color:#ffb700}
+
 /* ── Conquistas ── */
 .conquistas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
 @media(min-width:480px){.conquistas-grid{grid-template-columns:repeat(3,1fr)}}
@@ -1199,6 +1213,140 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('pt-BR')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
+/* ── AVALIAÇÃO ── */
+document.addEventListener('click',function(e){
+  var estrela=e.target.closest('.aval-estrela');
+  if(!estrela) return;
+  var wrap=estrela.closest('.aval-estrelas');
+  if(!wrap) return;
+  var val=parseInt(estrela.dataset.v);
+  wrap.dataset.val=val;
+  wrap.querySelectorAll('.aval-estrela').forEach(function(s){
+    s.classList.toggle('ativa',parseInt(s.dataset.v)<=val);
+  });
+});
+document.addEventListener('mouseover',function(e){
+  var estrela=e.target.closest('.aval-estrela');
+  if(!estrela) return;
+  var wrap=estrela.closest('.aval-estrelas');
+  if(!wrap) return;
+  var val=parseInt(estrela.dataset.v);
+  wrap.querySelectorAll('.aval-estrela').forEach(function(s){
+    s.classList.toggle('hover',parseInt(s.dataset.v)<=val);
+  });
+});
+document.addEventListener('mouseout',function(e){
+  var estrela=e.target.closest('.aval-estrela');
+  if(!estrela) return;
+  var wrap=estrela.closest('.aval-estrelas');
+  if(!wrap) return;
+  wrap.querySelectorAll('.aval-estrela').forEach(function(s){s.classList.remove('hover');});
+});
+
+async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
+  var starsEl=document.getElementById('aval-stars-'+pedidoId);
+  var txtEl=document.getElementById('aval-txt-'+pedidoId);
+  var btnEl=document.getElementById('aval-btn-'+pedidoId);
+  var wrapEl=document.getElementById('aval-wrap-'+pedidoId);
+  if(!starsEl||!txtEl||!btnEl) return;
+  var estrelas=parseInt(starsEl.dataset.val||'0');
+  if(estrelas<1){showToast('Selecione pelo menos 1 estrela!');return;}
+  var comentario=(txtEl.value||'').trim().substring(0,200);
+  btnEl.disabled=true;
+  btnEl.textContent='Enviando...';
+  try{
+    var sessao=await sb.auth.getSession();
+    var user=sessao&&sessao.data&&sessao.data.session?sessao.data.session.user:null;
+    if(!user){showToast('Sessão expirada. Faça login novamente.');btnEl.disabled=false;btnEl.textContent='Enviar avaliação';return;}
+    var nome=user.user_metadata&&(user.user_metadata.full_name||user.user_metadata.name)||user.email||'';
+    var ins=await sb.from('avaliacoes').insert({
+      pedido_id:pedidoId,
+      produto_nome:produtoNome,
+      produto_img:produtoImg,
+      user_email:user.email,
+      user_nome:nome,
+      estrelas:estrelas,
+      comentario:comentario||null
+    });
+    if(ins.error) throw ins.error;
+    /* Substitui o form pela mensagem de confirmação */
+    wrapEl.innerHTML='<div class="aval-enviada">⭐ Avaliação enviada — obrigado pelo feedback!</div>';
+    showToast('Avaliação enviada com sucesso! ⭐');
+  }catch(err){
+    console.error('[avaliacao]',err);
+    showToast('Erro ao enviar avaliação. Tente novamente.');
+    btnEl.disabled=false;
+    btnEl.textContent='Enviar avaliação';
+  }
+}
+
+/* ══ AVALIAÇÃO ══ */
+/* Delegação de eventos para estrelas (funciona após innerHTML) */
+document.addEventListener('mouseover',function(e){
+  var s=e.target.closest('.aval-estrela');
+  if(!s) return;
+  var wrap=s.closest('.aval-estrelas');
+  var v=parseInt(s.dataset.v);
+  wrap.querySelectorAll('.aval-estrela').forEach(function(el){
+    el.classList.toggle('hover',parseInt(el.dataset.v)<=v);
+  });
+});
+document.addEventListener('mouseout',function(e){
+  var s=e.target.closest('.aval-estrela');
+  if(!s) return;
+  var wrap=s.closest('.aval-estrelas');
+  var sel=parseInt(wrap.dataset.val||0);
+  wrap.querySelectorAll('.aval-estrela').forEach(function(el){
+    el.classList.remove('hover');
+    el.classList.toggle('ativa',parseInt(el.dataset.v)<=sel);
+  });
+});
+document.addEventListener('click',function(e){
+  var s=e.target.closest('.aval-estrela');
+  if(!s) return;
+  var wrap=s.closest('.aval-estrelas');
+  var v=parseInt(s.dataset.v);
+  wrap.dataset.val=v;
+  wrap.querySelectorAll('.aval-estrela').forEach(function(el){
+    el.classList.toggle('ativa',parseInt(el.dataset.v)<=v);
+    el.classList.remove('hover');
+  });
+});
+
+async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
+  var wrap=document.getElementById('aval-stars-'+pedidoId);
+  var estrelas=parseInt(wrap?wrap.dataset.val:0);
+  if(!estrelas){showToast('Selecione pelo menos 1 estrela!');return;}
+  var comentario=(document.getElementById('aval-txt-'+pedidoId)||{}).value||'';
+  var btn=document.getElementById('aval-btn-'+pedidoId);
+  if(btn){btn.disabled=true;btn.textContent='Enviando...';}
+  try{
+    var sessD=await sb.auth.getSession();
+    var sess=sessD&&sessD.data&&sessD.data.session?sessD.data.session:null;
+    var userEmail=sess?sess.user.email:(sessionStorage.getItem('mg_user_email')||'');
+    var userNome=sess?(sess.user.user_metadata&&(sess.user.user_metadata.full_name||sess.user.user_metadata.name)||userEmail):userEmail;
+    var{error}=await sb.from('avaliacoes').insert({
+      pedido_id:pedidoId,
+      produto_nome:produtoNome,
+      produto_img:produtoImg,
+      user_email:userEmail,
+      user_nome:userNome,
+      estrelas:estrelas,
+      comentario:comentario.trim()||null
+    });
+    if(error)throw error;
+    var wrapDiv=document.getElementById('aval-wrap-'+pedidoId);
+    if(wrapDiv){
+      wrapDiv.innerHTML='<div class="aval-enviada">⭐ Avaliação enviada — obrigado pelo feedback!</div>';
+    }
+    showToast('Avaliação enviada! Obrigado ⭐');
+  }catch(err){
+    console.error('[avaliacao]',err);
+    showToast('Erro ao enviar avaliação. Tente novamente.');
+    if(btn){btn.disabled=false;btn.textContent='Enviar avaliação';}
+  }
+}
+
 // ── NÍVEIS ──
 var NIVEIS=[
   {nome:'Bronze',  min:0,    max:99,   cor:'var(--bronze)',emoji:'🥉',cls:'nivel-bronze',   desc:'Sem desconto',pct:0,  titulo:'Recruta Marciano'},
@@ -1529,41 +1677,36 @@ async function carregarPedidos(userId){
       return !p.chaves_entregues||p.chaves_entregues.length===0;
     });
     if(pedidosSemChave.length>0){
-      /* Obtém token atualizado da sessão — nunca usa só a anon key para estoque_chaves (RLS bloqueia) */
-      var sessAtual=await sb.auth.getSession();
-      var tkn2=(sessAtual&&sessAtual.data&&sessAtual.data.session&&sessAtual.data.session.access_token)
-               ||sessionStorage.getItem('mg_access_token')
-               ||SUPABASE_KEY;
-      console.log('[chaves] token type:', tkn2===SUPABASE_KEY?'ANON (pode falhar RLS)':'USER TOKEN OK');
+      var tkn2=sessionStorage.getItem('mg_access_token')||SUPABASE_KEY;
       for(var pi=0;pi<pedidosSemChave.length;pi++){
         var ped=pedidosSemChave[pi];
         try{
-          /* Busca chaves entregues OU qualquer chave associada a este pedido */
-          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&select=*';
+          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&status=eq.entregue';
           var chRes=await fetch(chUrl,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+tkn2,'Accept':'application/json'}});
-          console.log('[chaves] pedido',ped.id,'status HTTP:',chRes.status);
           if(chRes.ok){
             var chRows=await chRes.json();
-            console.log('[chaves] pedido',ped.id,'rows:',chRows&&chRows.length);
-            /* Filtra apenas as entregues para exibição */
-            var chEntregues=chRows?chRows.filter(function(c){return c.status==='entregue'||c.conteudo}):[];
-            if(chEntregues&&chEntregues.length>0){
+            if(chRows&&chRows.length>0){
+              /* Injeta as chaves e atualiza status para pago */
               var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
               if(pedIdx>=0){
-                data[pedIdx].chaves_entregues=chEntregues;
+                data[pedIdx].chaves_entregues=chRows;
                 /* Se tinha chave entregue, o pedido está pago mesmo que status diga pendente */
-                if(data[pedIdx].status==='pendente'||data[pedIdx].status==='aprovado'){
-                  data[pedIdx].status='pago';
-                }
+                if(data[pedIdx].status==='pendente') data[pedIdx].status='pago';
               }
             }
-          }else{
-            var errTxt=await chRes.text();
-            console.warn('[chaves] HTTP erro',chRes.status,errTxt);
           }
-        }catch(ce){console.warn('[chaves pedido]',ped.id,ce);}
+        }catch(ce){console.warn('[chaves pedido]',ce);}
       }
     }
+
+    /* Marca pedidos que o cliente já avaliou */
+    try{
+      var avalRes=await sb.from('avaliacoes').select('pedido_id').eq('user_email',userEmail);
+      if(avalRes.data&&avalRes.data.length>0){
+        var avalIds=avalRes.data.map(function(a){return a.pedido_id;});
+        data.forEach(function(p){if(avalIds.indexOf(p.id)>=0) p._avaliado=true;});
+      }
+    }catch(ae){console.warn('[avaliacoes check]',ae);}
 
     list.innerHTML=data.map(function(p){
       var statusPago=p.status==='pago'||p.status==='aprovado'||p.status==='entregue';
@@ -1576,7 +1719,6 @@ async function carregarPedidos(userId){
         chavesHtml='<div style="width:100%;margin-top:12px;border-top:1px solid rgba(0,255,85,.1);padding-top:12px">';
         chavesHtml+=chavesValidas.map(function(c){
           var conteudo=esc(c.conteudo||'');
-          /* Exibe a chave/credencial completa — login|senha ou chave de ativação */
           var corpo='<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--green);word-break:break-all;line-height:1.6">'+conteudo+'</div>';
           return '<div style="background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.15);border-radius:8px;padding:10px 12px;margin-bottom:6px">'+
             '<div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,255,85,.5);margin-bottom:8px">🔑 Sua chave</div>'+
@@ -1587,6 +1729,30 @@ async function carregarPedidos(userId){
           '</div>';
         }).join('');
         chavesHtml+='</div>';
+
+        /* ── BLOCO DE AVALIAÇÃO — só aparece em pedidos pagos com chave ── */
+        var pedIdEsc=esc(p.id||'');
+        var jaAvaliou=p._avaliado||false;
+        if(jaAvaliou){
+          chavesHtml+='<div class="aval-wrap"><div class="aval-enviada">⭐ Avaliação enviada — obrigado pelo feedback!</div></div>';
+        } else {
+          chavesHtml+=
+            '<div class="aval-wrap" id="aval-wrap-'+pedIdEsc+'">'+
+              '<div class="aval-titulo">⭐ Avalie sua experiência</div>'+
+              '<div class="aval-estrelas" id="aval-stars-'+pedIdEsc+'" data-pedido="'+pedIdEsc+'" data-val="0">'+
+                '<span class="aval-estrela" data-v="1">★</span>'+
+                '<span class="aval-estrela" data-v="2">★</span>'+
+                '<span class="aval-estrela" data-v="3">★</span>'+
+                '<span class="aval-estrela" data-v="4">★</span>'+
+                '<span class="aval-estrela" data-v="5">★</span>'+
+              '</div>'+
+              '<textarea class="aval-textarea" id="aval-txt-'+pedIdEsc+'" maxlength="200" placeholder="Deixe um comentário sobre o site (opcional)..."></textarea>'+
+              '<button class="aval-btn" id="aval-btn-'+pedIdEsc+'" onclick="enviarAvaliacao(\''+pedIdEsc+'\',\''+esc(p.produto_nome||'')+'\',\''+esc(img)+'\')">'+
+                'Enviar avaliação'+
+              '</button>'+
+            '</div>';
+        }
+
       } else if(statusPago){
         chavesHtml='<div style="width:100%;margin-top:10px;font-size:10px;color:var(--muted)">🔑 Chave em processamento — atualize a página em instantes.</div>';
       }
