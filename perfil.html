@@ -435,36 +435,93 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ── Bronze: borda no inner + glow no wrap ── */
-.avatar-bronze .avatar-inner{border:3px solid #cd9f6a}
-.avatar-bronze .perfil-avatar-wrap{animation:bronzePulse 2.5s ease-in-out infinite}
+/* ── Bronze: anel giratório âmbar ── */
+.avatar-bronze .avatar-ring{
+  background:conic-gradient(from 0deg,#5a2e00,#c87820,#f0c060,#cd8030,#f5d080,#b06010,#5a2e00);
+  animation:diaRotate 4s linear infinite;
+  box-shadow:0 0 12px rgba(205,127,50,.6),0 0 24px rgba(180,100,30,.3);
+}
+.avatar-bronze .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;
+}
+.avatar-bronze .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-bronze .perfil-avatar-wrap{
+  animation:bronzePulse 3s ease-in-out infinite;
+}
 @keyframes bronzePulse{
-  0%,100%{box-shadow:0 0 0 3px rgba(205,159,106,.7),0 0 16px 6px rgba(205,159,106,.5)}
-  50%{box-shadow:0 0 0 4px rgba(205,159,106,1),0 0 32px 12px rgba(205,159,106,.8)}
+  0%,100%{filter:drop-shadow(0 0 6px rgba(205,127,50,.5))}
+  50%{filter:drop-shadow(0 0 16px rgba(205,127,50,.9))}
 }
 
-/* ── Prata ── */
-.avatar-prata .avatar-inner{border:3px solid #e8e8e8}
-.avatar-prata .perfil-avatar-wrap{animation:prataShimmer 3s ease-in-out infinite}
+/* ── Prata: duplo anel oposto ── */
+.avatar-prata .avatar-ring{
+  background:conic-gradient(from 0deg,#333,#bbb,#fff,#ccc,#eee,#aaa,#333);
+  animation:diaRotate 3s linear infinite reverse;
+  box-shadow:0 0 14px rgba(220,220,240,.5),0 0 28px rgba(200,200,220,.2);
+}
+.avatar-prata .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;
+}
+.avatar-prata .avatar-ring::after{
+  content:'';position:absolute;width:92px;height:92px;border-radius:50%;
+  background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.55) 78%,transparent 90%);
+  animation:diaRotate 2s linear infinite;z-index:-1;
+}
+.avatar-prata .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-prata .perfil-avatar-wrap{
+  animation:prataShimmer 2.8s ease-in-out infinite;
+}
 @keyframes prataShimmer{
-  0%,100%{box-shadow:0 0 0 3px rgba(232,232,232,.7),0 0 16px 6px rgba(200,200,220,.4)}
-  50%{box-shadow:0 0 0 4px #fff,0 0 32px 12px rgba(232,232,232,.8)}
+  0%,100%{filter:drop-shadow(0 0 6px rgba(200,210,230,.4))}
+  50%{filter:drop-shadow(0 0 20px rgba(255,255,255,.7))}
 }
 
-/* ── Ouro ── */
-.avatar-ouro .avatar-inner{border:3px solid #FFD700}
-.avatar-ouro .perfil-avatar-wrap{animation:ouroPulse 2s ease-in-out infinite}
+/* ── Ouro: anel triplo dourado ── */
+.avatar-ouro .avatar-ring{
+  background:conic-gradient(from 0deg,#6a3800,#e8a800,#ffdd00,#ffe880,#ffd000,#c07800,#6a3800);
+  animation:diaRotate 2s linear infinite;
+  filter:blur(.3px);
+  box-shadow:0 0 18px rgba(255,200,0,.6),0 0 36px rgba(255,160,0,.3);
+}
+.avatar-ouro .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+}
+.avatar-ouro .avatar-ring::after{
+  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.65) 62%,rgba(255,255,180,.85) 68%,transparent 78%);
+  animation:diaRotate 2.5s linear infinite reverse;filter:blur(.5px);z-index:-1;
+}
+.avatar-ouro .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-ouro .perfil-avatar-wrap{
+  animation:ouroPulse 2s ease-in-out infinite;
+}
 @keyframes ouroPulse{
-  0%,100%{box-shadow:0 0 0 3px rgba(255,215,0,.7),0 0 16px 6px rgba(255,215,0,.5)}
-  50%{box-shadow:0 0 0 4px #FFD700,0 0 36px 14px rgba(255,215,0,.8)}
+  0%,100%{filter:drop-shadow(0 0 8px rgba(255,200,0,.5))}
+  50%{filter:drop-shadow(0 0 22px rgba(255,215,0,.95))}
 }
 
-/* ── Esmeralda ── */
-.avatar-esmeralda .avatar-inner{border:3px solid #50c878}
-.avatar-esmeralda .perfil-avatar-wrap{animation:esmPulse 1.8s ease-in-out infinite}
+/* ── Esmeralda: triplo anel verde ── */
+.avatar-esmeralda .avatar-ring{
+  background:conic-gradient(from 0deg,#002010,#00aa44,#00ff77,#80ffcc,#00ff88,#009933,#002010);
+  animation:diaRotate 1.5s linear infinite;
+  filter:blur(.2px);
+  box-shadow:0 0 20px rgba(0,255,100,.55),0 0 40px rgba(0,200,80,.3);
+}
+.avatar-esmeralda .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+}
+.avatar-esmeralda .avatar-ring::after{
+  content:'';position:absolute;width:96px;height:96px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.55) 46%,rgba(150,255,180,.8) 55%,transparent 68%);
+  animation:diaRotate 2.2s linear infinite reverse;filter:blur(1px);z-index:-1;
+}
+.avatar-esmeralda .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-esmeralda .perfil-avatar-wrap{
+  animation:esmPulse 1.8s ease-in-out infinite;
+}
 @keyframes esmPulse{
-  0%,100%{box-shadow:0 0 0 3px rgba(80,200,120,.7),0 0 16px 6px rgba(80,200,120,.5)}
-  50%{box-shadow:0 0 0 4px #50c878,0 0 36px 14px rgba(80,200,120,.8)}
+  0%,100%{filter:drop-shadow(0 0 10px rgba(0,200,80,.55))}
+  50%{filter:drop-shadow(0 0 28px rgba(0,255,120,.9))}
 }
 
 /* ── Diamante: disco conic-gradient girando + inner sem borda ── */
