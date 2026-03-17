@@ -3098,6 +3098,52 @@ footer::before{
   </div>
 </section>
 
+<script>
+/* ══ FAVORITAR NOS CARDS — deve vir antes dos carrosséis ══ */
+var _favIds=JSON.parse(localStorage.getItem('mg_favs')||'[]');
+
+async function toggleWish(btn){
+  var pid=btn.dataset.pid;
+  if(!pid)return;
+  var ativo=btn.classList.contains('fav-ativo');
+
+  // Atualiza todos os botões com o mesmo pid (clones do carrossel)
+  document.querySelectorAll('[data-pid="'+pid+'"]').forEach(function(b){
+    if(ativo){ b.classList.remove('fav-ativo'); }
+    else     { b.classList.add('fav-ativo'); }
+  });
+
+  if(ativo){
+    _favIds=_favIds.filter(function(x){return x!==pid});
+    showToast('Removido dos favoritos');
+  } else {
+    if(!_favIds.includes(pid)) _favIds.push(pid);
+    showToast('❤️ Adicionado aos favoritos!');
+  }
+  localStorage.setItem('mg_favs',JSON.stringify(_favIds));
+
+  // Sincroniza com Supabase se logado
+  try{
+    var r=await sb.auth.getSession();
+    var session=r.data&&r.data.session?r.data.session:null;
+    if(!session)return;
+    var uid=session.user.id;
+    if(!ativo){
+      await sb.from('favoritos').upsert({user_id:uid,produto_id:pid},{onConflict:'user_id,produto_id'});
+    } else {
+      await sb.from('favoritos').delete().eq('user_id',uid).eq('produto_id',pid);
+    }
+  }catch(e){console.warn('fav sync',e);}
+}
+
+function aplicarFavs(){
+  document.querySelectorAll('[data-pid]').forEach(function(btn){
+    if(_favIds.includes(btn.dataset.pid)) btn.classList.add('fav-ativo');
+    else btn.classList.remove('fav-ativo');
+  });
+}
+</script>
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){
   /* ── Dados dos produtos ── */
@@ -3139,9 +3185,9 @@ footer::before{
     var dis=p.esgotado?' mv-dis':'';
     var lbl=p.esgotado?'ESGOTADO':'COMPRAR AGORA';
     var buyEvt=p.esgotado?'onclick="event.stopPropagation()"':'data-mvbuy="'+p.link+'"';
-    return '<div class="mv-card'+(p.esgotado?' mv-esgotado':'')+'" data-mvlink="'+p.link+'" data-mvid="'+(p.id||p.name)+'">'+
+    return '<div class="mv-card'+(p.esgotado?' mv-esgotado':'')+'" data-mvlink="'+p.link+'" data-mvid="'+p.name+'">'+
       ribbon+
-      '<button class="mv-wish" data-mvwl="1" data-pid="'+(p.id||p.name)+'" title="Favoritar">'+
+      '<button class="mv-wish" data-mvwl="1" data-pid="'+p.name+'" title="Favoritar">'+
         '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
       '</button>'+
       '<div class="mv-card-inner">'+
@@ -3568,7 +3614,7 @@ footer::before{
   function buildCard(p){
     return '<div class="chv-card t-'+p.tier+'" data-chvlink="'+p.link+'">'+
       '<div class="chv-ribbon-wrap"><div class="chv-ribbon">Novidade</div></div>'+
-      '<button class="chv-wish" data-chvwl="1" data-pid="'+(p.id||p.name)+'" title="Favoritar">'+
+      '<button class="chv-wish" data-chvwl="1" data-pid="'+p.name+'" title="Favoritar">'+
         '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
       '</button>'+
       '<div class="chv-card-inner">'+
@@ -4510,48 +4556,6 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function showToast(msg){
   var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
-}
-
-/* ══ FAVORITAR NOS CARDS (mv-wish / chv-wish) ══ */
-var _favIds=JSON.parse(localStorage.getItem('mg_favs')||'[]');
-
-async function toggleWish(btn){
-  var pid=btn.dataset.pid;
-  if(!pid)return;
-  var ativo=btn.classList.contains('fav-ativo');
-
-  // Atualiza visual imediatamente
-  if(ativo){
-    btn.classList.remove('fav-ativo');
-    _favIds=_favIds.filter(function(x){return x!==pid});
-    showToast('Removido dos favoritos');
-  } else {
-    btn.classList.add('fav-ativo');
-    if(!_favIds.includes(pid)) _favIds.push(pid);
-    showToast('❤️ Adicionado aos favoritos!');
-  }
-  localStorage.setItem('mg_favs',JSON.stringify(_favIds));
-
-  // Sincroniza com Supabase se logado
-  try{
-    var r=await sb.auth.getSession();
-    var session=r.data&&r.data.session?r.data.session:null;
-    if(!session)return;
-    var uid=session.user.id;
-    if(!ativo){
-      await sb.from('favoritos').upsert({user_id:uid,produto_id:pid},{onConflict:'user_id,produto_id'});
-    } else {
-      await sb.from('favoritos').delete().eq('user_id',uid).eq('produto_id',pid);
-    }
-  }catch(e){console.warn('fav sync',e);}
-}
-
-/* Aplica estado inicial dos favoritos nos botões após renderizar */
-function aplicarFavs(){
-  document.querySelectorAll('[data-pid]').forEach(function(btn){
-    if(_favIds.includes(btn.dataset.pid)) btn.classList.add('fav-ativo');
-    else btn.classList.remove('fav-ativo');
-  });
 }
 
 /* Carrega favoritos do Supabase ao logar */
