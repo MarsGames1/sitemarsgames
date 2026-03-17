@@ -587,7 +587,7 @@ body.tema-claro .exit-sub{color:#666}
 }
 @media(min-width:1200px){
   /* Busca compacta — ícone que expande */
-  .nav-search{display:flex!important;align-items:center;position:relative}
+  .nav-search{display:flex!important;align-items:center;position:relative;z-index:400}
   .nav-search-icon-btn{
     width:34px;height:34px;border-radius:8px;border:1px solid var(--border2);
     background:rgba(255,255,255,.03);color:#fff;cursor:pointer;
@@ -596,49 +596,50 @@ body.tema-claro .exit-sub{color:#666}
   }
   .nav-search-icon-btn:hover{border-color:#888;color:#fff;background:rgba(255,255,255,.06)}
   .nav-search-icon-btn svg{pointer-events:none}
+  /* Campo que expande — position:fixed calculado via JS */
   .nav-search-expand{
-    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    position:fixed;top:16px;right:160px;
     display:flex;align-items:center;
-    border-radius:8px;border:1px solid rgba(232,66,26,.4);
-    background:rgba(10,10,14,.97);backdrop-filter:blur(16px);
-    overflow:hidden;
+    border-radius:8px;border:1px solid rgba(232,66,26,.5);
+    background:rgba(10,10,14,.98);backdrop-filter:blur(20px);
     width:0;opacity:0;pointer-events:none;
     transition:width .25s cubic-bezier(.4,0,.2,1),opacity .2s;
-    z-index:300;
+    z-index:500;overflow:hidden;height:36px;
   }
-  .nav-search-expand.open{width:200px;opacity:1;pointer-events:all}
+  .nav-search-expand.open{width:220px;opacity:1;pointer-events:all}
   .nav-search-expand input{
     background:none;border:none;outline:none;
-    padding:7px 12px;font-size:11px;color:#fff;
+    padding:8px 12px;font-size:12px;color:#fff;
     font-family:'Montserrat',sans-serif;width:100%;min-width:0;
   }
   .nav-search-expand input::placeholder{color:#666}
   .nav-search-btn{
     padding:7px 10px;background:none;border:none;
-    color:#888;cursor:pointer;transition:color .15s;display:flex;align-items:center;flex-shrink:0;
+    color:#888;cursor:pointer;transition:color .15s;
+    display:flex;align-items:center;flex-shrink:0;
   }
   .nav-search-btn:hover{color:#fff}
-  /* Sugestões — posicionado relativo ao .nav-search, não ao expand */
+  /* Sugestões — fixed, logo abaixo do expand */
   .nav-search-suggestions{
-    position:absolute;top:calc(100% + 8px);right:0;
-    width:240px;
-    background:rgba(13,13,18,.98);border:1px solid rgba(232,66,26,.25);
+    position:fixed;top:56px;right:160px;
+    width:280px;
+    background:rgba(10,10,14,.99);border:1px solid rgba(232,66,26,.3);
     border-radius:10px;overflow:hidden;
-    box-shadow:0 12px 32px rgba(0,0,0,.6);
-    display:none;z-index:9999;
+    box-shadow:0 16px 40px rgba(0,0,0,.8);
+    display:none;z-index:500;
   }
   .nav-search-suggestions.open{display:block}
   .nav-sugg-item{
     display:flex;align-items:center;gap:10px;
-    padding:9px 12px;cursor:pointer;text-decoration:none;
-    transition:background .12s;border-bottom:1px solid rgba(255,255,255,.04);
+    padding:10px 12px;cursor:pointer;text-decoration:none;
+    transition:background .12s;border-bottom:1px solid rgba(255,255,255,.05);
   }
   .nav-sugg-item:last-child{border-bottom:none}
-  .nav-sugg-item:hover{background:rgba(232,66,26,.1)}
-  .nav-sugg-img{width:32px;height:32px;border-radius:5px;object-fit:cover;background:var(--dim);flex-shrink:0}
+  .nav-sugg-item:hover{background:rgba(232,66,26,.12)}
+  .nav-sugg-img{width:36px;height:36px;border-radius:6px;object-fit:cover;background:var(--dim);flex-shrink:0}
   .nav-sugg-nome{font-size:11px;font-weight:700;color:#eee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .nav-sugg-preco{font-size:10px;font-weight:900;color:var(--green);margin-top:1px}
-  .nav-sugg-empty{padding:14px 12px;font-size:10px;color:#555;font-weight:600;text-align:center}
+  .nav-sugg-preco{font-size:10px;font-weight:900;color:var(--green);margin-top:2px}
+  .nav-sugg-empty{padding:16px 12px;font-size:10px;color:#666;font-weight:600;text-align:center}
   .nav-points{
     display:flex;align-items:center;gap:5px;
     font-size:10px;font-weight:700;color:#ffb300;letter-spacing:.5px;
@@ -3140,9 +3141,9 @@ footer::before{
       </button>
       <div class="nav-search-expand" id="navSearchExpand">
         <input type="text" id="searchInput" placeholder="Buscar jogo..." autocomplete="off"
-          oninput="buscar(this.value);navBuscarSugestoes(this.value);var l=document.getElementById('searchInputLoja');if(l)l.value=this.value"
+          oninput="navBuscarSugestoes(this.value);var l=document.getElementById('searchInputLoja');if(l){l.value=this.value;buscar(this.value);}"
           onblur="recolherSearch()"
-          onkeydown="if(event.key==='Escape'){recolherSearch();this.blur()}">
+          onkeydown="if(event.key==='Escape'){recolherSearch();this.blur()}if(event.key==='Enter'){var l=document.getElementById('searchInputLoja');if(l){l.value=this.value;buscar(this.value);}fecharNavSugg()}">
         <button class="nav-search-btn" aria-label="Buscar">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
@@ -4346,10 +4347,28 @@ var todosProdutos=[],catAtual='todos',buscaAtual='',carrinho=[],prodModalAtual=n
 /* Busca compacta — expande ao clicar no ícone */
 function toggleNavSearch(){
   var exp=document.getElementById('navSearchExpand');
-  if(!exp)return;
+  var sugg=document.getElementById('navSuggestions');
+  var btn=document.getElementById('navSearchToggle');
+  if(!exp||!btn)return;
   var open=exp.classList.contains('open');
-  if(open){exp.classList.remove('open');fecharNavSugg();}
-  else{exp.classList.add('open');setTimeout(function(){var i=document.getElementById('searchInput');if(i)i.focus();},60);}
+  if(open){
+    exp.classList.remove('open');
+    fecharNavSugg();
+  } else {
+    var r=btn.getBoundingClientRect();
+    var rightOffset=(window.innerWidth-r.right)+'px';
+    exp.style.top=r.top+'px';
+    exp.style.right=rightOffset;
+    if(sugg){
+      sugg.style.top=(r.bottom+8)+'px';
+      sugg.style.right=rightOffset;
+    }
+    exp.classList.add('open');
+    setTimeout(function(){
+      var i=document.getElementById('searchInput');
+      if(i)i.focus();
+    },60);
+  }
 }
 function recolherSearch(){
   var inp=document.getElementById('searchInput');
@@ -4364,28 +4383,30 @@ function fecharNavSugg(){
   var s=document.getElementById('navSuggestions');
   if(s){s.classList.remove('open');s.innerHTML='';}
 }
+var _suggTimer=null;
 function navBuscarSugestoes(q){
   var sugg=document.getElementById('navSuggestions');
   if(!sugg)return;
   q=(q||'').trim();
   if(q.length<2){sugg.classList.remove('open');sugg.innerHTML='';return;}
-
-  /* Tenta primeiro nos produtos já em memória */
-  var local=typeof todosProdutos!=='undefined'&&Array.isArray(todosProdutos)?todosProdutos:[];
-  if(local.length>0){
-    var res=local.filter(function(p){
-      return p.ativo!==false&&(p.nome||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
-    }).slice(0,6);
-    _renderNavSugg(sugg,res,q);
-    return;
-  }
-
-  /* Fallback: busca direto no Supabase */
-  sb.from('produtos').select('id,nome,preco,imagem')
-    .ilike('nome','%'+q+'%').eq('ativo',true).limit(6)
-    .then(function(r){
-      _renderNavSugg(sugg,r.data||[],q);
-    }).catch(function(){sugg.classList.remove('open');});
+  clearTimeout(_suggTimer);
+  _suggTimer=setTimeout(function(){
+    /* Tenta memória primeiro */
+    var local=typeof todosProdutos!=='undefined'&&Array.isArray(todosProdutos)?todosProdutos:[];
+    if(local.length>0){
+      var res=local.filter(function(p){
+        return p.ativo!==false&&(p.nome||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
+      }).slice(0,6);
+      _renderNavSugg(sugg,res,q);
+      return;
+    }
+    /* Fallback: Supabase direto */
+    if(typeof sb==='undefined')return;
+    sb.from('produtos').select('id,nome,preco,imagem')
+      .ilike('nome','%'+q+'%').eq('ativo',true).limit(6)
+      .then(function(r){_renderNavSugg(sugg,r.data||[],q);})
+      .catch(function(){});
+  },250);
 }
 
 function _renderNavSugg(sugg,resultados,q){
@@ -4496,7 +4517,9 @@ function renderProdutos(){
     return catOk&&buscaOk;
   });
   var grid=document.getElementById('prodsGrid');
-  document.getElementById('storeCount').textContent=lista.length+' jogos encontrados';
+  var countEl=document.getElementById('storeCount');
+  if(countEl) countEl.textContent=lista.length+' jogos encontrados';
+  if(!grid) return;
   if(lista.length===0){grid.innerHTML='<div class="loader-wrap" style="grid-column:1/-1">Nenhum jogo encontrado.</div>';return;}
   grid.innerHTML=lista.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
@@ -4537,9 +4560,9 @@ function filtrarCat(cat,el){
 }
 function buscar(q){
   buscaAtual=q;
-  renderProdutos();
-  /* Rola para os resultados se tiver texto */
-  if(q && q.length>0){
+  var grid=document.getElementById('prodsGrid');
+  if(grid) renderProdutos();
+  if(q&&q.length>0){
     var store=document.querySelector('.store-wrap');
     if(store) store.scrollIntoView({behavior:'smooth',block:'start'});
   }
