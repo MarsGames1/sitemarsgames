@@ -1202,6 +1202,8 @@ footer::before{
 .mv-wish:hover{background:rgba(220,30,70,.85);transform:scale(1.2);box-shadow:0 0 10px rgba(220,30,70,.5)}
 .mv-wish svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:fill .2s}
 .mv-wish:hover svg{fill:rgba(255,255,255,.9)}
+.mv-wish.fav-ativo{background:rgba(220,30,70,.85);box-shadow:0 0 10px rgba(220,30,70,.5)}
+.mv-wish.fav-ativo svg{fill:#fff}
 
 /* Info */
 .mv-info{
@@ -1282,6 +1284,8 @@ footer::before{
   grid-template-columns:1fr;
   gap:32px;
   align-items:center;
+  position:relative;
+  z-index:1;
 }
 @media(min-width:900px){
   .boa-inner{grid-template-columns:1fr 1fr;gap:48px}
@@ -1295,6 +1299,7 @@ footer::before{
   padding:32px 28px;
   position:relative;
   overflow:hidden;
+  z-index:5;
 }
 .boa-panel::before{
   content:'';position:absolute;inset:0;
@@ -1887,6 +1892,8 @@ footer::before{
 .chv-wish:hover{background:rgba(220,30,70,.85);transform:scale(1.2);box-shadow:0 0 10px rgba(220,30,70,.5)}
 .chv-wish svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:fill .2s}
 .chv-wish:hover svg{fill:rgba(255,255,255,.9)}
+.chv-wish.fav-ativo{background:rgba(220,30,70,.85);box-shadow:0 0 10px rgba(220,30,70,.5)}
+.chv-wish.fav-ativo svg{fill:#fff}
 
 /* Info */
 .chv-info{
@@ -3132,9 +3139,9 @@ footer::before{
     var dis=p.esgotado?' mv-dis':'';
     var lbl=p.esgotado?'ESGOTADO':'COMPRAR AGORA';
     var buyEvt=p.esgotado?'onclick="event.stopPropagation()"':'data-mvbuy="'+p.link+'"';
-    return '<div class="mv-card'+(p.esgotado?' mv-esgotado':'')+'" data-mvlink="'+p.link+'">'+
+    return '<div class="mv-card'+(p.esgotado?' mv-esgotado':'')+'" data-mvlink="'+p.link+'" data-mvid="'+(p.id||p.name)+'">'+
       ribbon+
-      '<button class="mv-wish" data-mvwl="1" title="Lista de desejos">'+
+      '<button class="mv-wish" data-mvwl="1" data-pid="'+(p.id||p.name)+'" title="Favoritar">'+
         '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
       '</button>'+
       '<div class="mv-card-inner">'+
@@ -3169,8 +3176,7 @@ footer::before{
   for(var j=0;j<N;j++)        h+=mvBuildCard(MV_PRODUTOS[j],j);
   for(var k=0;k<CLONES;k++)   h+=mvBuildCard(MV_PRODUTOS[k],k);
   track.innerHTML=h;
-
-  /* Forçar largura dos cards via JS para bater com o CARD_W calculado */
+  setTimeout(aplicarFavs,50);
   function resizeCards(){
     CARD_W=getCardW();STEP=CARD_W+GAP;
     var cards=track.querySelectorAll('.mv-card');
@@ -3186,7 +3192,7 @@ footer::before{
     var wl =e.target.closest('[data-mvwl]');
     var card=e.target.closest('[data-mvlink]');
     if(buy) {e.stopPropagation();window.location.href=buy.dataset.mvbuy;return}
-    if(wl)  {e.stopPropagation();return}
+    if(wl)  {e.stopPropagation();toggleWish(wl);return}
     if(card){window.location.href=card.dataset.mvlink}
   });
 
@@ -3562,7 +3568,7 @@ footer::before{
   function buildCard(p){
     return '<div class="chv-card t-'+p.tier+'" data-chvlink="'+p.link+'">'+
       '<div class="chv-ribbon-wrap"><div class="chv-ribbon">Novidade</div></div>'+
-      '<button class="chv-wish" title="Lista de desejos">'+
+      '<button class="chv-wish" data-chvwl="1" data-pid="'+(p.id||p.name)+'" title="Favoritar">'+
         '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
       '</button>'+
       '<div class="chv-card-inner">'+
@@ -3587,6 +3593,7 @@ footer::before{
   for(var j=0;j<N;j++)        h+=buildCard(CHV_PRODUTOS[j]);
   for(var k=0;k<CLONES;k++)   h+=buildCard(CHV_PRODUTOS[k%N]);
   track.innerHTML=h;
+  setTimeout(aplicarFavs,50);
 
   function resizeCards(){
     CARD_W=getW();STEP=CARD_W+GAP;
@@ -3598,8 +3605,10 @@ footer::before{
 
   track.addEventListener('click',function(e){
     var buy=e.target.closest('[data-chvbuy]');
+    var wl=e.target.closest('[data-chvwl]');
     var card=e.target.closest('[data-chvlink]');
     if(buy){e.stopPropagation();window.location.href=buy.dataset.chvbuy;return}
+    if(wl){e.stopPropagation();toggleWish(wl);return}
     if(card){window.location.href=card.dataset.chvlink}
   });
 
@@ -4502,6 +4511,62 @@ function showToast(msg){
   var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800);
 }
+
+/* ══ FAVORITAR NOS CARDS (mv-wish / chv-wish) ══ */
+var _favIds=JSON.parse(localStorage.getItem('mg_favs')||'[]');
+
+async function toggleWish(btn){
+  var pid=btn.dataset.pid;
+  if(!pid)return;
+  var ativo=btn.classList.contains('fav-ativo');
+
+  // Atualiza visual imediatamente
+  if(ativo){
+    btn.classList.remove('fav-ativo');
+    _favIds=_favIds.filter(function(x){return x!==pid});
+    showToast('Removido dos favoritos');
+  } else {
+    btn.classList.add('fav-ativo');
+    if(!_favIds.includes(pid)) _favIds.push(pid);
+    showToast('❤️ Adicionado aos favoritos!');
+  }
+  localStorage.setItem('mg_favs',JSON.stringify(_favIds));
+
+  // Sincroniza com Supabase se logado
+  try{
+    var r=await sb.auth.getSession();
+    var session=r.data&&r.data.session?r.data.session:null;
+    if(!session)return;
+    var uid=session.user.id;
+    if(!ativo){
+      await sb.from('favoritos').upsert({user_id:uid,produto_id:pid},{onConflict:'user_id,produto_id'});
+    } else {
+      await sb.from('favoritos').delete().eq('user_id',uid).eq('produto_id',pid);
+    }
+  }catch(e){console.warn('fav sync',e);}
+}
+
+/* Aplica estado inicial dos favoritos nos botões após renderizar */
+function aplicarFavs(){
+  document.querySelectorAll('[data-pid]').forEach(function(btn){
+    if(_favIds.includes(btn.dataset.pid)) btn.classList.add('fav-ativo');
+    else btn.classList.remove('fav-ativo');
+  });
+}
+
+/* Carrega favoritos do Supabase ao logar */
+sb.auth.onAuthStateChange(async function(_e, session){
+  if(session&&session.user){
+    try{
+      var{data}=await sb.from('favoritos').select('produto_id').eq('user_id',session.user.id);
+      if(data&&data.length){
+        _favIds=data.map(function(f){return f.produto_id});
+        localStorage.setItem('mg_favs',JSON.stringify(_favIds));
+        aplicarFavs();
+      }
+    }catch(e){console.warn('fav load',e);}
+  }
+});
 
 /* ══ VERIFICAÇÃO DE MANUTENÇÃO ══ */
 async function verificarManutencao(){
