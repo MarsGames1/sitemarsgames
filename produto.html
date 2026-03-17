@@ -354,6 +354,22 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .compat-badge svg{width:14px;height:14px;flex-shrink:0}
 
 
+/* ══ O QUE VOCÊ RECEBE ══ */
+.recebe-box{
+  display:flex;align-items:flex-start;gap:13px;
+  background:linear-gradient(135deg,rgba(0,255,85,.06),rgba(0,255,85,.02));
+  border:1px solid rgba(0,255,85,.2);border-radius:12px;
+  padding:16px 18px;margin-bottom:20px;
+}
+.recebe-icon{
+  width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.2);
+  display:flex;align-items:center;justify-content:center;
+}
+.recebe-icon svg{width:18px;height:18px;fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.recebe-label{font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--green);opacity:.7;margin-bottom:5px}
+.recebe-text{font-size:12px;font-weight:700;color:#ddd;line-height:1.6}
+
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
 #mars-canvas.ready{opacity:1}
@@ -506,6 +522,17 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
       <h1 class="prod-title" id="prodNome">—</h1>
       <p class="prod-desc" id="prodDesc">Jogo digital para PC via Steam Offline. Entrega imediata após confirmação do pagamento.</p>
 
+      <!-- O que você recebe -->
+      <div class="recebe-box" id="recebeBox">
+        <div class="recebe-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <div>
+          <div class="recebe-label">O que você recebe</div>
+          <div class="recebe-text" id="recebeText">—</div>
+        </div>
+      </div>
+
       <!-- Preço -->
       <div class="prod-price-box">
         <div class="prod-price-label">Preço especial MarsGames</div>
@@ -526,7 +553,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
         </button>
         <button class="btn-favorito" id="btnFav" onclick="toggleFavorito()">
           <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          Adicionar aos favoritos
+          <span id="btnFavText">Favoritar</span>
         </button>
       </div>
 
@@ -758,10 +785,27 @@ function renderProduto(p){
     btnAdd.disabled=true;btnAdd.style.opacity='.3';
   }
 
+  // O que você recebe
+  var recebeText = document.getElementById('recebeText');
+  var cat = (p.categoria||'').toLowerCase();
+  var plat = (p.plataforma||'').toLowerCase();
+  var isKey = cat.indexOf('key')!==-1 || cat.indexOf('chave')!==-1 || plat.indexOf('key')!==-1;
+  if(isKey){
+    recebeText.textContent='Você receberá uma chave de ativação (CD Key) para ativar o jogo diretamente na sua conta Steam. Basta inserir a chave na Steam e o jogo ficará vinculado à sua conta para sempre.';
+  } else {
+    recebeText.textContent='Você receberá os dados de acesso de uma conta Steam já com o jogo instalado e pronto para jogar. É só fazer login e aproveitar o jogo em modo offline.';
+  }
+
   // Favorito
-  if(favoritos.includes(p.id)){
-    document.getElementById('btnFav').classList.add('ativo');
-    document.getElementById('btnFav').querySelector('svg').style.fill='#ff5555';
+  var favAtivo = favoritos.includes(p.id);
+  var btnFavEl = document.getElementById('btnFav');
+  var btnFavTextEl = document.getElementById('btnFavText');
+  if(favAtivo){
+    btnFavEl.classList.add('ativo');
+    btnFavEl.querySelector('svg').style.fill='#ff5555';
+    if(btnFavTextEl) btnFavTextEl.textContent='Favoritado ♥';
+  } else {
+    if(btnFavTextEl) btnFavTextEl.textContent='Favoritar';
   }
 
   // Detalhes
@@ -850,19 +894,59 @@ function adicionarCarrinho(){
   showToast('✓ '+produto.nome.substring(0,30)+' adicionado!');
 }
 
-function toggleFavorito(){
+async function toggleFavorito(){
   if(!produto)return;
-  var idx=favoritos.indexOf(produto.id);
   var btn=document.getElementById('btnFav');
   var svg=btn.querySelector('svg');
+  var txtEl=document.getElementById('btnFavText');
+  var idx=favoritos.indexOf(produto.id);
+
+  // Tenta salvar no Supabase também se estiver logado
+  var session=null;
+  try{var r=await sb.auth.getSession();session=r.data&&r.data.session?r.data.session:null;}catch(e){}
+
   if(idx===-1){
     favoritos.push(produto.id);
-    btn.classList.add('ativo');svg.style.fill='#ff5555';
-    showToast('Adicionado aos favoritos!');
+    btn.classList.add('ativo');
+    svg.style.fill='#ff5555';
+    if(txtEl) txtEl.textContent='Favoritado ♥';
+    showToast('❤️ Adicionado aos favoritos!');
+
+    // Salvar no Supabase
+    if(session){
+      try{
+        await sb.from('favoritos').upsert({
+          user_email:session.user.email,
+          produto_id:produto.id,
+          produto_nome:produto.nome,
+          produto_imagem:produto.imagem||'',
+          produto_preco:Number(produto.preco)
+        },{onConflict:'user_email,produto_id'});
+      }catch(e){console.warn('fav supabase',e);}
+    }
+
+    // Depois de 1.5s, pergunta se quer ver favoritos
+    setTimeout(function(){
+      showToast('Ver seus favoritos no perfil?');
+      btn.onclick=function(){window.location.href='perfil.html#favoritos'};
+    },1600);
+
   }else{
     favoritos.splice(idx,1);
-    btn.classList.remove('ativo');svg.style.fill='none';
+    btn.classList.remove('ativo');
+    svg.style.fill='none';
+    if(txtEl) txtEl.textContent='Favoritar';
     showToast('Removido dos favoritos');
+    btn.onclick=toggleFavorito;
+
+    // Remover do Supabase
+    if(session){
+      try{
+        await sb.from('favoritos').delete()
+          .eq('user_email',session.user.email)
+          .eq('produto_id',produto.id);
+      }catch(e){console.warn('fav remove supabase',e);}
+    }
   }
   localStorage.setItem('mg_favs',JSON.stringify(favoritos));
 }
