@@ -1648,12 +1648,12 @@ footer::before{
   border:none;padding:12px 8px;font-family:'Montserrat',sans-serif;
   font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;
   border-radius:8px;cursor:pointer;width:100%;
-  opacity:0;transform:translateY(8px);
+  opacity:0.75;transform:translateY(4px);
   transition:opacity .3s .08s,transform .3s .08s,box-shadow .2s;
   position:relative;overflow:hidden;min-height:40px;
 }
 @media(hover:hover){.cex-card:hover .cex-btn{opacity:1;transform:translateY(0)}}
-@media(max-width:640px){.cex-btn{opacity:1;transform:none}}
+@media(max-width:900px){.cex-btn{opacity:1;transform:none}}
 
 .cex-card[data-color="green"]  .cex-btn{background:linear-gradient(160deg,#00cc44,var(--green));color:#001a0d;box-shadow:0 3px 16px rgba(0,200,60,.35)}
 .cex-card[data-color="red"]    .cex-btn{background:linear-gradient(160deg,var(--mars),var(--orange));color:#fff;box-shadow:0 3px 16px rgba(232,66,26,.35)}
@@ -2840,7 +2840,7 @@ footer::before{
   <div class="cats-explore-gallery">
 
     <!-- AÇÃO / RPG -->
-    <div class="cex-card" data-color="green" onclick="window.location.href='catalogo.html?cat=Ação+%2F+RPG'">
+    <a class="cex-card" data-color="green" href="catalogo.html?cat=Ação+%2F+RPG" style="text-decoration:none;color:inherit;display:block">
       <img class="cex-bg" loading="lazy" decoding="async"
         src="https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_600x900.jpg"
         alt="Ação RPG">
@@ -2862,15 +2862,15 @@ footer::before{
           <img class="cex-thumb" loading="lazy" src="https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_600x900.jpg" alt="Elden Ring">
           <div class="cex-thumb-more">+17</div>
         </div>
-        <button class="cex-btn" type="button" onclick="event.stopPropagation();window.location.href='catalogo.html?cat=Ação+%2F+RPG'">
+        <button class="cex-btn" type="button" onclick="event.preventDefault();event.stopPropagation();window.location.href='catalogo.html?cat=Ação+%2F+RPG'">
           Ver Jogos
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-    </div>
+    </a>
 
     <!-- LUTA / TIROS -->
-    <div class="cex-card" data-color="red" onclick="window.location.href='catalogo.html?cat=Luta+%2F+Tiros'">
+    <a class="cex-card" data-color="red" href="catalogo.html?cat=Luta+%2F+Tiros" style="text-decoration:none;color:inherit;display:block">
       <img class="cex-bg" loading="lazy" decoding="async"
         src="https://cdn.cloudflare.steamstatic.com/steam/apps/3017860/library_600x900.jpg"
         alt="Luta Tiros">
@@ -2892,15 +2892,15 @@ footer::before{
           <img class="cex-thumb" loading="lazy" src="https://cdn.cloudflare.steamstatic.com/steam/apps/377840/library_600x900.jpg" alt="Mortal Kombat XL">
           <div class="cex-thumb-more">+12</div>
         </div>
-        <button class="cex-btn" type="button" onclick="event.stopPropagation();window.location.href='catalogo.html?cat=Luta+%2F+Tiros'">
+        <button class="cex-btn" type="button" onclick="event.preventDefault();event.stopPropagation();window.location.href='catalogo.html?cat=Luta+%2F+Tiros'">
           Ver Jogos
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-    </div>
+    </a>
 
     <!-- SIMULAÇÃO / SOBREVIVÊNCIA -->
-    <div class="cex-card" data-color="blue" onclick="window.location.href='catalogo.html?cat=Simulação+%2F+Sobrevivência'">
+    <a class="cex-card" data-color="blue" href="catalogo.html?cat=Simulação+%2F+Sobrevivência" style="text-decoration:none;color:inherit;display:block">
       <img class="cex-bg" loading="lazy" decoding="async"
         src="https://cdn.cloudflare.steamstatic.com/steam/apps/1097150/library_600x900.jpg"
         alt="Simulação Sobrevivência">
@@ -2922,15 +2922,15 @@ footer::before{
           <img class="cex-thumb" loading="lazy" src="https://cdn.cloudflare.steamstatic.com/steam/apps/346110/library_600x900.jpg" alt="ARK">
           <div class="cex-thumb-more">+9</div>
         </div>
-        <button class="cex-btn" type="button" onclick="event.stopPropagation();window.location.href='catalogo.html?cat=Simulação+%2F+Sobrevivência'">
+        <button class="cex-btn" type="button" onclick="event.preventDefault();event.stopPropagation();window.location.href='catalogo.html?cat=Simulação+%2F+Sobrevivência'">
           Ver Jogos
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-    </div>
+    </a>
 
     <!-- TERROR / INDIE -->
-    <div class="cex-card" data-color="purple" onclick="window.location.href='catalogo.html?cat=Terror+%2F+Indie'">
+    <a class="cex-card" data-color="purple" href="catalogo.html?cat=Terror+%2F+Indie" style="text-decoration:none;color:inherit;display:block">
       <img class="cex-bg" loading="lazy" decoding="async"
         src="https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/library_600x900.jpg"
         alt="Terror Indie">
@@ -2952,12 +2952,12 @@ footer::before{
           <img class="cex-thumb" loading="lazy" src="https://cdn.cloudflare.steamstatic.com/steam/apps/1145360/library_600x900.jpg" alt="Hades">
           <div class="cex-thumb-more">+15</div>
         </div>
-        <button class="cex-btn" type="button" onclick="event.stopPropagation();window.location.href='catalogo.html?cat=Terror+%2F+Indie'">
+        <button class="cex-btn" type="button" onclick="event.preventDefault();event.stopPropagation();window.location.href='catalogo.html?cat=Terror+%2F+Indie'">
           Ver Jogos
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
-    </div>
+    </a>
 
   </div>
 </section>
@@ -4105,9 +4105,9 @@ function initThree() {
     requestAnimationFrame(animate);
     var t = clock.getElapsedTime();
     /* Rotação contínua suave em Y + oscilação sinusoidal em X/Z — sensação de flutuar */
-    galaxy.rotation.y =  t * 0.00080;
-    galaxy.rotation.x =  Math.sin(t * 0.00020) * 0.055;
-    galaxy.rotation.z =  Math.sin(t * 0.00014) * 0.038;
+    galaxy.rotation.y =  t * 0.012;
+    galaxy.rotation.x =  Math.sin(t * 0.0035) * 0.18;
+    galaxy.rotation.z =  Math.sin(t * 0.0022) * 0.12;
     /* Twinkle suave */
     l1.material.opacity = 0.48 + 0.07 * Math.sin(t * 0.27 + 0.8);
     l3.material.opacity = 0.85 + 0.06 * Math.sin(t * 0.18 + 1.5);
