@@ -281,107 +281,63 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 }
 
 .sorteio-tabs{
-  display:flex;gap:10px;justify-content:center;align-items:stretch;
-  margin:24px 0 28px;padding:0 16px;flex-wrap:nowrap;
+  display:flex;gap:10px;justify-content:center;
+  margin:24px 0 28px;padding:0 16px;
 }
 
 .sorteio-tab{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  min-width:140px;padding:13px 24px;border-radius:12px;
+  display:flex;align-items:center;gap:9px;
+  padding:12px 26px;border-radius:10px;
   font-family:'Orbitron',sans-serif;
   font-size:10px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;
-  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
-  border:1.5px solid #3a3a50;
-  background:#1e1e2e;
-  color:#ddddee;
-}
-.sorteio-tab::before{
-  content:'';position:absolute;inset:0;opacity:0;
-  transition:opacity .25s;pointer-events:none;
+  cursor:pointer;transition:all .2s;
+  /* Base — cinza claro visível */
+  border:2px solid #444455;
+  background:#222233;
+  color:#ccccdd;
 }
 .sorteio-tab:hover{
-  color:#fff;border-color:#666680;
-  background:#28283c;
-  transform:translateY(-1px);
+  border-color:#666677;
+  background:#2a2a3d;
+  color:#ffffff;
+  transform:translateY(-2px);
 }
 
-/* Ícone animado */
-.tab-icon{
-  width:18px;height:18px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;position:relative;
+/* Bolinhas coloridas simples — sem clip-path, sem transforms */
+.tab-dot-new{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;display:inline-block;
 }
+.tab-dot-new.d{ background:#ff5533;box-shadow:0 0 8px #ff5533,0 0 16px rgba(255,85,51,.5) }
+.tab-dot-new.s{ background:#ffcc00;box-shadow:0 0 8px #ffcc00,0 0 16px rgba(255,204,0,.5) }
+.tab-dot-new.m{ background:#88ddff;box-shadow:0 0 8px #88ddff,0 0 16px rgba(136,221,255,.5) }
 
-/* DIÁRIO — chama */
-.tab-icon-diario{
-  width:18px;height:18px;
-  background:radial-gradient(circle at 50% 80%,#ff3300,#ff6b2b,#ffb300);
-  box-shadow:0 0 8px rgba(232,66,26,.7);
-  clip-path:polygon(50% 0%,65% 30%,100% 40%,75% 60%,85% 100%,50% 80%,15% 100%,25% 60%,0% 40%,35% 30%);
-}
-.sorteio-tab:hover .tab-icon-diario,
-.sorteio-tab.active-diario .tab-icon-diario{animation:flameDance .6s ease-in-out infinite}
-
-/* SEMANAL — estrela */
-.tab-icon-semanal{
-  width:17px;height:17px;
-  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-  background:radial-gradient(circle,#ffe566,#ffb300);
-  box-shadow:0 0 12px rgba(255,179,0,.9),0 0 20px rgba(255,179,0,.5);
-  border-radius:0;
-}
-.sorteio-tab:hover .tab-icon-semanal,
-.sorteio-tab.active-semanal .tab-icon-semanal{
-  animation:starSpin 1.5s ease-in-out infinite;
-  box-shadow:0 0 20px rgba(255,179,0,1),0 0 36px rgba(255,179,0,.6);
-}
-
-/* MENSAL — diamante */
-.tab-icon-mensal{
-  width:14px;height:14px;border-radius:2px;
-  background:linear-gradient(135deg,#ffffff,#b9f2ff,#7dd8f5,#b9f2ff);
-  box-shadow:0 0 14px rgba(185,242,255,1),0 0 24px rgba(185,242,255,.7),0 0 40px rgba(185,242,255,.3);
-  transform:rotate(45deg);
-  flex-shrink:0;
-}
-.sorteio-tab:hover .tab-icon-mensal,
-.sorteio-tab.active-mensal .tab-icon-mensal{animation:diamondPulse 1.2s ease-in-out infinite}
-
-/* ── ESTADOS ATIVOS ── */
+/* ATIVO — diário */
 .sorteio-tab.active-diario{
-  border-color:rgba(232,66,26,.9);
+  border-color:#ff5533;
+  background:#2a1510;
   color:#ff8866;
-  background:rgba(232,66,26,.16);
-  box-shadow:0 0 28px rgba(232,66,26,.22),0 2px 12px rgba(232,66,26,.15);
+  box-shadow:0 0 20px rgba(255,85,51,.25);
 }
-.sorteio-tab.active-diario::before{
-  background:linear-gradient(90deg,transparent,rgba(232,66,26,.12),transparent);
-  background-size:200% 100%;animation:tabShimmer 2s linear infinite;opacity:1;
-}
+/* ATIVO — semanal */
 .sorteio-tab.active-semanal{
-  border-color:rgba(255,200,0,.9);
-  color:#ffe066;
-  background:rgba(255,179,0,.16);
-  box-shadow:0 0 28px rgba(255,179,0,.2),0 2px 12px rgba(255,179,0,.12);
+  border-color:#ffcc00;
+  background:#252010;
+  color:#ffdd55;
+  box-shadow:0 0 20px rgba(255,204,0,.2);
 }
-.sorteio-tab.active-semanal::before{
-  background:linear-gradient(90deg,transparent,rgba(255,200,0,.12),transparent);
-  background-size:200% 100%;animation:tabShimmer 2s linear infinite;opacity:1;
-}
+/* ATIVO — mensal */
 .sorteio-tab.active-mensal{
-  border-color:rgba(185,242,255,.9);
-  color:#e8faff;
-  background:rgba(185,242,255,.13);
-  box-shadow:0 0 28px rgba(185,242,255,.18),0 2px 12px rgba(185,242,255,.1);
-}
-.sorteio-tab.active-mensal::before{
-  background:linear-gradient(90deg,transparent,rgba(185,242,255,.1),transparent);
-  background-size:200% 100%;animation:tabShimmer 2.5s linear infinite;opacity:1;
+  border-color:#88ddff;
+  background:#101a25;
+  color:#aaeeff;
+  box-shadow:0 0 20px rgba(136,221,255,.2);
 }
 
 @media(max-width:480px){
   .sorteio-tabs{gap:6px}
-  .sorteio-tab{min-width:0;padding:11px 16px;font-size:9px;letter-spacing:1px}
+  .sorteio-tab{padding:10px 14px;font-size:9px;letter-spacing:1px}
 }
 
 /* Main content */
@@ -791,16 +747,13 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 <!-- TABS -->
 <div class="sorteio-tabs">
   <div class="sorteio-tab active-diario" id="tab-diario" onclick="setTipoSorteio('diario')">
-    <div class="tab-icon tab-icon-diario"></div>
-    Diário
+    <span class="tab-dot-new d"></span>Diário
   </div>
   <div class="sorteio-tab" id="tab-semanal" onclick="setTipoSorteio('semanal')">
-    <div class="tab-icon tab-icon-semanal"></div>
-    Semanal
+    <span class="tab-dot-new s"></span>Semanal
   </div>
   <div class="sorteio-tab" id="tab-mensal" onclick="setTipoSorteio('mensal')">
-    <div class="tab-icon tab-icon-mensal"></div>
-    Mensal
+    <span class="tab-dot-new m"></span>Mensal
   </div>
 </div>
 
