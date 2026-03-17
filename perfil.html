@@ -1759,32 +1759,77 @@ async function carregarPerfil(user){
   renderPerfil(fallback);
 
   try{
-    /* Busca perfil e pontos em paralelo */
-    var [perfilRes, mpRes] = await Promise.all([
+    /* Busca tudo em paralelo: perfil, pontos, pedidos, avaliações, indicações */
+    var [perfilRes, mpRes, pedsRes, avalsRes, indicRes] = await Promise.all([
       sb.from('perfis').upsert(
         {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
-      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle()
+      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle(),
+      /* Conta pedidos pagos/entregues deste usuário — tenta por user_id e user_email */
+      sb.from('pedidos').select('id, itens, valor_total, status', {count:'exact'})
+        .or('user_id.eq.'+user.id+',user_email.eq.'+user.email)
+        .in('status',['pago','entregue']),
+      /* Conta avaliações aprovadas deste usuário */
+      sb.from('avaliacoes').select('id', {count:'exact'})
+        .eq('user_email', user.email),
+      /* Conta indicações convertidas */
+      sb.from('indicacoes').select('id', {count:'exact'})
+        .eq('indicador_email', user.email)
+        .eq('convertida', true)
     ]);
 
     var perfil=perfilRes.data||fallback;
-    /* Injeta pontos E historico do marspoints no perfil */
+
+    /* Injeta pontos e histórico */
     if(mpRes.data){
       perfil.pontos=mpRes.data.pontos||0;
       perfil.historico=mpRes.data.historico||[];
     }
+
+    /* Injeta contagens reais das tabelas */
+    var pedidos=pedsRes.data||[];
+    perfil.total_pedidos=pedsRes.count||pedidos.length||0;
+    perfil.total_gasto=pedidos.reduce(function(s,p){return s+Number(p.valor_total||0)},0);
+
+    /* Conta jogos RPG comprados analisando os itens dos pedidos */
+    var rpgCount=0;
+    pedidos.forEach(function(ped){
+      var itens=[];
+      try{itens=typeof ped.itens==='string'?JSON.parse(ped.itens):ped.itens||[];}catch(e){}
+      itens.forEach(function(item){
+        var cat=(item.categoria||item.cat||'').toLowerCase();
+        if(cat.indexOf('rpg')!==-1||cat.indexOf('ação')!==-1||cat.indexOf('acao')!==-1) rpgCount++;
+      });
+    });
+    perfil.rpg_comprados=rpgCount;
+    /* Toda compra na MarsGames é uma oferta/promoção */
+    perfil.promo_comprados=perfil.total_pedidos;
+
+    /* Avaliações reais */
+    perfil.total_avaliacoes=avalsRes.count||0;
+
+    /* Indicações */
+    try{perfil.indicacoes=indicRes.count||0;}catch(e){perfil.indicacoes=0;}
+
     perfilData=perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
     renderConquistas(perfil);
+
   }catch(e){
     console.error('Erro perfil banco:',e);
-    /* Tenta pegar pontos mesmo no erro */
+    /* Tenta ao menos pegar pontos e avaliações mesmo no erro */
     try{
-      var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
+      var [mp, avals, peds] = await Promise.all([
+        sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle(),
+        sb.from('avaliacoes').select('id',{count:'exact'}).eq('user_email',user.email),
+        sb.from('pedidos').select('id',{count:'exact'}).or('user_id.eq.'+user.id+',user_email.eq.'+user.email).in('status',['pago','entregue'])
+      ]);
       if(mp.data) fallback.pontos=mp.data.pontos||0;
+      fallback.total_avaliacoes=avals.count||0;
+      fallback.total_pedidos=peds.count||0;
     }catch(_){}
     perfilData=fallback;
     renderPerfil(fallback);
