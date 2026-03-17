@@ -280,105 +280,109 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   100%{background-position:-200% center}
 }
 
-.sorteio-tabs{display:flex;gap:10px;justify-content:center;margin:24px 0 28px;
-  padding:0 16px;flex-wrap:wrap}
+.sorteio-tabs{
+  display:flex;gap:10px;justify-content:center;align-items:stretch;
+  margin:24px 0 28px;padding:0 16px;flex-wrap:nowrap;
+}
 
 .sorteio-tab{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 28px;border-radius:12px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-width:140px;padding:13px 24px;border-radius:12px;
   font-family:'Orbitron',sans-serif;
-  font-size:10px;font-weight:700;color:#aaa;
+  font-size:10px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;
-  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  /* Todos visíveis por padrão */
+  border:1.5px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.07);
+  color:#ccc;
 }
 .sorteio-tab::before{
   content:'';position:absolute;inset:0;opacity:0;
   transition:opacity .25s;pointer-events:none;
 }
-.sorteio-tab:hover{color:#fff;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.09)}
+.sorteio-tab:hover{
+  color:#fff;border-color:rgba(255,255,255,.35);
+  background:rgba(255,255,255,.11);
+  transform:translateY(-1px);
+}
 
-/* Ícone animado de cada tab */
+/* Ícone animado */
 .tab-icon{
-  width:18px;height:18px;border-radius:50%;flex-shrink:0;
+  width:18px;height:18px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;position:relative;
 }
 
-/* DIÁRIO — chama de fogo */
+/* DIÁRIO — chama */
 .tab-icon-diario{
+  width:18px;height:18px;
   background:radial-gradient(circle at 50% 80%,#ff3300,#ff6b2b,#ffb300);
-  box-shadow:0 0 8px rgba(232,66,26,.6);
+  box-shadow:0 0 8px rgba(232,66,26,.7);
   clip-path:polygon(50% 0%,65% 30%,100% 40%,75% 60%,85% 100%,50% 80%,15% 100%,25% 60%,0% 40%,35% 30%);
 }
 .sorteio-tab:hover .tab-icon-diario,
-.sorteio-tab.active-diario .tab-icon-diario{
-  animation:flameDance .6s ease-in-out infinite;
-}
+.sorteio-tab.active-diario .tab-icon-diario{animation:flameDance .6s ease-in-out infinite}
 
 /* SEMANAL — estrela */
 .tab-icon-semanal{
-  background:transparent;
-  border-radius:0;
+  width:17px;height:17px;
   clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
   background:radial-gradient(circle,#ffe566,#ffb300);
-  box-shadow:0 0 10px rgba(255,179,0,.7);
-  width:16px;height:16px;
+  box-shadow:0 0 10px rgba(255,179,0,.8);
+  border-radius:0;
 }
 .sorteio-tab:hover .tab-icon-semanal,
 .sorteio-tab.active-semanal .tab-icon-semanal{
   animation:starSpin 1.5s ease-in-out infinite;
-  box-shadow:0 0 18px rgba(255,179,0,.9),0 0 32px rgba(255,179,0,.4);
+  box-shadow:0 0 18px rgba(255,179,0,.9);
 }
 
 /* MENSAL — diamante */
 .tab-icon-mensal{
   width:14px;height:14px;border-radius:2px;
-  background:linear-gradient(135deg,#e0f8ff,#b9f2ff,#7dd8f5,#b9f2ff);
-  box-shadow:0 0 8px rgba(185,242,255,.6),inset 0 0 4px rgba(255,255,255,.4);
+  background:linear-gradient(135deg,#ffffff,#b9f2ff,#7dd8f5,#b9f2ff);
+  box-shadow:0 0 10px rgba(185,242,255,.9),0 0 18px rgba(185,242,255,.4);
   transform:rotate(45deg);
+  flex-shrink:0;
 }
 .sorteio-tab:hover .tab-icon-mensal,
-.sorteio-tab.active-mensal .tab-icon-mensal{
-  animation:diamondPulse 1.2s ease-in-out infinite;
-}
+.sorteio-tab.active-mensal .tab-icon-mensal{animation:diamondPulse 1.2s ease-in-out infinite}
 
-/* Active states */
+/* ── ESTADOS ATIVOS ── */
 .sorteio-tab.active-diario{
-  border-color:rgba(232,66,26,.8);
-  color:#ff7755;
-  background:rgba(232,66,26,.14);
-  box-shadow:0 0 24px rgba(232,66,26,.18),inset 0 0 20px rgba(232,66,26,.06);
+  border-color:rgba(232,66,26,.9);
+  color:#ff8866;
+  background:rgba(232,66,26,.16);
+  box-shadow:0 0 28px rgba(232,66,26,.22),0 2px 12px rgba(232,66,26,.15);
 }
 .sorteio-tab.active-diario::before{
-  background:linear-gradient(90deg,transparent,rgba(232,66,26,.1),transparent);
-  background-size:200% 100%;
-  animation:tabShimmer 2s linear infinite;
-  opacity:1;
+  background:linear-gradient(90deg,transparent,rgba(232,66,26,.12),transparent);
+  background-size:200% 100%;animation:tabShimmer 2s linear infinite;opacity:1;
 }
 .sorteio-tab.active-semanal{
-  border-color:rgba(255,179,0,.8);
-  color:#ffcc44;
-  background:rgba(255,179,0,.14);
-  box-shadow:0 0 24px rgba(255,179,0,.15),inset 0 0 20px rgba(255,179,0,.06);
+  border-color:rgba(255,200,0,.9);
+  color:#ffe066;
+  background:rgba(255,179,0,.16);
+  box-shadow:0 0 28px rgba(255,179,0,.2),0 2px 12px rgba(255,179,0,.12);
 }
 .sorteio-tab.active-semanal::before{
-  background:linear-gradient(90deg,transparent,rgba(255,179,0,.1),transparent);
-  background-size:200% 100%;
-  animation:tabShimmer 2s linear infinite;
-  opacity:1;
+  background:linear-gradient(90deg,transparent,rgba(255,200,0,.12),transparent);
+  background-size:200% 100%;animation:tabShimmer 2s linear infinite;opacity:1;
 }
 .sorteio-tab.active-mensal{
-  border-color:rgba(185,242,255,.7);
-  color:#ccf2ff;
-  background:rgba(185,242,255,.1);
-  box-shadow:0 0 24px rgba(185,242,255,.12),inset 0 0 20px rgba(185,242,255,.04);
+  border-color:rgba(185,242,255,.9);
+  color:#e8faff;
+  background:rgba(185,242,255,.13);
+  box-shadow:0 0 28px rgba(185,242,255,.18),0 2px 12px rgba(185,242,255,.1);
 }
 .sorteio-tab.active-mensal::before{
-  background:linear-gradient(90deg,transparent,rgba(185,242,255,.08),transparent);
-  background-size:200% 100%;
-  animation:tabShimmer 2.5s linear infinite;
-  opacity:1;
+  background:linear-gradient(90deg,transparent,rgba(185,242,255,.1),transparent);
+  background-size:200% 100%;animation:tabShimmer 2.5s linear infinite;opacity:1;
+}
+
+@media(max-width:480px){
+  .sorteio-tabs{gap:6px}
+  .sorteio-tab{min-width:0;padding:11px 16px;font-size:9px;letter-spacing:1px}
 }
 
 /* Main content */
