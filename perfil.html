@@ -42,24 +42,18 @@
   0%,100%{opacity:.85}50%{opacity:1}
 }
 
-/* ══ ANÉIS DE NÍVEL NAVBAR ══ */
-@keyframes navBronzePulse{
-  0%,100%{box-shadow:0 0 6px 2px rgba(205,159,106,.6)}
-  50%{box-shadow:0 0 18px 6px rgba(205,159,106,1),0 0 30px 4px rgba(205,159,106,.4)}
-}
-@keyframes navPrataShimmer{
-  0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.5)}
-  50%{box-shadow:0 0 20px 7px rgba(232,232,232,.9),0 0 35px 4px rgba(255,255,255,.3)}
-}
-@keyframes navOuroPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.6)}
-  50%{box-shadow:0 0 22px 8px rgba(255,215,0,1),0 0 38px 5px rgba(255,215,0,.4)}
-}
-@keyframes navEsmPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.6)}
-  50%{box-shadow:0 0 24px 9px rgba(80,200,120,1),0 0 40px 5px rgba(80,200,120,.4)}
-}
+/* ══ ANÉIS DE NÍVEL NAVBAR — versão premium ══ */
+@keyframes navBronzeRotate{to{transform:rotate(360deg)}}
+@keyframes navBronzeGlow{0%,100%{box-shadow:0 0 6px 2px rgba(180,100,30,.5)}50%{box-shadow:0 0 14px 4px rgba(205,127,50,.9),0 0 26px rgba(205,127,50,.35)}}
+@keyframes navPrataRotate{to{transform:rotate(-360deg)}}
+@keyframes navPrataGlow{0%,100%{box-shadow:0 0 6px 2px rgba(190,200,220,.4)}33%{box-shadow:0 0 20px 5px rgba(255,255,255,.85),0 0 34px rgba(200,220,255,.4)}66%{box-shadow:0 0 8px 2px rgba(180,195,215,.5)}}
+@keyframes navOuroRotate{to{transform:rotate(360deg)}}
+@keyframes navOuroGlow{0%,100%{box-shadow:0 0 10px 2px rgba(220,170,0,.55),0 0 20px rgba(255,160,0,.25)}50%{box-shadow:0 0 20px 6px rgba(255,215,0,.95),0 0 38px rgba(255,165,0,.5),0 0 55px rgba(255,120,0,.2)}}
+@keyframes navEsmRotate{to{transform:rotate(360deg)}}
+@keyframes navEsmRotateRev{to{transform:rotate(-360deg)}}
+@keyframes navEsmGlow{0%,100%{box-shadow:0 0 10px 3px rgba(0,200,80,.5),0 0 22px rgba(0,255,100,.2)}50%{box-shadow:0 0 24px 8px rgba(0,255,120,.9),0 0 44px rgba(0,200,80,.5),0 0 66px rgba(0,255,100,.2)}}
 @keyframes navDiaRotate{to{transform:rotate(360deg)}}
+@keyframes navDiaGlow{0%,100%{box-shadow:0 0 16px rgba(185,242,255,.6),0 0 32px rgba(123,97,255,.35)}50%{box-shadow:0 0 28px rgba(185,242,255,.9),0 0 52px rgba(167,139,250,.6),0 0 72px rgba(0,255,255,.25)}}
 
 .nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nav-avatar-ring{position:absolute;inset:-3px;border-radius:50%;z-index:0}
@@ -79,36 +73,68 @@
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
 }
-/* Bronze — borda âmbar quente */
-.nav-nivel-bronze .nav-user-avatar{
-  border-color:#cd9f6a !important;
-  animation:navBronzePulse 2.5s ease-in-out infinite;
+
+/* ── Bronze: anel giratório âmbar ── */
+.nav-nivel-bronze .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#5a2e00,#c87820,#f0c060,#cd8030,#f5d080,#b06010,#5a2e00);
+  animation:navBronzeRotate 4s linear infinite;
 }
-/* Prata — borda prateada */
-.nav-nivel-prata .nav-user-avatar{
-  border-color:#e8e8e8 !important;
-  animation:navPrataShimmer 3s ease-in-out infinite;
+.nav-nivel-bronze .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e}
+.nav-nivel-bronze .nav-user-avatar{border:none!important;animation:navBronzeGlow 3s ease-in-out infinite}
+
+/* ── Prata: duplo anel oposto + flash ── */
+.nav-nivel-prata .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#333,#bbb,#fff,#ccc,#eee,#aaa,#333);
+  animation:navPrataRotate 3s linear infinite;
 }
-/* Ouro — borda dourada */
-.nav-nivel-ouro .nav-user-avatar{
-  border-color:#FFD700 !important;
-  animation:navOuroPulse 2s ease-in-out infinite;
+.nav-nivel-prata .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e}
+.nav-nivel-prata .nav-avatar-ring::after{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.6) 78%,transparent 90%);
+  animation:navPrataRotate 2s linear infinite reverse;
 }
-/* Esmeralda — borda verde */
-.nav-nivel-esmeralda .nav-user-avatar{
-  border-color:#50c878 !important;
-  animation:navEsmPulse 1.8s ease-in-out infinite;
+.nav-nivel-prata .nav-user-avatar{border:none!important;animation:navPrataGlow 2.8s ease-in-out infinite}
+
+/* ── Ouro: triplo anel dourado + faísca ── */
+.nav-nivel-ouro .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#6a3800,#e8a800,#ffdd00,#ffe880,#ffd000,#c07800,#6a3800);
+  animation:navOuroRotate 2s linear infinite;
+  filter:blur(.3px);
 }
-/* Diamante — disco girando */
+.nav-nivel-ouro .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none}
+.nav-nivel-ouro .nav-avatar-ring::after{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.7) 62%,rgba(255,255,180,.9) 68%,transparent 78%);
+  animation:navOuroRotate 2.5s linear infinite reverse;
+  filter:blur(.5px);
+}
+.nav-nivel-ouro .nav-user-avatar{border:none!important;animation:navOuroGlow 2s ease-in-out infinite}
+
+/* ── Esmeralda: triplo anel verde + halo externo ── */
+.nav-nivel-esmeralda .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#002010,#00aa44,#00ff77,#80ffcc,#00ff88,#009933,#002010);
+  animation:navEsmRotate 1.5s linear infinite;
+  filter:blur(.2px);
+}
+.nav-nivel-esmeralda .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none}
+.nav-nivel-esmeralda .nav-avatar-ring::after{
+  content:'';position:absolute;inset:-7px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.6) 46%,rgba(150,255,180,.85) 55%,transparent 68%);
+  animation:navEsmRotateRev 2.2s linear infinite;
+  filter:blur(1px);
+}
+.nav-nivel-esmeralda .nav-user-avatar{border:none!important;animation:navEsmGlow 1.8s ease-in-out infinite}
+
+/* ── Diamante: arco-íris cósmico máximo ── */
 .nav-nivel-diamante .nav-avatar-ring{
   background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
-  animation:navDiaRotate 2.5s linear infinite;
+  animation:navDiaRotate 2s linear infinite;
   box-shadow:0 0 16px rgba(185,242,255,.7),0 0 32px rgba(123,97,255,.4);
 }
 .nav-nivel-diamante .nav-avatar-ring::before{
   content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0;
 }
-.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
+.nav-nivel-diamante .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navDiaGlow 2.5s ease-in-out infinite}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
