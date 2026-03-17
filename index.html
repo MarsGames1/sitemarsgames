@@ -598,18 +598,19 @@ body.tema-claro .exit-sub{color:#666}
   .nav-search-icon-btn svg{pointer-events:none}
   .nav-search-expand{
     position:absolute;right:0;top:50%;transform:translateY(-50%);
-    display:flex;align-items:center;gap:0;
+    display:flex;align-items:center;
     border-radius:8px;border:1px solid rgba(232,66,26,.4);
     background:rgba(10,10,14,.97);backdrop-filter:blur(16px);
-    overflow:visible;width:0;opacity:0;pointer-events:none;
+    overflow:hidden;
+    width:0;opacity:0;pointer-events:none;
     transition:width .25s cubic-bezier(.4,0,.2,1),opacity .2s;
-    z-index:50;
+    z-index:300;
   }
-  .nav-search-expand.open{width:240px;opacity:1;pointer-events:all}
+  .nav-search-expand.open{width:200px;opacity:1;pointer-events:all;overflow:visible}
   .nav-search-expand input{
     background:none;border:none;outline:none;
     padding:7px 12px;font-size:11px;color:#fff;
-    font-family:'Montserrat',sans-serif;width:100%;
+    font-family:'Montserrat',sans-serif;width:100%;min-width:0;
   }
   .nav-search-expand input::placeholder{color:#666}
   .nav-search-btn{
@@ -619,7 +620,8 @@ body.tema-claro .exit-sub{color:#666}
   .nav-search-btn:hover{color:#fff}
   /* Dropdown de sugestões */
   .nav-search-suggestions{
-    position:absolute;top:calc(100% + 6px);right:0;left:0;
+    position:absolute;top:calc(100% + 6px);right:0;
+    width:240px;
     background:rgba(13,13,18,.98);border:1px solid rgba(232,66,26,.25);
     border-radius:10px;overflow:hidden;
     box-shadow:0 12px 32px rgba(0,0,0,.6);
@@ -4366,16 +4368,33 @@ function navBuscarSugestoes(q){
   if(!sugg)return;
   q=(q||'').trim();
   if(q.length<2){sugg.classList.remove('open');sugg.innerHTML='';return;}
-  var resultados=(typeof todosProdutos!=='undefined'?todosProdutos:[])
-    .filter(function(p){
+
+  /* Tenta primeiro nos produtos já em memória */
+  var local=typeof todosProdutos!=='undefined'&&Array.isArray(todosProdutos)?todosProdutos:[];
+  if(local.length>0){
+    var res=local.filter(function(p){
       return p.ativo!==false&&(p.nome||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
     }).slice(0,6);
-  if(resultados.length===0){
+    _renderNavSugg(sugg,res,q);
+    return;
+  }
+
+  /* Fallback: busca direto no Supabase */
+  sb.from('produtos').select('id,nome,preco,imagem')
+    .ilike('nome','%'+q+'%').eq('ativo',true).limit(6)
+    .then(function(r){
+      _renderNavSugg(sugg,r.data||[],q);
+    }).catch(function(){sugg.classList.remove('open');});
+}
+
+function _renderNavSugg(sugg,resultados,q){
+  if(!resultados||resultados.length===0){
     sugg.innerHTML='<div class="nav-sugg-empty">Nenhum resultado para "'+esc(q)+'"</div>';
   } else {
     sugg.innerHTML=resultados.map(function(p){
       return '<a class="nav-sugg-item" href="produto.html?id='+p.id+'" onmousedown="event.preventDefault()">'+
-        '<img class="nav-sugg-img" src="'+(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
+        (p.imagem?'<img class="nav-sugg-img" src="'+esc(p.imagem)+'" alt="" loading="lazy">':
+          '<div class="nav-sugg-img" style="background:var(--dim)"></div>')+
         '<div style="min-width:0;flex:1">'+
           '<div class="nav-sugg-nome">'+esc(p.nome)+'</div>'+
           '<div class="nav-sugg-preco">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
