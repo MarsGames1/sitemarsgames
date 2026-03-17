@@ -792,6 +792,14 @@ body.tema-claro .section-loader{color:var(--muted)}
   </a>
   <div class="nav-right">
     <a class="nav-btn" href="catalogo.html">Catálogo</a>
+    <!-- Avatar com anel de nível -->
+    <div class="nav-avatar-wrap" id="navAvatarWrap" style="display:none">
+      <div class="nav-avatar-ring" id="navAvatarRing"></div>
+      <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" title="Meu perfil">
+        <img id="navAvatarImg" src="" alt="" style="display:none">
+        <div id="navAvatarFallback"></div>
+      </a>
+    </div>
     <button class="nav-btn nav-btn-red" id="btnLogout" onclick="logout()" style="display:none">Sair</button>
   </div>
 </nav>

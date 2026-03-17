@@ -20,24 +20,18 @@
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 
-/* ══ ANÉIS DE NÍVEL NAVBAR ══ */
-@keyframes navBronzePulse{
-  0%,100%{box-shadow:0 0 6px 2px rgba(205,159,106,.6)}
-  50%{box-shadow:0 0 18px 6px rgba(205,159,106,1),0 0 30px 4px rgba(205,159,106,.4)}
-}
-@keyframes navPrataShimmer{
-  0%,100%{box-shadow:0 0 8px 2px rgba(232,232,232,.5)}
-  50%{box-shadow:0 0 20px 7px rgba(232,232,232,.9),0 0 35px 4px rgba(255,255,255,.3)}
-}
-@keyframes navOuroPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(255,215,0,.6)}
-  50%{box-shadow:0 0 22px 8px rgba(255,215,0,1),0 0 38px 5px rgba(255,215,0,.4)}
-}
-@keyframes navEsmPulse{
-  0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.6)}
-  50%{box-shadow:0 0 24px 9px rgba(80,200,120,1),0 0 40px 5px rgba(80,200,120,.4)}
-}
+/* ══ ANÉIS DE NÍVEL — versão premium ══ */
+@keyframes navBronzeRotate{to{transform:rotate(360deg)}}
+@keyframes navBronzeGlow{0%,100%{box-shadow:0 0 6px 2px rgba(180,100,30,.5)}50%{box-shadow:0 0 14px 4px rgba(205,127,50,.9),0 0 26px rgba(205,127,50,.35)}}
+@keyframes navPrataRotate{to{transform:rotate(-360deg)}}
+@keyframes navPrataGlow{0%,100%{box-shadow:0 0 6px 2px rgba(190,200,220,.4)}33%{box-shadow:0 0 20px 5px rgba(255,255,255,.85),0 0 34px rgba(200,220,255,.4)}66%{box-shadow:0 0 8px 2px rgba(180,195,215,.5)}}
+@keyframes navOuroRotate{to{transform:rotate(360deg)}}
+@keyframes navOuroGlow{0%,100%{box-shadow:0 0 10px 2px rgba(220,170,0,.55),0 0 20px rgba(255,160,0,.25)}50%{box-shadow:0 0 20px 6px rgba(255,215,0,.95),0 0 38px rgba(255,165,0,.5),0 0 55px rgba(255,120,0,.2)}}
+@keyframes navEsmRotate{to{transform:rotate(360deg)}}
+@keyframes navEsmRotateRev{to{transform:rotate(-360deg)}}
+@keyframes navEsmGlow{0%,100%{box-shadow:0 0 10px 3px rgba(0,200,80,.5),0 0 22px rgba(0,255,100,.2)}50%{box-shadow:0 0 24px 8px rgba(0,255,120,.9),0 0 44px rgba(0,200,80,.5),0 0 66px rgba(0,255,100,.2)}}
 @keyframes navDiaRotate{to{transform:rotate(360deg)}}
+@keyframes navDiaGlow{0%,100%{box-shadow:0 0 16px rgba(185,242,255,.6),0 0 32px rgba(123,97,255,.35)}50%{box-shadow:0 0 28px rgba(185,242,255,.9),0 0 52px rgba(167,139,250,.6),0 0 72px rgba(0,255,255,.25)}}
 
 .nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nav-avatar-ring{position:absolute;inset:-3px;border-radius:50%;z-index:0}
@@ -57,36 +51,24 @@
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
 }
-/* Bronze — borda âmbar quente */
-.nav-nivel-bronze .nav-user-avatar{
-  border-color:#cd9f6a !important;
-  animation:navBronzePulse 2.5s ease-in-out infinite;
-}
-/* Prata — borda prateada */
-.nav-nivel-prata .nav-user-avatar{
-  border-color:#e8e8e8 !important;
-  animation:navPrataShimmer 3s ease-in-out infinite;
-}
-/* Ouro — borda dourada */
-.nav-nivel-ouro .nav-user-avatar{
-  border-color:#FFD700 !important;
-  animation:navOuroPulse 2s ease-in-out infinite;
-}
-/* Esmeralda — borda verde */
-.nav-nivel-esmeralda .nav-user-avatar{
-  border-color:#50c878 !important;
-  animation:navEsmPulse 1.8s ease-in-out infinite;
-}
-/* Diamante — disco girando */
-.nav-nivel-diamante .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
-  animation:navDiaRotate 2.5s linear infinite;
-  box-shadow:0 0 16px rgba(185,242,255,.7),0 0 32px rgba(123,97,255,.4);
-}
-.nav-nivel-diamante .nav-avatar-ring::before{
-  content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0;
-}
-.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
+.nav-nivel-bronze .nav-avatar-ring{background:conic-gradient(from 0deg,#5a2e00,#c87820,#f0c060,#cd8030,#f5d080,#b06010,#5a2e00);animation:navBronzeRotate 4s linear infinite}
+.nav-nivel-bronze .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e}
+.nav-nivel-bronze .nav-user-avatar{border:none!important;animation:navBronzeGlow 3s ease-in-out infinite}
+.nav-nivel-prata .nav-avatar-ring{background:conic-gradient(from 0deg,#333,#bbb,#fff,#ccc,#eee,#aaa,#333);animation:navPrataRotate 3s linear infinite}
+.nav-nivel-prata .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e}
+.nav-nivel-prata .nav-avatar-ring::after{content:'';position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.6) 78%,transparent 90%);animation:navPrataRotate 2s linear infinite reverse}
+.nav-nivel-prata .nav-user-avatar{border:none!important;animation:navPrataGlow 2.8s ease-in-out infinite}
+.nav-nivel-ouro .nav-avatar-ring{background:conic-gradient(from 0deg,#6a3800,#e8a800,#ffdd00,#ffe880,#ffd000,#c07800,#6a3800);animation:navOuroRotate 2s linear infinite;filter:blur(.3px)}
+.nav-nivel-ouro .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none}
+.nav-nivel-ouro .nav-avatar-ring::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.7) 62%,rgba(255,255,180,.9) 68%,transparent 78%);animation:navOuroRotate 2.5s linear infinite reverse;filter:blur(.5px)}
+.nav-nivel-ouro .nav-user-avatar{border:none!important;animation:navOuroGlow 2s ease-in-out infinite}
+.nav-nivel-esmeralda .nav-avatar-ring{background:conic-gradient(from 0deg,#002010,#00aa44,#00ff77,#80ffcc,#00ff88,#009933,#002010);animation:navEsmRotate 1.5s linear infinite;filter:blur(.2px)}
+.nav-nivel-esmeralda .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;filter:none}
+.nav-nivel-esmeralda .nav-avatar-ring::after{content:'';position:absolute;inset:-7px;border-radius:50%;background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.6) 46%,rgba(150,255,180,.85) 55%,transparent 68%);animation:navEsmRotateRev 2.2s linear infinite;filter:blur(1px)}
+.nav-nivel-esmeralda .nav-user-avatar{border:none!important;animation:navEsmGlow 1.8s ease-in-out infinite}
+.nav-nivel-diamante .nav-avatar-ring{background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);animation:navDiaRotate 2s linear infinite;box-shadow:0 0 16px rgba(185,242,255,.7),0 0 32px rgba(123,97,255,.4)}
+.nav-nivel-diamante .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
+.nav-nivel-diamante .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navDiaGlow 2.5s ease-in-out infinite}
 
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -254,6 +236,18 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   <div class="nav-right">
     <a class="nav-btn" href="index.html">Início</a>
     <a class="nav-btn" href="promocoes.html" style="color:var(--orange);border-color:rgba(232,66,26,.3)">Promoções</a>
+    <!-- Login / Avatar com anel de nível -->
+    <a class="nav-btn" href="perfil.html" id="navLogin">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Entrar
+    </a>
+    <div class="nav-avatar-wrap" id="navAvatarWrap" style="display:none">
+      <div class="nav-avatar-ring" id="navAvatarRing"></div>
+      <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" title="Meu perfil">
+        <img id="navAvatarImg" src="" alt="" style="display:none">
+        <div id="navAvatarFallback"></div>
+      </a>
+    </div>
     <button class="nav-cart-btn" onclick="toggleCart()">
       <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       <div class="cart-badge" id="cartBadge">0</div>
@@ -362,24 +356,35 @@ async function init(){
 
 function renderProdutos(){
   var lista=todosProdutos.filter(function(p){
-    var catOk=catAtual==='todos'||p.categoria===catAtual;
-    var buscaOk=!buscaAtual||(p.nome||'').toLowerCase().includes(buscaAtual.toLowerCase());
+    /* Se está buscando por texto, ignora filtro de categoria para mostrar todos os resultados */
+    var catOk=buscaAtual?true:(catAtual==='todos'||p.categoria===catAtual);
+    var buscaOk=!buscaAtual||(p.nome||'').toLowerCase().includes(buscaAtual.toLowerCase())||
+                (p.categoria||'').toLowerCase().includes(buscaAtual.toLowerCase());
     return catOk&&buscaOk;
   });
-  document.getElementById('filterCount').textContent=lista.length+' jogos';
+  document.getElementById('filterCount').textContent=lista.length+' jogo'+(lista.length!==1?'s':'');
   var grid=document.getElementById('prodsGrid');
-  if(lista.length===0){grid.innerHTML='<div class="empty-grid">Nenhum jogo encontrado.</div>';return}
+  if(lista.length===0){
+    grid.innerHTML='<div class="empty-grid">🔍 Nenhum jogo encontrado para <strong style="color:#ccc">"'+esc(buscaAtual)+'"</strong>.<br><span style="font-size:10px;margin-top:8px;display:block">Tente outro nome ou verifique a ortografia.</span></div>';
+    return;
+  }
   grid.innerHTML=lista.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
     var tagClass=!ok?'tag-esgotado':p.categoria==='Combos e Bundles'?'tag-combo':p.categoria==='Steam Key / Outros'?'tag-key':'tag-oferta';
     var tagTxt=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Bundle':p.categoria==='Steam Key / Outros'?'Key':'Oferta';
+    /* Highlight do nome na busca */
+    var nomeFinal=esc(p.nome);
+    if(buscaAtual){
+      var re=new RegExp('('+buscaAtual.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+      nomeFinal=esc(p.nome).replace(re,'<mark style="background:rgba(232,66,26,.35);color:#fff;border-radius:2px;padding:0 1px">$1</mark>');
+    }
     return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s">'+
       '<div class="prod-img-wrap">'+
         (p.imagem?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">':'')+
         '<div class="prod-tag '+tagClass+'">'+tagTxt+'</div>'+
       '</div>'+
       '<div class="prod-body">'+
-        '<div class="prod-name">'+esc(p.nome)+'</div>'+
+        '<div class="prod-name">'+nomeFinal+'</div>'+
         '<div class="prod-plat">'+esc(p.plataforma||'Steam')+'</div>'+
         '<div class="prod-price'+(ok?'':' esgotado')+'">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
         '<button class="prod-btn '+(ok?'prod-btn-buy':'prod-btn-dis')+'" '+(ok?'':'disabled')+
@@ -389,7 +394,10 @@ function renderProdutos(){
   }).join('');
 }
 
-function buscar(q){buscaAtual=q;renderProdutos()}
+function buscar(q){
+  buscaAtual=q.trim();
+  renderProdutos();
+}
 
 function addCarrinho(id){
   var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
@@ -421,54 +429,29 @@ function toggleCart(){
   if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
   else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
 }
-async function iniciarPagamento(itens, user) {
-  /* Garante que a sessão existe e o token é válido */
-  const { data: sessData, error: sessErr } = await sb.auth.getSession();
-  if(sessErr || !sessData.session) {
-    throw new Error('Sessão expirada. Faça login novamente.');
-  }
-  const token = sessData.session.access_token;
-  if(!token) throw new Error('Token inválido. Faça login novamente.');
-
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/mercadopago-criar-preferencia`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ itens: itens })
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || 'Erro ao criar pagamento');
-  return data.init_point;
-}
-
 async function checkout() {
   if (carrinho.length === 0) return;
   const btn = document.getElementById('checkoutBtn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Processando...'; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Aguarde...'; }
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
       showToast('Faça login para finalizar a compra!');
       setTimeout(() => window.location.href = 'perfil.html', 1200);
+      if (btn) { btn.disabled = false; btn.textContent = 'Finalizar compra'; }
       return;
     }
-    const itens = carrinho.map(p => ({
-      id: p.id,
-      nome: p.nome,
-      preco: Number(p.preco),
-      quantidade: 1,
-      imagem: p.imagem || ''
-    }));
-    sessionStorage.setItem('mg_carrinho_pendente', JSON.stringify(itens));
-    sessionStorage.setItem('mg_user_email', session.user.email);
-    const initPoint = await iniciarPagamento(itens, session.user);
-    window.location.href = initPoint;
+    const itens = carrinho.map(p => ({ id: p.id, nome: p.nome, preco: Number(p.preco), quantidade: 1, imagem: p.imagem || '' }));
+    sessionStorage.setItem('mg_itens_pendentes',  JSON.stringify(itens));
+    sessionStorage.setItem('mg_user_email',        session.user.email);
+    sessionStorage.setItem('mg_user_id',           session.user.id);
+    sessionStorage.setItem('mg_access_token',      session.access_token);
+    sessionStorage.setItem('mg_refresh_token',     session.refresh_token || '');
+    window.location.href = 'checkout.html';
   } catch (error) {
     console.error('Erro no checkout:', error);
     showToast('Erro: ' + (error.message || 'Tente novamente'));
-    if (btn) { btn.disabled = false; btn.textContent = '🚀 Finalizar compra'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Finalizar compra'; }
   }
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}

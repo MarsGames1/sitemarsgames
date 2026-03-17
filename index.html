@@ -422,62 +422,58 @@ body.tema-claro .exit-sub{color:#666}
     content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
     width:20px;height:2px;background:var(--green);border-radius:1px;
   }
-  /* Sorteios — borda giratória animada */
+  /* Sorteios — borda fina girando, elegante */
   @keyframes sorteioSpin{to{transform:rotate(360deg)}}
-  @keyframes sorteioGlow{0%,100%{opacity:.7}50%{opacity:1}}
   .nav-link-sorteio{
-    color:#fff!important;
-    background:rgba(10,6,2,.85)!important;
+    color:#ffb347!important;
+    background:rgba(232,66,26,.06)!important;
     border:none!important;
     border-radius:8px;
     position:relative;
-    overflow:visible;
-    padding:10px 16px;
     isolation:isolate;
+    padding:10px 16px;
   }
   .nav-link-sorteio::before{
     content:'';
     position:absolute;
-    inset:-2px;
-    border-radius:10px;
+    inset:-1.5px;
+    border-radius:9px;
     background:conic-gradient(
       from 0deg,
-      #e8421a 0%,
-      #ff6b2b 20%,
-      #ffb300 38%,
-      #ff6b2b 55%,
-      #e8421a 70%,
-      transparent 75%,
+      transparent 0%,
+      transparent 55%,
+      rgba(255,160,50,.9) 70%,
+      rgba(255,210,80,1) 78%,
+      rgba(255,160,50,.9) 86%,
       transparent 100%
     );
-    animation:sorteioSpin .9s linear infinite;
+    animation:sorteioSpin 2s linear infinite;
     z-index:-1;
-    filter:blur(1px);
   }
   .nav-link-sorteio::after{
     content:'';
     position:absolute;
     inset:1px;
     border-radius:7px;
-    background:#0e0805;
+    background:#0a0a0e;
     z-index:-1;
   }
+  .nav-link-sorteio:hover{
+    color:#ffe080!important;
+    background:rgba(232,66,26,.1)!important;
+  }
   .nav-link-sorteio:hover::before{
+    animation-duration:1.2s;
     background:conic-gradient(
       from 0deg,
-      #ff6b2b 0%,
-      #ffb300 25%,
-      #fff 45%,
-      #ffb300 65%,
-      #ff6b2b 80%,
-      transparent 83%,
+      transparent 0%,
+      transparent 50%,
+      rgba(255,140,30,.9) 64%,
+      rgba(255,220,100,1) 74%,
+      rgba(255,255,180,.8) 78%,
+      rgba(255,200,80,.8) 86%,
       transparent 100%
     );
-    animation-duration:.5s;
-    filter:blur(0px);
-  }
-  .nav-link-sorteio:hover{
-    text-shadow:0 0 12px rgba(255,179,0,.8);
   }
   /* Dropdown */
   .nav-dropdown{position:relative}
