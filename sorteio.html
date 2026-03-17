@@ -286,10 +286,10 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .sorteio-tab{
   display:flex;align-items:center;gap:10px;
   padding:12px 28px;border-radius:12px;
-  border:1px solid var(--border2);
-  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
   font-family:'Orbitron',sans-serif;
-  font-size:10px;font-weight:700;color:#555;
+  font-size:10px;font-weight:700;color:#aaa;
   letter-spacing:1.5px;text-transform:uppercase;
   cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
 }
@@ -297,7 +297,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   content:'';position:absolute;inset:0;opacity:0;
   transition:opacity .25s;pointer-events:none;
 }
-.sorteio-tab:hover{color:#aaa;border-color:#444;background:rgba(255,255,255,.05)}
+.sorteio-tab:hover{color:#fff;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.09)}
 
 /* Ícone animado de cada tab */
 .tab-icon{
@@ -570,8 +570,80 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
   font-size:10px;font-weight:700;color:var(--muted);
 }
 
-/* Card sorteio encerrado / sem sorteio */
-.sem-sorteio{
+/* ══ TELA DE SORTEIO ENCERRADO ══ */
+@keyframes trophyBounce{
+  0%,100%{transform:translateY(0) scale(1)}
+  30%{transform:translateY(-18px) scale(1.08)}
+  60%{transform:translateY(-6px) scale(1.03)}
+}
+@keyframes winnerReveal{
+  0%{opacity:0;transform:scale(.85) translateY(20px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+.encerrado-card{
+  text-align:center;padding:52px 28px 44px;
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  position:relative;overflow:hidden;
+  animation:fadeUp .5s ease both;
+}
+.encerrado-card.tem-vencedor{
+  border-color:rgba(255,215,0,.35);
+  background:linear-gradient(160deg,rgba(255,215,0,.05) 0%,var(--card) 50%);
+  box-shadow:0 0 60px rgba(255,215,0,.08);
+}
+.encerrado-card.aguardando{
+  border-color:rgba(232,66,26,.2);
+  background:linear-gradient(160deg,rgba(232,66,26,.04) 0%,var(--card) 50%);
+}
+.encerrado-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(to right,var(--enc-a,var(--mars)),var(--enc-b,var(--amber)));
+}
+.enc-trophy{
+  font-size:64px;display:block;margin:0 auto 16px;
+  animation:trophyBounce 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(255,215,0,.6));
+}
+.enc-subtitle{
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--amber);margin-bottom:10px;
+}
+.enc-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,26px);font-weight:900;
+  color:#fff;margin-bottom:20px;
+}
+.enc-vencedor-box{
+  display:inline-flex;align-items:center;gap:14px;
+  padding:16px 28px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,215,0,.12),rgba(255,165,0,.06));
+  border:1px solid rgba(255,215,0,.3);
+  margin-bottom:24px;
+  animation:winnerReveal .6s .2s ease both;
+}
+.enc-vencedor-avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,215,0,.3),rgba(255,165,0,.2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--amber);
+  border:2px solid rgba(255,215,0,.4);flex-shrink:0;
+}
+.enc-vencedor-info{text-align:left}
+.enc-vencedor-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:4px}
+.enc-vencedor-email{font-size:14px;font-weight:900;color:#fff}
+.enc-vencedor-premio{font-size:11px;color:#888;margin-top:3px}
+.enc-next{
+  font-size:12px;color:#555;font-weight:600;line-height:1.7;
+  max-width:400px;margin:0 auto;
+}
+.enc-next strong{color:#888}
+.enc-discord{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:20px;padding:10px 22px;border-radius:10px;
+  background:rgba(114,137,218,.1);border:1px solid rgba(114,137,218,.3);
+  color:#7289da;font-size:11px;font-weight:700;
+  text-decoration:none;transition:background .2s;
+}
+.enc-discord:hover{background:rgba(114,137,218,.18)}
   text-align:center;padding:60px 24px;
   background:var(--card);border:1px solid var(--border);border-radius:20px;
 }
@@ -864,6 +936,29 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
     </div>
   </div>
 
+  <!-- Sorteio Encerrado -->
+  <div id="sorteio-encerrado" style="display:none">
+    <div class="encerrado-card" id="encerradoCard">
+      <span class="enc-trophy" id="encTrophy">🏆</span>
+      <div class="enc-subtitle" id="encSubtitle">Sorteio encerrado</div>
+      <div class="enc-title" id="encTitle">Temos um vencedor!</div>
+      <div class="enc-vencedor-box" id="encVencedorBox" style="display:none">
+        <div class="enc-vencedor-avatar" id="encAvatar">?</div>
+        <div class="enc-vencedor-info">
+          <div class="enc-vencedor-label">Vencedor sortudo</div>
+          <div class="enc-vencedor-email" id="encEmail">—</div>
+          <div class="enc-vencedor-premio" id="encPremio">—</div>
+        </div>
+      </div>
+      <div class="enc-next" id="encNext">Aguarde o próximo sorteio!</div>
+      <br>
+      <a href="https://discord.gg/bKnR9accnw" target="_blank" class="enc-discord">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#7289da"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        Seja avisado no Discord
+      </a>
+    </div>
+  </div>
+
 </main>
 
 <div id="toast"></div>
@@ -1031,6 +1126,7 @@ async function carregarSorteio(tipo){
   carregarParticipantes(sorteioAtual.id);
   carregarHistorico(tipo);
   assinarRealtime(sorteioAtual.id);
+  assinarRealtimeDelete(sorteioAtual.id);
 
   if(userSession){
     var{data:part}=await sb.from('sorteio_participacoes')
@@ -1097,6 +1193,13 @@ function iniciarContador(dataFim){
       document.getElementById('cMinutos').textContent='00';
       document.getElementById('cSegundos').textContent='00';
       showToast('⏰ Sorteio encerrado! Apurando vencedor...');
+      /* Verifica após 3s se o admin já sorteou */
+      setTimeout(async function(){
+        if(!sorteioAtual) return;
+        var{data}=await sb.from('sorteios_periodicos').select('*').eq('id',sorteioAtual.id).maybeSingle();
+        if(data&&data.vencedor_email) mostrarEncerrado(data,'vencedor');
+        else if(data&&!data.ativo) mostrarEncerrado(data,'pausado');
+      },3000);
       return;
     }
     var d=pad(Math.floor(diff/86400000));
@@ -1331,15 +1434,99 @@ async function executarSorteio(sorteioId){
 /* Expõe globalmente para o admin poder chamar via console ou trigger */
 window.executarSorteio=executarSorteio;
 
-/* Realtime — atualiza participantes em tempo real */
+/* ── MOSTRAR ENCERRADO ── */
+function mostrarEncerrado(sorteio, motivo){
+  /* motivo: 'vencedor' | 'pausado' | 'excluido' */
+  document.getElementById('loading-sorteio').style.display='none';
+  document.getElementById('sorteio-content').style.display='none';
+  document.getElementById('sem-sorteio').style.display='none';
+  document.getElementById('sorteio-encerrado').style.display='block';
+
+  var card=document.getElementById('encerradoCard');
+  var vencBox=document.getElementById('encVencedorBox');
+
+  if(motivo==='vencedor'&&sorteio&&sorteio.vencedor_email){
+    card.className='encerrado-card tem-vencedor';
+    card.style.setProperty('--enc-a','#b8860b');
+    card.style.setProperty('--enc-b','#ffd700');
+    document.getElementById('encTrophy').textContent='🏆';
+    document.getElementById('encSubtitle').textContent='Sorteio '+(sorteio.tipo||'')+ ' encerrado';
+    document.getElementById('encTitle').textContent='Temos um vencedor!';
+    var email=sorteio.vencedor_email.replace(/(.{3}).*(@.*)/,'$1***$2');
+    document.getElementById('encAvatar').textContent=(sorteio.vencedor_email[0]||'?').toUpperCase();
+    document.getElementById('encEmail').textContent=email;
+    document.getElementById('encPremio').textContent='Ganhou: '+(sorteio.premio||'');
+    document.getElementById('encNext').textContent='O prêmio foi entregue ao vencedor. Participe do próximo sorteio!';
+    vencBox.style.display='inline-flex';
+    lancarConfetti();
+  } else if(motivo==='pausado'){
+    card.className='encerrado-card aguardando';
+    card.style.setProperty('--enc-a','#e8421a');
+    card.style.setProperty('--enc-b','#ff6b2b');
+    document.getElementById('encTrophy').textContent='⏸️';
+    document.getElementById('encSubtitle').textContent='Sorteio pausado';
+    document.getElementById('encTitle').textContent='Este sorteio foi pausado';
+    document.getElementById('encNext').textContent='O administrador pausou este sorteio. Em breve um novo começará — fique de olho!';
+    vencBox.style.display='none';
+  } else {
+    card.className='encerrado-card aguardando';
+    card.style.setProperty('--enc-a','#555');
+    card.style.setProperty('--enc-b','#888');
+    document.getElementById('encTrophy').textContent='🚀';
+    document.getElementById('encSubtitle').textContent='Nenhum sorteio ativo';
+    document.getElementById('encTitle').textContent='Aguarde o próximo!';
+    document.getElementById('encNext').innerHTML='Em breve um novo sorteio incrível será aberto.<br>Entre no Discord para ser avisado primeiro!';
+    vencBox.style.display='none';
+  }
+
+  carregarHistorico(tipoAtual);
+}
+
+/* Realtime — escuta participações E mudanças no sorteio */
+var _realtimeChannel=null;
 function assinarRealtime(sorteioId){
-  sb.channel('sorteio_'+sorteioId)
+  /* Remove canal anterior se existir */
+  if(_realtimeChannel){
+    sb.removeChannel(_realtimeChannel);
+    _realtimeChannel=null;
+  }
+
+  _realtimeChannel=sb.channel('sorteio_watch_'+sorteioId)
+    /* Novo participante */
     .on('postgres_changes',{
       event:'INSERT',schema:'public',table:'sorteio_participacoes',
       filter:'sorteio_id=eq.'+sorteioId
     },function(){
       carregarParticipantes(sorteioId);
-    }).subscribe();
+    })
+    /* Sorteio atualizado pelo admin (pausa, encerra, define vencedor) */
+    .on('postgres_changes',{
+      event:'UPDATE',schema:'public',table:'sorteios_periodicos',
+      filter:'id=eq.'+sorteioId
+    },function(payload){
+      var novo=payload.new;
+      if(!novo) return;
+      if(novo.vencedor_email){
+        /* Admin sorteou — mostra vencedor */
+        mostrarEncerrado(novo,'vencedor');
+      } else if(!novo.ativo){
+        /* Admin pausou/parou sem sortear */
+        mostrarEncerrado(novo,'pausado');
+      }
+    })
+    .subscribe();
+}
+
+/* Também escuta exclusão */
+function assinarRealtimeDelete(sorteioId){
+  sb.channel('sorteio_delete_'+sorteioId)
+    .on('postgres_changes',{
+      event:'DELETE',schema:'public',table:'sorteios_periodicos',
+      filter:'id=eq.'+sorteioId
+    },function(){
+      mostrarEncerrado(null,'excluido');
+    })
+    .subscribe();
 }
 
 function lancarConfetti(){
