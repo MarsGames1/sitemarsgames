@@ -876,7 +876,58 @@ body.tema-claro .exit-sub{color:#666}
 }
 .cart-item-rm:hover{color:#ff5555}
 .cart-footer{padding:16px 20px;border-top:1px solid var(--border)}
-.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+
+/* ── Cupom ── */
+.cart-cupom-wrap{margin-bottom:14px}
+.cart-cupom-row{
+  display:flex;gap:7px;
+}
+.cart-cupom-input{
+  flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border2);
+  border-radius:8px;padding:10px 13px;color:#ccc;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;
+  outline:none;text-transform:uppercase;letter-spacing:1px;
+  transition:border-color .2s;
+}
+.cart-cupom-input::placeholder{color:#333;text-transform:none;letter-spacing:0;font-weight:600}
+.cart-cupom-input:focus{border-color:rgba(232,66,26,.4)}
+.cart-cupom-btn{
+  padding:10px 14px;border-radius:8px;border:none;
+  background:rgba(232,66,26,.15);border:1px solid rgba(232,66,26,.3);
+  color:var(--orange);font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;
+  cursor:pointer;white-space:nowrap;transition:background .2s,border-color .2s;
+  flex-shrink:0;
+}
+.cart-cupom-btn:hover{background:rgba(232,66,26,.25);border-color:rgba(232,66,26,.5)}
+.cart-cupom-btn:disabled{opacity:.5;cursor:not-allowed}
+.cart-cupom-status{
+  margin-top:7px;font-size:10px;font-weight:700;letter-spacing:.3px;
+  display:none;align-items:center;gap:6px;
+  padding:7px 10px;border-radius:7px;
+}
+.cart-cupom-status.ok{
+  display:flex;background:rgba(0,255,85,.07);border:1px solid rgba(0,255,85,.2);color:var(--green);
+}
+.cart-cupom-status.erro{
+  display:flex;background:rgba(255,68,68,.07);border:1px solid rgba(255,68,68,.2);color:#ff6666;
+}
+.cart-cupom-status.removido{
+  display:flex;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);
+}
+/* Linha de desconto */
+.cart-desconto-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:6px;display:none;
+}
+.cart-desconto-row.show{display:flex}
+.cart-desconto-lbl{font-size:10px;font-weight:700;color:var(--green);display:flex;align-items:center;gap:6px}
+.cart-desconto-lbl span{
+  background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.2);
+  border-radius:4px;padding:1px 6px;font-size:8px;letter-spacing:.5px;
+}
+.cart-desconto-val{font-size:13px;font-weight:900;color:var(--green)}
 .cart-total-lbl{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
 .cart-total-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green)}
 .checkout-btn{
@@ -1438,22 +1489,17 @@ footer::before{
 /* Cabeçalho */
 .cats-explore-head{
   text-align:center;margin-bottom:36px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
   animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .08s both;
 }
 .cats-explore-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
+  display:block;
   font-size:10px;font-weight:700;letter-spacing:4px;
   text-transform:uppercase;color:rgba(255,255,255,.3);
   margin-bottom:0;font-family:'Montserrat',sans-serif;
+  text-align:center;
 }
-.cats-explore-eyebrow::before,.cats-explore-eyebrow::after{
-  content:'';display:inline-block;width:32px;height:1px;
-  background:linear-gradient(to right,transparent,rgba(255,255,255,.2));
-  animation:catLineIn .7s cubic-bezier(.23,1,.32,1) .3s both;
-}
-.cats-explore-eyebrow::after{
-  background:linear-gradient(to left,transparent,rgba(255,255,255,.2));
-}
+.cats-explore-eyebrow::before,.cats-explore-eyebrow::after{display:none}
 .cats-explore-title{
   font-family:'Orbitron',sans-serif;
   font-size:clamp(22px,6vw,52px);font-weight:900;
@@ -3894,6 +3940,19 @@ footer::before{
     <div class="cart-empty"><span class="cart-empty-icon">🛒</span>Seu carrinho está vazio.<br>Adicione jogos para continuar.</div>
   </div>
   <div class="cart-footer">
+    <!-- Cupom de desconto -->
+    <div class="cart-cupom-wrap">
+      <div class="cart-cupom-row">
+        <input class="cart-cupom-input" id="cartCupomInput" type="text" placeholder="Código de cupom" maxlength="20" autocomplete="off">
+        <button class="cart-cupom-btn" id="cartCupomBtn" onclick="aplicarCupom()">Aplicar</button>
+      </div>
+      <div class="cart-cupom-status" id="cartCupomStatus"></div>
+    </div>
+    <!-- Desconto aplicado -->
+    <div class="cart-desconto-row" id="cartDescontoRow">
+      <div class="cart-desconto-lbl">Desconto <span id="cartCupomTag"></span></div>
+      <div class="cart-desconto-val" id="cartDescontoVal"></div>
+    </div>
     <div class="cart-total-row">
       <div class="cart-total-lbl">Total</div>
       <div class="cart-total-val" id="cartTotal">R$ 0,00</div>
@@ -4196,23 +4255,159 @@ function addCarrinhoModal(){if(prodModalAtual){addCarrinho(prodModalAtual.id);fe
 document.getElementById('prodModal').addEventListener('click',function(e){if(e.target===this)fecharModal()});
 
 /* ── CARRINHO ── */
+/* ══ SISTEMA DE CUPOM ══ */
+var cupomAtual = null; /* {codigo, desconto_tipo, desconto_valor, id} */
+
+async function aplicarCupom(){
+  var input = document.getElementById('cartCupomInput');
+  var btn   = document.getElementById('cartCupomBtn');
+  var status= document.getElementById('cartCupomStatus');
+  var codigo= (input.value||'').trim().toUpperCase();
+  if(!codigo) return;
+
+  /* Já tem cupom aplicado — remover */
+  if(cupomAtual){
+    cupomAtual = null;
+    input.value = '';
+    btn.textContent = 'Aplicar';
+    status.className = 'cart-cupom-status removido';
+    status.textContent = '✕ Cupom removido';
+    status.style.display = 'flex';
+    setTimeout(function(){status.style.display='none'},2500);
+    atualizarCarrinho();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  status.style.display = 'none';
+
+  try {
+    /* Busca o cupom na tabela 'cupons' */
+    var res = await sb.from('cupons')
+      .select('*')
+      .eq('codigo', codigo)
+      .eq('ativo', true)
+      .maybeSingle();
+
+    if(res.error || !res.data){
+      mostrarErroCupom('Cupom inválido ou expirado.');
+      btn.disabled = false; btn.textContent = 'Aplicar'; return;
+    }
+
+    var c = res.data;
+
+    /* Verifica se já foi usado por este email */
+    var sess = await sb.auth.getSession();
+    if(sess.data && sess.data.session){
+      var email = sess.data.session.user.email;
+      var usadoRes = await sb.from('cupons_usados')
+        .select('id')
+        .eq('cupom_id', c.id)
+        .eq('user_email', email)
+        .maybeSingle();
+      if(usadoRes.data){
+        mostrarErroCupom('Este cupom já foi utilizado pela sua conta.');
+        btn.disabled = false; btn.textContent = 'Aplicar'; return;
+      }
+    }
+
+    /* Verifica limite de usos */
+    if(c.max_usos && c.usos_atual >= c.max_usos){
+      mostrarErroCupom('Este cupom atingiu o limite de usos.');
+      btn.disabled = false; btn.textContent = 'Aplicar'; return;
+    }
+
+    /* Cupom válido */
+    cupomAtual = c;
+    btn.textContent = 'Remover';
+    btn.disabled = false;
+    atualizarCarrinho();
+
+    status.className = 'cart-cupom-status ok';
+    var desc = c.desconto_tipo==='percentual'
+      ? c.desconto_valor+'% OFF no item mais barato'
+      : 'R$ '+Number(c.desconto_valor).toFixed(2).replace('.',',')+ ' OFF no item mais barato';
+    status.innerHTML = '✓ Cupom <strong>'+codigo+'</strong> aplicado! '+desc;
+    status.style.display = 'flex';
+
+  } catch(e){
+    mostrarErroCupom('Erro ao verificar cupom. Tente novamente.');
+    btn.disabled = false; btn.textContent = 'Aplicar';
+  }
+}
+
+function mostrarErroCupom(msg){
+  var status = document.getElementById('cartCupomStatus');
+  status.className = 'cart-cupom-status erro';
+  status.textContent = '✕ '+msg;
+  status.style.display = 'flex';
+  setTimeout(function(){status.style.display='none'},3500);
+}
+
+function calcularDesconto(){
+  /* Aplica o desconto no produto de MENOR valor */
+  if(!cupomAtual || carrinho.length===0) return 0;
+  var precos = carrinho.map(function(p){return Number(p.preco)});
+  var menor  = Math.min.apply(null, precos);
+  var desc   = 0;
+  if(cupomAtual.desconto_tipo==='percentual'){
+    desc = menor * (cupomAtual.desconto_valor/100);
+  } else {
+    desc = Math.min(Number(cupomAtual.desconto_valor), menor);
+  }
+  return Math.round(desc*100)/100;
+}
+
 function addCarrinho(id){
   var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
   if(carrinho.find(function(x){return x.id===id})){showToast('Jogo já está no carrinho!');return}
   carrinho.push(p);atualizarCarrinho();showToast('✓ '+p.nome.substring(0,28)+'... adicionado!');
 }
-function removerCarrinho(id){carrinho=carrinho.filter(function(x){return x.id!==id});atualizarCarrinho()}
+function removerCarrinho(id){
+  carrinho=carrinho.filter(function(x){return x.id!==id});
+  atualizarCarrinho();
+}
 function atualizarCarrinho(){
   document.getElementById('cartCount').textContent=carrinho.length;
-  var total=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+
+  var subtotal=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+  var desconto=calcularDesconto();
+  var total=Math.max(0, subtotal-desconto);
+
+  /* Linha de desconto */
+  var rowDesc=document.getElementById('cartDescontoRow');
+  if(desconto>0 && cupomAtual){
+    rowDesc.classList.add('show');
+    document.getElementById('cartCupomTag').textContent=cupomAtual.codigo;
+    document.getElementById('cartDescontoVal').textContent='−R$ '+desconto.toFixed(2).replace('.',',');
+  } else {
+    rowDesc.classList.remove('show');
+  }
+
   document.getElementById('cartTotal').textContent='R$ '+total.toFixed(2).replace('.',',');
   document.getElementById('checkoutBtn').disabled=carrinho.length===0;
+
   var items=document.getElementById('cartItems');
-  if(carrinho.length===0){items.innerHTML='<div class="cart-empty"><span class="cart-empty-icon">🛒</span>Seu carrinho está vazio.<br>Adicione jogos para continuar.</div>';return}
+  if(carrinho.length===0){
+    items.innerHTML='<div class="cart-empty"><span class="cart-empty-icon">🛒</span>Seu carrinho está vazio.<br>Adicione jogos para continuar.</div>';
+    return;
+  }
+
+  /* Identifica o item com menor valor para mostrar tag */
+  var precos=carrinho.map(function(p){return Number(p.preco)});
+  var menorPreco=cupomAtual?Math.min.apply(null,precos):null;
+
   items.innerHTML=carrinho.map(function(p){
+    var preco=Number(p.preco);
+    var isMenor=cupomAtual&&preco===menorPreco;
+    var tag=isMenor?'<span style="font-size:7px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;background:rgba(0,255,85,.12);border:1px solid rgba(0,255,85,.25);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px">DESCONTO</span>':'';
     return '<div class="cart-item">'+
       (p.imagem?'<img class="cart-item-img" src="'+p.imagem+'" alt="">':'<div class="cart-item-img"></div>')+
-      '<div class="cart-item-info"><div class="cart-item-name">'+esc(p.nome)+'</div><div class="cart-item-price">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div></div>'+
+      '<div class="cart-item-info">'+
+        '<div class="cart-item-name">'+esc(p.nome)+tag+'</div>'+
+        '<div class="cart-item-price">R$ '+preco.toFixed(2).replace('.',',')+'</div>'+
+      '</div>'+
       '<button class="cart-item-rm" onclick="removerCarrinho(\''+p.id+'\')">✕</button>'+
     '</div>';
   }).join('');
@@ -4237,6 +4432,22 @@ async function checkout() {
       btn.textContent = '🚀 Finalizar via Pix / Cartão';
       return;
     }
+
+    /* Registrar uso do cupom (otimista — checkout vai confirmar) */
+    var desconto = calcularDesconto();
+    if(cupomAtual && desconto>0){
+      try {
+        await sb.from('cupons_usados').insert({
+          cupom_id: cupomAtual.id,
+          user_email: session.user.email,
+          desconto_aplicado: desconto
+        });
+        await sb.from('cupons')
+          .update({usos_atual: (cupomAtual.usos_atual||0)+1})
+          .eq('id', cupomAtual.id);
+      } catch(e){ /* não bloqueia o checkout */ }
+    }
+
     const itens = carrinho.map(p => ({
       id: p.id,
       nome: p.nome,
@@ -4244,9 +4455,21 @@ async function checkout() {
       quantidade: 1,
       imagem: p.imagem || ''
     }));
-    // Salva itens e redireciona para a tela de seleção de pagamento
     sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
     sessionStorage.setItem('mg_user_email', session.user.email);
+    sessionStorage.setItem('mg_user_id', session.user.id);
+    sessionStorage.setItem('mg_access_token', session.access_token);
+    sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
+    /* Passa cupom e desconto para o checkout */
+    if(cupomAtual && desconto>0){
+      sessionStorage.setItem('mg_cupom', JSON.stringify({
+        codigo: cupomAtual.codigo,
+        desconto: desconto,
+        tipo: cupomAtual.desconto_tipo
+      }));
+    } else {
+      sessionStorage.removeItem('mg_cupom');
+    }
     window.location.href = 'checkout.html';
   } catch (error) {
     console.error('Erro no checkout:', error);
