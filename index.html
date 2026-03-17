@@ -283,7 +283,7 @@ body.tema-claro .exit-sub{color:#666}
 .nav-logo img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,66,26,.5))}
 .nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
 .nav-logo-text span{color:var(--mars)}
-.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative}
 /* Login */
 .nav-login{
   display:flex;align-items:center;justify-content:center;
@@ -606,7 +606,7 @@ body.tema-claro .exit-sub{color:#666}
     transition:width .25s cubic-bezier(.4,0,.2,1),opacity .2s;
     z-index:300;
   }
-  .nav-search-expand.open{width:200px;opacity:1;pointer-events:all;overflow:visible}
+  .nav-search-expand.open{width:200px;opacity:1;pointer-events:all}
   .nav-search-expand input{
     background:none;border:none;outline:none;
     padding:7px 12px;font-size:11px;color:#fff;
@@ -618,14 +618,14 @@ body.tema-claro .exit-sub{color:#666}
     color:#888;cursor:pointer;transition:color .15s;display:flex;align-items:center;flex-shrink:0;
   }
   .nav-search-btn:hover{color:#fff}
-  /* Dropdown de sugestões */
+  /* Sugestões — posicionado relativo ao .nav-search, não ao expand */
   .nav-search-suggestions{
-    position:absolute;top:calc(100% + 6px);right:0;
+    position:absolute;top:calc(100% + 8px);right:0;
     width:240px;
     background:rgba(13,13,18,.98);border:1px solid rgba(232,66,26,.25);
     border-radius:10px;overflow:hidden;
     box-shadow:0 12px 32px rgba(0,0,0,.6);
-    display:none;z-index:999;
+    display:none;z-index:9999;
   }
   .nav-search-suggestions.open{display:block}
   .nav-sugg-item{
@@ -3146,8 +3146,9 @@ footer::before{
         <button class="nav-search-btn" aria-label="Buscar">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
-        <div class="nav-search-suggestions" id="navSuggestions"></div>
       </div>
+      <!-- Sugestões FORA do expand para não ser cortado pelo overflow:hidden -->
+      <div class="nav-search-suggestions" id="navSuggestions"></div>
     </div>
     <!-- Discord -->
     <a class="nav-discord" href="https://discord.gg/bKnR9accnw" target="_blank">
