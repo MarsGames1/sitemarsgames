@@ -3101,37 +3101,48 @@ footer::before{
 <script>
 /* ══ FAVORITAR NOS CARDS — deve vir antes dos carrosséis ══ */
 var _favIds=JSON.parse(localStorage.getItem('mg_favs')||'[]');
+// Cache nome→UUID para não repetir queries
+var _pidCache={};
 
 async function toggleWish(btn){
-  var pid=btn.dataset.pid;
-  if(!pid)return;
+  var pname=btn.dataset.pid; // é o nome do produto
+  if(!pname)return;
   var ativo=btn.classList.contains('fav-ativo');
 
-  // Atualiza todos os botões com o mesmo pid (clones do carrossel)
-  document.querySelectorAll('[data-pid="'+pid+'"]').forEach(function(b){
-    if(ativo){ b.classList.remove('fav-ativo'); }
-    else     { b.classList.add('fav-ativo'); }
+  // Atualiza visual imediatamente em todos os clones
+  document.querySelectorAll('[data-pid="'+pname+'"]').forEach(function(b){
+    b.classList.toggle('fav-ativo',!ativo);
   });
 
   if(ativo){
-    _favIds=_favIds.filter(function(x){return x!==pid});
+    _favIds=_favIds.filter(function(x){return x!==pname});
     showToast('Removido dos favoritos');
   } else {
-    if(!_favIds.includes(pid)) _favIds.push(pid);
+    if(!_favIds.includes(pname)) _favIds.push(pname);
     showToast('❤️ Adicionado aos favoritos!');
   }
   localStorage.setItem('mg_favs',JSON.stringify(_favIds));
 
-  // Sincroniza com Supabase se logado
+  // Sincroniza com Supabase
   try{
     var r=await sb.auth.getSession();
     var session=r.data&&r.data.session?r.data.session:null;
-    if(!session)return;
+    if(!session){showToast('Faça login para salvar favoritos!');return;}
     var uid=session.user.id;
+
+    // Busca UUID real do produto pelo nome (com cache)
+    var realId=_pidCache[pname];
+    if(!realId){
+      var{data:prod}=await sb.from('produtos').select('id').ilike('nome',pname).maybeSingle();
+      if(!prod||!prod.id){console.warn('produto não encontrado:',pname);return;}
+      _pidCache[pname]=prod.id;
+      realId=prod.id;
+    }
+
     if(!ativo){
-      await sb.from('favoritos').upsert({user_id:uid,produto_id:pid},{onConflict:'user_id,produto_id'});
+      await sb.from('favoritos').upsert({user_id:uid,produto_id:realId},{onConflict:'user_id,produto_id'});
     } else {
-      await sb.from('favoritos').delete().eq('user_id',uid).eq('produto_id',pid);
+      await sb.from('favoritos').delete().eq('user_id',uid).eq('produto_id',realId);
     }
   }catch(e){console.warn('fav sync',e);}
 }
@@ -4559,18 +4570,23 @@ function showToast(msg){
 }
 
 /* Carrega favoritos do Supabase ao logar */
-sb.auth.onAuthStateChange(async function(_e, session){
-  if(session&&session.user){
-    try{
-      var{data}=await sb.from('favoritos').select('produto_id').eq('user_id',session.user.id);
-      if(data&&data.length){
-        _favIds=data.map(function(f){return f.produto_id});
-        localStorage.setItem('mg_favs',JSON.stringify(_favIds));
-        aplicarFavs();
-      }
-    }catch(e){console.warn('fav load',e);}
-  }
-});
+async function carregarFavsDoSupabase(session){
+  if(!session||!session.user)return;
+  try{
+    var{data}=await sb.from('favoritos').select('produto_id, produtos(nome)').eq('user_id',session.user.id);
+    if(data&&data.length){
+      // Mapeia UUID→nome para usar como pid nos botões
+      data.forEach(function(f){
+        if(f.produtos&&f.produtos.nome&&!_favIds.includes(f.produtos.nome)){
+          _favIds.push(f.produtos.nome);
+          _pidCache[f.produtos.nome]=f.produto_id;
+        }
+      });
+      localStorage.setItem('mg_favs',JSON.stringify(_favIds));
+      aplicarFavs();
+    }
+  }catch(e){console.warn('fav load',e);}
+}
 
 /* ══ VERIFICAÇÃO DE MANUTENÇÃO ══ */
 async function verificarManutencao(){
@@ -4654,11 +4670,14 @@ async function atualizarNavbar(session){
 /* Lê sessão assim que sb é criado */
 (function iniciarAuth(){
   sb.auth.getSession().then(function(r){
-    if(r.data && r.data.session) atualizarNavbar(r.data.session);
+    if(r.data && r.data.session){
+      atualizarNavbar(r.data.session);
+      carregarFavsDoSupabase(r.data.session);
+    }
   });
   sb.auth.onAuthStateChange(function(event, session){
     if(event==='SIGNED_OUT'){ atualizarNavbar(null); }
-    else if(session){ atualizarNavbar(session); }
+    else if(session){ atualizarNavbar(session); carregarFavsDoSupabase(session); }
   });
   [300,800,2000].forEach(function(ms){
     setTimeout(function(){
