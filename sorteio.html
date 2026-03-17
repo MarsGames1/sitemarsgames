@@ -292,18 +292,17 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   font-size:10px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;
   cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
-  /* Todos visíveis por padrão */
-  border:1.5px solid rgba(255,255,255,.18);
-  background:rgba(255,255,255,.07);
-  color:#ccc;
+  border:1.5px solid #3a3a50;
+  background:#1e1e2e;
+  color:#ddddee;
 }
 .sorteio-tab::before{
   content:'';position:absolute;inset:0;opacity:0;
   transition:opacity .25s;pointer-events:none;
 }
 .sorteio-tab:hover{
-  color:#fff;border-color:rgba(255,255,255,.35);
-  background:rgba(255,255,255,.11);
+  color:#fff;border-color:#666680;
+  background:#28283c;
   transform:translateY(-1px);
 }
 
@@ -328,20 +327,20 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   width:17px;height:17px;
   clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
   background:radial-gradient(circle,#ffe566,#ffb300);
-  box-shadow:0 0 10px rgba(255,179,0,.8);
+  box-shadow:0 0 12px rgba(255,179,0,.9),0 0 20px rgba(255,179,0,.5);
   border-radius:0;
 }
 .sorteio-tab:hover .tab-icon-semanal,
 .sorteio-tab.active-semanal .tab-icon-semanal{
   animation:starSpin 1.5s ease-in-out infinite;
-  box-shadow:0 0 18px rgba(255,179,0,.9);
+  box-shadow:0 0 20px rgba(255,179,0,1),0 0 36px rgba(255,179,0,.6);
 }
 
 /* MENSAL — diamante */
 .tab-icon-mensal{
   width:14px;height:14px;border-radius:2px;
   background:linear-gradient(135deg,#ffffff,#b9f2ff,#7dd8f5,#b9f2ff);
-  box-shadow:0 0 10px rgba(185,242,255,.9),0 0 18px rgba(185,242,255,.4);
+  box-shadow:0 0 14px rgba(185,242,255,1),0 0 24px rgba(185,242,255,.7),0 0 40px rgba(185,242,255,.3);
   transform:rotate(45deg);
   flex-shrink:0;
 }
