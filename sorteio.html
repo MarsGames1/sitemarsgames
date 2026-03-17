@@ -291,11 +291,11 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   font-family:'Orbitron',sans-serif;
   font-size:10px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;
-  cursor:pointer;transition:all .2s;
-  /* Base — cinza claro visível */
+  cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .2s;
   border:2px solid #444455;
   background:#222233;
   color:#ccccdd;
+  opacity:1 !important;  /* impede GSAP de deixar invisível */
 }
 .sorteio-tab:hover{
   border-color:#666677;
@@ -1637,7 +1637,7 @@ setTipoSorteio('diario');
     onScroll('.cats-explore-head',{y:28,opacity:0,duration:.8},0);
     onScroll('.perfil-hero',{y:22,opacity:0,duration:.65},0);
     onScroll('.sorteio-card',{y:26,opacity:0,duration:.65},0);
-    onScroll('.sorteio-tab',{y:12,opacity:0},.06);
+    /* sorteio-tab removido do GSAP — ficava com opacity:0 permanente */
     onScroll('.vencedor-card',{scale:.95,opacity:0,duration:.7},0);
     onScroll('.tinfo-card',{y:14,opacity:0},.07);
     onScroll('.historico-item',{x:-14,opacity:0},.05);
