@@ -1685,13 +1685,17 @@ async function carregarPedidos(userId){
       for(var pi=0;pi<pedidosSemChave.length;pi++){
         var ped=pedidosSemChave[pi];
         try{
-          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&select=*';
+          /* Busca apenas 1 chave por pedido — limita pela quantidade do pedido (padrão 1) */
+          var qtdPedido=ped.quantidade||1;
+          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&select=*&limit='+qtdPedido;
           var chRes=await fetch(chUrl,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+tkn2,'Accept':'application/json'}});
           console.log('[chaves] pedido',ped.id,'HTTP:',chRes.status);
           if(chRes.ok){
             var chRows=await chRes.json();
             console.log('[chaves] rows:',chRows&&chRows.length);
             var chEntregues=(chRows||[]).filter(function(c){return c.status==='entregue'||c.conteudo;});
+            /* Garante no máximo qtdPedido chaves exibidas */
+            chEntregues=chEntregues.slice(0,qtdPedido);
             if(chEntregues.length>0){
               var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
               if(pedIdx>=0){

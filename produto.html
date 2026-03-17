@@ -358,6 +358,81 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 #mars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s ease}
 #mars-canvas.ready{opacity:1}
 
+/* ══ AVALIAÇÕES ══ */
+.avals-section{
+  max-width:960px;margin:0 auto 60px;padding:0 20px;
+  position:relative;z-index:1;
+}
+.avals-header{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin-bottom:20px;
+}
+.avals-title{
+  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
+  color:#fff;letter-spacing:1px;
+}
+.avals-resumo{
+  display:flex;align-items:center;gap:14px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px 20px;margin-bottom:20px;
+}
+.avals-media-num{
+  font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;
+  color:var(--amber);line-height:1;
+}
+.avals-media-info{}
+.avals-media-stars{font-size:18px;letter-spacing:2px;margin-bottom:2px}
+.avals-media-qtd{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.avals-lista-wrap{
+  max-height:460px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:10px;
+  padding-right:4px;
+  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+}
+.avals-lista-wrap::-webkit-scrollbar{width:4px}
+.avals-lista-wrap::-webkit-scrollbar-track{background:transparent}
+.avals-lista-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.aval-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:16px;
+  animation:fadeUp .3s ease both;
+  position:relative;
+}
+.aval-card-top{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;margin-bottom:10px;
+}
+.aval-card-user{display:flex;align-items:center;gap:10px}
+.aval-card-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;
+  color:var(--green);flex-shrink:0;border:1.5px solid var(--border2);
+}
+.aval-card-nome{font-size:12px;font-weight:700;color:#fff}
+.aval-card-data{font-size:9px;color:var(--muted);margin-top:2px;font-weight:600}
+.aval-card-stars{font-size:14px;letter-spacing:1px;flex-shrink:0}
+.aval-card-comentario{
+  font-size:12px;color:#bbb;font-weight:600;line-height:1.6;
+  border-top:1px solid var(--border);padding-top:10px;margin-top:4px;
+}
+
+.avals-vazia{
+  text-align:center;padding:40px 20px;
+  color:var(--muted);font-size:12px;font-weight:600;
+}
+.avals-vazia div:first-child{font-size:32px;margin-bottom:10px}
+.avals-loader{
+  display:flex;align-items:center;justify-content:center;
+  padding:40px;color:var(--muted);font-size:11px;gap:8px;
+}
+.avals-loader::before{
+  content:'';width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border2);border-top-color:var(--green);
+  animation:spin .8s linear infinite;flex-shrink:0;
+}
+
 /* ══ ANÉIS DE NÍVEL NA NAVBAR ══ */
 
 </style>
@@ -552,6 +627,25 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   </div>
 </div>
 
+<!-- AVALIAÇÕES DOS CLIENTES -->
+<div class="avals-section" id="avalsSection" style="display:none">
+  <div class="avals-header">
+    <div class="avals-title">⭐ Avaliações dos clientes</div>
+  </div>
+  <!-- Resumo médio -->
+  <div class="avals-resumo" id="avalsResumo" style="display:none">
+    <div class="avals-media-num" id="avalsMediaNum">0.0</div>
+    <div class="avals-media-info">
+      <div class="avals-media-stars" id="avalsMediaStars">☆☆☆☆☆</div>
+      <div class="avals-media-qtd" id="avalsMediaQtd">0 avaliações</div>
+    </div>
+  </div>
+  <!-- Lista com scroll -->
+  <div id="avalsConteudo">
+    <div class="avals-loader" id="avalsLoader">Carregando avaliações...</div>
+  </div>
+</div>
+
 <!-- CARRINHO DRAWER -->
 <div id="cartOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200" onclick="toggleCart()"></div>
 <div id="cartDrawer" style="position:fixed;top:0;right:0;bottom:0;width:100%;max-width:400px;background:var(--card);border-left:1px solid var(--border);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.23,1,.32,1)">
@@ -620,6 +714,7 @@ async function init(){
   produto=data;
   renderProduto(data);
   carregarRelacionados(data.categoria,data.id);
+  carregarAvaliacoesProduto(data.nome);
   atualizarCarrinho();
 }
 
@@ -837,6 +932,79 @@ function showError(){
   document.getElementById('loading').style.display='none';
   document.getElementById('error-screen').style.display='flex';
 }
+/* ══ AVALIAÇÕES DO PRODUTO ══ */
+async function carregarAvaliacoesProduto(produtoNome){
+  var section=document.getElementById('avalsSection');
+  var loader=document.getElementById('avalsLoader');
+  var conteudo=document.getElementById('avalsConteudo');
+  var resumo=document.getElementById('avalsResumo');
+  if(!section)return;
+
+  try{
+    var{data,error}=await sb.from('avaliacoes')
+      .select('*')
+      .eq('produto_nome',produtoNome)
+      .order('created_at',{ascending:false});
+
+    if(error||!data||data.length===0){
+      /* Sem avaliações — não exibe a seção */
+      section.style.display='none';
+      return;
+    }
+
+    /* Mostra seção */
+    section.style.display='block';
+
+    /* Calcula média */
+    var totalStars=data.reduce(function(s,a){return s+(a.estrelas||0)},0);
+    var media=(totalStars/data.length).toFixed(1);
+    var mediaNum=parseFloat(media);
+
+    /* Resumo */
+    resumo.style.display='flex';
+    document.getElementById('avalsMediaNum').textContent=media;
+    document.getElementById('avalsMediaQtd').textContent=data.length+' avaliação'+(data.length!==1?'ões':'');
+
+    /* Estrelas preenchidas */
+    var starsHtml='';
+    for(var i=1;i<=5;i++){
+      starsHtml+=i<=Math.round(mediaNum)?'★':'☆';
+    }
+    document.getElementById('avalsMediaStars').textContent=starsHtml;
+
+    /* Renderiza cards */
+    conteudo.innerHTML=
+      '<div class="avals-lista-wrap">'+
+        data.map(function(a){
+          var ini=(a.user_nome||'?').trim()[0].toUpperCase();
+          var nome=esc(a.user_nome||'Cliente');
+          var dt=a.created_at?new Date(a.created_at).toLocaleDateString('pt-BR'):'—';
+          var stars='';
+          for(var i=1;i<=5;i++) stars+=i<=(a.estrelas||0)?'★':'☆';
+          var comentario=a.comentario?
+            '<div class="aval-card-comentario">'+esc(a.comentario)+'</div>':'';
+          return '<div class="aval-card">'+
+            '<div class="aval-card-top">'+
+              '<div class="aval-card-user">'+
+                '<div class="aval-card-avatar">'+ini+'</div>'+
+                '<div>'+
+                  '<div class="aval-card-nome">'+nome+'</div>'+
+                  '<div class="aval-card-data">'+dt+'</div>'+
+                '</div>'+
+              '</div>'+
+              '<div class="aval-card-stars">'+stars+'</div>'+
+            '</div>'+
+            comentario+
+          '</div>';
+        }).join('')+
+      '</div>';
+
+  }catch(e){
+    console.warn('[avaliacoes produto]',e);
+    section.style.display='none';
+  }
+}
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function showToast(msg){
   var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
