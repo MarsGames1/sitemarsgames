@@ -1096,10 +1096,10 @@ async function carregarSorteio(tipo){
     .select('*').eq('tipo',tipo).eq('ativo',true)
     .order('created_at',{ascending:false}).limit(1);
 
-  /* Fallback: status='ativo' */
+  /* Fallback: busca o mais recente do tipo */
   if(!sorteios||sorteios.length===0){
     var r2=await sb.from('sorteios_periodicos')
-      .select('*').eq('tipo',tipo).eq('status','ativo')
+      .select('*').eq('tipo',tipo)
       .order('created_at',{ascending:false}).limit(1);
     if(r2.data&&r2.data.length>0) sorteios=r2.data;
   }
@@ -1109,7 +1109,7 @@ async function carregarSorteio(tipo){
   /* Nenhum sorteio ativo — verifica se existe um encerrado recente */
   if(!sorteios||sorteios.length===0){
     var {data:recente}=await sb.from('sorteios_periodicos')
-      .select('*').eq('tipo',tipo).not('status','eq','rascunho')
+      .select('*').eq('tipo',tipo)
       .order('created_at',{ascending:false}).limit(1);
 
     if(recente&&recente.length>0){
@@ -1133,7 +1133,7 @@ async function carregarSorteio(tipo){
   sorteioAtual=sorteios[0];
 
   /* Se encontrou mas já está encerrado — mostra encerrado */
-  if(!sorteioAtual.ativo||sorteioAtual.status==='encerrado'){
+  if(!sorteioAtual.ativo){
     if(sorteioAtual.vencedor_email) mostrarEncerrado(sorteioAtual,'vencedor');
     else mostrarEncerrado(sorteioAtual,'pausado');
     carregarHistorico(tipo);
@@ -1441,7 +1441,6 @@ async function executarSorteio(sorteioId){
       vencedor_email:vencedor.user_email,
       vencedor_nome:vencedor.user_email,
       ativo:false,
-      status:'encerrado',
       data_sorteio:new Date().toISOString()
     }).eq('id',sorteioId);
 
