@@ -434,15 +434,13 @@ body.tema-claro .exit-sub{color:#666}
     position:relative;
     padding:10px 16px;
     isolation:isolate;
-    /* Borda com gradiente deslizante */
-    border:1.5px solid transparent!important;
+    border:1.35px solid transparent!important;
     background-clip:padding-box;
   }
-  /* Borda animada via outline com shimmer */
   .nav-link-sorteio::before{
     content:'';
     position:absolute;
-    inset:-1.5px;
+    inset:-1.35px;
     border-radius:9px;
     background:linear-gradient(
       90deg,
@@ -455,13 +453,13 @@ body.tema-claro .exit-sub{color:#666}
       rgba(90,40,0,.4) 100%
     );
     background-size:200% 100%;
-    animation:sorteioShimmer 2s linear infinite;
+    animation:sorteioShimmer 2.4s linear infinite;
     z-index:-1;
   }
   .nav-link-sorteio::after{
     content:'';
     position:absolute;
-    inset:1.5px;
+    inset:1.35px;
     border-radius:7px;
     background:#0a0a0e;
     z-index:-1;
@@ -470,7 +468,7 @@ body.tema-claro .exit-sub{color:#666}
     color:#ffe090!important;
   }
   .nav-link-sorteio:hover::before{
-    animation-duration:1s;
+    animation-duration:1.2s;
     background:linear-gradient(
       90deg,
       rgba(100,40,0,.4) 0%,
@@ -496,7 +494,7 @@ body.tema-claro .exit-sub{color:#666}
   .nav-dropdown-toggle svg{transition:transform .2s}
   .nav-dropdown:hover .nav-dropdown-toggle svg{transform:rotate(180deg)}
   .nav-dropdown-menu{
-    position:absolute;top:calc(100% + 8px);left:50%;
+    position:absolute;top:calc(100% + 4px);left:50%;
     transform:translateX(-50%) translateY(-6px);
     background:rgba(10,10,14,.97);border:1px solid rgba(232,66,26,.2);
     border-radius:12px;padding:8px;min-width:200px;
@@ -504,10 +502,11 @@ body.tema-claro .exit-sub{color:#666}
     transition:opacity .18s,transform .18s;
     box-shadow:0 16px 40px rgba(0,0,0,.6);
   }
-  .nav-dropdown:hover .nav-dropdown-menu{
+  .nav-dropdown-menu.open{
     opacity:1;pointer-events:all;
     transform:translateX(-50%) translateY(0);
   }
+  .nav-dropdown-toggle.open svg{transform:rotate(180deg)}
   .nav-dropdown-item{
     display:block;padding:9px 14px;border-radius:8px;
     font-size:13px;font-weight:700;color:#888;
@@ -2484,12 +2483,12 @@ footer::before{
     </a>
     <a class="nav-link" href="promocoes.html">Promoções</a>
     <a class="nav-link" href="combos.html">Bundles</a>
-    <div class="nav-dropdown">
-      <button class="nav-dropdown-toggle">
+    <div class="nav-dropdown" id="navDropdown">
+      <button class="nav-dropdown-toggle" id="navDropdownToggle">
         Mais
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <div class="nav-dropdown-menu">
+      <div class="nav-dropdown-menu" id="navDropdownMenu">
         <a class="nav-dropdown-item" href="catalogo.html?cat=Ação+%2F+RPG">Ação / RPG</a>
         <a class="nav-dropdown-item" href="catalogo.html?cat=Luta+%2F+Tiros">Luta / Tiros</a>
         <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação</a>
@@ -2606,7 +2605,7 @@ footer::before{
       <a class="btn-mars btn-mars-outline" href="https://discord.gg/bKnR9accnw" target="_blank">Discord da comunidade</a>
     </div>
     <div class="countdown">
-      <span class="countdown-label">Oferta da semana acaba em</span>
+      <span class="countdown-label">Forza Horizon 6 lança em</span>
       <div class="count-block"><div class="count-val" id="cDias">00</div><div class="count-lbl">Dias</div></div>
       <span class="count-sep">:</span>
       <div class="count-block"><div class="count-val" id="cHrs">00</div><div class="count-lbl">Hrs</div></div>
@@ -2810,15 +2809,7 @@ footer::before{
       <div class="boa-titulo">A BOA DA<br>SEMANA</div>
       <div class="boa-off">90% OFF</div>
 
-      <!-- Countdown -->
-      <div class="boa-countdown">
-        <div class="boa-cd-label">Termina em</div>
-        <div class="boa-cd-block"><div class="boa-cd-val" id="boaH">00</div><div class="boa-cd-lbl">Hrs</div></div>
-        <span class="boa-cd-sep">:</span>
-        <div class="boa-cd-block"><div class="boa-cd-val" id="boaM">00</div><div class="boa-cd-lbl">Min</div></div>
-        <span class="boa-cd-sep">:</span>
-        <div class="boa-cd-block"><div class="boa-cd-val" id="boaS">00</div><div class="boa-cd-lbl">Seg</div></div>
-      </div>
+      <!-- Countdown removido conforme solicitado -->
 
       <div class="boa-bullets">
         <div class="boa-bullet">Jogos Steam Offline com desconto absurdo</div>
@@ -2841,41 +2832,39 @@ footer::before{
     <div class="boa-covers">
       
     <div class="boa-cover boa-cover-0" onclick="window.location.href='produto.html?nome=DOOM+The+Dark+Ages'" title="DOOM: The Dark Ages">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/3017860/library_600x900.jpg" alt="DOOM: The Dark Ages" loading="lazy" decoding="async">
+      <img src="https://static.wixstatic.com/media/2130b9_7ba8c6d055cd4469aecd51216d41d448~mv2.avif" alt="DOOM: The Dark Ages" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
         <div class="boa-cover-name">DOOM: The Dark Ages</div>
-        <div style="color:#e8421a;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · Mai 2025</div>
+        <div style="color:#e8421a;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL</div>
       </div>
     </div>
     <div class="boa-cover boa-cover-1" onclick="window.location.href='produto.html?nome=Ninja+Gaiden+4'" title="Ninja Gaiden 4">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/2627260/library_600x900.jpg" alt="Ninja Gaiden 4" loading="lazy" decoding="async">
+      <img src="https://static.wixstatic.com/media/afd2cb_6a18762e226d4c51ab4a0693bb623a00~mv2.jpg" alt="Ninja Gaiden 4" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
         <div class="boa-cover-name">Ninja Gaiden 4</div>
-        <div style="color:#00aaff;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · Out 2025</div>
+        <div style="color:#00aaff;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL</div>
       </div>
     </div>
     <div class="boa-cover boa-cover-2" onclick="window.location.href='produto.html?nome=Kingdom+Come%3A+Deliverance+II'" title="Kingdom Come: Deliverance II">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1771300/library_600x900.jpg" alt="Kingdom Come: Deliverance II" loading="lazy" decoding="async">
+      <img src="https://static.wixstatic.com/media/afd2cb_70f50387c35747b088c1df20b61f9ebf~mv2.webp" alt="Kingdom Come: Deliverance II" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
         <div class="boa-cover-name">Kingdom Come: Deliverance II</div>
-        <div style="color:#ffb300;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · Fev 2025</div>
+        <div style="color:#ffb300;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL</div>
       </div>
     </div>
   </div>
-    <div class="boa-cover boa-cover-1" onclick="window.location.href='catalogo.html'" title="Crimson Desert">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/3321460/library_600x900.jpg" alt="Crimson Desert" loading="lazy" decoding="async"
-           >
+    <div class="boa-cover boa-cover-1" onclick="window.location.href='produto.html?nome=Resident+Evil+4+Remake'" title="Resident Evil 4 Remake">
+      <img src="https://static.wixstatic.com/media/2130b9_b35a788a0f034be98bf5fbf2f222912c~mv2.jpg" alt="Resident Evil 4 Remake" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
-        <div class="boa-cover-name">Crimson Desert</div>
-        <div style="color:#e8421a;font-size:8px;font-weight:900;letter-spacing:1px">EM BREVE · 19 Mar 2026</div>
+        <div class="boa-cover-name">Resident Evil 4</div>
+        <div style="color:#00ff55;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL</div>
       </div>
     </div>
-    <div class="boa-cover boa-cover-2" onclick="window.location.href='produto.html?nome=Resident+Evil+Requiem'" title="Resident Evil Requiem">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/2971970/library_600x900.jpg" alt="Resident Evil Requiem" loading="lazy" decoding="async"
-           >
+    <div class="boa-cover boa-cover-2" onclick="window.location.href='produto.html?nome=Elden+Ring'" title="Elden Ring">
+      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_600x900.jpg" alt="Elden Ring" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
-        <div class="boa-cover-name">Resident Evil Requiem</div>
-        <div style="color:#00ff55;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL · 27 Fev 2026</div>
+        <div class="boa-cover-name">Elden Ring</div>
+        <div style="color:#ffb300;font-size:8px;font-weight:900;letter-spacing:1px">DISPONÍVEL</div>
       </div>
     </div>
   </div>
@@ -2884,21 +2873,21 @@ footer::before{
   <div class="boa-covers-mobile" style="max-width:1280px;margin:24px auto 0;padding:0 16px 16px">
     
     <div class="boa-cover-mobile" onclick="window.location.href='produto.html?nome=DOOM+The+Dark+Ages'" title="DOOM: The Dark Ages">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/3017860/library_600x900.jpg" alt="DOOM: The Dark Ages" loading="lazy" decoding="async">
+      <img src="https://static.wixstatic.com/media/2130b9_7ba8c6d055cd4469aecd51216d41d448~mv2.avif" alt="DOOM: The Dark Ages" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
         <div class="boa-cover-name">DOOM: The Dark Ages</div>
         <div style="color:#e8421a;font-size:7px;font-weight:900">DISPONÍVEL</div>
       </div>
     </div>
     <div class="boa-cover-mobile" onclick="window.location.href='produto.html?nome=Ninja+Gaiden+4'" title="Ninja Gaiden 4">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/2627260/library_600x900.jpg" alt="Ninja Gaiden 4" loading="lazy" decoding="async">
+      <img src="https://static.wixstatic.com/media/afd2cb_6a18762e226d4c51ab4a0693bb623a00~mv2.jpg" alt="Ninja Gaiden 4" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
         <div class="boa-cover-name">Ninja Gaiden 4</div>
         <div style="color:#00aaff;font-size:7px;font-weight:900">DISPONÍVEL</div>
       </div>
     </div>
     <div class="boa-cover-mobile" onclick="window.location.href='produto.html?nome=Kingdom+Come%3A+Deliverance+II'" title="Kingdom Come: Deliverance II">
-      <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1771300/library_600x900.jpg" alt="Kingdom Come: Deliverance II" loading="lazy" decoding="async">
+      <img src="https://static.wixstatic.com/media/afd2cb_70f50387c35747b088c1df20b61f9ebf~mv2.webp" alt="Kingdom Come: Deliverance II" loading="lazy" decoding="async">
       <div class="boa-cover-tag">
         <div class="boa-cover-name">Kingdom Come: Deliverance II</div>
         <div style="color:#ffb300;font-size:7px;font-weight:900">DISPONÍVEL</div>
@@ -3658,13 +3647,20 @@ function recolherSearch(){
   }
 }
 
-/* ── COUNTDOWN ── */
+/* ── COUNTDOWN — Forza Horizon 6 ── */
 (function(){
-  var target=new Date();target.setDate(target.getDate()+((7-target.getDay())%7||7));
-  target.setHours(23,59,59,0);
+  /* Data estimada de lançamento: 1 de junho de 2026 */
+  var target=new Date('2026-06-01T00:00:00');
   function tick(){
     var diff=target-new Date();
-    if(diff<0)return;
+    if(diff<0){
+      ['cDias','cHrs','cMin','cSec'].forEach(function(id){
+        var el=document.getElementById(id);if(el)el.textContent='00';
+      });
+      var lbl=document.querySelector('.countdown-label');
+      if(lbl)lbl.textContent='Forza Horizon 6 — Disponível agora!';
+      return;
+    }
     var d=Math.floor(diff/86400000);
     var h=Math.floor((diff%86400000)/3600000);
     var m=Math.floor((diff%3600000)/60000);
@@ -4049,6 +4045,29 @@ window.addEventListener('resize',function(){
     document.body.style.overflow='';
   }
 });
+
+/* ── Dropdown "Mais" com delay no fechamento ── */
+(function(){
+  var toggle=document.getElementById('navDropdownToggle');
+  var menu=document.getElementById('navDropdownMenu');
+  if(!toggle||!menu) return;
+  var closeTimer=null;
+  function openMenu(){
+    clearTimeout(closeTimer);
+    menu.classList.add('open');
+    toggle.classList.add('open');
+  }
+  function closeMenu(){
+    closeTimer=setTimeout(function(){
+      menu.classList.remove('open');
+      toggle.classList.remove('open');
+    },320); /* 320ms de grace — tempo suficiente para mover o mouse até o item */
+  }
+  toggle.addEventListener('mouseenter',openMenu);
+  toggle.addEventListener('mouseleave',closeMenu);
+  menu.addEventListener('mouseenter',openMenu);
+  menu.addEventListener('mouseleave',closeMenu);
+})();
 
 /* ── HERO VIDEO — lazy load após página pronta ── */
 (function(){
