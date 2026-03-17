@@ -285,6 +285,24 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .sorteio-card{
   background:var(--card);border:1px solid var(--border);border-radius:20px;
   overflow:hidden;margin-bottom:28px;animation:fadeUp .4s ease both;
+  transition:border-color .3s,box-shadow .3s;
+}
+.sorteio-card.tipo-diario{
+  border-color:rgba(232,66,26,.3);
+  box-shadow:0 0 0 1px rgba(232,66,26,.08),0 8px 32px rgba(232,66,26,.12);
+}
+.sorteio-card.tipo-semanal{
+  border-color:rgba(255,179,0,.3);
+  box-shadow:0 0 0 1px rgba(255,179,0,.08),0 8px 32px rgba(255,179,0,.1);
+}
+.sorteio-card.tipo-mensal{
+  border-color:rgba(185,242,255,.25);
+  box-shadow:0 0 0 1px rgba(185,242,255,.06),0 8px 32px rgba(185,242,255,.08);
+}
+/* Linha colorida no topo do card */
+.sorteio-card::before{
+  content:'';display:block;height:3px;width:100%;
+  background:linear-gradient(to right,var(--card-accent-a,var(--mars)),var(--card-accent-b,var(--orange)));
 }
 .sorteio-card-header{
   padding:28px 28px 0;
@@ -871,9 +889,26 @@ async function carregarSorteio(tipo){
   document.getElementById('sorteio-content').style.display='none';
   document.getElementById('sem-sorteio').style.display='none';
 
-  var{data:sorteios}=await sb.from('sorteios_periodicos')
+  /* Tenta primeiro com ativo=true, depois sem filtro de status como fallback */
+  var {data:sorteios,error} = await sb.from('sorteios_periodicos')
     .select('*').eq('tipo',tipo).eq('ativo',true)
     .order('created_at',{ascending:false}).limit(1);
+
+  /* Fallback: tenta com status='ativo' se não encontrou */
+  if((!sorteios||sorteios.length===0)&&!error){
+    var r2=await sb.from('sorteios_periodicos')
+      .select('*').eq('tipo',tipo).eq('status','ativo')
+      .order('created_at',{ascending:false}).limit(1);
+    if(r2.data&&r2.data.length>0) sorteios=r2.data;
+  }
+
+  /* Último fallback: qualquer sorteio deste tipo não encerrado */
+  if(!sorteios||sorteios.length===0){
+    var r3=await sb.from('sorteios_periodicos')
+      .select('*').eq('tipo',tipo).is('vencedor_email',null)
+      .order('created_at',{ascending:false}).limit(1);
+    if(r3.data&&r3.data.length>0) sorteios=r3.data;
+  }
 
   document.getElementById('loading-sorteio').style.display='none';
 
@@ -887,11 +922,10 @@ async function carregarSorteio(tipo){
   renderSorteio(sorteioAtual);
   document.getElementById('sorteio-content').style.display='block';
 
-  /* Carrega participantes e histórico */
   carregarParticipantes(sorteioAtual.id);
   carregarHistorico(tipo);
+  assinarRealtime(sorteioAtual.id);
 
-  /* Verifica se usuário já participa */
   if(userSession){
     var{data:part}=await sb.from('sorteio_participacoes')
       .select('*').eq('sorteio_id',sorteioAtual.id)
@@ -905,10 +939,14 @@ async function carregarSorteio(tipo){
 }
 
 function renderSorteio(s){
-  /* Badge tipo */
   var cores={diario:'badge-diario',semanal:'badge-semanal',mensal:'badge-mensal'};
   var nomes={diario:'🔥 Diário',semanal:'⭐ Semanal',mensal:'💎 Mensal'};
   var dotCores={diario:'var(--diario)',semanal:'var(--semanal)',mensal:'var(--mensal)'};
+  var accents={
+    diario:['#e8421a','#ff6b2b'],
+    semanal:['#ffb300','#ff9500'],
+    mensal:['#b9f2ff','#a78bfa']
+  };
   document.getElementById('sorteioTipoBadge').className='sorteio-tipo-badge '+cores[s.tipo];
   document.getElementById('badgeDot').style.background=dotCores[s.tipo];
   document.getElementById('badgeLabel').textContent=nomes[s.tipo];
@@ -917,14 +955,19 @@ function renderSorteio(s){
   document.getElementById('premiNome').textContent=s.premio;
   document.getElementById('premiPlat').textContent=s.plataforma||'Steam Key';
 
-  /* Vencedor anterior */
+  /* Aplica classe e cor de acento ao card */
+  var card=document.getElementById('sorteioCardMain');
+  card.className='sorteio-card tipo-'+s.tipo;
+  var acc=accents[s.tipo]||accents.diario;
+  card.style.setProperty('--card-accent-a',acc[0]);
+  card.style.setProperty('--card-accent-b',acc[1]);
+
   if(s.vencedor_email){
     document.getElementById('vencedorCard').style.display='flex';
-    document.getElementById('vencedorNome').textContent=s.vencedor_email;
+    document.getElementById('vencedorNome').textContent=s.vencedor_email.replace(/(.{3}).*(@.*)/, '$1***$2');
     document.getElementById('vencedorPremio').textContent='Ganhou: '+s.premio;
   }
 
-  /* Contador */
   iniciarContador(s.data_fim);
 }
 
@@ -968,6 +1011,9 @@ function renderParticipacao(part){
   document.getElementById('ctaLogin').style.display='none';
   document.getElementById('ctaParticipacao').style.display='block';
 
+  /* Atualiza label de tickets disponíveis */
+  document.getElementById('meusTicketsLabel').textContent=meusTickets+' ticket'+(meusTickets!==1?'s':'');
+
   if(part){
     document.getElementById('jaParticipaBox').style.display='flex';
     document.getElementById('sliderBox').style.display='none';
@@ -975,17 +1021,33 @@ function renderParticipacao(part){
   } else {
     document.getElementById('jaParticipaBox').style.display='none';
     document.getElementById('sliderBox').style.display='block';
-    /* Configura slider */
+    /* Slider com max = tickets disponíveis, mínimo 1 */
     var max=Math.max(1,meusTickets);
     var range=document.getElementById('ticketsRange');
-    range.max=max;range.value=1;
+    range.min=1;
+    range.max=max;
+    range.value=1;
+    /* Atualiza a track colorida */
+    range.style.background='linear-gradient(to right,var(--amber) 0%,var(--border) 0%)';
     atualizarSlider(1);
   }
 }
 
 function atualizarSlider(val){
+  val=parseInt(val)||1;
+  var max=parseInt(document.getElementById('ticketsRange').max)||1;
+  var pct=((val-1)/(Math.max(max-1,1)))*100;
+  document.getElementById('ticketsRange').style.background=
+    'linear-gradient(to right,var(--amber) '+pct+'%,var(--border) '+pct+'%)';
   document.getElementById('sliderValLabel').textContent=val+' 🎟️';
   document.getElementById('ticketsEscolhidos').textContent=val;
+  /* Mostra aviso se não tem tickets */
+  if(meusTickets===0){
+    document.getElementById('sliderValLabel').textContent='Sem tickets';
+    document.getElementById('btnParticipar').disabled=true;
+  } else {
+    document.getElementById('btnParticipar').disabled=false;
+  }
 }
 
 async function carregarParticipantes(sorteioId){
@@ -1115,6 +1177,63 @@ async function participar(){
   } finally {
     btn.disabled=false;btn.textContent='🎟️ Participar do sorteio';
   }
+}
+
+/* ── FUNÇÃO DE SORTEIO — ALEATORIEDADE PONDERADA POR TICKETS ── */
+async function executarSorteio(sorteioId){
+  try{
+    /* Busca todos os participantes com seus tickets */
+    var{data:participantes,error}=await sb.from('sorteio_participacoes')
+      .select('user_email,user_id,tickets_usados')
+      .eq('sorteio_id',sorteioId);
+
+    if(error||!participantes||participantes.length===0){
+      return{ok:false,msg:'Nenhum participante encontrado'};
+    }
+
+    /* Monta lista ponderada — cada ticket é uma entrada */
+    var pool=[];
+    participantes.forEach(function(p){
+      for(var i=0;i<p.tickets_usados;i++) pool.push(p);
+    });
+
+    /* Embaralha o pool com Fisher-Yates para aleatoriedade real */
+    for(var i=pool.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;
+    }
+
+    /* Sorteia — pega posição aleatória do pool já embaralhado */
+    var idx=Math.floor(Math.random()*pool.length);
+    var vencedor=pool[idx];
+
+    /* Salva vencedor no sorteio */
+    await sb.from('sorteios_periodicos').update({
+      vencedor_email:vencedor.user_email,
+      vencedor_nome:vencedor.user_email,
+      ativo:false,
+      status:'encerrado',
+      data_sorteio:new Date().toISOString()
+    }).eq('id',sorteioId);
+
+    return{ok:true,vencedor:vencedor,totalPool:pool.length,totalParticipantes:participantes.length};
+  }catch(e){
+    return{ok:false,msg:e.message};
+  }
+}
+
+/* Expõe globalmente para o admin poder chamar via console ou trigger */
+window.executarSorteio=executarSorteio;
+
+/* Realtime — atualiza participantes em tempo real */
+function assinarRealtime(sorteioId){
+  sb.channel('sorteio_'+sorteioId)
+    .on('postgres_changes',{
+      event:'INSERT',schema:'public',table:'sorteio_participacoes',
+      filter:'sorteio_id=eq.'+sorteioId
+    },function(){
+      carregarParticipantes(sorteioId);
+    }).subscribe();
 }
 
 function lancarConfetti(){
