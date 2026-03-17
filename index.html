@@ -147,8 +147,7 @@ body.tema-claro .indicacao-card{background:#fff;border-color:var(--border)}
 body.tema-claro .indicacao-title{color:var(--text)}
 body.tema-claro .indicacao-desc{color:#666}
 body.tema-claro .indicacao-link{background:var(--surface);border-color:var(--border2);color:var(--text)}
-body.tema-claro .exit-popup{background:#fff;border-color:var(--border)}
-body.tema-claro .exit-title{color:var(--text)}
+
 body.tema-claro .exit-sub{color:#666}
 
 /* ══ TELA DE MANUTENÇÃO ══ */
@@ -2172,68 +2171,6 @@ footer::before{
 .com-btn span{font-size:9px;opacity:.8;margin-top:4px;font-weight:600;letter-spacing:1px;color:#fff}
 
 
-/* ══ POP-UP DE SAÍDA ══ */
-@keyframes popIn{from{opacity:0;transform:translate(-50%,-50%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-@keyframes timerBar{from{width:100%}to{width:0%}}
-.exit-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;
-  display:none;align-items:center;justify-content:center;
-}
-.exit-overlay.open{display:flex}
-.exit-popup{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:var(--card);border:1px solid rgba(232,66,26,.3);
-  border-radius:20px;padding:36px 32px;width:90%;max-width:460px;
-  text-align:center;z-index:501;
-  animation:popIn .4s cubic-bezier(.23,1,.32,1) both;
-  box-shadow:0 32px 80px rgba(0,0,0,.8);
-}
-.exit-popup::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(to right,var(--mars),var(--orange));
-  border-radius:20px 20px 0 0;
-}
-.exit-emoji{font-size:48px;margin-bottom:12px;display:block}
-.exit-title{
-  font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,24px);
-  font-weight:900;color:#fff;margin-bottom:8px;
-}
-.exit-title span{color:var(--mars)}
-.exit-sub{font-size:13px;color:#888;font-weight:600;line-height:1.6;margin-bottom:20px}
-.exit-cupom{
-  background:rgba(232,66,26,.08);border:1px dashed rgba(232,66,26,.4);
-  border-radius:10px;padding:14px;margin-bottom:20px;
-}
-.exit-cupom-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.exit-cupom-code{
-  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
-  color:var(--mars);letter-spacing:3px;
-}
-.exit-timer-wrap{margin-bottom:20px}
-.exit-timer-label{font-size:10px;color:var(--muted);font-weight:700;margin-bottom:6px}
-.exit-timer-display{
-  font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--orange);
-}
-.exit-timer-bar-wrap{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
-.exit-timer-bar{height:100%;background:linear-gradient(to right,var(--mars),var(--orange));border-radius:2px}
-.exit-btn-aceitar{
-  width:100%;padding:15px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,var(--mars),var(--orange));
-  color:#fff;font-family:'Montserrat',sans-serif;
-  font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
-  cursor:pointer;transition:box-shadow .2s,transform .15s;margin-bottom:10px;
-  min-height:48px;
-}
-.exit-btn-aceitar:hover{box-shadow:0 0 24px var(--mars-glow);transform:translateY(-1px)}
-.exit-btn-recusar{
-  background:transparent;border:none;color:var(--muted);
-  font-size:11px;font-weight:600;cursor:pointer;
-  font-family:'Montserrat',sans-serif;padding:8px;
-  transition:color .2s;
-}
-.exit-btn-recusar:hover{color:#aaa}
-
-
 /* ══ MODO SURPRESA ══ */
 .surpresa-btn{
   position:fixed;bottom:80px;right:20px;z-index:150;
@@ -2298,18 +2235,18 @@ footer::before{
 
 /* ══ STARS ══ */
 .stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.3) 0%,transparent 100%);opacity:.6}
+  background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.25) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.15) 0%,transparent 100%);opacity:.5}
 
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{
   position:fixed;inset:0;
   z-index:0;
   pointer-events:none;
-  opacity:0;transition:opacity 2s ease;
+  opacity:0;transition:opacity 3s ease;
 }
-#mars-canvas.ready{opacity:0.35}
+#mars-canvas.ready{opacity:0.55}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
 
@@ -3963,65 +3900,7 @@ async function atualizarNavbar(session){
 })();
 
 
-/* ── POP-UP DE SAÍDA ── */
-(function(){
-  var shown=false;
-  var timerInterval=null;
-  var DURATION=300; // 5 minutos em segundos
 
-  function mostrarExitPopup(){
-    if(shown)return;
-    // Não mostrar se já foi exibido nesta sessão
-    if(sessionStorage.getItem('mg_exit_shown'))return;
-    shown=true;
-    sessionStorage.setItem('mg_exit_shown','1');
-    document.getElementById('exitOverlay').classList.add('open');
-    document.getElementById('exitPopup').style.display='block';
-    iniciarTimer();
-  }
-
-  function iniciarTimer(){
-    var restante=DURATION;
-    var bar=document.getElementById('exitTimerBar');
-    bar.style.transition='width '+DURATION+'s linear';
-    bar.style.width='0%';
-
-    timerInterval=setInterval(function(){
-      restante--;
-      var min=Math.floor(restante/60);
-      var sec=restante%60;
-      document.getElementById('exitTimerDisplay').textContent=
-        String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0');
-      if(restante<=0){
-        clearInterval(timerInterval);
-        fecharExitPopup();
-      }
-    },1000);
-  }
-
-  window.fecharExitPopup=function(){
-    document.getElementById('exitOverlay').classList.remove('open');
-    document.getElementById('exitPopup').style.display='none';
-    clearInterval(timerInterval);
-  };
-
-  window.aceitarExitOffer=function(){
-    navigator.clipboard.writeText('MARS10OFF').catch(function(){});
-    localStorage.setItem('mg_exit_used','1');
-    fecharExitPopup();
-    // Redirecionar para catálogo
-    setTimeout(function(){window.location.href='catalogo.html'},300);
-  };
-
-  // Só ativar depois de 10 segundos na página — evita disparar ao abrir/atualizar
-  var podeDisparar=false;
-  setTimeout(function(){podeDisparar=true;},10000);
-
-  // Detectar intenção de sair — mouse saindo pelo topo da página
-  document.addEventListener('mouseleave',function(e){
-    if(e.clientY<=0 && podeDisparar) mostrarExitPopup();
-  },{passive:true});
-})();
 
 
 /* ── MODO SURPRESA ── */
@@ -4118,100 +3997,280 @@ window.addEventListener('resize',function(){
   }
 })();
 
-/* ══ THREE.JS STARS ══ */
+/* ══ GALÁXIA — UNIVERSO REALISTA ══ */
 function loadScript(src, cb) {
   var s = document.createElement('script');
-  s.src = src;
-  s.onload = cb;
-  s.onerror = function(){ console.warn('Falha ao carregar:', src); };
+  s.src = src; s.onload = cb;
+  s.onerror = function(){ console.warn('Falha:', src); };
   document.head.appendChild(s);
 }
+
 function initThree() {
   if (typeof THREE === 'undefined') return;
   var canvas = document.getElementById('mars-canvas');
   if (!canvas) return;
+
   var W = window.innerWidth, H = window.innerHeight;
   var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: false});
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   renderer.setSize(W, H);
+
   var scene = new THREE.Scene();
-  var cam = new THREE.PerspectiveCamera(60, W / H, 0.1, 100);
-  cam.position.z = 2;
-  var N = 1800;
-  var pos = new Float32Array(N * 3);
-  var col = new Float32Array(N * 3);
-  var palette = [[1,.4,.2],[0,1,.33],[1,.7,.1],[.6,.4,1],[1,1,1]];
-  for (var i = 0; i < N; i++) {
-    pos[i*3]   = (Math.random() - .5) * 8;
-    pos[i*3+1] = (Math.random() - .5) * 8;
-    pos[i*3+2] = (Math.random() - .5) * 8;
-    var c = Math.random() < 0.85 ? [1,1,1] : palette[Math.floor(Math.random() * (palette.length-1))];
-    col[i*3] = c[0]; col[i*3+1] = c[1]; col[i*3+2] = c[2];
+  var cam = new THREE.PerspectiveCamera(75, W / H, 0.1, 200);
+  cam.position.z = 3;
+
+  /* ── Textura de sprite: ponto suave com halo ── */
+  function makeSprite(size, r, g, b) {
+    var c = document.createElement('canvas');
+    c.width = c.height = size;
+    var ctx = c.getContext('2d');
+    var half = size / 2;
+    var grad = ctx.createRadialGradient(half, half, 0, half, half, half);
+    grad.addColorStop(0,   'rgba('+r+','+g+','+b+',1)');
+    grad.addColorStop(0.25,'rgba('+r+','+g+','+b+',.8)');
+    grad.addColorStop(0.6, 'rgba('+r+','+g+','+b+',.2)');
+    grad.addColorStop(1,   'rgba('+r+','+g+','+b+',0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    return new THREE.CanvasTexture(c);
   }
-  var geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  var spriteCanvas = document.createElement('canvas');
-  spriteCanvas.width = spriteCanvas.height = 32;
-  var ctx2d = spriteCanvas.getContext('2d');
-  var grad = ctx2d.createRadialGradient(16,16,0,16,16,16);
-  grad.addColorStop(0,'rgba(255,255,255,1)');
-  grad.addColorStop(.4,'rgba(255,255,255,.6)');
-  grad.addColorStop(1,'rgba(255,255,255,0)');
-  ctx2d.fillStyle = grad; ctx2d.fillRect(0,0,32,32);
-  var sprite = new THREE.CanvasTexture(spriteCanvas);
-  var mat = new THREE.PointsMaterial({size:.08,map:sprite,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false});
-  var pts = new THREE.Points(geo, mat);
-  scene.add(pts);
+
+  var spriteWhite  = makeSprite(32, 255, 255, 255);
+  var spriteBlue   = makeSprite(32, 180, 210, 255);  /* estrelas azul-brancas jovens */
+  var spriteYellow = makeSprite(32, 255, 240, 180);  /* estrelas amarelas tipo Sol */
+  var spriteRed    = makeSprite(32, 255, 190, 140);  /* anãs vermelhas */
+  var spriteOrange = makeSprite(32, 255, 160, 80);   /* gigantes alaranjadas (raras) */
+
+  /* ── Paleta de cores realistas de estrelas (distribuição espectral) ──
+     O universo real tem: ~70% brancas/azuis, ~20% amarelas, ~8% vermelhas, ~2% laranja/especiais */
+  function starColor() {
+    var r = Math.random();
+    if (r < 0.55) return { sprite: spriteWhite,  size: rnd(0.018, 0.055) }; /* brancas comuns */
+    if (r < 0.75) return { sprite: spriteBlue,   size: rnd(0.030, 0.075) }; /* azuis brilhantes */
+    if (r < 0.88) return { sprite: spriteYellow, size: rnd(0.022, 0.050) }; /* amarelas tipo Sol */
+    if (r < 0.97) return { sprite: spriteRed,    size: rnd(0.018, 0.040) }; /* anãs vermelhas */
+    return           { sprite: spriteOrange,  size: rnd(0.045, 0.090) }; /* gigantes raras */
+  }
+
+  function rnd(min, max) { return min + Math.random() * (max - min); }
+
+  /* ── Camada 1: estrelas de fundo distantes (pequenas, densas) ── */
+  var N1 = 2800;
+  var pos1 = new Float32Array(N1 * 3);
+  var siz1 = new Float32Array(N1);
+  var col1 = new Float32Array(N1 * 3);
+  var sprites1 = [];
+
+  for (var i = 0; i < N1; i++) {
+    /* Distribuição esférica uniforme */
+    var theta = Math.random() * Math.PI * 2;
+    var phi   = Math.acos(2 * Math.random() - 1);
+    var rad   = rnd(8, 22);
+    pos1[i*3]   = rad * Math.sin(phi) * Math.cos(theta);
+    pos1[i*3+1] = rad * Math.sin(phi) * Math.sin(theta);
+    pos1[i*3+2] = rad * Math.cos(phi);
+
+    var sc = starColor();
+    sprites1.push(sc.sprite);
+    siz1[i] = sc.size * 0.65; /* fundo mais tênue */
+    col1[i*3] = 1; col1[i*3+1] = 1; col1[i*3+2] = 1;
+  }
+
+  /* ── Camada 2: estrelas de meio campo (tamanho médio) ── */
+  var N2 = 900;
+  var pos2 = new Float32Array(N2 * 3);
+  var siz2 = new Float32Array(N2);
+
+  for (var j = 0; j < N2; j++) {
+    var theta2 = Math.random() * Math.PI * 2;
+    var phi2   = Math.acos(2 * Math.random() - 1);
+    var rad2   = rnd(4, 9);
+    pos2[j*3]   = rad2 * Math.sin(phi2) * Math.cos(theta2);
+    pos2[j*3+1] = rad2 * Math.sin(phi2) * Math.sin(theta2);
+    pos2[j*3+2] = rad2 * Math.cos(phi2);
+    siz2[j] = rnd(0.025, 0.08);
+  }
+
+  /* ── Camada 3: estrelas próximas brilhantes (poucas, com halo) ── */
+  var N3 = 120;
+  var pos3 = new Float32Array(N3 * 3);
+  var siz3 = new Float32Array(N3);
+
+  for (var k = 0; k < N3; k++) {
+    var theta3 = Math.random() * Math.PI * 2;
+    var phi3   = Math.acos(2 * Math.random() - 1);
+    var rad3   = rnd(2, 5);
+    pos3[k*3]   = rad3 * Math.sin(phi3) * Math.cos(theta3);
+    pos3[k*3+1] = rad3 * Math.sin(phi3) * Math.sin(theta3);
+    pos3[k*3+2] = rad3 * Math.cos(phi3);
+    siz3[k] = rnd(0.07, 0.16);
+  }
+
+  /* ── Função para criar Points ── */
+  function makePoints(positions, sizes, sprite, opacity) {
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    var mat = new THREE.PointsMaterial({
+      size: 0.05,
+      map: sprite,
+      transparent: true,
+      opacity: opacity,
+      sizeAttenuation: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    return new THREE.Points(geo, mat);
+  }
+
+  /* Camadas de estrelas usando sprites diferentes para variedade */
+  var layer1a = makePoints(pos1, siz1, spriteWhite,  0.55);
+  var layer1b = makePoints(pos1, siz1, spriteBlue,   0.20);
+  var layer2  = makePoints(pos2, siz2, spriteWhite,  0.75);
+  var layer2b = makePoints(pos2, siz2, spriteYellow, 0.25);
+  var layer3  = makePoints(pos3, siz3, spriteWhite,  0.90);
+  var layer3b = makePoints(pos3, siz3, spriteBlue,   0.35);
+
+  /* Grupo único para rotação solidária */
+  var galaxy = new THREE.Group();
+  galaxy.add(layer1a, layer1b, layer2, layer2b, layer3, layer3b);
+  scene.add(galaxy);
+
+  /* ── Nebulosa: plano com textura canvas radial colorida ── */
+  (function addNebula() {
+    var nc = document.createElement('canvas');
+    nc.width = nc.height = 512;
+    var nctx = nc.getContext('2d');
+
+    /* Nuvem 1 — azul-violeta fria (braço espiral) */
+    var g1 = nctx.createRadialGradient(160, 200, 0, 160, 200, 220);
+    g1.addColorStop(0,   'rgba(80,100,200,.22)');
+    g1.addColorStop(0.4, 'rgba(60,80,180,.10)');
+    g1.addColorStop(1,   'rgba(0,0,0,0)');
+    nctx.fillStyle = g1; nctx.fillRect(0, 0, 512, 512);
+
+    /* Nuvem 2 — vermelho-vinho (região de formação estelar) */
+    var g2 = nctx.createRadialGradient(340, 140, 0, 340, 140, 160);
+    g2.addColorStop(0,   'rgba(160,40,60,.18)');
+    g2.addColorStop(0.5, 'rgba(120,30,50,.07)');
+    g2.addColorStop(1,   'rgba(0,0,0,0)');
+    nctx.fillStyle = g2; nctx.fillRect(0, 0, 512, 512);
+
+    /* Nuvem 3 — turquesa subtil (borda do braço) */
+    var g3 = nctx.createRadialGradient(280, 360, 0, 280, 360, 140);
+    g3.addColorStop(0,   'rgba(0,160,180,.12)');
+    g3.addColorStop(0.6, 'rgba(0,120,140,.04)');
+    g3.addColorStop(1,   'rgba(0,0,0,0)');
+    nctx.fillStyle = g3; nctx.fillRect(0, 0, 512, 512);
+
+    var nebTex = new THREE.CanvasTexture(nc);
+    var nebGeo = new THREE.PlaneGeometry(28, 28);
+    var nebMat = new THREE.MeshBasicMaterial({
+      map: nebTex, transparent: true, opacity: 0.18,
+      depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+    var neb = new THREE.Mesh(nebGeo, nebMat);
+    neb.rotation.x = 0.35;
+    neb.rotation.z = 0.6;
+    neb.position.set(0, -1, -8);
+    scene.add(neb);
+
+    /* Segunda nebulosa levemente deslocada */
+    var neb2 = neb.clone();
+    neb2.rotation.x = -0.2;
+    neb2.rotation.z = -0.8;
+    neb2.position.set(2, 1, -12);
+    neb2.material = nebMat.clone();
+    neb2.material.opacity = 0.10;
+    scene.add(neb2);
+  })();
+
+  /* ── Via Láctea: faixa difusa de poeira ── */
+  (function addMilkyWay() {
+    var mc = document.createElement('canvas');
+    mc.width = 1024; mc.height = 256;
+    var mctx = mc.getContext('2d');
+    var mg = mctx.createLinearGradient(0, 0, 1024, 0);
+    mg.addColorStop(0,    'rgba(0,0,0,0)');
+    mg.addColorStop(0.15, 'rgba(180,190,220,.06)');
+    mg.addColorStop(0.35, 'rgba(210,220,255,.13)');
+    mg.addColorStop(0.50, 'rgba(230,235,255,.17)');
+    mg.addColorStop(0.65, 'rgba(210,220,255,.13)');
+    mg.addColorStop(0.85, 'rgba(180,190,220,.06)');
+    mg.addColorStop(1,    'rgba(0,0,0,0)');
+    mctx.fillStyle = mg; mctx.fillRect(0, 0, 1024, 256);
+
+    /* Borrão vertical para suavizar */
+    var mg2 = mctx.createLinearGradient(0, 0, 0, 256);
+    mg2.addColorStop(0,   'rgba(0,0,0,.7)');
+    mg2.addColorStop(0.3, 'rgba(0,0,0,0)');
+    mg2.addColorStop(0.7, 'rgba(0,0,0,0)');
+    mg2.addColorStop(1,   'rgba(0,0,0,.7)');
+    mctx.fillStyle = mg2; mctx.fillRect(0, 0, 1024, 256);
+
+    var mwTex = new THREE.CanvasTexture(mc);
+    var mwGeo = new THREE.PlaneGeometry(40, 10);
+    var mwMat = new THREE.MeshBasicMaterial({
+      map: mwTex, transparent: true, opacity: 0.28,
+      depthWrite: false, side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+    var mw = new THREE.Mesh(mwGeo, mwMat);
+    mw.rotation.x = Math.PI * 0.5;
+    mw.rotation.z = 0.45;
+    mw.position.set(0, -2, -6);
+    scene.add(mw);
+  })();
+
+  /* ── Twinkle: variar opacidade individualmente por frame ── */
+  var twinklePhase = new Float32Array(N1 + N2 + N3);
+  var twinkleSpeed = new Float32Array(N1 + N2 + N3);
+  for (var t = 0; t < twinklePhase.length; t++) {
+    twinklePhase[t] = Math.random() * Math.PI * 2;
+    twinkleSpeed[t] = 0.004 + Math.random() * 0.012; /* velocidades variadas — algumas piscam mais rápido */
+  }
+
+  /* ── Resize ── */
   window.addEventListener('resize', function() {
     W = window.innerWidth; H = window.innerHeight;
-    cam.aspect = W/H; cam.updateProjectionMatrix();
+    cam.aspect = W / H; cam.updateProjectionMatrix();
     renderer.setSize(W, H);
   });
+
+  /* ── Loop de animação ── */
+  var clock = new THREE.Clock();
   (function animate() {
     requestAnimationFrame(animate);
-    pts.rotation.y += .0015;
-    pts.rotation.x += .0005;
-    pts.rotation.z += .0002;
+    var t = clock.getElapsedTime();
+
+    /* Rotação suavíssima — 1 volta a cada ~12 min */
+    galaxy.rotation.y = t * 0.0008;
+    galaxy.rotation.x = t * 0.00025;
+    galaxy.rotation.z = t * 0.00015;
+
+    /* Twinkle nas camadas 1 e 3 (mais perceptível) */
+    var base1 = 0.55 + 0.10 * Math.sin(t * 0.3 + 0.7);
+    var base3 = 0.90 + 0.08 * Math.sin(t * 0.2 + 1.4);
+    layer1a.material.opacity = Math.max(0.30, base1);
+    layer3.material.opacity  = Math.max(0.65, base3);
+
     renderer.render(scene, cam);
   })();
+
   canvas.classList.add('ready');
 }
-// Three.js — carrega após page load para não bloquear
-function dispararThree(){
-  loadScript('https://unpkg.com/three@0.128.0/build/three.min.js', function(){
-    if(typeof THREE !== 'undefined'){
-      initThree();
-    } else {
-      console.warn('THREE não carregou');
-    }
+
+function dispararThree() {
+  loadScript('https://unpkg.com/three@0.128.0/build/three.min.js', function() {
+    if (typeof THREE !== 'undefined') initThree();
+    else console.warn('THREE não carregou');
   });
 }
-if(document.readyState === 'complete'){
-  dispararThree();
-} else {
-  window.addEventListener('load', dispararThree);
-}
+if (document.readyState === 'complete') dispararThree();
+else window.addEventListener('load', dispararThree);
 </script>
 
-<!-- ══ POP-UP DE SAÍDA ══ -->
-<div class="exit-overlay" id="exitOverlay"></div>
-<div class="exit-popup" id="exitPopup" style="display:none">
-  <span class="exit-emoji">🚀</span>
-  <div class="exit-title">Espera! <span>Desconto exclusivo</span></div>
-  <div class="exit-sub">Só porque você está saindo, preparamos uma oferta especial que expira em breve!</div>
-  <div class="exit-cupom">
-    <div class="exit-cupom-label">Seu cupom de desconto</div>
-    <div class="exit-cupom-code">MARS10OFF</div>
-  </div>
-  <div class="exit-timer-wrap">
-    <div class="exit-timer-label">Oferta expira em</div>
-    <div class="exit-timer-display" id="exitTimerDisplay">05:00</div>
-    <div class="exit-timer-bar-wrap"><div class="exit-timer-bar" id="exitTimerBar"></div></div>
-  </div>
-  <button class="exit-btn-aceitar" onclick="aceitarExitOffer()">Quero o desconto!</button>
-  <button class="exit-btn-recusar" onclick="fecharExitPopup()">Não, obrigado — prefiro pagar mais</button>
-</div>
 
 <!-- MODO SURPRESA -->
 <button class="surpresa-btn" onclick="modeSurpresa()" title="Jogo surpresa!">
