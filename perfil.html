@@ -1529,25 +1529,39 @@ async function carregarPedidos(userId){
       return !p.chaves_entregues||p.chaves_entregues.length===0;
     });
     if(pedidosSemChave.length>0){
-      var tkn2=sessionStorage.getItem('mg_access_token')||SUPABASE_KEY;
+      /* Obtém token atualizado da sessão — nunca usa só a anon key para estoque_chaves (RLS bloqueia) */
+      var sessAtual=await sb.auth.getSession();
+      var tkn2=(sessAtual&&sessAtual.data&&sessAtual.data.session&&sessAtual.data.session.access_token)
+               ||sessionStorage.getItem('mg_access_token')
+               ||SUPABASE_KEY;
+      console.log('[chaves] token type:', tkn2===SUPABASE_KEY?'ANON (pode falhar RLS)':'USER TOKEN OK');
       for(var pi=0;pi<pedidosSemChave.length;pi++){
         var ped=pedidosSemChave[pi];
         try{
-          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&status=eq.entregue';
+          /* Busca chaves entregues OU qualquer chave associada a este pedido */
+          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&select=*';
           var chRes=await fetch(chUrl,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+tkn2,'Accept':'application/json'}});
+          console.log('[chaves] pedido',ped.id,'status HTTP:',chRes.status);
           if(chRes.ok){
             var chRows=await chRes.json();
-            if(chRows&&chRows.length>0){
-              /* Injeta as chaves e atualiza status para pago */
+            console.log('[chaves] pedido',ped.id,'rows:',chRows&&chRows.length);
+            /* Filtra apenas as entregues para exibição */
+            var chEntregues=chRows?chRows.filter(function(c){return c.status==='entregue'||c.conteudo}):[];
+            if(chEntregues&&chEntregues.length>0){
               var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
               if(pedIdx>=0){
-                data[pedIdx].chaves_entregues=chRows;
+                data[pedIdx].chaves_entregues=chEntregues;
                 /* Se tinha chave entregue, o pedido está pago mesmo que status diga pendente */
-                if(data[pedIdx].status==='pendente') data[pedIdx].status='pago';
+                if(data[pedIdx].status==='pendente'||data[pedIdx].status==='aprovado'){
+                  data[pedIdx].status='pago';
+                }
               }
             }
+          }else{
+            var errTxt=await chRes.text();
+            console.warn('[chaves] HTTP erro',chRes.status,errTxt);
           }
-        }catch(ce){console.warn('[chaves pedido]',ce);}
+        }catch(ce){console.warn('[chaves pedido]',ped.id,ce);}
       }
     }
 
