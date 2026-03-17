@@ -1309,23 +1309,23 @@ body.tema-claro .section-loader{color:var(--muted)}
       <div class="tickets-nivel-list">
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--bronze)">🥉 Bronze</span>
-          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
+          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--prata)">🥈 Prata</span>
-          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
+          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--ouro)">🥇 Ouro</span>
-          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+4 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--esm)">💚 Esmeralda</span>
-          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+6 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--dia)">💎 Diamante</span>
-          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+8 tickets/semana</span>
         </div>
       </div>
       <div style="margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(255,183,0,.05);border:1px solid rgba(255,183,0,.15);font-size:10px;color:#888;font-weight:600;line-height:1.6">
@@ -1713,18 +1713,19 @@ async function carregarPerfil(user){
   /* Mostra dados do Google imediatamente enquanto busca o banco */
   var fallback={id:user.id,email:user.email,nome:nome,avatar_url:avatar,
     pontos:0,total_gasto:0,total_pedidos:0,total_avaliacoes:0,
-    rpg_comprados:0,promo_comprados:0,indicacoes:0};
+    rpg_comprados:0,promo_comprados:0,indicacoes:0,total_comentarios:0};
   renderPerfil(fallback);
 
   try{
     /* Busca perfil e pontos em paralelo */
-    var [perfilRes, mpRes] = await Promise.all([
+    var [perfilRes, mpRes, commRes] = await Promise.all([
       sb.from('perfis').upsert(
         {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
-      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle()
+      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle(),
+      sb.from('comentarios').select('id',{count:'exact',head:true}).eq('user_id',user.id)
     ]);
 
     var perfil=perfilRes.data||fallback;
@@ -1733,6 +1734,8 @@ async function carregarPerfil(user){
       perfil.pontos=mpRes.data.pontos||0;
       perfil.historico=mpRes.data.historico||[];
     }
+    /* Injeta contagem de comentários */
+    perfil.total_comentarios=(commRes&&commRes.count)||0;
     perfilData=perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
@@ -2031,6 +2034,7 @@ var CONQUISTAS=[
   {id:'dez_compras',     icon:'👑', nome:'Veterano',           desc:'Comprou 10 jogos na MarsGames',               titulo:'Veterano Mars',       pts:200, req:function(p){return(p.total_pedidos||0)>=10}},
   {id:'primeira_aval',   icon:'⭐', nome:'Crítico',            desc:'Avaliou um jogo pela primeira vez',           titulo:'Crítico Gamer',       pts:20,  req:function(p){return(p.total_avaliacoes||0)>=1}},
   {id:'cinco_aval',      icon:'🏅', nome:'Influencer',         desc:'Fez 5 avaliações verificadas',                titulo:'Influencer Mars',     pts:80,  req:function(p){return(p.total_avaliacoes||0)>=5}},
+  {id:'primeiro_comentario', icon:'💬', nome:'Voz da Galáxia', desc:'Fez seu primeiro comentário na MarsGames',   titulo:'Comentarista Mars',   pts:15,  req:function(p){return(p.total_comentarios||0)>=1}},
   {id:'fiel',            icon:'🔥', nome:'Fã de RPG',          desc:'Comprou 3 jogos da categoria Ação/RPG',       titulo:'Caçador de RPG',      pts:60,  req:function(p){return(p.rpg_comprados||0)>=3}},
   {id:'caçador',         icon:'💰', nome:'Caçador de Ofertas', desc:'Comprou 5 jogos em promoção',                 titulo:'Caçador de Ofertas',  pts:80,  req:function(p){return(p.promo_comprados||0)>=5}},
   {id:'social',          icon:'🤝', nome:'Embaixador',         desc:'Indicou um amigo que fez a primeira compra',  titulo:'Embaixador Mars',     pts:150, req:function(p){return(p.indicacoes||0)>=1}},
@@ -2339,7 +2343,7 @@ async function carregarTicketsPerfil(user){
   if(!data){
     var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
     var pts=(mp.data&&mp.data.pontos)||0;
-    var bonus=pts>=5000?3:pts>=1000?2:pts>=500?2:1;
+    var bonus=pts>=5000?8:pts>=1000?6:pts>=500?4:pts>=100?3:2;
     var{data:novo}=await sb.from('tickets').insert({
       user_id:user.id,user_email:user.email,
       quantidade:bonus,total_acumulado:bonus,
@@ -2358,7 +2362,7 @@ async function carregarTicketsPerfil(user){
 
   /* Bonus semanal baseado no nível */
   var nivel=getNivel(perfilData?perfilData.pontos||0:0);
-  var bonus=nivel.nome==='Diamante'?3:nivel.nome==='Esmeralda'?2:nivel.nome==='Ouro'?2:1;
+  var bonus=nivel.nome==='Diamante'?8:nivel.nome==='Esmeralda'?6:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:2;
   document.getElementById('ticketsBonusPorSemana').textContent='+'+bonus;
 
   /* Timer renovação */
