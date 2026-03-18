@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsPass — Assinaturas Galácticas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070d;--card:#0f0f1a;--surface:#161624;--border:#1e1e32;--border2:#2a2a44;
+  --green:#00ff55;--mars:#e8421a;--orange:#ff6b2b;--amber:#ffb300;
+  --text:#f0f0ff;--muted:#555570;--radius:16px;
+
+  /* Cores por plano */
+  --andromeda:#7c6af7;--andromeda-glow:rgba(124,106,247,.3);--andromeda-dim:rgba(124,106,247,.08);
+  --triangulo:#00d4ff;--triangulo-glow:rgba(0,212,255,.3);--triangulo-dim:rgba(0,212,255,.08);
+  --centaurus:#ffb300;--centaurus-glow:rgba(255,179,0,.3);--centaurus-dim:rgba(255,179,0,.08);
+  --sombrero:#ff3c6e;--sombrero-glow:rgba(255,60,110,.35);--sombrero-dim:rgba(255,60,110,.08);
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes starTwinkle{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+@keyframes orbit{from{transform:rotate(0deg) translateX(60px) rotate(0deg)}to{transform:rotate(360deg) translateX(60px) rotate(-360deg)}}
+@keyframes glow{0%,100%{opacity:.4}50%{opacity:.9}}
+@keyframes gradMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);font-family:'Montserrat',sans-serif;
+  color:var(--text);min-height:100vh;overflow-x:hidden;
+}
+
+/* ── STARS BG ── */
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:starTwinkle var(--dur,3s) ease-in-out infinite}
+
+/* ── NEBULA ── */
+.nebula{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 20%,rgba(124,106,247,.07) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(255,60,110,.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.04) 0%,transparent 60%);
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(7,7,13,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(124,106,247,.15);
+  padding:0 24px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.navbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(124,106,247,.5) 30%,rgba(255,60,110,.3) 70%,transparent);
+}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:var(--mars)}
+.nav-pass-badge{
+  font-family:'Orbitron',sans-serif;font-size:8px;font-weight:900;
+  letter-spacing:2px;padding:3px 8px;border-radius:4px;
+  background:linear-gradient(135deg,var(--andromeda),var(--sombrero));
+  color:#fff;margin-left:6px;
+}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-btn{
+  padding:8px 16px;border-radius:8px;border:1px solid var(--border2);
+  background:rgba(255,255,255,.04);color:#aaa;font-size:10px;font-weight:700;
+  letter-spacing:.5px;text-decoration:none;transition:all .2s;
+}
+.nav-btn:hover{border-color:#555;color:#fff}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;
+  padding:90px 24px 70px;text-align:center;
+  overflow:hidden;
+}
+.hero-eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  color:var(--andromeda);margin-bottom:20px;
+  display:inline-flex;align-items:center;gap:10px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';height:1px;width:40px;
+  background:linear-gradient(to right,transparent,var(--andromeda));
+}
+.hero-eyebrow::after{background:linear-gradient(to left,transparent,var(--andromeda))}
+
+.hero-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(36px,7vw,80px);
+  font-weight:900;line-height:1;
+  letter-spacing:2px;margin-bottom:8px;
+  background:linear-gradient(135deg,#fff 0%,var(--andromeda) 40%,var(--sombrero) 70%,var(--centaurus) 100%);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradMove 6s ease infinite;
+}
+.hero-title-sub{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(18px,3vw,32px);
+  font-weight:700;color:rgba(255,255,255,.5);
+  letter-spacing:4px;margin-bottom:28px;
+}
+.hero-desc{
+  font-size:14px;color:#666688;font-weight:600;
+  max-width:580px;margin:0 auto 48px;line-height:1.8;
+}
+
+/* Planeta decorativo */
+.hero-planet{
+  width:120px;height:120px;border-radius:50%;margin:0 auto 48px;
+  position:relative;
+  background:radial-gradient(circle at 35% 30%,#3a2a80,#1a0a40,#070712);
+  box-shadow:0 0 60px rgba(124,106,247,.5),0 0 120px rgba(124,106,247,.2),inset -20px -16px 40px rgba(0,0,0,.6);
+  animation:float 6s ease-in-out infinite;
+}
+.hero-planet::before{
+  content:'';position:absolute;inset:-16px;border-radius:50%;
+  border:1px solid rgba(124,106,247,.2);
+  animation:pulse 3s ease-in-out infinite;
+}
+.hero-planet::after{
+  content:'';position:absolute;inset:-32px;border-radius:50%;
+  border:1px dashed rgba(124,106,247,.1);
+}
+.planet-orb{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35%,#fff,var(--andromeda));
+  box-shadow:0 0 12px var(--andromeda);
+  top:50%;left:50%;margin:-5px 0 0 -5px;
+  animation:orbit 4s linear infinite;
+}
+.planet-orb-2{
+  position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35%,#fff,var(--sombrero));
+  box-shadow:0 0 10px var(--sombrero);
+  top:50%;left:50%;margin:-3.5px 0 0 -3.5px;
+  animation:orbit 7s linear infinite reverse;
+  --orbit-r:80px;
+}
+
+/* ── GRID DE PLANOS ── */
+.plans-section{
+  position:relative;z-index:1;
+  max-width:1200px;margin:0 auto;
+  padding:0 24px 100px;
+}
+.plans-title{
+  font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:4px;text-transform:uppercase;color:var(--muted);
+  text-align:center;margin-bottom:48px;
+}
+
+.plans-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;align-items:start;
+}
+
+/* ── CARD DO PLANO ── */
+.plan-card{
+  position:relative;border-radius:20px;overflow:hidden;
+  background:var(--card);
+  border:1px solid var(--border);
+  transition:transform .3s,box-shadow .3s;
+  animation:cardIn .6s ease both;
+}
+.plan-card:hover{transform:translateY(-8px)}
+
+/* Linha topo */
+.plan-card::before{
+  content:'';display:block;height:3px;width:100%;
+  background:var(--plan-gradient);
+}
+
+/* Destaques */
+.plan-card.popular{
+  border-color:var(--centaurus);
+  box-shadow:0 0 40px var(--centaurus-glow),0 20px 60px rgba(0,0,0,.4);
+}
+.plan-card.top{
+  border-color:var(--sombrero);
+  box-shadow:0 0 40px var(--sombrero-glow),0 20px 60px rgba(0,0,0,.4);
+}
+
+.popular-tag,.top-tag{
+  position:absolute;top:16px;right:16px;
+  font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 10px;border-radius:99px;
+}
+.popular-tag{background:rgba(255,179,0,.15);color:var(--centaurus);border:1px solid rgba(255,179,0,.3)}
+.top-tag{background:rgba(255,60,110,.15);color:var(--sombrero);border:1px solid rgba(255,60,110,.3)}
+
+/* Header do card */
+.plan-header{padding:28px 28px 20px}
+.plan-icon{font-size:36px;margin-bottom:12px;display:block;line-height:1}
+.plan-name{
+  font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;
+  letter-spacing:2px;margin-bottom:4px;
+}
+.plan-tagline{font-size:11px;color:#555570;font-weight:600;margin-bottom:20px}
+
+.plan-price-wrap{display:flex;align-items:baseline;gap:4px;margin-bottom:6px}
+.plan-price-cur{font-size:13px;font-weight:700;color:#888;margin-top:4px}
+.plan-price{
+  font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;
+  line-height:1;
+}
+.plan-price-per{font-size:11px;color:#555570;font-weight:600;margin-left:2px}
+.plan-price-anual{font-size:10px;color:#444460;font-weight:600;margin-bottom:24px}
+
+/* Botão */
+.plan-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:14px;border-radius:12px;border:none;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+  background:var(--plan-gradient);color:#fff;
+  box-shadow:0 4px 20px var(--plan-glow);
+}
+.plan-btn:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 8px 30px var(--plan-glow)}
+.plan-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);
+  background-size:200% 100%;
+  animation:shimmer 2.5s linear infinite;
+}
+
+/* Divisor */
+.plan-divider{height:1px;background:var(--border);margin:0 28px}
+
+/* Benefícios */
+.plan-benefits{padding:20px 28px 28px}
+.benefits-label{
+  font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;
+}
+.benefit-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:7px 0;font-size:11px;font-weight:600;color:#aaaacc;
+  border-bottom:1px solid rgba(255,255,255,.03);
+  line-height:1.4;
+}
+.benefit-item:last-child{border-bottom:none}
+.benefit-check{
+  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;margin-top:1px;
+  background:var(--plan-dim);color:var(--plan-color);
+  border:1px solid var(--plan-color);
+  opacity:.9;
+}
+.benefit-highlight{color:#fff;font-weight:700}
+
+/* ── VARIANTES POR PLANO ── */
+.plan-andromeda{
+  --plan-gradient:linear-gradient(135deg,#5a4fd4,#7c6af7,#9d8fff);
+  --plan-glow:rgba(124,106,247,.35);
+  --plan-color:var(--andromeda);
+  --plan-dim:var(--andromeda-dim);
+}
+.plan-andromeda .plan-name{color:var(--andromeda)}
+.plan-andromeda .plan-price{color:var(--andromeda)}
+
+.plan-triangulo{
+  --plan-gradient:linear-gradient(135deg,#0090bb,#00d4ff,#66e8ff);
+  --plan-glow:rgba(0,212,255,.3);
+  --plan-color:var(--triangulo);
+  --plan-dim:var(--triangulo-dim);
+}
+.plan-triangulo .plan-name{color:var(--triangulo)}
+.plan-triangulo .plan-price{color:var(--triangulo)}
+
+.plan-centaurus{
+  --plan-gradient:linear-gradient(135deg,#c07800,#ffb300,#ffd060);
+  --plan-glow:rgba(255,179,0,.35);
+  --plan-color:var(--centaurus);
+  --plan-dim:var(--centaurus-dim);
+}
+.plan-centaurus .plan-name{color:var(--centaurus)}
+.plan-centaurus .plan-price{color:var(--centaurus)}
+
+.plan-sombrero{
+  --plan-gradient:linear-gradient(135deg,#c01040,#ff3c6e,#ff80a0);
+  --plan-glow:rgba(255,60,110,.4);
+  --plan-color:var(--sombrero);
+  --plan-dim:var(--sombrero-dim);
+}
+.plan-sombrero .plan-name{color:var(--sombrero)}
+.plan-sombrero .plan-price{color:var(--sombrero)}
+
+/* ── SEÇÃO COMPARAÇÃO ── */
+.compare-section{
+  position:relative;z-index:1;
+  max-width:900px;margin:0 auto;
+  padding:0 24px 100px;
+}
+.section-title{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
+  letter-spacing:2px;text-align:center;color:#fff;margin-bottom:8px;
+}
+.section-sub{font-size:13px;color:#555570;text-align:center;margin-bottom:40px}
+
+.compare-table{
+  width:100%;border-collapse:collapse;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;
+}
+.compare-table th{
+  padding:14px 16px;font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);background:rgba(0,0,0,.2);
+  text-align:center;border-bottom:1px solid var(--border);
+}
+.compare-table th:first-child{text-align:left}
+.compare-table td{
+  padding:13px 16px;font-size:11px;font-weight:600;color:#9999bb;
+  border-bottom:1px solid rgba(255,255,255,.03);text-align:center;
+}
+.compare-table td:first-child{text-align:left;color:#cccce0;font-weight:700}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr:hover td{background:rgba(255,255,255,.015)}
+.ct{color:var(--green);font-size:14px}
+.cx{color:#2a2a44;font-size:14px}
+.th-andromeda{color:var(--andromeda)!important}
+.th-triangulo{color:var(--triangulo)!important}
+.th-centaurus{color:var(--centaurus)!important}
+.th-sombrero{color:var(--sombrero)!important}
+
+/* ── FAQ ── */
+.faq-section{
+  position:relative;z-index:1;
+  max-width:700px;margin:0 auto;padding:0 24px 100px;
+}
+.faq-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;margin-bottom:10px;overflow:hidden;
+}
+.faq-q{
+  padding:16px 20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:13px;font-weight:700;color:#cccce0;
+  transition:color .2s;user-select:none;
+}
+.faq-q:hover{color:#fff}
+.faq-arrow{font-size:12px;transition:transform .2s;color:var(--muted)}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+  font-size:12px;color:#666688;font-weight:600;line-height:1.7;
+}
+.faq-item.open .faq-a{max-height:200px}
+.faq-a-inner{padding:0 20px 16px}
+
+/* ── CTA FINAL ── */
+.cta-section{
+  position:relative;z-index:1;
+  text-align:center;padding:60px 24px 100px;
+}
+.cta-box{
+  max-width:600px;margin:0 auto;
+  background:linear-gradient(135deg,rgba(124,106,247,.08),rgba(255,60,110,.06));
+  border:1px solid rgba(124,106,247,.2);border-radius:24px;
+  padding:48px 40px;
+}
+.cta-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,32px);
+  font-weight:900;color:#fff;margin-bottom:12px;
+}
+.cta-sub{font-size:13px;color:#666688;margin-bottom:32px;line-height:1.7}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 40px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--andromeda),var(--sombrero));
+  color:#fff;font-family:'Montserrat',sans-serif;
+  font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  box-shadow:0 8px 32px rgba(124,106,247,.4);
+  transition:all .2s;
+}
+.cta-btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 12px 40px rgba(124,106,247,.5)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid rgba(124,106,247,.4);color:var(--andromeda);
+  padding:12px 24px;border-radius:8px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;z-index:999;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── MODAL LOGIN ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.9);
+  display:none;align-items:center;justify-content:center;z-index:500;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:40px;max-width:400px;width:100%;text-align:center;
+  animation:cardIn .3s ease both;
+}
+.modal-title{
+  font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;
+  color:#fff;margin-bottom:8px;
+}
+.modal-sub{font-size:12px;color:#666688;margin-bottom:28px;line-height:1.6}
+.modal-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:14px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--andromeda),var(--sombrero));
+  color:#fff;font-family:'Montserrat',sans-serif;
+  font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;text-decoration:none;
+}
+.modal-btn:hover{filter:brightness(1.1)}
+.modal-close{
+  margin-top:16px;background:none;border:none;color:#444460;
+  font-size:11px;cursor:pointer;font-weight:600;
+}
+.modal-close:hover{color:#888}
+
+/* ── RESPONSIVO ── */
+@media(max-width:768px){
+  .plans-grid{grid-template-columns:1fr}
+  .hero{padding:60px 16px 50px}
+  .plans-section,.compare-section,.faq-section{padding-left:16px;padding-right:16px}
+  .compare-table{display:none}
+  .plan-header{padding:22px 20px 16px}
+  .plan-benefits{padding:16px 20px 22px}
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="starsContainer"></div>
+<div class="nebula"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-text">Mars<span>Games</span></div>
+    <span class="nav-pass-badge">PASS</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-btn" href="index.html">← Loja</a>
+    <a class="nav-btn" href="perfil.html" id="navPerfilBtn" style="display:none">Meu Perfil</a>
+    <a class="nav-btn" href="perfil.html" id="navLoginBtn">Entrar</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-eyebrow">Programa de Assinaturas</div>
+  <div class="hero-planet">
+    <div class="planet-orb"></div>
+    <div class="planet-orb-2"></div>
+  </div>
+  <div class="hero-title">MarsPass</div>
+  <div class="hero-title-sub">UNIVERSO EXPANDIDO</div>
+  <p class="hero-desc">Saia da Via Láctea comum. Assine o MarsPass e viaje por universos de benefícios exclusivos — descontos, tickets, sorteios VIP e muito mais.</p>
+</section>
+
+<!-- Planos -->
+<section class="plans-section">
+  <div class="plans-title">Escolha seu universo</div>
+  <div class="plans-grid">
+
+    <!-- ANDRÔMEDA -->
+    <div class="plan-card plan-andromeda" style="animation-delay:.05s">
+      <div class="plan-header">
+        <span class="plan-icon">🌀</span>
+        <div class="plan-name">Andrômeda</div>
+        <div class="plan-tagline">Entrada no universo MarsPass</div>
+        <div class="plan-price-wrap">
+          <span class="plan-price-cur">R$</span>
+          <span class="plan-price">14</span>
+          <span class="plan-price" style="font-size:22px">,99</span>
+          <span class="plan-price-per">/mês</span>
+        </div>
+        <div class="plan-price-anual">≈ R$ 0,50/dia</div>
+        <button class="plan-btn" onclick="assinar('andromeda',14.99)">
+          🚀 Assinar Andrômeda
+        </button>
+      </div>
+      <div class="plan-divider"></div>
+      <div class="plan-benefits">
+        <div class="benefits-label">Benefícios inclusos</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">50 MarsPoints</span> ao assinar</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">3 MarsTickets extras</span> por semana</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">3% de desconto</span> em todas as compras</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Acesso ao <span class="benefit-highlight">Sorteio Premium</span></span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Badge exclusivo <span class="benefit-highlight">"Andromediano"</span> no perfil</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Chat exclusivo de assinantes no Discord</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Suporte prioritário via Discord</span></div>
+      </div>
+    </div>
+
+    <!-- TRIÂNGULO -->
+    <div class="plan-card plan-triangulo" style="animation-delay:.1s">
+      <div class="plan-header">
+        <span class="plan-icon">🔺</span>
+        <div class="plan-name">Triângulo</div>
+        <div class="plan-tagline">Explorador galáctico</div>
+        <div class="plan-price-wrap">
+          <span class="plan-price-cur">R$</span>
+          <span class="plan-price">19</span>
+          <span class="plan-price" style="font-size:22px">,90</span>
+          <span class="plan-price-per">/mês</span>
+        </div>
+        <div class="plan-price-anual">≈ R$ 0,66/dia</div>
+        <button class="plan-btn" onclick="assinar('triangulo',19.90)">
+          🚀 Assinar Triângulo
+        </button>
+      </div>
+      <div class="plan-divider"></div>
+      <div class="plan-benefits">
+        <div class="benefits-label">Benefícios inclusos</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">80 MarsPoints</span> ao assinar</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">5 MarsTickets extras</span> por semana</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">5% de desconto</span> em todas as compras</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Acesso ao <span class="benefit-highlight">Sorteio Premium</span></span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Badge exclusivo <span class="benefit-highlight">"Trianguriano"</span></span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">1 jogo Steam Offline</span> por mês (escolha do editor)</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Chat exclusivo de assinantes no Discord</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Suporte Prioritário no Discord</span></div>
+      </div>
+    </div>
+
+    <!-- CENTAURUS -->
+    <div class="plan-card plan-centaurus popular" style="animation-delay:.15s">
+      <span class="popular-tag">⭐ Mais popular</span>
+      <div class="plan-header">
+        <span class="plan-icon">⚡</span>
+        <div class="plan-name">Centaurus</div>
+        <div class="plan-tagline">Comandante da frota</div>
+        <div class="plan-price-wrap">
+          <span class="plan-price-cur">R$</span>
+          <span class="plan-price">29</span>
+          <span class="plan-price" style="font-size:22px">,90</span>
+          <span class="plan-price-per">/mês</span>
+        </div>
+        <div class="plan-price-anual">≈ R$ 0,99/dia</div>
+        <button class="plan-btn" onclick="assinar('centaurus',29.90)">
+          🚀 Assinar Centaurus
+        </button>
+      </div>
+      <div class="plan-divider"></div>
+      <div class="plan-benefits">
+        <div class="benefits-label">Benefícios inclusos</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">100 MarsPoints</span> ao assinar</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">8 MarsTickets extras</span> por semana</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">10% de desconto</span> em todas as compras</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Acesso ao <span class="benefit-highlight">Sorteio Premium + VIP</span></span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Badge <span class="benefit-highlight">"Centauriano"</span> + anel exclusivo no avatar</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">1 jogo Steam</span> à escolha do tripulante (até R$10)</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Chat exclusivo + <span class="benefit-highlight">suporte Premium direto</span></span></div>
+      </div>
+    </div>
+
+    <!-- SOMBRERO -->
+    <div class="plan-card plan-sombrero top" style="animation-delay:.2s">
+      <span class="top-tag">👑 Lendário</span>
+      <div class="plan-header">
+        <span class="plan-icon">🌐</span>
+        <div class="plan-name">Sombrero</div>
+        <div class="plan-tagline">Lendário do universo Mars</div>
+        <div class="plan-price-wrap">
+          <span class="plan-price-cur">R$</span>
+          <span class="plan-price">39</span>
+          <span class="plan-price" style="font-size:22px">,90</span>
+          <span class="plan-price-per">/mês</span>
+        </div>
+        <div class="plan-price-anual">≈ R$ 1,33/dia</div>
+        <button class="plan-btn" onclick="assinar('sombrero',39.90)">
+          🚀 Assinar Sombrero
+        </button>
+      </div>
+      <div class="plan-divider"></div>
+      <div class="plan-benefits">
+        <div class="benefits-label">Benefícios inclusos</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">150 MarsPoints</span> ao assinar</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">12 MarsTickets extras</span> por semana</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">15% de desconto</span> em todas as compras</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Acesso ao <span class="benefit-highlight">Sorteio Premium + VIP exclusivo</span></span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Badge <span class="benefit-highlight">"Sombreriano"</span> + anel lendário no avatar</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">1 Chave CD-Key Steam</span> (escolha do editor)</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">1 jogo Steam</span> à escolha (até R$15)</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span><span class="benefit-highlight">1 cupom presente 20%</span> para um amigo</span></div>
+        <div class="benefit-item"><span class="benefit-check">✓</span><span>Suporte Premium <span class="benefit-highlight">direto no WhatsApp</span></span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Tabela comparativa -->
+<section class="compare-section">
+  <div class="section-title">Comparação completa</div>
+  <div class="section-sub">Tudo o que cada plano oferece lado a lado</div>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Benefício</th>
+        <th class="th-andromeda">🌀 Andrômeda</th>
+        <th class="th-triangulo">🔺 Triângulo</th>
+        <th class="th-centaurus">⚡ Centaurus</th>
+        <th class="th-sombrero">🌐 Sombrero</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>MarsPoints ao assinar</td><td>50 pts</td><td>80 pts</td><td>100 pts</td><td>150 pts</td></tr>
+      <tr><td>Tickets extras/semana</td><td>3</td><td>5</td><td>8</td><td>12</td></tr>
+      <tr><td>Desconto nas compras</td><td>3%</td><td>5%</td><td>10%</td><td>15%</td></tr>
+      <tr><td>Sorteio Premium</td><td class="ct">✓</td><td class="ct">✓</td><td class="ct">✓</td><td class="ct">✓</td></tr>
+      <tr><td>Sorteio VIP</td><td class="cx">—</td><td class="cx">—</td><td class="ct">✓</td><td class="ct">✓</td></tr>
+      <tr><td>Badge exclusivo</td><td class="ct">✓</td><td class="ct">✓</td><td class="ct">✓</td><td class="ct">✓</td></tr>
+      <tr><td>Anel no avatar</td><td class="cx">—</td><td class="cx">—</td><td class="ct">✓</td><td class="ct">✓</td></tr>
+      <tr><td>Jogo mensal (editor)</td><td class="cx">—</td><td class="ct">✓</td><td class="cx">—</td><td class="cx">—</td></tr>
+      <tr><td>Jogo mensal (escolha)</td><td class="cx">—</td><td class="cx">—</td><td>Até R$10</td><td>Até R$15</td></tr>
+      <tr><td>Chave CD-Key Steam</td><td class="cx">—</td><td class="cx">—</td><td class="cx">—</td><td class="ct">✓</td></tr>
+      <tr><td>Cupom presente (amigo)</td><td class="cx">—</td><td class="cx">—</td><td class="cx">—</td><td>20% desc.</td></tr>
+      <tr><td>Chat Discord exclusivo</td><td class="ct">✓</td><td class="ct">✓</td><td class="ct">✓</td><td class="ct">✓</td></tr>
+      <tr><td>Suporte prioritário</td><td>Discord</td><td>Discord</td><td>Premium</td><td>WhatsApp</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="section-title">Dúvidas frequentes</div>
+  <div class="section-sub" style="margin-bottom:32px">Respondemos as principais perguntas sobre o MarsPass</div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Como funciona o pagamento? <span class="faq-arrow">▾</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">O pagamento é feito via Pix ou cartão através do Mercado Pago. Após a confirmação, sua assinatura é ativada em até 24h pelo nosso time.</div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Como recebo meu jogo mensal? <span class="faq-arrow">▾</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">No seu perfil, aba MarsPass, aparece um botão para solicitar o jogo do mês. Você informa qual jogo quer (dentro do limite do plano) e entregamos via perfil em até 48h.</div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Posso cancelar quando quiser? <span class="faq-arrow">▾</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">Sim! Você pode cancelar a qualquer momento. Seus benefícios continuam ativos até o fim do período pago. Não há multa ou fidelidade mínima.</div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Os descontos se acumulam com promoções? <span class="faq-arrow">▾</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">Sim! Seu desconto MarsPass é aplicado sobre o preço atual do produto, incluindo promoções ativas. É desconto em cima de desconto.</div></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">
+      Posso fazer upgrade de plano? <span class="faq-arrow">▾</span>
+    </div>
+    <div class="faq-a"><div class="faq-a-inner">Sim! Entre em contato com nosso suporte via Discord e fazemos o upgrade. Você paga apenas a diferença proporcional pelos dias restantes.</div></div>
+  </div>
+</section>
+
+<!-- CTA Final -->
+<section class="cta-section">
+  <div class="cta-box">
+    <div class="cta-title">Pronto para expandir seu universo?</div>
+    <p class="cta-sub">Junte-se aos assinantes MarsPass e tenha acesso a benefícios que os jogadores comuns não conhecem.</p>
+    <a href="#" class="cta-btn" onclick="document.querySelector('.plans-section').scrollIntoView({behavior:'smooth'});return false;">
+      🌌 Ver todos os planos
+    </a>
+  </div>
+</section>
+
+<div id="toast"></div>
+
+<!-- Modal login -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal-box">
+    <div class="modal-title">Faça login primeiro 🚀</div>
+    <div class="modal-sub">Para assinar o MarsPass você precisa estar logado na sua conta MarsGames.</div>
+    <a href="perfil.html" class="modal-btn">Entrar / Criar conta</a>
+    <button class="modal-close" onclick="document.getElementById('modalLogin').classList.remove('open')">Fechar</button>
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}
+});
+
+/* Links do Mercado Pago — substitua pelas URLs reais dos seus planos */
+var LINKS_MP={
+  andromeda: 'https://link.mercadopago.com.br/marsgames-andromeda',
+  triangulo:  'https://link.mercadopago.com.br/marsgames-triangulo',
+  centaurus:  'https://link.mercadopago.com.br/marsgames-centaurus',
+  sombrero:   'https://link.mercadopago.com.br/marsgames-sombrero'
+};
+
+var userSession=null;
+
+/* Auth */
+sb.auth.onAuthStateChange(function(e,session){
+  userSession=session;
+  var btn=document.getElementById('navLoginBtn');
+  var pBtn=document.getElementById('navPerfilBtn');
+  if(session){
+    if(btn)btn.style.display='none';
+    if(pBtn)pBtn.style.display='flex';
+  }
+});
+sb.auth.getSession().then(function(r){
+  userSession=r.data&&r.data.session?r.data.session:null;
+  if(userSession){
+    document.getElementById('navLoginBtn').style.display='none';
+    document.getElementById('navPerfilBtn').style.display='flex';
+  }
+});
+
+/* Assinar */
+function assinar(plano, valor){
+  if(!userSession){
+    document.getElementById('modalLogin').classList.add('open');
+    return;
+  }
+  /* Salva intenção e redireciona para checkout exclusivo */
+  sessionStorage.setItem('mp_plano_intencao', JSON.stringify({
+    plano:plano, valor:valor, email:userSession.user.email, user_id:userSession.user.id
+  }));
+  window.location.href='marspass-checkout.html';
+}
+
+/* FAQ */
+function toggleFaq(el){
+  var item=el.parentElement;
+  item.classList.toggle('open');
+}
+
+/* Toast */
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},3000);
+}
+
+/* Stars */
+(function(){
+  var container=document.getElementById('starsContainer');
+  for(var i=0;i<120;i++){
+    var s=document.createElement('div');
+    s.className='star';
+    var size=Math.random()*2+.5;
+    s.style.cssText=
+      'width:'+size+'px;height:'+size+'px;'+
+      'left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;'+
+      '--dur:'+(Math.random()*4+2)+'s;'+
+      'animation-delay:'+(Math.random()*5)+'s;'+
+      'opacity:'+(Math.random()*.6+.2);
+    container.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>

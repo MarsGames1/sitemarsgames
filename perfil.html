@@ -664,6 +664,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 .tab-marspoints.active{color:var(--green)!important;border-bottom-color:var(--green)!important}
 .tab-premios{color:var(--ouro)!important;border-bottom-color:transparent}
 .tab-premios.active{color:var(--ouro)!important;border-bottom-color:var(--ouro)!important}
+.tab-marspass{color:#7c6af7!important;border-bottom-color:transparent}
+.tab-marspass.active{color:#7c6af7!important;border-bottom-color:#7c6af7!important}
 /* MarsTickets */
 .tickets-hero{
   background:linear-gradient(135deg,rgba(255,183,0,.08),rgba(255,183,0,.03));
@@ -1160,6 +1162,7 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
+    <div class="tab tab-marspass" onclick="showTab('marspass-perfil',this)">🌌 MarsPass</div>
     <div class="tab" onclick="showTab('editar',this)">Editar Perfil</div>
   </div>
   </div>
@@ -1381,6 +1384,23 @@ body.tema-claro .section-loader{color:var(--muted)}
   <div class="tab-content" id="tab-premios">
     <div id="premiosLoader" class="section-loader"><div class="spinner"></div> Carregando prêmios...</div>
     <div id="premiosList" style="display:none"></div>
+  </div>
+
+  <!-- MARSPASS -->
+  <div class="tab-content" id="tab-marspass-perfil">
+    <div id="mp-perfil-loader" style="text-align:center;padding:40px;color:var(--muted)">
+      <div style="width:28px;height:28px;border:3px solid rgba(124,106,247,.15);border-top-color:#7c6af7;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px"></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px">Carregando assinatura...</div>
+    </div>
+    <div id="mp-perfil-ativo" style="display:none"></div>
+    <div id="mp-perfil-inativo" style="display:none">
+      <div style="text-align:center;padding:40px 20px;background:var(--card);border-radius:16px;border:1px solid var(--border)">
+        <div style="font-size:48px;margin-bottom:16px">🌌</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#fff;margin-bottom:8px">Você ainda não tem MarsPass</div>
+        <div style="font-size:12px;color:#555570;margin-bottom:24px;line-height:1.7">Assine e tenha acesso a sorteios exclusivos, descontos, tickets extras e muito mais!</div>
+        <a href="marspass.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:10px;background:linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;text-decoration:none;text-transform:uppercase">🚀 Ver planos MarsPass</a>
+      </div>
+    </div>
   </div>
 
   <!-- EDITAR PERFIL -->
@@ -2296,9 +2316,121 @@ function showTab(id,el){
   if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
   if(id==='marspoints-perfil' && userSession) carregarMarsPointsPerfil(userSession.user);
   if(id==='premios' && userSession) carregarPremios(userSession.user);
+  if(id==='marspass-perfil' && userSession) carregarMarsPassPerfil(userSession.user);
 }
 
-/* ── Abre tab pelo hash da URL (ex: perfil.html#marstickets) ── */
+async function carregarMarsPassPerfil(user){
+  document.getElementById('mp-perfil-loader').style.display='block';
+  document.getElementById('mp-perfil-ativo').style.display='none';
+  document.getElementById('mp-perfil-inativo').style.display='none';
+
+  var{data:a}=await sb.from('marspass_assinaturas')
+    .select('*').eq('user_email',user.email).eq('status','ativo')
+    .gt('data_vencimento',new Date().toISOString())
+    .order('created_at',{ascending:false}).limit(1).maybeSingle();
+
+  document.getElementById('mp-perfil-loader').style.display='none';
+
+  if(!a){
+    document.getElementById('mp-perfil-inativo').style.display='block';
+    return;
+  }
+
+  var PLANOS_INFO={
+    andromeda:{nome:'Andrômeda',icon:'🌀',cor:'#7c6af7',gradient:'linear-gradient(135deg,#5a4fd4,#7c6af7)',desc:3,tickets:3,pontos:50},
+    triangulo:{nome:'Triângulo',icon:'🔺',cor:'#00d4ff',gradient:'linear-gradient(135deg,#0090bb,#00d4ff)',desc:5,tickets:5,pontos:80},
+    centaurus:{nome:'Centaurus',icon:'⚡',cor:'#ffb300',gradient:'linear-gradient(135deg,#c07800,#ffb300)',desc:10,tickets:8,pontos:100},
+    sombrero:{nome:'Sombrero',icon:'🌐',cor:'#ff3c6e',gradient:'linear-gradient(135deg,#c01040,#ff3c6e)',desc:15,tickets:12,pontos:150}
+  };
+  var pl=PLANOS_INFO[a.plano]||{nome:a.plano,icon:'🌌',cor:'#888',gradient:'',desc:0,tickets:0};
+
+  var venc=new Date(a.data_vencimento);
+  var hoje=new Date();
+  var diffDias=Math.ceil((venc-hoje)/(1000*60*60*24));
+  var vencStr=venc.toLocaleDateString('pt-BR');
+
+  /* Verifica se pode solicitar jogo (mês atual) */
+  var mesAtual=hoje.getMonth()+1;
+  var podeJogo=(a.plano!=='andromeda')&&(!a.jogo_mensal_resgatado||(a.jogo_mensal_mes||0)!==mesAtual);
+  var temJogoPendente=a.jogo_mensal_solicitacao&&!a.jogo_mensal_entregue;
+
+  var borderCor=a.plano==='sombrero'?'rgba(255,60,110,.3)':a.plano==='centaurus'?'rgba(255,179,0,.3)':a.plano==='triangulo'?'rgba(0,212,255,.3)':'rgba(124,106,247,.3)';
+
+  var jogoHtml='';
+  if(a.plano!=='andromeda'){
+    var jogoContent='';
+    if(temJogoPendente){
+      jogoContent='<div style="font-size:12px;color:var(--amber);font-weight:700">⏳ Aguardando entrega: <span style="color:#fff">'+esc(a.jogo_mensal_solicitacao)+'</span></div>';
+    } else if(podeJogo){
+      jogoContent='<div style="font-size:11px;color:#888;margin-bottom:10px">Solicite seu jogo deste mês!</div>'+
+        '<input id="mp-jogo-input" class="edit-input" placeholder="Qual jogo você quer?" style="margin-bottom:8px;font-size:11px">'+
+        '<button onclick="solicitarJogoMarsPass(\''+a.id+'\')" style="padding:8px 18px;border-radius:8px;border:none;background:var(--amber);color:#000;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer">Solicitar jogo</button>';
+    } else {
+      jogoContent='<div style="font-size:11px;color:var(--green)">✅ Jogo do mês já solicitado!</div>';
+    }
+    jogoHtml='<div style="background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.15);border-radius:10px;padding:14px;margin-bottom:16px">'+
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:10px">JOGO DO MÊS</div>'+jogoContent+'</div>';
+  }
+
+  var cupomHtml='';
+  if(a.plano==='sombrero'){
+    var cupomContent=a.cupom_presente_codigo?
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
+        '<div style="font-family:monospace;font-size:14px;font-weight:900;color:#ff3c6e;background:rgba(255,60,110,.1);padding:8px 14px;border-radius:6px;border:1px solid rgba(255,60,110,.2)">'+esc(a.cupom_presente_codigo)+'</div>'+
+        '<button onclick="navigator.clipboard.writeText(\''+esc(a.cupom_presente_codigo)+'\').then(function(){showToast(\'Cupom copiado!\')})" style="padding:8px 12px;border-radius:6px;border:1px solid rgba(255,60,110,.3);background:none;color:#ff3c6e;font-size:10px;font-weight:700;cursor:pointer">Copiar</button>'+
+        '<span style="font-size:10px;color:#555">'+(a.cupom_presente_usado?'✅ Usado':'⏳ Disponível')+'</span>'+
+      '</div>':
+      '<div style="font-size:11px;color:#888">Cupom sendo gerado — disponível em breve!</div>';
+    cupomHtml='<div style="background:rgba(255,60,110,.05);border:1px solid rgba(255,60,110,.15);border-radius:10px;padding:14px;margin-bottom:16px">'+
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:8px">CUPOM PRESENTE</div>'+cupomContent+'</div>';
+  }
+
+  var html=
+    '<div style="background:var(--card);border:1px solid '+borderCor+';border-radius:16px;overflow:hidden;margin-bottom:16px">'+
+      '<div style="height:3px;background:'+pl.gradient+'"></div>'+
+      '<div style="padding:24px">'+
+        '<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">'+
+          '<div style="font-size:36px">'+pl.icon+'</div>'+
+          '<div>'+
+            '<div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;color:'+pl.cor+'">'+pl.nome+'</div>'+
+            '<div style="font-size:10px;color:#666;margin-top:2px;font-weight:600">Assinatura ativa</div>'+
+          '</div>'+
+          '<div style="margin-left:auto;text-align:right">'+
+            '<div style="font-size:10px;color:#555;font-weight:600">Vence em</div>'+
+            '<div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:900;color:'+(diffDias<=5?'var(--red)':'var(--green)')+'">'+diffDias+'d</div>'+
+            '<div style="font-size:9px;color:#444">'+vencStr+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">'+
+          '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:900;color:'+pl.cor+'">'+pl.desc+'%</div><div style="font-size:9px;color:#555;font-weight:700;letter-spacing:1px">DESCONTO</div></div>'+
+          '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:900;color:var(--amber)">+'+pl.tickets+'</div><div style="font-size:9px;color:#555;font-weight:700;letter-spacing:1px">TICKETS/SEM</div></div>'+
+          '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:900;color:var(--green)">'+(a.renovacoes||0)+'x</div><div style="font-size:9px;color:#555;font-weight:700;letter-spacing:1px">RENOVAÇÕES</div></div>'+
+        '</div>'+
+        jogoHtml+
+        cupomHtml+
+        '<a href="marspass.html" style="font-size:10px;color:#444;font-weight:600;text-decoration:none">Ver benefícios completos →</a>'+
+      '</div>'+
+    '</div>';
+
+  document.getElementById('mp-perfil-ativo').innerHTML=html;
+  document.getElementById('mp-perfil-ativo').style.display='block';
+}
+
+async function solicitarJogoMarsPass(assinaturaId){
+  var jogo=document.getElementById('mp-jogo-input');
+  if(!jogo||!jogo.value.trim()){showToast('Informe qual jogo você quer!',true);return;}
+  var{error}=await sb.from('marspass_assinaturas').update({
+    jogo_mensal_solicitacao:jogo.value.trim(),
+    jogo_mensal_mes:new Date().getMonth()+1,
+    jogo_mensal_resgatado:true,
+    updated_at:new Date().toISOString()
+  }).eq('id',assinaturaId);
+  if(error){showToast('Erro: '+error.message,true);return;}
+  showToast('🎮 Solicitação enviada! Entregamos em até 48h.');
+  if(userSession) carregarMarsPassPerfil(userSession.user);
+}
+
+/* ── Abre tab pelo hash da URL (ex: perfil.html#marspass) ── */
 function abrirTabPeloHash(){
   var hash=window.location.hash.replace('#','').toLowerCase();
   if(!hash) return;
@@ -2309,6 +2441,10 @@ function abrirTabPeloHash(){
   } else if(hash==='marspoints'){
     var tabEl=document.querySelector('.tab-marspoints');
     showTab('marspoints-perfil', tabEl);
+    if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'center'});
+  } else if(hash==='marspass'){
+    var tabEl=document.querySelector('.tab-marspass');
+    showTab('marspass-perfil', tabEl);
     if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'center'});
   }
 }

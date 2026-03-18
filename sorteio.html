@@ -340,7 +340,56 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   .sorteio-tab{padding:10px 14px;font-size:9px;letter-spacing:1px}
 }
 
-/* Main content */
+.tab-dot-new.p{ background:#7c6af7;box-shadow:0 0 8px #7c6af7,0 0 16px rgba(124,106,247,.5) }
+.tab-dot-new.v{ background:#ff3c6e;box-shadow:0 0 8px #ff3c6e,0 0 16px rgba(255,60,110,.5) }
+
+.tab-premium{ border-color:#3a2a60!important }
+.tab-vip{ border-color:#4a1a2a!important }
+.sorteio-tab.active-premium{
+  border-color:#7c6af7;color:#aa99ff;background:rgba(124,106,247,.14);
+  box-shadow:0 0 20px rgba(124,106,247,.2);
+}
+.sorteio-tab.active-vip{
+  border-color:#ff3c6e;color:#ff88aa;background:rgba(255,60,110,.12);
+  box-shadow:0 0 20px rgba(255,60,110,.2);
+}
+
+/* Card bloqueado MarsPass */
+.marspass-locked{
+  text-align:center;padding:60px 28px;
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  position:relative;overflow:hidden;animation:fadeUp .4s ease both;
+}
+.marspass-locked::before{
+  content:'';display:block;height:3px;
+  background:linear-gradient(to right,#5a4fd4,#7c6af7,#ff3c6e,#ffb300);
+  position:absolute;top:0;left:0;right:0;
+}
+.marspass-locked-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%,rgba(124,106,247,.08) 0%,transparent 60%);
+}
+.lock-icon{font-size:52px;display:block;margin:0 auto 20px;filter:drop-shadow(0 0 20px rgba(124,106,247,.6))}
+.lock-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#7c6af7;margin-bottom:12px}
+.lock-title{font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,24px);font-weight:900;color:#fff;margin-bottom:12px}
+.lock-sub{font-size:12px;color:#555570;font-weight:600;line-height:1.8;max-width:440px;margin:0 auto 28px}
+.lock-plans{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.lock-plan-badge{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:99px;font-size:10px;font-weight:700;
+}
+.lock-plan-badge.premium{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.3);color:#aa99ff}
+.lock-plan-badge.vip{background:rgba(255,60,110,.1);border:1px solid rgba(255,60,110,.25);color:#ff88aa}
+.lock-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 36px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e);
+  color:#fff;font-family:'Montserrat',sans-serif;
+  font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;transition:all .2s;
+  box-shadow:0 6px 24px rgba(124,106,247,.35);
+}
+.lock-btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 10px 32px rgba(124,106,247,.45)}
 .main{max-width:900px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1}
 
 /* Card do sorteio ativo */
@@ -755,6 +804,12 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
   <div class="sorteio-tab" id="tab-mensal" onclick="setTipoSorteio('mensal')">
     <span class="tab-dot-new m"></span>Mensal
   </div>
+  <div class="sorteio-tab tab-premium" id="tab-premium" onclick="setTipoSorteio('premium')">
+    <span class="tab-dot-new p"></span>Premium
+  </div>
+  <div class="sorteio-tab tab-vip" id="tab-vip" onclick="setTipoSorteio('vip')">
+    <span class="tab-dot-new v"></span>VIP
+  </div>
 </div>
 
 <!-- MAIN -->
@@ -889,6 +944,19 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
       <span class="sem-sorteio-emoji" id="semSorteioEmoji">🚀</span>
       <div class="sem-sorteio-title" id="semSorteioTitle">Nenhum sorteio ativo agora</div>
       <div class="sem-sorteio-sub" id="semSorteiSub">Fique de olho! Em breve teremos um sorteio incrível para você.<br>Siga o nosso Discord para ser avisado primeiro! 🎮</div>
+    </div>
+  </div>
+
+  <!-- Bloqueado — MarsPass -->
+  <div id="marspass-locked-card" style="display:none">
+    <div class="marspass-locked">
+      <div class="marspass-locked-glow"></div>
+      <span class="lock-icon">🔐</span>
+      <div class="lock-eyebrow" id="lockEyebrow">Sorteio Exclusivo</div>
+      <div class="lock-title" id="lockTitle">Saia da Via Láctea comum</div>
+      <p class="lock-sub" id="lockSub">Este sorteio é exclusivo para assinantes MarsPass. Assine e tenha acesso a prêmios ainda maiores, com menos concorrentes e mais chances de ganhar!</p>
+      <div class="lock-plans" id="lockPlans"></div>
+      <a href="marspass.html" class="lock-btn">🌌 Assinar o MarsPass</a>
     </div>
   </div>
 
@@ -1032,9 +1100,11 @@ function atualizarTimerRenovacao(ultima){
 /* ── TABS ── */
 function setTipoSorteio(tipo){
   tipoAtual=tipo;
-  ['diario','semanal','mensal'].forEach(function(t){
+  var todosTipos=['diario','semanal','mensal','premium','vip'];
+  todosTipos.forEach(function(t){
     var tab=document.getElementById('tab-'+t);
-    tab.className='sorteio-tab'+(t===tipo?' active-'+t:'');
+    if(!tab) return;
+    tab.className='sorteio-tab'+(t===tipo?' active-'+t:'')+(t==='premium'?' tab-premium':'')+(t==='vip'?' tab-vip':'');
   });
   if(contadorInterval)clearInterval(contadorInterval);
   carregarSorteio(tipo);
@@ -1046,13 +1116,21 @@ async function carregarSorteio(tipo){
   document.getElementById('sorteio-content').style.display='none';
   document.getElementById('sem-sorteio').style.display='none';
   document.getElementById('sorteio-encerrado').style.display='none';
+  document.getElementById('marspass-locked-card').style.display='none';
 
-  /* Busca APENAS sorteios ativos */
-  var {data:sorteios} = await sb.from('sorteios_periodicos')
+  /* Premium e VIP — verifica acesso antes de tudo */
+  if(tipo==='premium'||tipo==='vip'){
+    document.getElementById('loading-sorteio').style.display='none';
+    var temAcesso=await verificarAcessoMarsPass(tipo);
+    if(!temAcesso){mostrarBloqueadoMarsPass(tipo);return;}
+    /* Tem acesso — continua normalmente mas mostra loading */
+    document.getElementById('loading-sorteio').style.display='block';
+  }
+
+  var{data:sorteios}=await sb.from('sorteios_periodicos')
     .select('*').eq('tipo',tipo).eq('ativo',true)
     .order('created_at',{ascending:false}).limit(1);
 
-  /* Fallback: busca o mais recente do tipo */
   if(!sorteios||sorteios.length===0){
     var r2=await sb.from('sorteios_periodicos')
       .select('*').eq('tipo',tipo)
@@ -1062,33 +1140,14 @@ async function carregarSorteio(tipo){
 
   document.getElementById('loading-sorteio').style.display='none';
 
-  /* Nenhum sorteio ativo — verifica se existe um encerrado recente */
   if(!sorteios||sorteios.length===0){
-    var {data:recente}=await sb.from('sorteios_periodicos')
-      .select('*').eq('tipo',tipo)
-      .order('created_at',{ascending:false}).limit(1);
-
-    if(recente&&recente.length>0){
-      var s=recente[0];
-      if(s.vencedor_email){
-        /* Tinha vencedor — mostra tela de vencedor */
-        mostrarEncerrado(s,'vencedor');
-      } else if(!s.ativo){
-        /* Foi pausado/encerrado sem vencedor */
-        mostrarEncerrado(s,'pausado');
-      } else {
-        mostrarSemSorteio(tipo);
-      }
-    } else {
-      mostrarSemSorteio(tipo);
-    }
+    mostrarSemSorteio(tipo);
     carregarHistorico(tipo);
     return;
   }
 
   sorteioAtual=sorteios[0];
 
-  /* Se encontrou mas já está encerrado — mostra encerrado */
   if(!sorteioAtual.ativo){
     if(sorteioAtual.vencedor_email) mostrarEncerrado(sorteioAtual,'vencedor');
     else mostrarEncerrado(sorteioAtual,'pausado');
@@ -1116,14 +1175,53 @@ async function carregarSorteio(tipo){
   }
 }
 
+/* Verifica acesso MarsPass */
+async function verificarAcessoMarsPass(tipo){
+  if(!userSession) return false;
+  var{data:a}=await sb.from('marspass_assinaturas')
+    .select('plano,status,data_vencimento')
+    .eq('user_email',userSession.user.email)
+    .eq('status','ativo')
+    .gt('data_vencimento',new Date().toISOString())
+    .maybeSingle();
+  if(!a) return false;
+  if(tipo==='premium') return true;
+  if(tipo==='vip') return a.plano==='centaurus'||a.plano==='sombrero';
+  return true;
+}
+
+function mostrarBloqueadoMarsPass(tipo){
+  document.getElementById('marspass-locked-card').style.display='block';
+  if(tipo==='premium'){
+    document.getElementById('lockEyebrow').textContent='Sorteio Premium — Exclusivo MarsPass';
+    document.getElementById('lockTitle').textContent='Saia da Via Láctea comum';
+    document.getElementById('lockSub').textContent='Este sorteio é exclusivo para assinantes MarsPass. Prêmios incríveis, menos competidores e muito mais chance de ganhar. Qualquer plano dá acesso!';
+    document.getElementById('lockPlans').innerHTML=
+      '<span class="lock-plan-badge premium">🌀 Andrômeda</span>'+
+      '<span class="lock-plan-badge premium">🔺 Triângulo</span>'+
+      '<span class="lock-plan-badge premium">⚡ Centaurus</span>'+
+      '<span class="lock-plan-badge premium">🌐 Sombrero</span>';
+  } else {
+    document.getElementById('lockEyebrow').textContent='Sorteio VIP — Ultra Exclusivo';
+    document.getElementById('lockTitle').textContent='Vá mais longe no universo Mars';
+    document.getElementById('lockSub').textContent='O Sorteio VIP é o mais exclusivo da galáxia MarsGames. Apenas Comandantes e Lendários têm acesso. Assine Centaurus ou Sombrero para entrar!';
+    document.getElementById('lockPlans').innerHTML=
+      '<span class="lock-plan-badge vip">⚡ Centaurus — R$29,90</span>'+
+      '<span class="lock-plan-badge vip">🌐 Sombrero — R$39,90</span>';
+  }
+  carregarHistorico(tipo);
+}
+
 function renderSorteio(s){
-  var cores={diario:'badge-diario',semanal:'badge-semanal',mensal:'badge-mensal'};
-  var nomes={diario:'🔥 Diário',semanal:'⭐ Semanal',mensal:'💎 Mensal'};
-  var dotCores={diario:'var(--diario)',semanal:'var(--semanal)',mensal:'var(--mensal)'};
+  var cores={diario:'badge-diario',semanal:'badge-semanal',mensal:'badge-mensal',premium:'badge-semanal',vip:'badge-diario'};
+  var nomes={diario:'🔥 Diário',semanal:'⭐ Semanal',mensal:'💎 Mensal',premium:'🌌 Premium',vip:'👑 VIP'};
+  var dotCores={diario:'var(--diario)',semanal:'var(--semanal)',mensal:'var(--mensal)',premium:'#7c6af7',vip:'#ff3c6e'};
   var accents={
     diario:['#e8421a','#ff6b2b'],
     semanal:['#ffb300','#ff9500'],
-    mensal:['#b9f2ff','#a78bfa']
+    mensal:['#b9f2ff','#a78bfa'],
+    premium:['#7c6af7','#aa99ff'],
+    vip:['#ff3c6e','#ff80a0']
   };
   document.getElementById('sorteioTipoBadge').className='sorteio-tipo-badge '+cores[s.tipo];
   document.getElementById('badgeDot').style.background=dotCores[s.tipo];

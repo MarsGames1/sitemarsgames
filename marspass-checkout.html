@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsPass — Assinatura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070d;--card:#0f0f1a;--border:#1e1e32;
+  --green:#00ff55;--mars:#e8421a;--amber:#ffb300;
+  --andromeda:#7c6af7;--triangulo:#00d4ff;--centaurus:#ffb300;--sombrero:#ff3c6e;
+  --plan-color:#7c6af7;--plan-glow:rgba(124,106,247,.3);
+  --plan-gradient:linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e);
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes gradMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes starTwinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes checkPop{0%{transform:scale(0) rotate(-20deg)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes confetti{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(120px) rotate(720deg);opacity:0}}
+@keyframes countDown{from{stroke-dashoffset:0}to{stroke-dashoffset:283}}
+
+html,body{min-height:100vh}
+body{
+  background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;overflow-x:hidden;position:relative;
+}
+
+/* Stars */
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.star{position:absolute;border-radius:50%;background:#fff;animation:starTwinkle var(--d,3s) ease-in-out infinite}
+.nebula{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 20%,rgba(124,106,247,.07) 0%,transparent 55%),
+    radial-gradient(ellipse at 70% 80%,rgba(255,60,110,.05) 0%,transparent 55%)}
+
+/* ── CARD PRINCIPAL ── */
+.card{
+  position:relative;z-index:1;
+  background:var(--card);
+  border:1px solid var(--plan-color);
+  border-radius:28px;width:100%;max-width:480px;
+  animation:fadeUp .45s ease both;
+  box-shadow:0 0 60px var(--plan-glow),0 40px 100px rgba(0,0,0,.8);
+  overflow:hidden;
+}
+.card-top-bar{height:3px;background:var(--plan-gradient);background-size:200% 200%;animation:gradMove 4s ease infinite}
+
+/* ── STEP 1: Confirmação do plano ── */
+#step-confirm{padding:36px 36px 32px}
+.plan-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.plan-icon-big{font-size:44px;filter:drop-shadow(0 0 16px var(--plan-color))}
+.plan-title-wrap{}
+.plan-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--plan-color);margin-bottom:4px}
+.plan-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff}
+.plan-price-row{display:flex;align-items:baseline;gap:4px}
+.plan-cur{font-size:14px;font-weight:700;color:#888;margin-top:4px}
+.plan-price{font-family:'Orbitron',sans-serif;font-size:40px;font-weight:900;color:var(--plan-color)}
+.plan-per{font-size:12px;color:#555;font-weight:600}
+
+.benefits-box{
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;padding:16px 18px;margin-bottom:24px;
+}
+.benefits-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:12px}
+.benefit-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:11px;font-weight:600;color:#aaa;border-bottom:1px solid rgba(255,255,255,.03)}
+.benefit-row:last-child{border-bottom:none}
+.benefit-check{width:16px;height:16px;border-radius:50%;background:rgba(124,106,247,.15);border:1px solid var(--plan-color);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--plan-color);flex-shrink:0}
+.benefit-hl{color:#fff;font-weight:700}
+
+.btn-assinar{
+  width:100%;padding:17px;border-radius:14px;border:none;
+  background:var(--plan-gradient);background-size:200% 200%;animation:gradMove 4s ease infinite;
+  color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;
+  font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 24px var(--plan-glow);transition:filter .2s,transform .15s;
+}
+.btn-assinar:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-2px)}
+.btn-assinar:disabled{opacity:.45;cursor:not-allowed;transform:none;animation:none}
+.btn-assinar .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.btn-assinar.loading .spinner{display:block}
+.btn-assinar.loading .btn-txt{display:none}
+
+.back-link{display:block;text-align:center;margin-top:14px;font-size:11px;color:#444;font-weight:600;text-decoration:none;transition:color .2s}
+.back-link:hover{color:#888}
+
+/* ── STEP 2: QR Code Pix ── */
+#step-pix{padding:36px;display:none}
+.pix-header{text-align:center;margin-bottom:24px}
+.pix-icon{font-size:40px;margin-bottom:12px;display:block;filter:drop-shadow(0 0 14px rgba(0,255,85,.5))}
+.pix-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#fff;margin-bottom:4px}
+.pix-sub{font-size:11px;color:#555;font-weight:600}
+
+/* Timer circular */
+.timer-wrap{position:relative;width:64px;height:64px;margin:0 auto 20px}
+.timer-svg{transform:rotate(-90deg)}
+.timer-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:4}
+.timer-ring{fill:none;stroke:var(--plan-color);stroke-width:4;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:0;transition:stroke-dashoffset .5s linear}
+.timer-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:#fff}
+
+/* Valor a pagar */
+.valor-box{
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;
+}
+.valor-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#444}
+.valor-num{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--plan-color)}
+
+/* QR Code */
+.qr-wrap{text-align:center;margin-bottom:20px}
+.qr-img{width:200px;height:200px;border-radius:16px;padding:10px;background:#fff;margin:0 auto 12px;display:block}
+.qr-plano-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;
+  background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.3);
+  font-size:10px;font-weight:700;color:var(--plan-color);
+  margin-bottom:16px;
+}
+
+/* Copia e cola */
+.copiar-wrap{margin-bottom:20px}
+.copiar-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:8px}
+.copiar-box{
+  display:flex;gap:8px;align-items:stretch;
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;padding:10px 14px;
+}
+.copiar-code{flex:1;font-family:monospace;font-size:10px;color:#888;word-break:break-all;line-height:1.4}
+.copiar-btn{
+  flex-shrink:0;padding:8px 14px;border-radius:8px;border:1px solid rgba(124,106,247,.3);
+  background:rgba(124,106,247,.1);color:var(--plan-color);font-size:10px;font-weight:900;
+  cursor:pointer;transition:all .2s;letter-spacing:.5px;white-space:nowrap;
+}
+.copiar-btn:hover{background:rgba(124,106,247,.2)}
+.copiar-btn.copiado{background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.3);color:var(--green)}
+
+/* Steps de instrução */
+.instrucoes{margin-bottom:20px}
+.instrucao-item{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.instrucao-item:last-child{border-bottom:none}
+.instrucao-num{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:var(--plan-gradient);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:900;color:#fff;margin-top:1px;
+}
+.instrucao-txt{font-size:11px;color:#888;font-weight:600;line-height:1.5}
+
+/* Status aguardando */
+.aguardando-box{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-radius:12px;background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.15);
+}
+.aguardando-spin{width:20px;height:20px;border:2.5px solid rgba(255,179,0,.2);border-top-color:var(--amber);border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0}
+.aguardando-txt{font-size:11px;color:#888;font-weight:600;line-height:1.5}
+.aguardando-txt strong{color:var(--amber)}
+
+/* ── STEP 3: Sucesso ── */
+#step-sucesso{padding:48px 36px;text-align:center;display:none}
+.sucesso-check{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 20px;
+  background:var(--plan-gradient);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;animation:checkPop .5s .1s ease both;
+  box-shadow:0 0 40px var(--plan-glow);
+}
+.sucesso-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:8px}
+.sucesso-sub{font-size:12px;color:#555;font-weight:600;line-height:1.7;margin-bottom:28px}
+.btn-perfil{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 32px;border-radius:12px;border:none;
+  background:var(--plan-gradient);color:#fff;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  text-decoration:none;margin-bottom:10px;transition:filter .2s;
+}
+.btn-perfil:hover{filter:brightness(1.1)}
+.btn-loja{
+  display:block;text-align:center;font-size:11px;color:#444;font-weight:600;
+  text-decoration:none;transition:color .2s;
+}
+.btn-loja:hover{color:#888}
+
+/* ── STEP EXPIRADO ── */
+#step-expirado{padding:48px 36px;text-align:center;display:none}
+.expirado-icon{font-size:52px;margin-bottom:16px;display:block}
+.expirado-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#fff;margin-bottom:8px}
+.expirado-sub{font-size:12px;color:#555;margin-bottom:24px;line-height:1.7}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid rgba(124,106,247,.4);color:var(--andromeda);
+  padding:12px 24px;border-radius:8px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;z-index:999;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.erro{border-color:rgba(232,66,26,.4);color:var(--mars)}
+#toast.ok{border-color:rgba(0,255,85,.3);color:var(--green)}
+
+.confetti-piece{position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;border-radius:2px;animation:confetti 1.8s ease-out forwards}
+
+.seguranca{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:10px;color:#333;font-weight:600}
+
+@media(max-width:500px){
+  #step-confirm,#step-pix,#step-sucesso,#step-expirado{padding:28px 22px}
+  .plan-price{font-size:32px}
+  .qr-img{width:170px;height:170px}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="starsContainer"></div>
+<div class="nebula"></div>
+
+<div class="card" id="mainCard">
+  <div class="card-top-bar"></div>
+
+  <!-- STEP 1: Confirmar plano -->
+  <div id="step-confirm">
+    <div class="plan-header">
+      <span class="plan-icon-big" id="planIcon">🌀</span>
+      <div class="plan-title-wrap">
+        <div class="plan-eyebrow">MarsPass — Assinatura mensal</div>
+        <div class="plan-title" id="planNome">Andrômeda</div>
+      </div>
+    </div>
+
+    <div class="plan-price-row" style="margin-bottom:24px">
+      <span class="plan-cur">R$</span>
+      <span class="plan-price" id="planPreco">14,99</span>
+      <span class="plan-per">/mês</span>
+    </div>
+
+    <div class="benefits-box">
+      <div class="benefits-label">O que você recebe</div>
+      <div id="benefitsList"></div>
+    </div>
+
+    <button class="btn-assinar" id="btnAssinar" onclick="iniciarPagamento()">
+      <div class="spinner"></div>
+      <span class="btn-txt">⚡ Assinar com Pix</span>
+    </button>
+    <a href="marspass.html" class="back-link">← Voltar e ver todos os planos</a>
+    <div class="seguranca">🔒 Pagamento seguro via Mercado Pago</div>
+  </div>
+
+  <!-- STEP 2: QR Code -->
+  <div id="step-pix">
+    <div class="pix-header">
+      <span class="pix-icon">⚡</span>
+      <div class="pix-title">Pague com Pix</div>
+      <div class="pix-sub">Escaneie o QR Code ou copie o código abaixo</div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-wrap">
+      <svg class="timer-svg" width="64" height="64" viewBox="0 0 100 100">
+        <circle class="timer-bg" cx="50" cy="50" r="45"/>
+        <circle class="timer-ring" id="timerRing" cx="50" cy="50" r="45"/>
+      </svg>
+      <div class="timer-txt" id="timerTxt">30:00</div>
+    </div>
+
+    <!-- Valor -->
+    <div class="valor-box">
+      <span class="valor-label">Valor da assinatura</span>
+      <span class="valor-num" id="pixValor">R$ 14,99</span>
+    </div>
+
+    <!-- Badge do plano -->
+    <div style="text-align:center;margin-bottom:16px">
+      <span class="qr-plano-badge">
+        <span id="pixPlanIcon">🌀</span>
+        <span id="pixPlanNome">MarsPass Andrômeda</span>
+      </span>
+    </div>
+
+    <!-- QR Code -->
+    <div class="qr-wrap">
+      <img class="qr-img" id="qrImg" src="" alt="QR Code Pix">
+    </div>
+
+    <!-- Copia e cola -->
+    <div class="copiar-wrap">
+      <div class="copiar-label">Pix copia e cola</div>
+      <div class="copiar-box">
+        <div class="copiar-code" id="pixCode">—</div>
+        <button class="copiar-btn" id="copiarBtn" onclick="copiarCodigo()">Copiar</button>
+      </div>
+    </div>
+
+    <!-- Instruções -->
+    <div class="instrucoes">
+      <div class="instrucao-item">
+        <div class="instrucao-num">1</div>
+        <div class="instrucao-txt">Abra o app do seu banco e acesse a área <strong style="color:#ccc">Pix</strong></div>
+      </div>
+      <div class="instrucao-item">
+        <div class="instrucao-num">2</div>
+        <div class="instrucao-txt">Escolha <strong style="color:#ccc">Pagar com QR Code</strong> ou <strong style="color:#ccc">Copia e Cola</strong></div>
+      </div>
+      <div class="instrucao-item">
+        <div class="instrucao-num">3</div>
+        <div class="instrucao-txt">Confirme o valor de <strong style="color:var(--plan-color)" id="instrValor">R$ 14,99</strong> e finalize</div>
+      </div>
+      <div class="instrucao-item">
+        <div class="instrucao-num">4</div>
+        <div class="instrucao-txt">Sua assinatura é <strong style="color:#ccc">ativada automaticamente</strong> assim que o pagamento for confirmado</div>
+      </div>
+    </div>
+
+    <!-- Aguardando -->
+    <div class="aguardando-box">
+      <div class="aguardando-spin"></div>
+      <div class="aguardando-txt">
+        <strong>Aguardando pagamento...</strong><br>
+        Esta página verifica automaticamente a cada 5 segundos
+      </div>
+    </div>
+
+    <div class="seguranca" style="margin-top:16px">🔒 Pagamento seguro via Mercado Pago</div>
+  </div>
+
+  <!-- STEP 3: Sucesso -->
+  <div id="step-sucesso">
+    <div class="sucesso-check" id="sucessoCheck">🎉</div>
+    <div class="sucesso-title" id="sucessoTitle">MarsPass ativado!</div>
+    <p class="sucesso-sub" id="sucessoSub">Sua assinatura foi ativada com sucesso. Seus benefícios já estão disponíveis no seu perfil!</p>
+    <a href="perfil.html#marspass" class="btn-perfil">👤 Ver meu perfil e benefícios</a>
+    <a href="sorteio.html" class="btn-perfil" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">🎲 Acessar sorteios exclusivos</a>
+    <a href="index.html" class="btn-loja">Voltar à loja →</a>
+  </div>
+
+  <!-- STEP: Expirado -->
+  <div id="step-expirado">
+    <span class="expirado-icon">⏰</span>
+    <div class="expirado-title">QR Code expirado</div>
+    <p class="expirado-sub">O tempo para pagamento expirou. Gere um novo QR Code para continuar.</p>
+    <button class="btn-assinar" onclick="voltarConfirm()" style="max-width:280px;margin:0 auto">
+      <span class="btn-txt">↻ Gerar novo QR Code</span>
+    </button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}
+});
+
+var PLANOS={
+  andromeda:{nome:'Andrômeda',icon:'🌀',preco:'14,99',valor:14.99,cor:'#7c6af7',gradient:'linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e)',glow:'rgba(124,106,247,.3)',
+    beneficios:[
+      {i:'⭐',t:'<span class="benefit-hl">50 MarsPoints</span> ao assinar'},
+      {i:'🎟️',t:'<span class="benefit-hl">3 Tickets extras</span>/semana'},
+      {i:'💰',t:'<span class="benefit-hl">3% desconto</span> em compras'},
+      {i:'🏆',t:'Acesso ao <span class="benefit-hl">Sorteio Premium</span>'},
+      {i:'🎖️',t:'Badge <span class="benefit-hl">"Andromediano"</span>'},
+    ]},
+  triangulo:{nome:'Triângulo',icon:'🔺',preco:'19,90',valor:19.90,cor:'#00d4ff',gradient:'linear-gradient(135deg,#0090bb,#00d4ff,#66e8ff)',glow:'rgba(0,212,255,.3)',
+    beneficios:[
+      {i:'⭐',t:'<span class="benefit-hl">80 MarsPoints</span> ao assinar'},
+      {i:'🎟️',t:'<span class="benefit-hl">5 Tickets extras</span>/semana'},
+      {i:'💰',t:'<span class="benefit-hl">5% desconto</span> em compras'},
+      {i:'🏆',t:'Acesso ao <span class="benefit-hl">Sorteio Premium</span>'},
+      {i:'🎮',t:'<span class="benefit-hl">1 jogo</span>/mês (escolha do editor)'},
+    ]},
+  centaurus:{nome:'Centaurus',icon:'⚡',preco:'29,90',valor:29.90,cor:'#ffb300',gradient:'linear-gradient(135deg,#c07800,#ffb300,#ffd060)',glow:'rgba(255,179,0,.35)',
+    beneficios:[
+      {i:'⭐',t:'<span class="benefit-hl">100 MarsPoints</span> ao assinar'},
+      {i:'🎟️',t:'<span class="benefit-hl">8 Tickets extras</span>/semana'},
+      {i:'💰',t:'<span class="benefit-hl">10% desconto</span> em compras'},
+      {i:'🏆',t:'Acesso ao <span class="benefit-hl">Sorteio Premium + VIP</span>'},
+      {i:'🎮',t:'<span class="benefit-hl">1 jogo à escolha</span>/mês (até R$10)'},
+    ]},
+  sombrero:{nome:'Sombrero',icon:'🌐',preco:'39,90',valor:39.90,cor:'#ff3c6e',gradient:'linear-gradient(135deg,#c01040,#ff3c6e,#ff80a0)',glow:'rgba(255,60,110,.4)',
+    beneficios:[
+      {i:'⭐',t:'<span class="benefit-hl">150 MarsPoints</span> ao assinar'},
+      {i:'🎟️',t:'<span class="benefit-hl">12 Tickets extras</span>/semana'},
+      {i:'💰',t:'<span class="benefit-hl">15% desconto</span> em compras'},
+      {i:'🏆',t:'Acesso ao <span class="benefit-hl">Sorteio Premium + VIP</span>'},
+      {i:'🎮',t:'<span class="benefit-hl">1 jogo à escolha</span>/mês + CDKey Steam'},
+      {i:'🎁',t:'<span class="benefit-hl">Cupom presente 20%</span> para amigo'},
+    ]},
+};
+
+var planoKey='andromeda', pixData=null, timerInterval=null, pollInterval=null, timerSecs=1800;
+
+/* ── INICIALIZAÇÃO ── */
+(function init(){
+  /* Pega plano do sessionStorage (salvo pela marspass.html) */
+  var raw=sessionStorage.getItem('mp_plano_intencao');
+  var intencao=raw?JSON.parse(raw):null;
+  planoKey=intencao?intencao.plano:'andromeda';
+  var pl=PLANOS[planoKey]||PLANOS.andromeda;
+
+  /* Aplica cores */
+  var card=document.getElementById('mainCard');
+  card.style.setProperty('--plan-color',pl.cor);
+  card.style.setProperty('--plan-glow',pl.glow);
+  card.style.setProperty('--plan-gradient',pl.gradient);
+  document.querySelector('.card-top-bar').style.background=pl.gradient;
+
+  document.getElementById('planIcon').textContent=pl.icon;
+  document.getElementById('planNome').textContent=pl.nome;
+  document.getElementById('planPreco').textContent=pl.preco;
+  document.getElementById('benefitsList').innerHTML=pl.beneficios.map(function(b){
+    return '<div class="benefit-row"><span class="benefit-check">✓</span><span style="margin-right:6px">'+b.i+'</span><span>'+b.t+'</span></div>';
+  }).join('');
+
+  /* Verifica se já está logado */
+  sb.auth.getSession().then(function(r){
+    if(!r.data||!r.data.session){
+      showToast('Faça login para assinar!',true);
+      setTimeout(function(){window.location.href='perfil.html'},1500);
+    }
+  });
+
+  /* Stars */
+  var c=document.getElementById('starsContainer');
+  for(var i=0;i<80;i++){
+    var s=document.createElement('div');s.className='star';
+    var sz=Math.random()*1.5+.5;
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--d:'+(Math.random()*4+2)+'s;animation-delay:'+(Math.random()*5)+'s';
+    c.appendChild(s);
+  }
+})();
+
+function showToast(msg,erro){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='show'+(erro?' erro':' ok');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.className=''},3000);
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* ── INICIA PAGAMENTO ── */
+async function iniciarPagamento(){
+  var btn=document.getElementById('btnAssinar');
+  btn.disabled=true;btn.classList.add('loading');
+
+  try{
+    var r=await sb.auth.getSession();
+    if(!r.data||!r.data.session){
+      showToast('Faça login primeiro!',true);
+      setTimeout(function(){window.location.href='perfil.html'},1500);
+      return;
+    }
+    var session=r.data.session;
+
+    var response=await fetch(SUPABASE_URL+'/functions/v1/marspass-criar-pix',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+session.access_token
+      },
+      body:JSON.stringify({plano:planoKey})
+    });
+
+    var data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
+
+    pixData=data;
+    mostrarQRCode(data);
+
+  }catch(err){
+    showToast('Erro: '+(err.message||'Tente novamente'),true);
+    btn.disabled=false;btn.classList.remove('loading');
+  }
+}
+
+/* ── EXIBE QR CODE ── */
+function mostrarQRCode(data){
+  var pl=PLANOS[planoKey];
+  var valorFmt='R$ '+Number(data.valor).toFixed(2).replace('.',',');
+
+  document.getElementById('pixValor').textContent=valorFmt;
+  document.getElementById('pixPlanIcon').textContent=pl.icon;
+  document.getElementById('pixPlanNome').textContent='MarsPass '+pl.nome;
+  document.getElementById('instrValor').textContent=valorFmt;
+
+  /* QR Code */
+  if(data.qr_code_base64){
+    document.getElementById('qrImg').src='data:image/png;base64,'+data.qr_code_base64;
+  } else if(data.qr_code){
+    /* Gera QR Code via API gratuita */
+    document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(data.qr_code);
+  }
+
+  document.getElementById('pixCode').textContent=data.qr_code||'—';
+
+  /* Troca step */
+  document.getElementById('step-confirm').style.display='none';
+  document.getElementById('step-pix').style.display='block';
+
+  /* Timer 30 minutos */
+  iniciarTimer(data.expira_em||30);
+
+  /* Polling para verificar pagamento */
+  iniciarPolling(data.reference);
+}
+
+/* ── TIMER ── */
+function iniciarTimer(minutos){
+  timerSecs=minutos*60;
+  var ring=document.getElementById('timerRing');
+  var total=timerSecs;
+
+  clearInterval(timerInterval);
+  timerInterval=setInterval(function(){
+    timerSecs--;
+    var mins=Math.floor(timerSecs/60);
+    var secs=timerSecs%60;
+    document.getElementById('timerTxt').textContent=
+      String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+
+    /* Atualiza anel */
+    var offset=283*(1-timerSecs/total);
+    ring.style.strokeDashoffset=offset;
+
+    /* Muda cor quando <5min */
+    if(timerSecs<300) ring.style.stroke='var(--mars)';
+    else if(timerSecs<600) ring.style.stroke='var(--amber)';
+
+    if(timerSecs<=0){
+      clearInterval(timerInterval);
+      clearInterval(pollInterval);
+      mostrarExpirado();
+    }
+  },1000);
+}
+
+/* ── POLLING ── */
+function iniciarPolling(reference){
+  clearInterval(pollInterval);
+  pollInterval=setInterval(async function(){
+    try{
+      var r=await sb.auth.getSession();
+      if(!r.data||!r.data.session) return;
+
+      var{data:assinatura}=await sb.from('marspass_assinaturas')
+        .select('status,plano')
+        .eq('referencia_pagamento',reference)
+        .maybeSingle();
+
+      if(assinatura&&assinatura.status==='ativo'){
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        mostrarSucesso();
+      }
+    }catch(e){console.error('Polling erro:',e);}
+  },5000);
+}
+
+/* ── COPIAR CÓDIGO ── */
+function copiarCodigo(){
+  var code=document.getElementById('pixCode').textContent;
+  navigator.clipboard.writeText(code).then(function(){
+    var btn=document.getElementById('copiarBtn');
+    btn.textContent='✓ Copiado!';
+    btn.classList.add('copiado');
+    showToast('✓ Código copiado!');
+    setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copiado')},3000);
+  }).catch(function(){
+    /* Fallback para iOS */
+    var el=document.createElement('textarea');
+    el.value=code;el.style.position='fixed';el.style.opacity='0';
+    document.body.appendChild(el);el.select();
+    document.execCommand('copy');document.body.removeChild(el);
+    showToast('✓ Código copiado!');
+  });
+}
+
+/* ── SUCESSO ── */
+function mostrarSucesso(){
+  var pl=PLANOS[planoKey];
+  document.getElementById('step-pix').style.display='none';
+  document.getElementById('step-sucesso').style.display='block';
+  document.getElementById('sucessoCheck').textContent=pl.icon;
+  document.getElementById('sucessoTitle').textContent='MarsPass '+pl.nome+' ativado!';
+  document.getElementById('sucessoSub').textContent=
+    'Pagamento confirmado! Seus '+pl.beneficios[0].t.replace(/<[^>]*>/g,'')+' e demais benefícios já estão ativos no seu perfil. Bem-vindo ao universo MarsPass!';
+
+  lancarConfetti();
+  sessionStorage.removeItem('mp_plano_intencao');
+}
+
+/* ── EXPIRADO ── */
+function mostrarExpirado(){
+  document.getElementById('step-pix').style.display='none';
+  document.getElementById('step-expirado').style.display='block';
+}
+
+function voltarConfirm(){
+  document.getElementById('step-expirado').style.display='none';
+  document.getElementById('step-confirm').style.display='block';
+  var btn=document.getElementById('btnAssinar');
+  btn.disabled=false;btn.classList.remove('loading');
+}
+
+function lancarConfetti(){
+  var cores=['#7c6af7','#ff3c6e','#ffb300','#00d4ff','#00ff55','#fff'];
+  for(var i=0;i<40;i++){
+    var el=document.createElement('div');el.className='confetti-piece';
+    el.style.cssText=
+      'left:'+(10+Math.random()*80)+'%;top:'+(-5+Math.random()*20)+'%;'+
+      'background:'+cores[Math.floor(Math.random()*cores.length)]+';'+
+      'animation-delay:'+(Math.random()*1.2)+'s;'+
+      'animation-duration:'+(1.5+Math.random())+'s;'+
+      'width:'+(6+Math.random()*6)+'px;height:'+(6+Math.random()*6)+'px;'+
+      'transform:rotate('+(Math.random()*360)+'deg)';
+    document.body.appendChild(el);
+    setTimeout(function(e){e.remove()},3000,el);
+  }
+}
+</script>
+</body>
+</html>

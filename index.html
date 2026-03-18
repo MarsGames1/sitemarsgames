@@ -548,6 +548,39 @@ body.tema-claro .exit-sub{color:#666}
     );
     background-size:200% 100%;
   }
+  /* MarsPass nav link — gradiente galáxico roxo→pink */
+  @keyframes marspassShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+  .nav-link-marspass{
+    color:#aa99ff!important;
+    border-radius:8px;
+    position:relative;
+    padding:10px 16px;
+    isolation:isolate;
+    border:1.28px solid transparent!important;
+    background-clip:padding-box;
+    white-space:nowrap;
+  }
+  .nav-link-marspass::before{
+    content:'';position:absolute;inset:-1.28px;border-radius:9px;
+    background:linear-gradient(90deg,
+      rgba(40,20,80,.4) 0%,
+      rgba(100,60,220,.8) 20%,
+      rgba(160,100,255,1) 35%,
+      rgba(255,80,140,1) 50%,
+      rgba(160,100,255,1) 65%,
+      rgba(100,60,220,.8) 80%,
+      rgba(40,20,80,.4) 100%
+    );
+    background-size:200% 100%;
+    animation:marspassShimmer 2.9s linear infinite;
+    z-index:-1;
+  }
+  .nav-link-marspass::after{
+    content:'';position:absolute;inset:1.28px;border-radius:7px;
+    background:#0a0a0e;z-index:-1;
+  }
+  .nav-link-marspass:hover{color:#d4c4ff!important}
+  .nav-link-marspass:hover::before{animation-duration:1.4s}
   /* Dropdown */
   .nav-dropdown{position:relative}
   .nav-dropdown-toggle{
@@ -2416,6 +2449,31 @@ footer::before{
   .surpresa-btn{display:none!important}
 }
 
+/* ── MARSPASS BANNER ── */
+@keyframes mpBannerShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+.marspass-banner-wrap{max-width:1200px;margin:0 auto;padding:0 20px 24px;position:relative;z-index:1}
+.marspass-banner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(90,60,180,.15),rgba(255,60,110,.1));
+  border:1px solid rgba(124,106,247,.3);
+  text-decoration:none;position:relative;overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.marspass-banner:hover{border-color:rgba(124,106,247,.6);box-shadow:0 4px 24px rgba(124,106,247,.15)}
+.marspass-banner::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 30%,rgba(124,106,247,.06) 50%,transparent 70%);
+  background-size:200% 100%;animation:mpBannerShimmer 3s linear infinite;pointer-events:none;
+}
+.marspass-banner-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 20% 50%,rgba(124,106,247,.08) 0%,transparent 60%)}
+.marspass-banner-left{display:flex;align-items:center;gap:14px}
+.marspass-banner-icon{font-size:22px;filter:drop-shadow(0 0 8px rgba(124,106,247,.6))}
+.marspass-banner-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;letter-spacing:2px;color:#fff;background:linear-gradient(135deg,#aa99ff,#ff88aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.marspass-banner-sub{font-size:10px;color:#666;font-weight:600;margin-top:2px}
+.marspass-banner-cta{font-size:11px;font-weight:900;letter-spacing:1px;color:#aa99ff;white-space:nowrap}
+@media(max-width:600px){.marspass-banner-sub{display:none}.marspass-banner{padding:12px 16px}}
+
 /* ── BOTÃO SORTEIO MOBILE — lado direito, z-index baixo para não cobrir modais ── */
 .mob-sorteio-btn{
   display:none;
@@ -3112,6 +3170,7 @@ footer::before{
     <a class="nav-link nav-link-sorteio" href="sorteio.html" id="navSorteioLink">
       Sorteios
     </a>
+    <a class="nav-link nav-link-marspass" href="marspass.html">🌌 MarsPass</a>
     <a class="nav-link" href="promocoes.html">Promoções</a>
     <a class="nav-link" href="combos.html">Bundles</a>
     <a class="nav-link nav-link-chaves" href="#chv-section" id="navChavesLink" onclick="document.getElementById('chv-section')&&document.getElementById('chv-section').scrollIntoView({behavior:'smooth'});return false;">
@@ -3128,6 +3187,7 @@ footer::before{
         <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação</a>
         <a class="nav-dropdown-item" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
         <a class="nav-dropdown-item" href="sorteio.html">🎲 Sorteios</a>
+        <a class="nav-dropdown-item" href="marspass.html">🌌 MarsPass</a>
         <a class="nav-dropdown-item" href="#chv-section" onclick="toggleMobileMenu&&toggleMobileMenu();setTimeout(function(){var s=document.getElementById('chv-section');if(s)s.scrollIntoView({behavior:'smooth'})},300);return false;">Chaves Aleatórias</a>
       </div>
     </div>
@@ -3194,6 +3254,7 @@ footer::before{
   <div class="nav-mobile-divider"></div>
   <a class="nav-mobile-link active" href="catalogo.html">Todos os Produtos</a>
   <a class="nav-mobile-link" href="sorteio.html" style="color:#ffca3a">🎲 Sorteios</a>
+  <a class="nav-mobile-link" href="marspass.html" style="color:#aa99ff">🌌 MarsPass</a>
   <a class="nav-mobile-link" href="promocoes.html">Promoções</a>
   <a class="nav-mobile-link" href="chaves.html" style="color:#c084fc">🎰 Chaves Steam Aleatórias</a>
   <a class="nav-mobile-link" href="combos.html">Combos e Bundles</a>
@@ -3266,6 +3327,23 @@ footer::before{
 
 
 <!-- ══ MAIS VENDIDOS ══ -->
+<!-- MARSPASS BANNER -->
+<div class="marspass-banner-wrap" id="marspassBannerWrap" style="display:none">
+  <a href="marspass.html" class="marspass-banner">
+    <div class="marspass-banner-glow"></div>
+    <div class="marspass-banner-left">
+      <span class="marspass-banner-icon">🌌</span>
+      <div>
+        <div class="marspass-banner-title">MarsPass</div>
+        <div class="marspass-banner-sub">Sorteios exclusivos · Descontos · Tickets extras · Badges únicos</div>
+      </div>
+    </div>
+    <div class="marspass-banner-right">
+      <span class="marspass-banner-cta">Ver planos →</span>
+    </div>
+  </a>
+</div>
+
 <section class="mv-section">
   <!-- Título com efeito RGB -->
   <div class="mv-title">
@@ -4937,6 +5015,9 @@ async function atualizarNavbar(session){
       });
     }, ms);
   });
+  /* Mostra banner MarsPass sempre */
+  var mpBanner=document.getElementById('marspassBannerWrap');
+  if(mpBanner) mpBanner.style.display='block';
 })();
 
 

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsPass — Bem-vindo ao universo!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070d;--card:#0f0f1a;--surface:#161624;--border:#1e1e32;
+  --green:#00ff55;--mars:#e8421a;--amber:#ffb300;--text:#f0f0ff;--muted:#555570;
+  --andromeda:#7c6af7;--triangulo:#00d4ff;--centaurus:#ffb300;--sombrero:#ff3c6e;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes confetti{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(120px) rotate(720deg);opacity:0}}
+@keyframes starTwinkle{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes gradMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes checkPop{0%{transform:scale(0) rotate(-30deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.star{position:absolute;border-radius:50%;background:#fff;animation:starTwinkle var(--dur,3s) ease-in-out infinite}
+.nebula{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 30%,rgba(124,106,247,.08) 0%,transparent 55%),
+    radial-gradient(ellipse at 70% 70%,rgba(255,60,110,.06) 0%,transparent 55%)}
+
+/* Navbar mínima */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,7,13,.95);
+  backdrop-filter:blur(20px);border-bottom:1px solid rgba(124,106,247,.12);
+  height:60px;display:flex;align-items:center;padding:0 24px;gap:8px}
+.nav-logo{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:#fff;text-decoration:none;letter-spacing:2px}
+.nav-logo span{color:var(--mars)}
+.nav-pass{font-family:'Orbitron',sans-serif;font-size:7px;font-weight:900;letter-spacing:2px;
+  padding:3px 7px;border-radius:4px;background:linear-gradient(135deg,var(--andromeda),var(--sombrero));color:#fff;margin-left:4px}
+
+/* Card principal */
+.success-wrap{position:relative;z-index:1;max-width:560px;width:100%;margin-top:60px;animation:fadeUp .6s ease both}
+
+.success-card{
+  background:var(--card);border-radius:24px;overflow:hidden;
+  border:1px solid var(--plan-color,var(--andromeda));
+  box-shadow:0 0 60px var(--plan-glow,rgba(124,106,247,.2)),0 24px 80px rgba(0,0,0,.5);
+}
+.success-card::before{content:'';display:block;height:3px;background:var(--plan-gradient,linear-gradient(135deg,var(--andromeda),var(--sombrero)))}
+
+/* Topo */
+.success-top{padding:40px 36px 28px;text-align:center}
+.check-circle{
+  width:72px;height:72px;border-radius:50%;margin:0 auto 20px;
+  background:var(--plan-gradient,linear-gradient(135deg,var(--andromeda),var(--sombrero)));
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;
+  animation:checkPop .5s .2s ease both;
+  box-shadow:0 0 30px var(--plan-glow,rgba(124,106,247,.4));
+}
+.success-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--plan-color,var(--andromeda));margin-bottom:10px}
+.success-title{font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,28px);font-weight:900;color:#fff;margin-bottom:8px;line-height:1.2}
+.success-sub{font-size:12px;color:#666688;font-weight:600;line-height:1.7;max-width:380px;margin:0 auto}
+
+/* Plano ativo */
+.plan-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  margin:20px auto 0;padding:10px 20px;border-radius:99px;
+  background:var(--plan-dim,rgba(124,106,247,.08));
+  border:1px solid var(--plan-color,var(--andromeda));
+}
+.plan-badge-icon{font-size:18px}
+.plan-badge-name{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:2px;color:var(--plan-color,var(--andromeda))}
+
+/* Divisor */
+.divider{height:1px;background:var(--border);margin:0 36px}
+
+/* Benefícios ativados */
+.benefits-wrap{padding:24px 36px}
+.benefits-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.benefit-row{
+  display:flex;align-items:center;gap:12px;padding:9px 0;
+  border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;font-weight:600;color:#aaaacc;
+  animation:fadeUp .4s ease both;
+}
+.benefit-row:last-child{border-bottom:none}
+.benefit-icon{font-size:16px;flex-shrink:0}
+.benefit-hl{color:#fff;font-weight:700}
+
+/* Próximos passos */
+.steps-wrap{padding:0 36px 28px}
+.steps-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.step-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:12px 16px;border-radius:10px;
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.04);
+  margin-bottom:8px;
+  animation:fadeUp .4s ease both;
+}
+.step-num{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  background:var(--plan-gradient);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:900;color:#fff;
+  box-shadow:0 0 10px var(--plan-glow);
+}
+.step-text{flex:1}
+.step-label{font-size:11px;font-weight:700;color:#ddddf0;margin-bottom:2px}
+.step-desc{font-size:10px;color:#555570;font-weight:600}
+
+/* Ações */
+.actions{padding:0 36px 36px;display:flex;flex-direction:column;gap:10px}
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:15px;border-radius:12px;border:none;
+  background:var(--plan-gradient);color:#fff;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
+  text-decoration:none;transition:all .2s;
+  box-shadow:0 4px 20px var(--plan-glow);
+}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-secondary{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;padding:13px;border-radius:12px;
+  border:1px solid var(--border);background:transparent;
+  color:#888;font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;transition:all .2s;
+}
+.btn-secondary:hover{border-color:#444;color:#ccc}
+
+/* Aguardando ativação */
+.pending-banner{
+  margin:0 36px 24px;padding:14px 16px;border-radius:10px;
+  background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.2);
+  display:flex;align-items:flex-start;gap:12px;
+}
+.pending-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.pending-text{font-size:11px;color:#888;font-weight:600;line-height:1.6}
+.pending-text strong{color:var(--amber)}
+
+/* Confetti */
+.confetti-piece{position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;border-radius:2px;animation:confetti 1.8s ease-out forwards}
+
+@media(max-width:600px){
+  .success-top{padding:32px 22px 22px}
+  .divider{margin:0 22px}
+  .benefits-wrap,.steps-wrap,.actions{padding-left:22px;padding-right:22px}
+  .pending-banner{margin-left:22px;margin-right:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="starsContainer"></div>
+<div class="nebula"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">Mars<span>Games</span></a>
+  <span class="nav-pass">PASS</span>
+</nav>
+
+<div class="success-wrap">
+  <div class="success-card" id="successCard">
+    <div class="success-top">
+      <div class="check-circle" id="checkIcon">🎉</div>
+      <div class="success-eyebrow" id="successEyebrow">Assinatura recebida</div>
+      <div class="success-title" id="successTitle">Bem-vindo ao universo MarsPass!</div>
+      <p class="success-sub" id="successSub">Seu pagamento foi registrado. Nossa equipe ativará sua assinatura em até 24h após a confirmação.</p>
+      <div class="plan-badge" id="planBadge">
+        <span class="plan-badge-icon" id="planIcon">🌀</span>
+        <span class="plan-badge-name" id="planName">Andrômeda</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="pending-banner">
+      <span class="pending-icon">⏳</span>
+      <div class="pending-text">
+        <strong>Ativação em até 24h.</strong> Após confirmação do pagamento no Mercado Pago, nossa equipe ativa sua assinatura e você recebe os benefícios automaticamente.
+      </div>
+    </div>
+
+    <div class="benefits-wrap">
+      <div class="benefits-title">O que você vai receber</div>
+      <div id="benefitsList"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="steps-wrap">
+      <div class="steps-title">Próximos passos</div>
+      <div class="step-item" style="animation-delay:.1s">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <div class="step-label">Aguarde a ativação</div>
+          <div class="step-desc">Nossa equipe confirma o pagamento e ativa sua assinatura em até 24h</div>
+        </div>
+      </div>
+      <div class="step-item" style="animation-delay:.15s">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <div class="step-label">Entre no Discord</div>
+          <div class="step-desc">Acesse o canal exclusivo de assinantes e apresente-se à comunidade</div>
+        </div>
+      </div>
+      <div class="step-item" style="animation-delay:.2s">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <div class="step-label">Aproveite seus benefícios</div>
+          <div class="step-desc">Seus tickets, desconto e badge estarão ativos assim que confirmarmos</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="perfil.html" class="btn-primary" id="btnPerfil">
+        👤 Ver meu perfil e assinatura
+      </a>
+      <a href="sorteio.html" class="btn-secondary">
+        🎲 Ver sorteios
+      </a>
+      <a href="index.html" class="btn-secondary">
+        🏠 Voltar à loja
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storageKey:'mg_auth',persistSession:true}});
+
+var PLANOS={
+  andromeda:{
+    nome:'Andrômeda',icon:'🌀',
+    gradient:'linear-gradient(135deg,#5a4fd4,#7c6af7,#9d8fff)',
+    glow:'rgba(124,106,247,.3)',color:'#7c6af7',dim:'rgba(124,106,247,.08)',
+    beneficios:[
+      {icon:'⭐','txt':'<span class="benefit-hl">50 MarsPoints</span> creditados na sua conta'},
+      {icon:'🎟️','txt':'<span class="benefit-hl">3 MarsTickets extras</span> por semana nos sorteios'},
+      {icon:'💰','txt':'<span class="benefit-hl">3% de desconto</span> em todas as compras'},
+      {icon:'🏆','txt':'Acesso ao <span class="benefit-hl">Sorteio Premium</span> exclusivo'},
+      {icon:'🎖️','txt':'Badge <span class="benefit-hl">"Andromediano"</span> no seu perfil'},
+      {icon:'💬','txt':'Chat exclusivo de assinantes no Discord'},
+    ]
+  },
+  triangulo:{
+    nome:'Triângulo',icon:'🔺',
+    gradient:'linear-gradient(135deg,#0090bb,#00d4ff,#66e8ff)',
+    glow:'rgba(0,212,255,.3)',color:'#00d4ff',dim:'rgba(0,212,255,.08)',
+    beneficios:[
+      {icon:'⭐','txt':'<span class="benefit-hl">80 MarsPoints</span> creditados na sua conta'},
+      {icon:'🎟️','txt':'<span class="benefit-hl">5 MarsTickets extras</span> por semana'},
+      {icon:'💰','txt':'<span class="benefit-hl">5% de desconto</span> em todas as compras'},
+      {icon:'🏆','txt':'Acesso ao <span class="benefit-hl">Sorteio Premium</span>'},
+      {icon:'🎮','txt':'<span class="benefit-hl">1 jogo Steam Offline</span> por mês (escolha do editor)'},
+      {icon:'🎖️','txt':'Badge <span class="benefit-hl">"Trianguriano"</span> no perfil'},
+    ]
+  },
+  centaurus:{
+    nome:'Centaurus',icon:'⚡',
+    gradient:'linear-gradient(135deg,#c07800,#ffb300,#ffd060)',
+    glow:'rgba(255,179,0,.35)',color:'#ffb300',dim:'rgba(255,179,0,.08)',
+    beneficios:[
+      {icon:'⭐','txt':'<span class="benefit-hl">100 MarsPoints</span> creditados na sua conta'},
+      {icon:'🎟️','txt':'<span class="benefit-hl">8 MarsTickets extras</span> por semana'},
+      {icon:'💰','txt':'<span class="benefit-hl">10% de desconto</span> em todas as compras'},
+      {icon:'🏆','txt':'Acesso ao <span class="benefit-hl">Sorteio Premium + VIP</span>'},
+      {icon:'🎮','txt':'<span class="benefit-hl">1 jogo à escolha</span> por mês (até R$10)'},
+      {icon:'💎','txt':'Badge <span class="benefit-hl">"Centauriano"</span> + anel exclusivo no avatar'},
+    ]
+  },
+  sombrero:{
+    nome:'Sombrero',icon:'🌐',
+    gradient:'linear-gradient(135deg,#c01040,#ff3c6e,#ff80a0)',
+    glow:'rgba(255,60,110,.4)',color:'#ff3c6e',dim:'rgba(255,60,110,.08)',
+    beneficios:[
+      {icon:'⭐','txt':'<span class="benefit-hl">150 MarsPoints</span> creditados na sua conta'},
+      {icon:'🎟️','txt':'<span class="benefit-hl">12 MarsTickets extras</span> por semana'},
+      {icon:'💰','txt':'<span class="benefit-hl">15% de desconto</span> em todas as compras'},
+      {icon:'🏆','txt':'Acesso ao <span class="benefit-hl">Sorteio Premium + VIP exclusivo</span>'},
+      {icon:'🎮','txt':'<span class="benefit-hl">1 jogo à escolha</span> (até R$15) + Chave CD-Key Steam'},
+      {icon:'🎁','txt':'<span class="benefit-hl">Cupom presente 20%</span> para presentear um amigo'},
+    ]
+  }
+};
+
+/* Inicializa página */
+(function(){
+  /* Pega plano do sessionStorage */
+  var raw=sessionStorage.getItem('mp_plano_intencao');
+  var intencao=raw?JSON.parse(raw):null;
+  var planoKey=intencao?intencao.plano:'andromeda';
+  var plano=PLANOS[planoKey]||PLANOS.andromeda;
+
+  /* Aplica cores do plano */
+  var card=document.getElementById('successCard');
+  card.style.setProperty('--plan-gradient',plano.gradient);
+  card.style.setProperty('--plan-glow',plano.glow);
+  card.style.setProperty('--plan-color',plano.color);
+  card.style.setProperty('--plan-dim',plano.dim);
+
+  document.getElementById('planIcon').textContent=plano.icon;
+  document.getElementById('planName').textContent=plano.nome;
+  document.getElementById('successTitle').textContent='Bem-vindo ao '+plano.nome+'!';
+
+  /* Benefícios */
+  var list=document.getElementById('benefitsList');
+  list.innerHTML=plano.beneficios.map(function(b,i){
+    return '<div class="benefit-row" style="animation-delay:'+(i*.06)+'s">'+
+      '<span class="benefit-icon">'+b.icon+'</span>'+
+      '<span>'+b.txt+'</span></div>';
+  }).join('');
+
+  /* Salva no banco como pendente */
+  sb.auth.getSession().then(function(r){
+    var session=r.data&&r.data.session?r.data.session:null;
+    if(session&&intencao){
+      /* Verifica se já existe pendente para não duplicar */
+      sb.from('marspass_assinaturas')
+        .select('id').eq('user_email',session.user.email)
+        .eq('status','pendente').maybeSingle()
+        .then(function(res){
+          if(!res.data){
+            var venc=new Date();
+            venc.setDate(venc.getDate()+30);
+            sb.from('marspass_assinaturas').insert({
+              user_id:session.user.id,
+              user_email:session.user.email,
+              plano:planoKey,
+              status:'pendente',
+              valor:intencao.valor,
+              data_vencimento:venc.toISOString()
+            }).then(function(){});
+          }
+        });
+    }
+  });
+
+  /* Confetti */
+  setTimeout(lancarConfetti, 400);
+  sessionStorage.removeItem('mp_plano_intencao');
+})();
+
+function lancarConfetti(){
+  var cores=['#7c6af7','#ff3c6e','#ffb300','#00d4ff','#00ff55','#ffffff'];
+  for(var i=0;i<40;i++){
+    var el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=
+      'left:'+(10+Math.random()*80)+'%;top:'+(-10+Math.random()*30)+'%;'+
+      'background:'+cores[Math.floor(Math.random()*cores.length)]+';'+
+      'animation-delay:'+(Math.random()*1.2)+'s;'+
+      'animation-duration:'+(1.5+Math.random())+'s;'+
+      'transform:rotate('+(Math.random()*360)+'deg);'+
+      'width:'+(6+Math.random()*6)+'px;height:'+(6+Math.random()*6)+'px';
+    document.body.appendChild(el);
+    setTimeout(function(e){e.remove()},3000,el);
+  }
+}
+
+/* Stars */
+(function(){
+  var c=document.getElementById('starsContainer');
+  for(var i=0;i<80;i++){
+    var s=document.createElement('div');s.className='star';
+    var sz=Math.random()*1.5+.5;
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--dur:'+(Math.random()*4+2)+'s;animation-delay:'+(Math.random()*5)+'s';
+    c.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
