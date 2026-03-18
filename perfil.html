@@ -168,6 +168,34 @@
 }
 .nav-nivel-diamante .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navDiaGlow 2.5s ease-in-out infinite}
 
+/* ── ANÉIS MARSPASS NA NAVBAR ── */
+@keyframes navAndromedaPulse{0%,100%{box-shadow:0 0 8px 2px rgba(124,106,247,.6)}50%{box-shadow:0 0 20px 6px rgba(124,106,247,1),0 0 34px 4px rgba(255,60,110,.4)}}
+@keyframes navCentaurusRotate{to{transform:rotate(360deg)}}
+@keyframes navSombreroPulse{0%,100%{box-shadow:0 0 8px 2px rgba(255,60,110,.6)}50%{box-shadow:0 0 22px 7px rgba(255,60,110,1),0 0 36px 4px rgba(255,60,110,.3)}}
+
+.nav-nivel-andromeda .nav-user-avatar{
+  border-color:#7c6af7!important;
+  animation:navAndromedaPulse 2s ease-in-out infinite;
+}
+.nav-nivel-centaurus .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffe566,#ffb300);
+  animation:navCentaurusRotate 2s linear infinite;
+  box-shadow:0 0 14px rgba(255,179,0,.6);
+}
+.nav-nivel-centaurus .nav-avatar-ring::before{
+  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0;
+}
+.nav-nivel-centaurus .nav-user-avatar{border:none;position:relative;z-index:1}
+.nav-nivel-sombrero .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e);
+  animation:navCentaurusRotate 1.8s linear infinite;
+  box-shadow:0 0 16px rgba(255,60,110,.7);
+}
+.nav-nivel-sombrero .nav-avatar-ring::before{
+  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0;
+}
+.nav-nivel-sombrero .nav-user-avatar{border:none;position:relative;z-index:1}
+
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
 /* ── TEMA CLARO ── */
@@ -585,6 +613,32 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 0 0 1px rgba(185,242,255,.2);
 }
 
+/* ── ANÉIS MARSPASS NO AVATAR DO PERFIL ── */
+@keyframes andromedaPulse{0%,100%{box-shadow:0 0 10px 2px rgba(124,106,247,.5)}50%{box-shadow:0 0 22px 6px rgba(124,106,247,.9),0 0 36px 4px rgba(255,60,110,.3)}}
+@keyframes centaurusRotate{0%{background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300)}100%{background:conic-gradient(from 360deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300)}}
+@keyframes sombreroPulse{0%,100%{box-shadow:0 0 12px 3px rgba(255,60,110,.6)}50%{box-shadow:0 0 28px 8px rgba(255,60,110,1),0 0 44px 5px rgba(255,60,110,.3)}}
+
+.avatar-andromeda .avatar-ring{
+  border:2.5px solid #7c6af7;
+  animation:andromedaPulse 2s ease-in-out infinite;
+}
+.avatar-andromeda .avatar-inner{border:none;position:relative;z-index:1}
+
+.avatar-centaurus .avatar-ring{
+  border:2.5px solid transparent;
+  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffe566,#ffb300) border-box;
+  box-shadow:0 0 14px rgba(255,179,0,.7),0 0 28px rgba(255,107,0,.3);
+  animation:spin 3s linear infinite;
+}
+.avatar-centaurus .avatar-inner{border:none;position:relative;z-index:1}
+
+.avatar-sombrero .avatar-ring{
+  border:2.5px solid #ff3c6e;
+  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e) border-box;
+  animation:sombreroPulse 1.6s ease-in-out infinite;
+}
+.avatar-sombrero .avatar-inner{border:none;position:relative;z-index:1}
+
 /* Badge de nível */
 .nivel-badge-wrap{
   position:absolute;
@@ -639,18 +693,30 @@ body.tema-claro .section-loader{color:var(--muted)}
   color:var(--muted);margin-top:4px}
 
 /* TABS */
-.tabs-wrap{position:relative;margin-bottom:24px}
-.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
+.tabs-wrap{position:relative;margin-bottom:24px;display:flex;align-items:flex-end;gap:0}
+.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex:1;
   border-bottom:1px solid var(--border);padding-bottom:0;
   -webkit-overflow-scrolling:touch;}
 .tabs::-webkit-scrollbar{display:none}
 /* Sombra indicando scroll à direita */
 .tabs-wrap::after{
-  content:'';position:absolute;top:0;right:0;bottom:4px;width:40px;
+  content:'';position:absolute;top:0;right:80px;bottom:4px;width:40px;
   background:linear-gradient(to right,transparent,var(--bg));
   pointer-events:none;border-radius:0 8px 0 0;
   transition:opacity .2s;
 }
+/* Botão Editar Perfil fixo à direita */
+.tab-editar-btn{
+  flex-shrink:0;padding:11px 14px;
+  font-size:10px;font-weight:700;color:var(--muted);
+  cursor:pointer;white-space:nowrap;letter-spacing:.4px;
+  background:none;border:none;border-bottom:2px solid transparent;
+  font-family:'Montserrat',sans-serif;
+  transition:color .15s,border-color .15s;
+  border-bottom:1px solid var(--border);
+}
+.tab-editar-btn:hover{color:#aaa}
+.tab-editar-btn.active{color:var(--green);border-bottom-color:var(--green);border-bottom-width:2px}
 .tab{padding:11px 16px;font-size:11px;font-weight:700;color:var(--muted);
   cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
   transition:color .15s,border-color .15s;letter-spacing:.4px;flex-shrink:0}
@@ -666,6 +732,141 @@ body.tema-claro .section-loader{color:var(--muted)}
 .tab-premios.active{color:var(--ouro)!important;border-bottom-color:var(--ouro)!important}
 .tab-marspass{color:#7c6af7!important;border-bottom-color:transparent}
 .tab-marspass.active{color:#7c6af7!important;border-bottom-color:#7c6af7!important}
+
+/* ── ABA MARSPASS GALÁXIA ── */
+@keyframes mpStarFloat{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+@keyframes mpNebulaPulse{0%,100%{opacity:.4}50%{opacity:.7}}
+@keyframes mpOrbit{from{transform:rotate(0deg) translateX(80px) rotate(0deg)}to{transform:rotate(360deg) translateX(80px) rotate(-360deg)}}
+@keyframes mpOrbit2{from{transform:rotate(120deg) translateX(60px) rotate(-120deg)}to{transform:rotate(480deg) translateX(60px) rotate(-480deg)}}
+@keyframes mpGradMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes mpShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes mpRingGlow{0%,100%{opacity:.6}50%{opacity:1}}
+
+.marspass-tab-universe{
+  position:relative;border-radius:20px;overflow:hidden;
+  background:linear-gradient(160deg,#070714 0%,#0d0d20 50%,#07071a 100%);
+  border:1px solid rgba(124,106,247,.2);
+  min-height:500px;padding:32px;
+}
+/* Fundo nebulosa */
+.marspass-tab-universe::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 20%,rgba(124,106,247,.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(255,60,110,.1) 0%,transparent 50%),
+    radial-gradient(ellipse at 60% 10%,rgba(0,212,255,.08) 0%,transparent 40%);
+  animation:mpNebulaPulse 6s ease-in-out infinite;
+}
+/* Estrelas animadas */
+.mp-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.mp-star{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:mpStarFloat var(--sd,3s) ease-in-out infinite;
+  animation-delay:var(--sdel,0s);
+}
+
+/* Loader */
+#mp-perfil-loader{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 0;
+}
+
+/* Card ativo */
+.mp-ativo-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(124,106,247,.3);
+  border-radius:16px;overflow:hidden;margin-bottom:20px;
+}
+.mp-ativo-card::before{
+  content:'';display:block;height:3px;
+  background:var(--mp-gradient,linear-gradient(135deg,#7c6af7,#ff3c6e));
+  background-size:200% 200%;animation:mpGradMove 4s ease infinite;
+}
+
+/* Inativo */
+.mp-inativo-card{
+  position:relative;z-index:1;
+  text-align:center;padding:48px 24px;
+  background:rgba(255,255,255,.02);border:1px dashed rgba(124,106,247,.2);
+  border-radius:16px;
+}
+
+/* ── SELETOR DE ANÉIS ── */
+.anel-selector-wrap{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:20px;margin-top:16px;
+}
+.anel-selector-title{
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:#444;margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.anel-selector-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05)}
+.anel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px}
+.anel-option{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:12px 8px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);
+  cursor:pointer;transition:all .2s;position:relative;
+}
+.anel-option:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}
+.anel-option.ativo{border-color:var(--green);background:rgba(0,255,85,.05)}
+.anel-option.ativo::after{
+  content:'✓';position:absolute;top:4px;right:6px;
+  font-size:8px;font-weight:900;color:var(--green);
+}
+.anel-option.bloqueado{opacity:.3;cursor:not-allowed;filter:grayscale(.8)}
+.anel-option.bloqueado:hover{background:rgba(255,255,255,.02);border-color:rgba(255,255,255,.06)}
+.anel-preview{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;color:#fff;
+  position:relative;
+}
+.anel-name{font-size:9px;font-weight:700;color:#666;letter-spacing:.5px;text-align:center;line-height:1.3}
+.anel-option.ativo .anel-name{color:var(--green)}
+.anel-lock{font-size:10px;color:#333;margin-top:2px}
+
+/* Preview de anel no avatar pequeno */
+.anel-preview.anel-bronze{
+  border:2.5px solid #cd9f6a;
+  box-shadow:0 0 8px rgba(205,159,106,.6),0 0 16px rgba(205,159,106,.2);
+}
+.anel-preview.anel-prata{
+  border:2.5px solid #e8e8e8;
+  box-shadow:0 0 8px rgba(232,232,232,.7),0 0 16px rgba(255,255,255,.2);
+}
+.anel-preview.anel-ouro{
+  border:2.5px solid #FFD700;
+  box-shadow:0 0 10px rgba(255,215,0,.8),0 0 20px rgba(255,215,0,.3);
+}
+.anel-preview.anel-esmeralda{
+  border:2.5px solid #50c878;
+  box-shadow:0 0 10px rgba(80,200,120,.8),0 0 20px rgba(80,200,120,.3);
+}
+.anel-preview.anel-diamante{
+  border:2.5px solid transparent;
+  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#b9f2ff) border-box;
+  box-shadow:0 0 12px rgba(185,242,255,.7),0 0 24px rgba(123,97,255,.3);
+}
+.anel-preview.anel-andromeda{
+  border:2.5px solid #7c6af7;
+  box-shadow:0 0 10px rgba(124,106,247,.8),0 0 20px rgba(124,106,247,.3);
+}
+.anel-preview.anel-centaurus{
+  border:2.5px solid #ffb300;
+  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300) border-box;
+  box-shadow:0 0 12px rgba(255,179,0,.8),0 0 24px rgba(255,107,0,.3);
+}
+.anel-preview.anel-sombrero{
+  border:2.5px solid #ff3c6e;
+  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e) border-box;
+  box-shadow:0 0 12px rgba(255,60,110,.8),0 0 24px rgba(255,60,110,.3);
+}
 /* MarsTickets */
 .tickets-hero{
   background:linear-gradient(135deg,rgba(255,183,0,.08),rgba(255,183,0,.03));
@@ -1163,8 +1364,9 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
     <div class="tab tab-marspass" onclick="showTab('marspass-perfil',this)">🌌 MarsPass</div>
-    <div class="tab" onclick="showTab('editar',this)">Editar Perfil</div>
   </div>
+  <!-- Botão Editar separado — não some no overflow -->
+  <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
   </div>
 
   <!-- BENEFÍCIOS -->
@@ -1388,17 +1590,31 @@ body.tema-claro .section-loader{color:var(--muted)}
 
   <!-- MARSPASS -->
   <div class="tab-content" id="tab-marspass-perfil">
-    <div id="mp-perfil-loader" style="text-align:center;padding:40px;color:var(--muted)">
-      <div style="width:28px;height:28px;border:3px solid rgba(124,106,247,.15);border-top-color:#7c6af7;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px"></div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:2px">Carregando assinatura...</div>
-    </div>
-    <div id="mp-perfil-ativo" style="display:none"></div>
-    <div id="mp-perfil-inativo" style="display:none">
-      <div style="text-align:center;padding:40px 20px;background:var(--card);border-radius:16px;border:1px solid var(--border)">
-        <div style="font-size:48px;margin-bottom:16px">🌌</div>
-        <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#fff;margin-bottom:8px">Você ainda não tem MarsPass</div>
-        <div style="font-size:12px;color:#555570;margin-bottom:24px;line-height:1.7">Assine e tenha acesso a sorteios exclusivos, descontos, tickets extras e muito mais!</div>
-        <a href="marspass.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:10px;background:linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;text-decoration:none;text-transform:uppercase">🚀 Ver planos MarsPass</a>
+    <div class="marspass-tab-universe" id="mpUniverse">
+      <!-- Estrelas animadas geradas por JS -->
+      <div class="mp-stars" id="mpStars"></div>
+
+      <div id="mp-perfil-loader" style="display:block">
+        <div style="width:28px;height:28px;border:3px solid rgba(124,106,247,.15);border-top-color:#7c6af7;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#444">Carregando assinatura...</div>
+      </div>
+      <div id="mp-perfil-ativo" style="display:none"></div>
+      <div id="mp-perfil-inativo" style="display:none">
+        <div class="mp-inativo-card">
+          <div style="font-size:52px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(124,106,247,.5))">🌌</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#fff;margin-bottom:8px">Você ainda não tem MarsPass</div>
+          <div style="font-size:12px;color:#555570;margin-bottom:24px;line-height:1.7;max-width:360px;margin-left:auto;margin-right:auto">Assine e tenha acesso a sorteios exclusivos, descontos, tickets extras, anéis exclusivos e muito mais!</div>
+          <a href="marspass.html" style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;background:linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;text-decoration:none;text-transform:uppercase;box-shadow:0 4px 20px rgba(124,106,247,.4)">🚀 Ver planos MarsPass</a>
+        </div>
+      </div>
+
+      <!-- Seletor de anéis — sempre visível na aba -->
+      <div class="anel-selector-wrap" id="anelSelectorWrap" style="display:none">
+        <div class="anel-selector-title">💍 Seu anel do perfil</div>
+        <div class="anel-grid" id="anelGrid"></div>
+        <div style="font-size:10px;color:#333;margin-top:12px;text-align:center">
+          Anéis são desbloqueados por nível e assinatura MarsPass
+        </div>
       </div>
     </div>
   </div>
@@ -1875,9 +2091,11 @@ function renderPerfil(p){
   document.getElementById('nivelBadge').textContent=nivel.emoji;
   document.getElementById('nivelBadge').style.background=nivel.cor.replace('var(--','').replace(')','');
 
-  // Borda do avatar por nível
+  // Borda do avatar por nível — respeita anel escolhido se salvo
   var avatarWrap=document.getElementById('avatarWrap');
-  avatarWrap.className='perfil-avatar-wrap avatar-'+nivel.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  var nivelSlug=nivel.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  var anelEscolhido=p.anel_escolhido||nivelSlug;
+  avatarWrap.className='perfil-avatar-wrap avatar-'+anelEscolhido;
 
   // Info
   document.getElementById('perfilNome').textContent=p.nome||'Cliente MarsGames';
@@ -2319,57 +2537,114 @@ function showTab(id,el){
   if(id==='marspass-perfil' && userSession) carregarMarsPassPerfil(userSession.user);
 }
 
+/* ── ABA MARSPASS — GALÁXIA COM ESTRELAS ANIMADAS ── */
+var mpStarsGeradas=false;
+function gerarEstrelasMarsPass(){
+  if(mpStarsGeradas) return;
+  mpStarsGeradas=true;
+  var container=document.getElementById('mpStars');
+  if(!container) return;
+  for(var i=0;i<60;i++){
+    var s=document.createElement('div');
+    s.className='mp-star';
+    var sz=Math.random()*2+.5;
+    s.style.cssText=
+      'width:'+sz+'px;height:'+sz+'px;'+
+      'left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;'+
+      '--sd:'+(Math.random()*4+2)+'s;'+
+      '--sdel:'+(Math.random()*6)+'s;'+
+      'opacity:'+(Math.random()*.5+.1);
+    container.appendChild(s);
+  }
+}
+
+/* Definição de todos os anéis disponíveis */
+var TODOS_ANEIS=[
+  {id:'bronze',   nome:'Bronze',    classe:'anel-bronze',    requisito:'nivel',  nivel:'bronze',   emoji:'🥉', desc:'Nível Bronze'},
+  {id:'prata',    nome:'Prata',     classe:'anel-prata',     requisito:'nivel',  nivel:'prata',    emoji:'🥈', desc:'Nível Prata'},
+  {id:'ouro',     nome:'Ouro',      classe:'anel-ouro',      requisito:'nivel',  nivel:'ouro',     emoji:'🥇', desc:'Nível Ouro'},
+  {id:'esmeralda',nome:'Esmeralda', classe:'anel-esmeralda', requisito:'nivel',  nivel:'esmeralda',emoji:'💚', desc:'Nível Esmeralda'},
+  {id:'diamante', nome:'Diamante',  classe:'anel-diamante',  requisito:'nivel',  nivel:'diamante', emoji:'💎', desc:'Nível Diamante'},
+  {id:'andromeda',nome:'Andrômeda', classe:'anel-andromeda', requisito:'marspass',plano:'andromeda',emoji:'🌀', desc:'MarsPass Andrômeda+'},
+  {id:'centaurus',nome:'Centaurus', classe:'anel-centaurus', requisito:'marspass',plano:'centaurus',emoji:'⚡', desc:'MarsPass Centaurus+'},
+  {id:'sombrero', nome:'Sombrero',  classe:'anel-sombrero',  requisito:'marspass',plano:'sombrero', emoji:'🌐', desc:'MarsPass Sombrero'},
+];
+
+var ORDEM_NIVEL=['bronze','prata','ouro','esmeralda','diamante'];
+var ORDEM_PLANO=['andromeda','triangulo','centaurus','sombrero'];
+
 async function carregarMarsPassPerfil(user){
-  document.getElementById('mp-perfil-loader').style.display='block';
+  gerarEstrelasMarsPass();
+
+  document.getElementById('mp-perfil-loader').style.display='flex';
   document.getElementById('mp-perfil-ativo').style.display='none';
   document.getElementById('mp-perfil-inativo').style.display='none';
+  document.getElementById('anelSelectorWrap').style.display='none';
 
-  var{data:a}=await sb.from('marspass_assinaturas')
-    .select('*').eq('user_email',user.email).eq('status','ativo')
-    .gt('data_vencimento',new Date().toISOString())
-    .order('created_at',{ascending:false}).limit(1).maybeSingle();
+  /* Busca assinatura e perfil em paralelo */
+  var[assRes, perfilRes]=await Promise.all([
+    sb.from('marspass_assinaturas')
+      .select('*').eq('user_email',user.email).eq('status','ativo')
+      .gt('data_vencimento',new Date().toISOString())
+      .order('created_at',{ascending:false}).limit(1).maybeSingle(),
+    sb.from('perfis').select('anel_escolhido').eq('email',user.email).maybeSingle()
+  ]);
 
   document.getElementById('mp-perfil-loader').style.display='none';
+
+  var a=assRes.data;
+  var anelSalvo=(perfilRes.data&&perfilRes.data.anel_escolhido)||null;
+
+  /* Determina nível atual do usuário */
+  var nivelAtual=(perfilData&&getNivel(perfilData.pontos||0).nome||'bronze').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+  /* Renderiza seletor de anéis */
+  renderAnelSelector(nivelAtual, a?a.plano:null, anelSalvo||nivelAtual);
 
   if(!a){
     document.getElementById('mp-perfil-inativo').style.display='block';
     return;
   }
 
+  /* Tem assinatura ativa */
   var PLANOS_INFO={
-    andromeda:{nome:'Andrômeda',icon:'🌀',cor:'#7c6af7',gradient:'linear-gradient(135deg,#5a4fd4,#7c6af7)',desc:3,tickets:3,pontos:50},
-    triangulo:{nome:'Triângulo',icon:'🔺',cor:'#00d4ff',gradient:'linear-gradient(135deg,#0090bb,#00d4ff)',desc:5,tickets:5,pontos:80},
-    centaurus:{nome:'Centaurus',icon:'⚡',cor:'#ffb300',gradient:'linear-gradient(135deg,#c07800,#ffb300)',desc:10,tickets:8,pontos:100},
-    sombrero:{nome:'Sombrero',icon:'🌐',cor:'#ff3c6e',gradient:'linear-gradient(135deg,#c01040,#ff3c6e)',desc:15,tickets:12,pontos:150}
+    andromeda:{nome:'Andrômeda',icon:'🌀',cor:'#7c6af7',gradient:'linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e)',desc:3,tickets:3},
+    triangulo:{nome:'Triângulo', icon:'🔺',cor:'#00d4ff',gradient:'linear-gradient(135deg,#0090bb,#00d4ff,#66e8ff)',desc:5,tickets:5},
+    centaurus:{nome:'Centaurus', icon:'⚡',cor:'#ffb300',gradient:'linear-gradient(135deg,#c07800,#ffb300,#ffd060)',desc:10,tickets:8},
+    sombrero: {nome:'Sombrero',  icon:'🌐',cor:'#ff3c6e',gradient:'linear-gradient(135deg,#c01040,#ff3c6e,#ff80a0)',desc:15,tickets:12},
   };
-  var pl=PLANOS_INFO[a.plano]||{nome:a.plano,icon:'🌌',cor:'#888',gradient:'',desc:0,tickets:0};
+  var pl=PLANOS_INFO[a.plano]||PLANOS_INFO.andromeda;
+
+  /* Aplica gradiente do plano no universo */
+  document.getElementById('mpUniverse').style.setProperty('--mp-gradient',pl.gradient);
 
   var venc=new Date(a.data_vencimento);
-  var hoje=new Date();
-  var diffDias=Math.ceil((venc-hoje)/(1000*60*60*24));
+  var diffDias=Math.ceil((venc-new Date())/(1000*60*60*24));
   var vencStr=venc.toLocaleDateString('pt-BR');
-
-  /* Verifica se pode solicitar jogo (mês atual) */
-  var mesAtual=hoje.getMonth()+1;
-  var podeJogo=(a.plano!=='andromeda')&&(!a.jogo_mensal_resgatado||(a.jogo_mensal_mes||0)!==mesAtual);
-  var temJogoPendente=a.jogo_mensal_solicitacao&&!a.jogo_mensal_entregue;
-
   var borderCor=a.plano==='sombrero'?'rgba(255,60,110,.3)':a.plano==='centaurus'?'rgba(255,179,0,.3)':a.plano==='triangulo'?'rgba(0,212,255,.3)':'rgba(124,106,247,.3)';
 
+  var podeJogo=a.plano!=='andromeda';
+  var temJogoPendente=a.jogo_mensal_solicitacao&&!a.jogo_mensal_entregue;
+  var mesAtual=new Date().getMonth()+1;
+  var jogoUsadoMes=a.jogo_mensal_resgatado&&(a.jogo_mensal_mes||0)===mesAtual;
+
   var jogoHtml='';
-  if(a.plano!=='andromeda'){
+  if(podeJogo){
+    var limiteJogo=a.plano==='sombrero'?'R$15':a.plano==='centaurus'?'R$10':'editor';
     var jogoContent='';
     if(temJogoPendente){
       jogoContent='<div style="font-size:12px;color:var(--amber);font-weight:700">⏳ Aguardando entrega: <span style="color:#fff">'+esc(a.jogo_mensal_solicitacao)+'</span></div>';
-    } else if(podeJogo){
-      jogoContent='<div style="font-size:11px;color:#888;margin-bottom:10px">Solicite seu jogo deste mês!</div>'+
+    } else if(jogoUsadoMes){
+      jogoContent='<div style="font-size:11px;color:var(--green)">✅ Jogo do mês já solicitado!</div>';
+    } else {
+      jogoContent=
+        '<div style="font-size:11px;color:#888;margin-bottom:10px">Solicite seu jogo deste mês (limite: '+limiteJogo+')</div>'+
         '<input id="mp-jogo-input" class="edit-input" placeholder="Qual jogo você quer?" style="margin-bottom:8px;font-size:11px">'+
         '<button onclick="solicitarJogoMarsPass(\''+a.id+'\')" style="padding:8px 18px;border-radius:8px;border:none;background:var(--amber);color:#000;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer">Solicitar jogo</button>';
-    } else {
-      jogoContent='<div style="font-size:11px;color:var(--green)">✅ Jogo do mês já solicitado!</div>';
     }
     jogoHtml='<div style="background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.15);border-radius:10px;padding:14px;margin-bottom:16px">'+
-      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:10px">JOGO DO MÊS</div>'+jogoContent+'</div>';
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:10px">🎮 JOGO DO MÊS</div>'+jogoContent+'</div>';
   }
 
   var cupomHtml='';
@@ -2378,42 +2653,123 @@ async function carregarMarsPassPerfil(user){
       '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
         '<div style="font-family:monospace;font-size:14px;font-weight:900;color:#ff3c6e;background:rgba(255,60,110,.1);padding:8px 14px;border-radius:6px;border:1px solid rgba(255,60,110,.2)">'+esc(a.cupom_presente_codigo)+'</div>'+
         '<button onclick="navigator.clipboard.writeText(\''+esc(a.cupom_presente_codigo)+'\').then(function(){showToast(\'Cupom copiado!\')})" style="padding:8px 12px;border-radius:6px;border:1px solid rgba(255,60,110,.3);background:none;color:#ff3c6e;font-size:10px;font-weight:700;cursor:pointer">Copiar</button>'+
-        '<span style="font-size:10px;color:#555">'+(a.cupom_presente_usado?'✅ Usado':'⏳ Disponível')+'</span>'+
-      '</div>':
+        '<span style="font-size:10px;color:#555">'+(a.cupom_presente_usado?'✅ Usado':'⏳ Disponível')+'</span></div>':
       '<div style="font-size:11px;color:#888">Cupom sendo gerado — disponível em breve!</div>';
     cupomHtml='<div style="background:rgba(255,60,110,.05);border:1px solid rgba(255,60,110,.15);border-radius:10px;padding:14px;margin-bottom:16px">'+
-      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:8px">CUPOM PRESENTE</div>'+cupomContent+'</div>';
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:8px">🎁 CUPOM PRESENTE</div>'+cupomContent+'</div>';
   }
 
   var html=
-    '<div style="background:var(--card);border:1px solid '+borderCor+';border-radius:16px;overflow:hidden;margin-bottom:16px">'+
-      '<div style="height:3px;background:'+pl.gradient+'"></div>'+
-      '<div style="padding:24px">'+
-        '<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">'+
-          '<div style="font-size:36px">'+pl.icon+'</div>'+
-          '<div>'+
-            '<div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;color:'+pl.cor+'">'+pl.nome+'</div>'+
-            '<div style="font-size:10px;color:#666;margin-top:2px;font-weight:600">Assinatura ativa</div>'+
+    '<div class="mp-ativo-card" style="border-color:'+borderCor+';--mp-gradient:'+pl.gradient+'">'+
+      '<div style="padding:20px 22px">'+
+        '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">'+
+          '<div style="font-size:32px;filter:drop-shadow(0 0 12px '+pl.cor+')">'+pl.icon+'</div>'+
+          '<div style="flex:1">'+
+            '<div style="font-family:Orbitron,sans-serif;font-size:15px;font-weight:900;color:'+pl.cor+'">'+pl.nome+'</div>'+
+            '<div style="font-size:10px;color:#555;margin-top:2px">Assinatura ativa</div>'+
           '</div>'+
-          '<div style="margin-left:auto;text-align:right">'+
-            '<div style="font-size:10px;color:#555;font-weight:600">Vence em</div>'+
-            '<div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:900;color:'+(diffDias<=5?'var(--red)':'var(--green)')+'">'+diffDias+'d</div>'+
-            '<div style="font-size:9px;color:#444">'+vencStr+'</div>'+
+          '<div style="text-align:right">'+
+            '<div style="font-size:9px;color:#444;font-weight:600">Vence em</div>'+
+            '<div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;color:'+(diffDias<=5?'var(--red)':'#4dff88')+'">'+diffDias+'d</div>'+
+            '<div style="font-size:9px;color:#333">'+vencStr+'</div>'+
           '</div>'+
         '</div>'+
-        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">'+
-          '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:900;color:'+pl.cor+'">'+pl.desc+'%</div><div style="font-size:9px;color:#555;font-weight:700;letter-spacing:1px">DESCONTO</div></div>'+
-          '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:900;color:var(--amber)">+'+pl.tickets+'</div><div style="font-size:9px;color:#555;font-weight:700;letter-spacing:1px">TICKETS/SEM</div></div>'+
-          '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:18px;font-weight:900;color:var(--green)">'+(a.renovacoes||0)+'x</div><div style="font-size:9px;color:#555;font-weight:700;letter-spacing:1px">RENOVAÇÕES</div></div>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">'+
+          '<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.05)"><div style="font-size:16px;font-weight:900;color:'+pl.cor+'">'+pl.desc+'%</div><div style="font-size:8px;color:#444;font-weight:700;letter-spacing:1px">DESCONTO</div></div>'+
+          '<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.05)"><div style="font-size:16px;font-weight:900;color:var(--amber)">+'+pl.tickets+'</div><div style="font-size:8px;color:#444;font-weight:700;letter-spacing:1px">TICKETS/SEM</div></div>'+
+          '<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.05)"><div style="font-size:16px;font-weight:900;color:var(--green)">'+(a.renovacoes||0)+'x</div><div style="font-size:8px;color:#444;font-weight:700;letter-spacing:1px">RENOVAÇÕES</div></div>'+
         '</div>'+
-        jogoHtml+
-        cupomHtml+
-        '<a href="marspass.html" style="font-size:10px;color:#444;font-weight:600;text-decoration:none">Ver benefícios completos →</a>'+
+        jogoHtml+cupomHtml+
+        '<a href="marspass.html" style="font-size:10px;color:#333;font-weight:600;text-decoration:none">Ver benefícios completos →</a>'+
       '</div>'+
     '</div>';
 
   document.getElementById('mp-perfil-ativo').innerHTML=html;
   document.getElementById('mp-perfil-ativo').style.display='block';
+}
+
+/* ── SELETOR DE ANÉIS ── */
+function renderAnelSelector(nivelAtual, planoMarsPass, anelAtivo){
+  var wrap=document.getElementById('anelSelectorWrap');
+  var grid=document.getElementById('anelGrid');
+  wrap.style.display='block';
+
+  /* Determina índice do nível atual */
+  var idxNivel=ORDEM_NIVEL.indexOf(nivelAtual);
+  var idxPlano=planoMarsPass?ORDEM_PLANO.indexOf(planoMarsPass):-1;
+
+  grid.innerHTML=TODOS_ANEIS.map(function(anel){
+    /* Verifica se está desbloqueado */
+    var desbloqueado=false;
+    if(anel.requisito==='nivel'){
+      var idxReq=ORDEM_NIVEL.indexOf(anel.nivel);
+      desbloqueado=idxNivel>=idxReq;
+    } else if(anel.requisito==='marspass'){
+      var idxReq=ORDEM_PLANO.indexOf(anel.plano);
+      desbloqueado=idxPlano>=idxReq;
+    }
+
+    var isAtivo=anelAtivo===anel.id;
+    var cls='anel-option'+(isAtivo?' ativo':'')+(desbloqueado?'':' bloqueado');
+
+    return '<div class="'+cls+'" onclick="'+(desbloqueado?'selecionarAnel(\''+anel.id+'\')':'mostrarBloqueioAnel(\''+anel.desc+'\')')+'" title="'+anel.desc+'">'+
+      '<div class="anel-preview '+anel.classe+'">'+
+        (anel.id==='diamante'||anel.id==='centaurus'||anel.id==='sombrero'?'':'<span style="font-size:12px">'+anel.emoji+'</span>')+
+      '</div>'+
+      '<div class="anel-name">'+anel.nome+'</div>'+
+      (desbloqueado?'':'<div class="anel-lock">🔒</div>')+
+    '</div>';
+  }).join('');
+}
+
+async function selecionarAnel(anelId){
+  if(!userSession) return;
+  var{error}=await sb.from('perfis').update({anel_escolhido:anelId}).eq('email',userSession.user.email);
+  if(error){showToast('Erro ao salvar anel',true);return;}
+
+  /* Atualiza UI do seletor */
+  document.querySelectorAll('.anel-option').forEach(function(el){el.classList.remove('ativo')});
+  var chosen=document.querySelectorAll('.anel-option:not(.bloqueado)');
+  /* Encontra e marca o selecionado */
+  TODOS_ANEIS.forEach(function(a,i){
+    if(a.id===anelId){
+      var opts=document.querySelectorAll('.anel-option');
+      if(opts[i]) opts[i].classList.add('ativo');
+    }
+  });
+
+  /* Aplica anel no avatar da navbar e no perfil hero */
+  aplicarAnelAvatar(anelId);
+  showToast('💍 Anel '+anelId+' aplicado!');
+}
+
+function aplicarAnelAvatar(anelId){
+  /* Mapa anel → classe avatar */
+  var mapaClasse={
+    bronze:'avatar-bronze',prata:'avatar-prata',ouro:'avatar-ouro',
+    esmeralda:'avatar-esmeralda',diamante:'avatar-diamante',
+    andromeda:'avatar-andromeda',centaurus:'avatar-centaurus',sombrero:'avatar-sombrero'
+  };
+  /* Avatar no perfil hero */
+  var avatarWrap=document.getElementById('avatarWrap');
+  if(avatarWrap){
+    /* Remove classes de anel */
+    avatarWrap.className='perfil-avatar-wrap '+(mapaClasse[anelId]||'avatar-bronze');
+  }
+  /* Avatar na navbar — nav-nivel-* */
+  var navWrap=document.getElementById('navAvatarWrap');
+  if(navWrap){
+    var mapaNav={
+      bronze:'nav-nivel-bronze',prata:'nav-nivel-prata',ouro:'nav-nivel-ouro',
+      esmeralda:'nav-nivel-esmeralda',diamante:'nav-nivel-diamante',
+      andromeda:'nav-nivel-andromeda',centaurus:'nav-nivel-centaurus',sombrero:'nav-nivel-sombrero'
+    };
+    navWrap.className='nav-avatar-wrap '+(mapaNav[anelId]||'nav-nivel-bronze');
+  }
+}
+
+function mostrarBloqueioAnel(desc){
+  showToast('🔒 Bloqueado — requer '+desc,true);
 }
 
 async function solicitarJogoMarsPass(assinaturaId){
@@ -2846,9 +3202,17 @@ async function atualizarNavbar(session){
       if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
     }
     try{
-      var mp=await sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle();
-      var pts=(mp.data&&mp.data.pontos)||0;
-      wrap.className='nav-avatar-wrap nav-nivel-'+getNavNivel(pts);
+      var[mpRes, perfilRes]=await Promise.all([
+        sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
+        sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
+      ]);
+      var pts=(mpRes.data&&mpRes.data.pontos)||0;
+      var anelNav=(perfilRes.data&&perfilRes.data.anel_escolhido)||getNavNivel(pts);
+      var mapaNav={
+        bronze:'bronze',prata:'prata',ouro:'ouro',esmeralda:'esmeralda',diamante:'diamante',
+        andromeda:'andromeda',centaurus:'centaurus',sombrero:'sombrero'
+      };
+      wrap.className='nav-avatar-wrap nav-nivel-'+(mapaNav[anelNav]||getNavNivel(pts));
     }catch(e){wrap.className='nav-avatar-wrap nav-nivel-bronze';}
   } else {
     if(btnLogin) btnLogin.style.display='flex';
