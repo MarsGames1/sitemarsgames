@@ -494,9 +494,9 @@ body.tema-claro .exit-sub{color:#666}
     font-size:12px;
     filter:drop-shadow(0 0 4px rgba(200,0,255,.7));
   }
+  /* Sorteio — herdou visual roxo→pink do marspass */
   .nav-link-sorteio{
-    color:#ffb84d!important;
-    background:rgba(20,10,2,.0)!important;
+    color:#aa99ff!important;
     border-radius:8px;
     position:relative;
     padding:10px 16px;
@@ -509,15 +509,14 @@ body.tema-claro .exit-sub{color:#666}
     position:absolute;
     inset:-1.28px;
     border-radius:9px;
-    background:linear-gradient(
-      90deg,
-      rgba(90,40,0,.4) 0%,
-      rgba(180,90,10,.7) 20%,
-      rgba(255,200,60,1) 40%,
-      rgba(255,240,120,1) 50%,
-      rgba(255,200,60,1) 60%,
-      rgba(180,90,10,.7) 80%,
-      rgba(90,40,0,.4) 100%
+    background:linear-gradient(90deg,
+      rgba(40,20,80,.4) 0%,
+      rgba(100,60,220,.8) 20%,
+      rgba(160,100,255,1) 35%,
+      rgba(255,80,140,1) 50%,
+      rgba(160,100,255,1) 65%,
+      rgba(100,60,220,.8) 80%,
+      rgba(40,20,80,.4) 100%
     );
     background-size:200% 100%;
     animation:sorteioShimmer 2.9s linear infinite;
@@ -531,11 +530,55 @@ body.tema-claro .exit-sub{color:#666}
     background:#0a0a0e;
     z-index:-1;
   }
-  .nav-link-sorteio:hover{
-    color:#ffe090!important;
-  }
+  .nav-link-sorteio:hover{color:#d4c4ff!important}
   .nav-link-sorteio:hover::before{
     animation-duration:1.45s;
+    background:linear-gradient(90deg,
+      rgba(80,0,120,.5)  0%,
+      rgba(180,0,255,.9) 15%,
+      rgba(255,0,100,1)  30%,
+      rgba(255,80,180,1) 50%,
+      rgba(255,0,100,1)  70%,
+      rgba(180,0,255,.9) 85%,
+      rgba(80,0,120,.5)  100%
+    );
+    background-size:200% 100%;
+  }
+  /* MarsPass — herdou visual dourado do sorteio */
+  @keyframes marspassShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+  .nav-link-marspass{
+    color:#ffb84d!important;
+    border-radius:8px;
+    position:relative;
+    padding:10px 16px;
+    isolation:isolate;
+    border:1.28px solid transparent!important;
+    background-clip:padding-box;
+    white-space:nowrap;
+  }
+  .nav-link-marspass::before{
+    content:'';position:absolute;inset:-1.28px;border-radius:9px;
+    background:linear-gradient(
+      90deg,
+      rgba(90,40,0,.4) 0%,
+      rgba(180,90,10,.7) 20%,
+      rgba(255,200,60,1) 40%,
+      rgba(255,240,120,1) 50%,
+      rgba(255,200,60,1) 60%,
+      rgba(180,90,10,.7) 80%,
+      rgba(90,40,0,.4) 100%
+    );
+    background-size:200% 100%;
+    animation:marspassShimmer 2.9s linear infinite;
+    z-index:-1;
+  }
+  .nav-link-marspass::after{
+    content:'';position:absolute;inset:1.28px;border-radius:7px;
+    background:#0a0a0e;z-index:-1;
+  }
+  .nav-link-marspass:hover{color:#ffe090!important}
+  .nav-link-marspass:hover::before{
+    animation-duration:1.4s;
     background:linear-gradient(
       90deg,
       rgba(100,40,0,.4) 0%,
@@ -548,39 +591,6 @@ body.tema-claro .exit-sub{color:#666}
     );
     background-size:200% 100%;
   }
-  /* MarsPass nav link — gradiente galáxico roxo→pink */
-  @keyframes marspassShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-  .nav-link-marspass{
-    color:#aa99ff!important;
-    border-radius:8px;
-    position:relative;
-    padding:10px 16px;
-    isolation:isolate;
-    border:1.28px solid transparent!important;
-    background-clip:padding-box;
-    white-space:nowrap;
-  }
-  .nav-link-marspass::before{
-    content:'';position:absolute;inset:-1.28px;border-radius:9px;
-    background:linear-gradient(90deg,
-      rgba(40,20,80,.4) 0%,
-      rgba(100,60,220,.8) 20%,
-      rgba(160,100,255,1) 35%,
-      rgba(255,80,140,1) 50%,
-      rgba(160,100,255,1) 65%,
-      rgba(100,60,220,.8) 80%,
-      rgba(40,20,80,.4) 100%
-    );
-    background-size:200% 100%;
-    animation:marspassShimmer 2.9s linear infinite;
-    z-index:-1;
-  }
-  .nav-link-marspass::after{
-    content:'';position:absolute;inset:1.28px;border-radius:7px;
-    background:#0a0a0e;z-index:-1;
-  }
-  .nav-link-marspass:hover{color:#d4c4ff!important}
-  .nav-link-marspass:hover::before{animation-duration:1.4s}
   /* Dropdown */
   .nav-dropdown{position:relative}
   .nav-dropdown-toggle{
