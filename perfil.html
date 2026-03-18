@@ -715,91 +715,148 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ══════════════════════════════════════════════════════
-   ANÉIS DO PERFIL — border + box-shadow apenas (sem orbs
-   via ::before/::after para evitar o blob preto)
-   Os anéis premium detalhados (com orbs) ficam nos
-   blocos avatar-bronze/prata/etc. definidos acima (linhas
-   84-288) que já usam a estrutura correta com avatar-ring
-   separado. Aqui ficam os aliases para perfil-avatar-wrap.
-══════════════════════════════════════════════════════ */
-
-/* Bronze */
+/* ── Bronze: anel giratório âmbar ── */
 .avatar-bronze .avatar-ring{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#8B5E3C,#cd9f6a,#e8c080,#f5d090,#cd9f6a,#8B5E3C) border-box;
-  box-shadow:0 0 10px rgba(205,159,106,.55),0 0 22px rgba(205,159,106,.25);
-  animation:bronzeRay 6s linear infinite;
+  background:conic-gradient(from 0deg,#5a2e00,#c87820,#f0c060,#cd8030,#f5d080,#b06010,#5a2e00);
+  animation:diaRotate 4s linear infinite;
+  box-shadow:0 0 12px rgba(205,127,50,.6),0 0 24px rgba(180,100,30,.3);
 }
-.avatar-bronze .avatar-ring::before,.avatar-bronze .avatar-ring::after{content:none!important}
+.avatar-bronze .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;
+}
 .avatar-bronze .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-bronze .perfil-avatar-wrap{
+  animation:bronzePulse 3s ease-in-out infinite;
+}
+@keyframes bronzePulse{
+  0%,100%{filter:drop-shadow(0 0 6px rgba(205,127,50,.5))}
+  50%{filter:drop-shadow(0 0 16px rgba(205,127,50,.9))}
+}
 
-/* Prata */
+/* ── Prata: duplo anel oposto ── */
 .avatar-prata .avatar-ring{
-  border:2px solid #c8c8dc;
-  box-shadow:0 0 12px rgba(200,200,220,.55),0 0 24px rgba(200,200,220,.2);
-  animation:prataPulse 3s ease-in-out infinite;
+  background:conic-gradient(from 0deg,#333,#bbb,#fff,#ccc,#eee,#aaa,#333);
+  animation:diaRotate 3s linear infinite reverse;
+  box-shadow:0 0 14px rgba(220,220,240,.5),0 0 28px rgba(200,200,220,.2);
 }
-.avatar-prata .avatar-ring::before,.avatar-prata .avatar-ring::after{content:none!important}
+.avatar-prata .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;
+}
+.avatar-prata .avatar-ring::after{
+  content:'';position:absolute;width:92px;height:92px;border-radius:50%;
+  background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.55) 78%,transparent 90%);
+  animation:diaRotate 2s linear infinite;z-index:-1;
+}
 .avatar-prata .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-prata .perfil-avatar-wrap{
+  animation:prataShimmer 2.8s ease-in-out infinite;
+}
+@keyframes prataShimmer{
+  0%,100%{filter:drop-shadow(0 0 6px rgba(200,210,230,.4))}
+  50%{filter:drop-shadow(0 0 20px rgba(255,255,255,.7))}
+}
 
-/* Ouro */
+/* ── Ouro: anel triplo dourado ── */
 .avatar-ouro .avatar-ring{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#B8860B,#FFD700,#FFF8DC,#FFD700,#DAA520,#B8860B) border-box;
-  box-shadow:0 0 16px rgba(255,215,0,.6),0 0 32px rgba(255,179,0,.3);
-  animation:ouroGlow 2.5s ease-in-out infinite;
+  background:conic-gradient(from 0deg,#6a3800,#e8a800,#ffdd00,#ffe880,#ffd000,#c07800,#6a3800);
+  animation:diaRotate 2s linear infinite;
+  filter:blur(.3px);
+  box-shadow:0 0 18px rgba(255,200,0,.6),0 0 36px rgba(255,160,0,.3);
 }
-.avatar-ouro .avatar-ring::before,.avatar-ouro .avatar-ring::after{content:none!important}
+.avatar-ouro .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+}
+.avatar-ouro .avatar-ring::after{
+  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.65) 62%,rgba(255,255,180,.85) 68%,transparent 78%);
+  animation:diaRotate 2.5s linear infinite reverse;filter:blur(.5px);z-index:-1;
+}
 .avatar-ouro .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-ouro .perfil-avatar-wrap{
+  animation:ouroPulse 2s ease-in-out infinite;
+}
+@keyframes ouroPulse{
+  0%,100%{filter:drop-shadow(0 0 8px rgba(255,200,0,.5))}
+  50%{filter:drop-shadow(0 0 22px rgba(255,215,0,.95))}
+}
 
-/* Esmeralda */
+/* ── Esmeralda: triplo anel verde ── */
 .avatar-esmeralda .avatar-ring{
-  border:2.5px solid #50c878;
-  box-shadow:0 0 14px rgba(80,200,120,.65),0 0 28px rgba(80,200,120,.3);
-  animation:esmCrystal 2.5s ease-in-out infinite;
+  background:conic-gradient(from 0deg,#002010,#00aa44,#00ff77,#80ffcc,#00ff88,#009933,#002010);
+  animation:diaRotate 1.5s linear infinite;
+  filter:blur(.2px);
+  box-shadow:0 0 20px rgba(0,255,100,.55),0 0 40px rgba(0,200,80,.3);
 }
-.avatar-esmeralda .avatar-ring::before,.avatar-esmeralda .avatar-ring::after{content:none!important}
+.avatar-esmeralda .avatar-ring::before{
+  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+}
+.avatar-esmeralda .avatar-ring::after{
+  content:'';position:absolute;width:96px;height:96px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.55) 46%,rgba(150,255,180,.8) 55%,transparent 68%);
+  animation:diaRotate 2.2s linear infinite reverse;filter:blur(1px);z-index:-1;
+}
 .avatar-esmeralda .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-esmeralda .perfil-avatar-wrap{
+  animation:esmPulse 1.8s ease-in-out infinite;
+}
+@keyframes esmPulse{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(0,200,80,.55))}
+  50%{filter:drop-shadow(0 0 28px rgba(0,255,120,.9))}
+}
 
-/* Diamante */
+/* ── Diamante: disco conic-gradient girando + inner sem borda ── */
 .avatar-diamante .avatar-ring{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#7b61ff,#ffb4c8,#b9f2ff) border-box;
-  box-shadow:0 0 18px rgba(185,242,255,.65),0 0 36px rgba(123,97,255,.35);
-  animation:diaGlow 3s ease-in-out infinite;
+  background:conic-gradient(
+    from 0deg,
+    #b9f2ff 0%,#a78bfa 15%,#ffffff 28%,
+    #00ffff 42%,#e0b0ff 58%,#ffffff 72%,
+    #7b61ff 85%,#b9f2ff 100%
+  );
+  animation:diaRotate 2.5s linear infinite;
+  box-shadow:
+    0 0 18px rgba(185,242,255,.6),
+    0 0 36px rgba(123,97,255,.35);
 }
-.avatar-diamante .avatar-ring::before,.avatar-diamante .avatar-ring::after{content:none!important}
-.avatar-diamante .avatar-inner{border:none;position:relative;z-index:1}
+/* Máscara: cobre o centro do disco deixando só o anel visível */
+.avatar-diamante .avatar-ring::before{
+  content:'';
+  position:absolute;
+  width:80px;height:80px;
+  border-radius:50%;
+  background:var(--bg);
+  z-index:0;
+}
+.avatar-diamante .avatar-inner{
+  border:none;
+  position:relative;
+  z-index:1;
+  box-shadow:0 0 0 1px rgba(185,242,255,.2);
+}
 
-/* Andrômeda */
+/* ── ANÉIS MARSPASS NO AVATAR DO PERFIL ── */
+@keyframes andromedaPulse{0%,100%{box-shadow:0 0 10px 2px rgba(124,106,247,.5)}50%{box-shadow:0 0 22px 6px rgba(124,106,247,.9),0 0 36px 4px rgba(255,60,110,.3)}}
+@keyframes centaurusRotate{0%{background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300)}100%{background:conic-gradient(from 360deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300)}}
+@keyframes sombreroPulse{0%,100%{box-shadow:0 0 12px 3px rgba(255,60,110,.6)}50%{box-shadow:0 0 28px 8px rgba(255,60,110,1),0 0 44px 5px rgba(255,60,110,.3)}}
+
 .avatar-andromeda .avatar-ring{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8) border-box;
-  box-shadow:0 0 16px rgba(124,106,247,.7),0 0 32px rgba(124,106,247,.3);
-  animation:androPulse 2.5s ease-in-out infinite;
+  border:2.5px solid #7c6af7;
+  animation:andromedaPulse 2s ease-in-out infinite;
 }
-.avatar-andromeda .avatar-ring::before,.avatar-andromeda .avatar-ring::after{content:none!important}
 .avatar-andromeda .avatar-inner{border:none;position:relative;z-index:1}
 
-/* Centaurus */
 .avatar-centaurus .avatar-ring{
   border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800) border-box;
-  box-shadow:0 0 18px rgba(255,179,0,.7),0 0 36px rgba(255,107,0,.3);
-  animation:centSpin 4s linear infinite,centFlare 2s ease-in-out infinite;
+  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffe566,#ffb300) border-box;
+  box-shadow:0 0 14px rgba(255,179,0,.7),0 0 28px rgba(255,107,0,.3);
+  animation:spin 3s linear infinite;
 }
-.avatar-centaurus .avatar-ring::before,.avatar-centaurus .avatar-ring::after{content:none!important}
 .avatar-centaurus .avatar-inner{border:none;position:relative;z-index:1}
 
-/* Sombrero */
 .avatar-sombrero .avatar-ring{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020) border-box;
-  box-shadow:0 0 20px rgba(255,60,110,.8),0 0 40px rgba(255,60,110,.35);
-  animation:sombSpin 3s linear infinite,sombPulse 1.8s ease-in-out infinite;
+  border:2.5px solid #ff3c6e;
+  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e) border-box;
+  animation:sombreroPulse 1.6s ease-in-out infinite;
 }
-.avatar-sombrero .avatar-ring::before,.avatar-sombrero .avatar-ring::after{content:none!important}
 .avatar-sombrero .avatar-inner{border:none;position:relative;z-index:1}
 
 /* Badge de nível */
@@ -1399,6 +1456,127 @@ body.tema-claro .section-loader{color:var(--muted)}
   .beneficios-grid{grid-template-columns:1fr 1fr}
   .conquistas-grid{grid-template-columns:1fr 1fr}
   .tabs .tab{padding:9px 10px;font-size:9px}
+}
+
+/* ══════════════════════════════════════════════════════
+   PAINEL DE BENEFÍCIOS MARSPASS — MODAL IN-PAGE
+══════════════════════════════════════════════════════ */
+.mp-benef-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.mp-benef-overlay.open{display:flex}
+.mp-benef-modal{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:20px;width:100%;max-width:860px;max-height:90vh;
+  overflow-y:auto;position:relative;
+  box-shadow:0 40px 100px rgba(0,0,0,.8);
+}
+.mp-benef-modal::-webkit-scrollbar{width:4px}
+.mp-benef-modal::-webkit-scrollbar-thumb{background:rgba(124,106,247,.4);border-radius:99px}
+.mp-benef-close{
+  position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;
+  padding:16px 20px 0;background:var(--card);
+}
+.mp-benef-close button{
+  background:rgba(255,255,255,.06);border:1px solid var(--border2);
+  border-radius:8px;color:#888;font-size:18px;cursor:pointer;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  transition:color .15s,background .15s;
+}
+.mp-benef-close button:hover{color:#fff;background:rgba(255,255,255,.12)}
+.mp-benef-header{
+  text-align:center;padding:0 28px 24px;
+}
+.mp-benef-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,26px);
+  font-weight:900;color:#fff;margin-bottom:6px;
+}
+.mp-benef-sub{font-size:12px;color:var(--muted);font-weight:600}
+.mp-benef-tabs{
+  display:flex;gap:0;border-bottom:1px solid var(--border);
+  overflow-x:auto;padding:0 28px;margin-bottom:24px;
+  scrollbar-width:none;
+}
+.mp-benef-tabs::-webkit-scrollbar{display:none}
+.mp-benef-tab{
+  padding:10px 18px;font-size:11px;font-weight:700;
+  color:var(--muted);cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:color .15s,border-color .15s;
+  letter-spacing:.4px;flex-shrink:0;background:none;border-top:none;border-left:none;border-right:none;
+}
+.mp-benef-tab.active{color:#fff;border-bottom-color:var(--green)}
+.mp-benef-tab[data-plano="andromeda"].active{border-bottom-color:#7c6af7;color:#c4b8ff}
+.mp-benef-tab[data-plano="triangulo"].active{border-bottom-color:#00d4ff;color:#66e8ff}
+.mp-benef-tab[data-plano="centaurus"].active{border-bottom-color:#ffb300;color:#ffe566}
+.mp-benef-tab[data-plano="sombrero"].active{border-bottom-color:#ff3c6e;color:#ff80a0}
+.mp-benef-body{padding:0 28px 32px}
+.mp-plano-card{display:none}
+.mp-plano-card.active{display:block}
+.mp-plano-hero{
+  border-radius:14px;padding:24px;margin-bottom:20px;
+  display:flex;align-items:center;gap:18px;
+  border:1px solid;
+}
+.mp-plano-icon{font-size:44px;flex-shrink:0;line-height:1}
+.mp-plano-info{flex:1}
+.mp-plano-nome{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;margin-bottom:4px}
+.mp-plano-preco{font-size:13px;font-weight:700;color:var(--muted)}
+.mp-plano-titulo-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;border:1px solid;
+  font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  margin-top:10px;
+}
+.mp-benef-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:10px;margin-bottom:20px;
+}
+.mp-benef-item{
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:10px;padding:14px;
+}
+.mp-benef-item-icon{font-size:20px;margin-bottom:8px}
+.mp-benef-item-nome{font-size:11px;font-weight:700;color:#fff;margin-bottom:4px}
+.mp-benef-item-desc{font-size:10px;color:var(--muted);line-height:1.5}
+.mp-benef-item.destaque{
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+}
+.mp-benef-sorteios{
+  background:rgba(255,255,255,.02);border:1px solid var(--border);
+  border-radius:10px;padding:16px;margin-bottom:16px;
+}
+.mp-benef-sorteios-title{
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:12px;
+}
+.mp-sort-row{
+  display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--border);
+}
+.mp-sort-row:last-child{border-bottom:none}
+.mp-sort-badge{
+  font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 8px;border-radius:99px;flex-shrink:0;
+}
+.mp-sort-desc{font-size:11px;color:#ccc;flex:1}
+.mp-assinar-btn{
+  display:block;width:100%;padding:14px;border-radius:10px;
+  border:none;font-size:12px;font-weight:900;letter-spacing:1px;
+  text-transform:uppercase;cursor:pointer;text-align:center;
+  text-decoration:none;transition:opacity .2s,transform .1s;
+  font-family:'Montserrat',sans-serif;
+}
+.mp-assinar-btn:hover{opacity:.88;transform:translateY(-1px)}
+.mp-assinar-btn:active{transform:translateY(0)}
+.mp-plano-atual-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;
+  background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.3);
+  font-size:10px;font-weight:900;color:var(--green);letter-spacing:1px;
+  text-transform:uppercase;margin-left:10px;
 }
 </style>
 </head>
@@ -2564,6 +2742,11 @@ function renderConquistas(perfil){
     '</div>';
   }).join('');
 
+  /* Injeta títulos MarsPass se o usuário tiver assinatura ativa */
+  if(window._marspassPlanoAtivo){
+    injetarTitulosMarsPass(window._marspassPlanoAtivo, titulosDesbloqueados);
+  }
+
   // Seletor de título
   var tituloAtual=perfil.titulo_exibido||titulosDesbloqueados[0].nome;
   opcoes.innerHTML=titulosDesbloqueados.map(function(t,idx){
@@ -2764,50 +2947,37 @@ var ORDEM_PLANO=['andromeda','triangulo','centaurus','sombrero'];
 async function carregarMarsPassPerfil(user){
   gerarEstrelasMarsPass();
 
-  var loaderEl=document.getElementById('mp-perfil-loader');
-  var ativoEl=document.getElementById('mp-perfil-ativo');
-  var inativoEl=document.getElementById('mp-perfil-inativo');
-  var anelWrap=document.getElementById('anelSelectorWrap');
+  document.getElementById('mp-perfil-loader').style.display='flex';
+  document.getElementById('mp-perfil-ativo').style.display='none';
+  document.getElementById('mp-perfil-inativo').style.display='none';
+  document.getElementById('anelSelectorWrap').style.display='none';
 
-  loaderEl.style.display='flex';
-  ativoEl.style.display='none';
-  inativoEl.style.display='none';
-  anelWrap.style.display='none';
+  /* Busca assinatura e perfil em paralelo */
+  var[assRes, perfilRes]=await Promise.all([
+    sb.from('marspass_assinaturas')
+      .select('*').eq('user_email',user.email).eq('status','ativo')
+      .gt('data_vencimento',new Date().toISOString())
+      .order('created_at',{ascending:false}).limit(1).maybeSingle(),
+    sb.from('perfis').select('anel_escolhido').eq('email',user.email).maybeSingle()
+  ]);
 
-  /* Timeout de segurança: derruba o loader em 8s mesmo se Supabase travar */
-  var _timeoutId=setTimeout(function(){
-    loaderEl.style.display='none';
-    inativoEl.style.display='block';
-    inativoEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">⚠️ Tempo limite excedido. Tente novamente.</div>';
-  }, 8000);
+  document.getElementById('mp-perfil-loader').style.display='none';
 
-  var assRes, perfilRes;
-  try{
-    /* Busca assinatura e perfil em paralelo */
-    [assRes, perfilRes]=await Promise.all([
-      sb.from('marspass_assinaturas')
-        .select('*').eq('user_email',user.email).eq('status','ativo')
-        .gt('data_vencimento',new Date().toISOString())
-        .order('created_at',{ascending:false}).limit(1).maybeSingle(),
-      sb.from('perfis').select('anel_escolhido').eq('email',user.email).maybeSingle()
-    ]);
-  }catch(e){
-    clearTimeout(_timeoutId);
-    loaderEl.style.display='none';
-    inativoEl.style.display='block';
-    inativoEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">Erro ao carregar assinatura. Tente novamente.</div>';
-    return;
-  }
-
-  clearTimeout(_timeoutId);
-  loaderEl.style.display='none';
-
-  var a=(assRes&&assRes.data)||null;
-  var anelSalvo=(perfilRes&&perfilRes.data&&perfilRes.data.anel_escolhido)||null;
+  var a=assRes.data;
+  var anelSalvo=(perfilRes.data&&perfilRes.data.anel_escolhido)||null;
 
   /* Determina nível atual do usuário */
   var nivelAtual=(perfilData&&getNivel(perfilData.pontos||0).nome||'bronze').toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+  /* Salva plano globalmente para que renderConquistas inclua títulos MarsPass */
+  window._marspassPlanoAtivo = a ? a.plano : null;
+
+  /* Credita tickets de boas-vindas se ainda não foram creditados */
+  if(a) creditarTicketsBV(a);
+
+  /* Re-renderiza conquistas para incluir títulos MarsPass na lista de seleção */
+  if(perfilData) renderConquistas(perfilData);
 
   /* Renderiza seletor de anéis */
   renderAnelSelector(nivelAtual, a?a.plano:null, anelSalvo||nivelAtual);
@@ -2890,7 +3060,7 @@ async function carregarMarsPassPerfil(user){
           '<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.05)"><div style="font-size:16px;font-weight:900;color:var(--green)">'+(a.renovacoes||0)+'x</div><div style="font-size:8px;color:#444;font-weight:700;letter-spacing:1px">RENOVAÇÕES</div></div>'+
         '</div>'+
         jogoHtml+cupomHtml+
-        '<a href="marspass.html" style="font-size:10px;color:#333;font-weight:600;text-decoration:none">Ver benefícios completos →</a>'+
+        '<button onclick="abrirBeneficiosModal('+JSON.stringify(a.plano)+')" style="background:none;border:none;font-size:11px;font-weight:700;color:var(--green);cursor:pointer;padding:0;display:flex;align-items:center;gap:5px;letter-spacing:.3px">✨ Ver todos os benefícios →</button>'+
       '</div>'+
     '</div>';
 
@@ -3431,6 +3601,342 @@ async function atualizarNavbar(session){
 }
 sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
 setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});}, 100);
+
+/* ══════════════════════════════════════════════════════
+   BENEFÍCIOS MODAL — controle de abas
+══════════════════════════════════════════════════════ */
+function abrirBeneficiosModal(planoAtivo){
+  var overlay=document.getElementById('mpBenefOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+  if(planoAtivo) trocarPlanoBenef(planoAtivo, document.querySelector('.mp-benef-tab[data-plano="'+planoAtivo+'"]'));
+}
+function fecharBeneficiosModal(event){
+  if(event && event.target!==document.getElementById('mpBenefOverlay')) return;
+  document.getElementById('mpBenefOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function trocarPlanoBenef(plano, tabEl){
+  document.querySelectorAll('.mp-benef-tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.mp-plano-card').forEach(function(c){c.classList.remove('active')});
+  if(tabEl) tabEl.classList.add('active');
+  var card=document.getElementById('mp-card-'+plano);
+  if(card) card.classList.add('active');
+}
+/* Fecha com ESC */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') fecharBeneficiosModal({target:document.getElementById('mpBenefOverlay')});
+});
+
+/* ══════════════════════════════════════════════════════
+   TÍTULOS MARSPASS — desbloqueio automático ao assinar
+   Chamado dentro de renderConquistas + carregarMarsPassPerfil
+══════════════════════════════════════════════════════ */
+var TITULOS_MARSPASS={
+  andromeda: {titulo:'Andromedano', fonte:'MarsPass Andrômeda'},
+  triangulo: {titulo:'Trianguriano', fonte:'MarsPass Triângulo'},
+  centaurus: {titulo:'Centauriano', fonte:'MarsPass Centaurus'},
+  sombrero:  {titulo:'Sombrerano',  fonte:'MarsPass Sombrero'}
+};
+
+/* Injeta títulos MarsPass na lista de opções de título do perfil */
+function injetarTitulosMarsPass(plano, titulosArray){
+  if(!plano||!TITULOS_MARSPASS[plano]) return;
+  var info=TITULOS_MARSPASS[plano];
+  /* Adiciona todos os planos abaixo ou igual ao plano atual */
+  var ORDEM_MP=['andromeda','triangulo','centaurus','sombrero'];
+  var idxAtual=ORDEM_MP.indexOf(plano);
+  for(var i=0;i<=idxAtual;i++){
+    var mp=TITULOS_MARSPASS[ORDEM_MP[i]];
+    if(mp && !titulosArray.some(function(t){return t.nome===mp.titulo})){
+      titulosArray.push({nome:mp.titulo, fonte:mp.fonte});
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   TICKETS — creditar na conta ao assinar (se ainda não creditado)
+   Verifica campo tickets_boas_vindas_creditados na assinatura
+══════════════════════════════════════════════════════ */
+async function creditarTicketsBV(assinatura){
+  if(!userSession||!assinatura) return;
+  if(assinatura.tickets_boas_vindas_creditados) return; /* já creditou */
+
+  var TICKETS_PLANO={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
+  var qtd=TICKETS_PLANO[assinatura.plano]||0;
+  if(qtd===0) return;
+
+  try{
+    /* Busca tickets atuais */
+    var{data:tckData}=await sb.from('tickets')
+      .select('id,quantidade').eq('user_email',userSession.user.email).maybeSingle();
+
+    if(tckData){
+      await sb.from('tickets')
+        .update({quantidade:(tckData.quantidade||0)+qtd, updated_at:new Date().toISOString()})
+        .eq('id',tckData.id);
+    } else {
+      await sb.from('tickets')
+        .insert({user_email:userSession.user.email, quantidade:qtd});
+    }
+
+    /* Marca como creditado na assinatura */
+    await sb.from('marspass_assinaturas')
+      .update({tickets_boas_vindas_creditados:true})
+      .eq('id',assinatura.id);
+
+    showToast('🎟️ +'+qtd+' tickets MarsPass creditados na sua conta!');
+  }catch(e){
+    console.warn('Erro ao creditar tickets bv:',e);
+  }
+}
+
 </script>
+
+<!-- ══ MODAL BENEFÍCIOS MARSPASS ══ -->
+<div class="mp-benef-overlay" id="mpBenefOverlay" onclick="fecharBeneficiosModal(event)">
+  <div class="mp-benef-modal" onclick="event.stopPropagation()">
+    <div class="mp-benef-close"><button onclick="fecharBeneficiosModal()">✕</button></div>
+    <div class="mp-benef-header">
+      <div class="mp-benef-title">🌌 Benefícios MarsPass</div>
+      <div class="mp-benef-sub">Escolha o plano ideal e expanda seu universo</div>
+    </div>
+    <div class="mp-benef-tabs" id="mpBenefTabs">
+      <button class="mp-benef-tab active" data-plano="andromeda" onclick="trocarPlanoBenef('andromeda',this)">🌀 Andrômeda</button>
+      <button class="mp-benef-tab" data-plano="triangulo" onclick="trocarPlanoBenef('triangulo',this)">🔺 Triângulo</button>
+      <button class="mp-benef-tab" data-plano="centaurus" onclick="trocarPlanoBenef('centaurus',this)">⚡ Centaurus</button>
+      <button class="mp-benef-tab" data-plano="sombrero" onclick="trocarPlanoBenef('sombrero',this)">🌐 Sombrero</button>
+    </div>
+    <div class="mp-benef-body">
+
+      <!-- ANDRÔMEDA -->
+      <div class="mp-plano-card active" id="mp-card-andromeda">
+        <div class="mp-plano-hero" style="background:linear-gradient(135deg,rgba(58,31,168,.18),rgba(124,106,247,.08));border-color:rgba(124,106,247,.3)">
+          <div class="mp-plano-icon">🌀</div>
+          <div class="mp-plano-info">
+            <div class="mp-plano-nome" style="color:#c4b8ff">Andrômeda</div>
+            <div class="mp-plano-preco">R$ 9,90 / mês</div>
+            <div class="mp-plano-titulo-tag" style="border-color:rgba(124,106,247,.4);color:#c4b8ff;background:rgba(124,106,247,.1)">
+              🏷️ Título: Andromedano
+            </div>
+          </div>
+        </div>
+        <div class="mp-benef-grid">
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">⭐</div>
+            <div class="mp-benef-item-nome">50 MarsPoints</div>
+            <div class="mp-benef-item-desc">Creditados ao assinar</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎟️</div>
+            <div class="mp-benef-item-nome">+3 Tickets / semana</div>
+            <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💸</div>
+            <div class="mp-benef-item-nome">3% de desconto</div>
+            <div class="mp-benef-item-desc">Em todos os jogos do catálogo</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">🎲</div>
+            <div class="mp-benef-item-nome">Sorteio Premium</div>
+            <div class="mp-benef-item-desc">Acesso ao sorteio exclusivo MarsPass</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💬</div>
+            <div class="mp-benef-item-nome">Chat Discord</div>
+            <div class="mp-benef-item-desc">Canal exclusivo de assinantes</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💍</div>
+            <div class="mp-benef-item-nome">Anel Andrômeda</div>
+            <div class="mp-benef-item-desc">Anel galáctico roxo no avatar</div>
+          </div>
+        </div>
+        <div class="mp-benef-sorteios">
+          <div class="mp-benef-sorteios-title">🎲 Sorteios disponíveis</div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(124,106,247,.15);color:#c4b8ff;border:1px solid rgba(124,106,247,.3)">PREMIUM</span><span class="mp-sort-desc">Acesso garantido ao Sorteio Premium mensal</span></div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(80,80,80,.3);color:#666;border:1px solid #333">VIP</span><span class="mp-sort-desc" style="color:#444">Não incluído — requer Centaurus ou Sombrero</span></div>
+        </div>
+        <button class="mp-assinar-btn" style="background:linear-gradient(135deg,#3a1fa8,#7c6af7);color:#fff" onclick="fecharBeneficiosModal();window.location.href='marspass.html'">
+          Assinar Andrômeda — R$ 9,90/mês
+        </button>
+      </div>
+
+      <!-- TRIÂNGULO -->
+      <div class="mp-plano-card" id="mp-card-triangulo">
+        <div class="mp-plano-hero" style="background:linear-gradient(135deg,rgba(0,144,187,.18),rgba(0,212,255,.08));border-color:rgba(0,212,255,.3)">
+          <div class="mp-plano-icon">🔺</div>
+          <div class="mp-plano-info">
+            <div class="mp-plano-nome" style="color:#66e8ff">Triângulo</div>
+            <div class="mp-plano-preco">R$ 14,90 / mês</div>
+            <div class="mp-plano-titulo-tag" style="border-color:rgba(0,212,255,.4);color:#66e8ff;background:rgba(0,212,255,.1)">
+              🏷️ Título: Trianguriano
+            </div>
+          </div>
+        </div>
+        <div class="mp-benef-grid">
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">⭐</div>
+            <div class="mp-benef-item-nome">80 MarsPoints</div>
+            <div class="mp-benef-item-desc">Creditados ao assinar</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎟️</div>
+            <div class="mp-benef-item-nome">+5 Tickets / semana</div>
+            <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💸</div>
+            <div class="mp-benef-item-nome">5% de desconto</div>
+            <div class="mp-benef-item-desc">Em todos os jogos do catálogo</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎮</div>
+            <div class="mp-benef-item-nome">Jogo mensal</div>
+            <div class="mp-benef-item-desc">1 jogo por mês (escolha do editor)</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">🎲</div>
+            <div class="mp-benef-item-nome">Sorteio Premium</div>
+            <div class="mp-benef-item-desc">Acesso ao sorteio exclusivo MarsPass</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💬</div>
+            <div class="mp-benef-item-nome">Chat Discord</div>
+            <div class="mp-benef-item-desc">Canal exclusivo de assinantes</div>
+          </div>
+        </div>
+        <div class="mp-benef-sorteios">
+          <div class="mp-benef-sorteios-title">🎲 Sorteios disponíveis</div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(0,212,255,.15);color:#66e8ff;border:1px solid rgba(0,212,255,.3)">PREMIUM</span><span class="mp-sort-desc">Acesso garantido ao Sorteio Premium mensal</span></div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(80,80,80,.3);color:#666;border:1px solid #333">VIP</span><span class="mp-sort-desc" style="color:#444">Não incluído — requer Centaurus ou Sombrero</span></div>
+        </div>
+        <button class="mp-assinar-btn" style="background:linear-gradient(135deg,#0090bb,#00d4ff);color:#000" onclick="fecharBeneficiosModal();window.location.href='marspass.html'">
+          Assinar Triângulo — R$ 14,90/mês
+        </button>
+      </div>
+
+      <!-- CENTAURUS -->
+      <div class="mp-plano-card" id="mp-card-centaurus">
+        <div class="mp-plano-hero" style="background:linear-gradient(135deg,rgba(192,120,0,.18),rgba(255,179,0,.08));border-color:rgba(255,179,0,.3)">
+          <div class="mp-plano-icon">⚡</div>
+          <div class="mp-plano-info">
+            <div class="mp-plano-nome" style="color:#ffe566">Centaurus</div>
+            <div class="mp-plano-preco">R$ 29,90 / mês</div>
+            <div class="mp-plano-titulo-tag" style="border-color:rgba(255,179,0,.4);color:#ffe566;background:rgba(255,179,0,.1)">
+              🏷️ Título: Centauriano
+            </div>
+          </div>
+        </div>
+        <div class="mp-benef-grid">
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">⭐</div>
+            <div class="mp-benef-item-nome">100 MarsPoints</div>
+            <div class="mp-benef-item-desc">Creditados ao assinar</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎟️</div>
+            <div class="mp-benef-item-nome">+8 Tickets / semana</div>
+            <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💸</div>
+            <div class="mp-benef-item-nome">10% de desconto</div>
+            <div class="mp-benef-item-desc">Em todos os jogos do catálogo</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎮</div>
+            <div class="mp-benef-item-nome">Jogo mensal (até R$10)</div>
+            <div class="mp-benef-item-desc">Você escolhe qual jogo quer</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">💍</div>
+            <div class="mp-benef-item-nome">Anel Centaurus</div>
+            <div class="mp-benef-item-desc">Anel âmbar estelar no avatar</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">🎲</div>
+            <div class="mp-benef-item-nome">Sorteio VIP</div>
+            <div class="mp-benef-item-desc">Acesso ao sorteio ultra exclusivo</div>
+          </div>
+        </div>
+        <div class="mp-benef-sorteios">
+          <div class="mp-benef-sorteios-title">🎲 Sorteios disponíveis</div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(255,179,0,.15);color:#ffe566;border:1px solid rgba(255,179,0,.3)">PREMIUM</span><span class="mp-sort-desc">Acesso ao Sorteio Premium mensal</span></div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(255,60,110,.15);color:#ff80a0;border:1px solid rgba(255,60,110,.3)">VIP</span><span class="mp-sort-desc">Acesso ao Sorteio VIP ultra exclusivo ✓</span></div>
+        </div>
+        <button class="mp-assinar-btn" style="background:linear-gradient(135deg,#c07800,#ffb300);color:#000" onclick="fecharBeneficiosModal();window.location.href='marspass.html'">
+          Assinar Centaurus — R$ 29,90/mês
+        </button>
+      </div>
+
+      <!-- SOMBRERO -->
+      <div class="mp-plano-card" id="mp-card-sombrero">
+        <div class="mp-plano-hero" style="background:linear-gradient(135deg,rgba(192,16,64,.18),rgba(255,60,110,.08));border-color:rgba(255,60,110,.35)">
+          <div class="mp-plano-icon">🌐</div>
+          <div class="mp-plano-info">
+            <div class="mp-plano-nome" style="color:#ff80a0">Sombrero</div>
+            <div class="mp-plano-preco">R$ 39,90 / mês <span style="font-size:10px;background:rgba(255,60,110,.2);border:1px solid rgba(255,60,110,.3);padding:2px 8px;border-radius:99px;color:#ff80a0;margin-left:6px">👑 LENDÁRIO</span></div>
+            <div class="mp-plano-titulo-tag" style="border-color:rgba(255,60,110,.4);color:#ff80a0;background:rgba(255,60,110,.1)">
+              🏷️ Título: Sombrerano
+            </div>
+          </div>
+        </div>
+        <div class="mp-benef-grid">
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">⭐</div>
+            <div class="mp-benef-item-nome">150 MarsPoints</div>
+            <div class="mp-benef-item-desc">Creditados ao assinar</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎟️</div>
+            <div class="mp-benef-item-nome">+12 Tickets / semana</div>
+            <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💸</div>
+            <div class="mp-benef-item-nome">15% de desconto</div>
+            <div class="mp-benef-item-desc">Em todos os jogos do catálogo</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎮</div>
+            <div class="mp-benef-item-nome">Jogo mensal (até R$15)</div>
+            <div class="mp-benef-item-desc">Você escolhe qual jogo quer</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🔑</div>
+            <div class="mp-benef-item-nome">Chave Steam</div>
+            <div class="mp-benef-item-desc">CD-Key Steam escolha do editor</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🎁</div>
+            <div class="mp-benef-item-nome">Cupom presente 20%</div>
+            <div class="mp-benef-item-desc">Para presentear um amigo</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">💍</div>
+            <div class="mp-benef-item-nome">Anel Sombrero</div>
+            <div class="mp-benef-item-desc">Anel buraco negro rosa (o mais raro)</div>
+          </div>
+          <div class="mp-benef-item">
+            <div class="mp-benef-item-icon">📱</div>
+            <div class="mp-benef-item-nome">Suporte WhatsApp</div>
+            <div class="mp-benef-item-desc">Atendimento prioritário direto</div>
+          </div>
+        </div>
+        <div class="mp-benef-sorteios">
+          <div class="mp-benef-sorteios-title">🎲 Sorteios disponíveis</div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(255,60,110,.15);color:#ff80a0;border:1px solid rgba(255,60,110,.3)">PREMIUM</span><span class="mp-sort-desc">Acesso ao Sorteio Premium mensal ✓</span></div>
+          <div class="mp-sort-row"><span class="mp-sort-badge" style="background:rgba(255,60,110,.15);color:#ff80a0;border:1px solid rgba(255,60,110,.3)">VIP</span><span class="mp-sort-desc">Acesso ao Sorteio VIP ultra exclusivo ✓</span></div>
+        </div>
+        <button class="mp-assinar-btn" style="background:linear-gradient(135deg,#c01040,#ff3c6e);color:#fff" onclick="fecharBeneficiosModal();window.location.href='marspass.html'">
+          Assinar Sombrero — R$ 39,90/mês
+        </button>
+      </div>
+
+    </div><!-- /mp-benef-body -->
+  </div><!-- /mp-benef-modal -->
+</div><!-- /mp-benef-overlay -->
 </body>
 </html>
