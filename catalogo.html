@@ -457,9 +457,33 @@ function renderProdutos(){
   }).join('');
 }
 
+/* Timer para debounce do tracking de busca */
+var _buscaTimer=null;
+var _ultimaBuscaTrackeada='';
+
+function registrarBusca(termo){
+  if(!termo||termo.length<2) return;
+  if(termo===_ultimaBuscaTrackeada) return;
+  _ultimaBuscaTrackeada=termo;
+  /* Registra no Supabase sem bloquear a UI */
+  try{
+    sb.from('buscas_log').insert({
+      termo:termo,
+      created_at:new Date().toISOString()
+    }).then(function(){}).catch(function(){});
+  }catch(e){}
+}
+
 function buscar(q){
   buscaAtual=q.trim();
   renderProdutos();
+  /* Tracking com debounce de 1.2s — só registra quando o usuário parar de digitar */
+  clearTimeout(_buscaTimer);
+  if(buscaAtual.length>=2){
+    _buscaTimer=setTimeout(function(){
+      registrarBusca(buscaAtual);
+    },1200);
+  }
 }
 
 function addCarrinho(id){
