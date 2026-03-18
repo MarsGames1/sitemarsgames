@@ -156,7 +156,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 @media(min-width:900px){.prod-grid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}}
 @media(min-width:1200px){.prod-grid{grid-template-columns:1.2fr 1fr}}
 
-/* ─ Imagem ─ */
+/* ─ Imagem + Reviews ─ */
 .prod-img-col{}
 .prod-img-main{
   width:100%;aspect-ratio:16/10;border-radius:16px;overflow:hidden;
@@ -424,7 +424,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;
-  color:var(--green);flex-shrink:0;
+  color:var(--green);flex-shrink:0;border:1.5px solid var(--border2);
 }
 .aval-card-nome{font-size:12px;font-weight:700;color:#fff}
 .aval-card-data{font-size:9px;color:var(--muted);margin-top:2px;font-weight:600}
@@ -454,8 +454,79 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 @keyframes centaurusRotate{to{transform:rotate(360deg)}}
 @keyframes sombreroPulse{0%,100%{box-shadow:0 0 12px 3px rgba(255,60,110,.6)}50%{box-shadow:0 0 28px 8px rgba(255,60,110,1),0 0 44px 5px rgba(255,60,110,.3)}}
 
+/* ══ AVALIAÇÕES (coluna da imagem) ══ */
+.avals-section{
+  margin-top:20px;
+  position:relative;z-index:1;
+}
+.avals-header{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin-bottom:14px;
+}
+.avals-title{
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;
+  color:#fff;letter-spacing:1px;
+}
+.avals-resumo{
+  display:flex;align-items:center;gap:14px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:12px 16px;margin-bottom:14px;
+}
+.avals-media-num{
+  font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+  color:var(--amber);line-height:1;
+}
+.avals-media-info{}
+.avals-media-stars{font-size:15px;letter-spacing:2px;margin-bottom:2px}
+.avals-media-qtd{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.avals-lista-wrap{
+  max-height:420px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:8px;
+  padding-right:4px;
+  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+}
+.avals-lista-wrap::-webkit-scrollbar{width:4px}
+.avals-lista-wrap::-webkit-scrollbar-track{background:transparent}
+.avals-lista-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.aval-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px;
+  animation:fadeUp .3s ease both;
+  position:relative;
+}
+.aval-card-top{
+  display:flex;align-items:flex-start;gap:10px;margin-bottom:0;
+}
+.aval-card-user{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0}
+.aval-card-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;
+  color:var(--green);flex-shrink:0;
+}
+.aval-card-meta{flex:1;min-width:0}
+.aval-card-nome{font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;flex-wrap:wrap;gap:4px;line-height:1.3}
+.aval-card-data{font-size:9px;color:var(--muted);margin-top:2px;font-weight:600}
+.aval-card-stars-row{margin-top:5px;font-size:14px;letter-spacing:1px}
+.aval-card-comentario{
+  font-size:11px;color:#bbb;font-weight:600;line-height:1.6;
+  border-top:1px solid var(--border);padding-top:10px;margin-top:10px;
+}
+.avals-vazia{
+  text-align:center;padding:40px 20px;
+  color:var(--muted);font-size:12px;font-weight:600;
+}
+.avals-loader{
+  display:flex;align-items:center;justify-content:center;
+  padding:40px;color:var(--muted);font-size:11px;gap:8px;
+}
+.avals-loader::before{
+  content:'';width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border2);border-top-color:var(--green);
+  animation:spin .8s linear infinite;flex-shrink:0;
+}
 </style>
-</head>
 <body>
 <div class="stars-bg"></div>
 
@@ -507,12 +578,28 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   </div>
 
   <div class="prod-grid">
-    <!-- Imagem -->
+    <!-- Imagem + Avaliações -->
     <div class="prod-img-col">
       <div class="prod-img-main">
         <img id="prodImg" src="" alt="">
         <div class="prod-img-badge" id="prodBadge">Oferta</div>
         <div class="prod-plat-tag" id="prodPlatTag">STEAM OFFLINE</div>
+      </div>
+      <!-- AVALIAÇÕES DOS CLIENTES (abaixo da imagem) -->
+      <div class="avals-section" id="avalsSection" style="display:none">
+        <div class="avals-header">
+          <div class="avals-title">⭐ Avaliações dos clientes</div>
+        </div>
+        <div class="avals-resumo" id="avalsResumo" style="display:none">
+          <div class="avals-media-num" id="avalsMediaNum">0.0</div>
+          <div class="avals-media-info">
+            <div class="avals-media-stars" id="avalsMediaStars">☆☆☆☆☆</div>
+            <div class="avals-media-qtd" id="avalsMediaQtd">0 avaliações</div>
+          </div>
+        </div>
+        <div id="avalsConteudo">
+          <div class="avals-loader" id="avalsLoader">Carregando avaliações...</div>
+        </div>
       </div>
     </div>
 
@@ -658,25 +745,6 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     <div class="related-grid" id="relGrid">
       <!-- preenchido via JS -->
     </div>
-  </div>
-</div>
-
-<!-- AVALIAÇÕES DOS CLIENTES -->
-<div class="avals-section" id="avalsSection" style="display:none">
-  <div class="avals-header">
-    <div class="avals-title">⭐ Avaliações dos clientes</div>
-  </div>
-  <!-- Resumo médio -->
-  <div class="avals-resumo" id="avalsResumo" style="display:none">
-    <div class="avals-media-num" id="avalsMediaNum">0.0</div>
-    <div class="avals-media-info">
-      <div class="avals-media-stars" id="avalsMediaStars">☆☆☆☆☆</div>
-      <div class="avals-media-qtd" id="avalsMediaQtd">0 avaliações</div>
-    </div>
-  </div>
-  <!-- Lista com scroll -->
-  <div id="avalsConteudo">
-    <div class="avals-loader" id="avalsLoader">Carregando avaliações...</div>
   </div>
 </div>
 
@@ -1071,139 +1139,129 @@ async function carregarAvaliacoesProduto(produtoNome){
 
   try{
     var{data,error}=await sb.from('avaliacoes')
-      .select('*')
-      .eq('produto_nome',produtoNome)
+      .select('*').eq('produto_nome',produtoNome)
       .order('created_at',{ascending:false});
 
     if(error||!data||data.length===0){section.style.display='none';return;}
-
     section.style.display='block';
+
     var totalStars=data.reduce(function(s,a){return s+(a.estrelas||0)},0);
     var media=(totalStars/data.length).toFixed(1);
-    var mediaNum=parseFloat(media);
     resumo.style.display='flex';
     document.getElementById('avalsMediaNum').textContent=media;
     document.getElementById('avalsMediaQtd').textContent=data.length+' avaliação'+(data.length!==1?'ões':'');
-    var starsHtml='';for(var i=1;i<=5;i++) starsHtml+=i<=Math.round(mediaNum)?'★':'☆';
-    document.getElementById('avalsMediaStars').textContent=starsHtml;
+    var sh='';for(var i=1;i<=5;i++) sh+=i<=Math.round(parseFloat(media))?'★':'☆';
+    document.getElementById('avalsMediaStars').textContent=sh;
 
-    /* Busca perfis, pontos e marspass ativo de todos os reviewers */
+    /* Busca perfis, pontos e marspass de todos os reviewers */
     var emails=[...new Set(data.map(function(a){return a.user_email}).filter(Boolean))];
     var perfisMap={},pontosMap={},marspassMap={};
     if(emails.length>0){
       var[perfisRes,pontosRes,mpRes]=await Promise.all([
         sb.from('perfis').select('email,titulo_exibido,anel_escolhido,nome').in('email',emails),
         sb.from('marspoints').select('user_email,pontos').in('user_email',emails),
-        sb.from('marspass_assinaturas')
-          .select('user_email,plano')
-          .in('user_email',emails)
-          .eq('status','ativo')
-          .gt('data_vencimento',new Date().toISOString())
+        sb.from('marspass_assinaturas').select('user_email,plano').in('user_email',emails)
+          .eq('status','ativo').gt('data_vencimento',new Date().toISOString())
       ]);
       (perfisRes.data||[]).forEach(function(p){perfisMap[p.email]=p;});
       (pontosRes.data||[]).forEach(function(p){pontosMap[p.user_email]=p.pontos||0;});
-      /* Pega o plano mais alto por email (caso raro de múltiplas assinaturas) */
-      var ORDEM_MP=['andromeda','triangulo','centaurus','sombrero'];
+      var OP=['andromeda','triangulo','centaurus','sombrero'];
       (mpRes.data||[]).forEach(function(p){
-        var atual=marspassMap[p.user_email];
-        if(!atual||ORDEM_MP.indexOf(p.plano)>ORDEM_MP.indexOf(atual)){
-          marspassMap[p.user_email]=p.plano;
-        }
+        var cur=marspassMap[p.user_email];
+        if(!cur||OP.indexOf(p.plano)>OP.indexOf(cur)) marspassMap[p.user_email]=p.plano;
       });
     }
 
-    var MP_INFO={
+    var MP={
       andromeda:{nome:'Andrômeda',icon:'🌀',cor:'#7c6af7',titulo:'Andromedano',
-        cardBg:'linear-gradient(135deg,rgba(124,106,247,.12),rgba(255,60,110,.07))',
-        cardBorder:'rgba(124,106,247,.4)',tituloStyle:'color:#c4b8ff;text-shadow:0 0 8px rgba(124,106,247,.8)'},
+        bg:'linear-gradient(135deg,rgba(124,106,247,.13),rgba(255,60,110,.07))',
+        border:'rgba(124,106,247,.4)',ts:'color:#c4b8ff;text-shadow:0 0 8px rgba(124,106,247,.8)'},
       triangulo:{nome:'Triângulo',icon:'🔺',cor:'#00d4ff',titulo:'Trianguriano',
-        cardBg:'linear-gradient(135deg,rgba(0,212,255,.1),rgba(0,144,187,.06))',
-        cardBorder:'rgba(0,212,255,.35)',tituloStyle:'color:#66e8ff;text-shadow:0 0 8px rgba(0,212,255,.7)'},
+        bg:'linear-gradient(135deg,rgba(0,212,255,.1),rgba(0,144,187,.06))',
+        border:'rgba(0,212,255,.35)',ts:'color:#66e8ff;text-shadow:0 0 8px rgba(0,212,255,.7)'},
       centaurus:{nome:'Centaurus',icon:'⚡',cor:'#ffb300',titulo:'Centauriano',
-        cardBg:'linear-gradient(135deg,rgba(255,179,0,.12),rgba(255,107,0,.07))',
-        cardBorder:'rgba(255,179,0,.45)',tituloStyle:'color:#ffd060;text-shadow:0 0 8px rgba(255,179,0,.8)'},
+        bg:'linear-gradient(135deg,rgba(255,179,0,.12),rgba(255,107,0,.07))',
+        border:'rgba(255,179,0,.45)',ts:'color:#ffd060;text-shadow:0 0 8px rgba(255,179,0,.8)'},
       sombrero:{nome:'Sombrero',icon:'🌐',cor:'#ff3c6e',titulo:'Sombrerano',
-        cardBg:'linear-gradient(135deg,rgba(255,60,110,.14),rgba(192,16,64,.08))',
-        cardBorder:'rgba(255,60,110,.5)',tituloStyle:'color:#ff80a0;text-shadow:0 0 8px rgba(255,60,110,.8)'}
+        bg:'linear-gradient(135deg,rgba(255,60,110,.14),rgba(192,16,64,.08))',
+        border:'rgba(255,60,110,.5)',ts:'color:#ff80a0;text-shadow:0 0 8px rgba(255,60,110,.8)'}
     };
     var MP_ANEIS=['andromeda','centaurus','sombrero'];
-    var NIVEIS_AVAL=[{min:5000,slug:'diamante'},{min:1000,slug:'esmeralda'},{min:500,slug:'ouro'},{min:100,slug:'prata'},{min:0,slug:'bronze'}];
-    function getNivelSlug(pts){for(var i=0;i<NIVEIS_AVAL.length;i++){if(pts>=NIVEIS_AVAL[i].min)return NIVEIS_AVAL[i].slug;}return 'bronze';}
+    var MP_TITULOS=['Andromedano','Trianguriano','Centauriano','Sombrerano'];
+    var NV=[{min:5000,s:'diamante'},{min:1000,s:'esmeralda'},{min:500,s:'ouro'},{min:100,s:'prata'},{min:0,s:'bronze'}];
+    function getNivel(pts){for(var i=0;i<NV.length;i++){if(pts>=NV[i].min)return NV[i].s;}return 'bronze';}
     var BG='#0a0a0e';
 
-    function buildAvatar(email,ini){
-      var perfil=perfisMap[email]||{};
+    function avatar(email,ini){
+      var p=perfisMap[email]||{};
       var pts=pontosMap[email]||0;
-      var mpPlano=marspassMap[email]||null;
-      var anelEscolhido=perfil.anel_escolhido||null;
-      /* Se anel escolhido é marspass mas sem assinatura ativa → cai para nível */
-      if(anelEscolhido&&MP_ANEIS.indexOf(anelEscolhido)!==-1&&!mpPlano) anelEscolhido=getNivelSlug(pts);
-      var anel=anelEscolhido||getNivelSlug(pts);
-      var html='<div style="position:relative;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center">';
+      var mp=marspassMap[email]||null;
+      var anel=p.anel_escolhido||null;
+      if(anel&&MP_ANEIS.indexOf(anel)!==-1&&!mp) anel=getNivel(pts);
+      anel=anel||getNivel(pts);
+      var h='<div style="position:relative;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center">';
       if(anel==='diamante'){
-        html+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);animation:navDiaRotate 2.5s linear infinite;box-shadow:0 0 14px rgba(185,242,255,.8)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
-        html+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);animation:navDiaRotate 2.5s linear infinite;box-shadow:0 0 14px rgba(185,242,255,.8)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
       }else if(anel==='esmeralda'){
-        html+='<div class="aval-card-avatar" style="border:2px solid #50c878;box-shadow:0 0 10px rgba(80,200,120,.9),0 0 20px rgba(80,200,120,.3)">'+ini+'</div>';
+        h+='<div class="aval-card-avatar" style="border:2.5px solid #50c878;box-shadow:0 0 10px rgba(80,200,120,.9),0 0 20px rgba(80,200,120,.3)">'+ini+'</div>';
       }else if(anel==='ouro'){
-        html+='<div class="aval-card-avatar" style="border:2px solid #FFD700;box-shadow:0 0 10px rgba(255,215,0,.9),0 0 20px rgba(255,215,0,.3)">'+ini+'</div>';
+        h+='<div class="aval-card-avatar" style="border:2.5px solid #FFD700;box-shadow:0 0 10px rgba(255,215,0,.9),0 0 20px rgba(255,215,0,.3)">'+ini+'</div>';
       }else if(anel==='prata'){
-        html+='<div class="aval-card-avatar" style="border:2px solid #e8e8e8;box-shadow:0 0 8px rgba(232,232,232,.8)">'+ini+'</div>';
+        h+='<div class="aval-card-avatar" style="border:2.5px solid #e8e8e8;box-shadow:0 0 8px rgba(232,232,232,.8)">'+ini+'</div>';
       }else if(anel==='andromeda'){
-        html+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8);animation:andromedaPulse 2s ease-in-out infinite;"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
-        html+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8);animation:andromedaPulse 2s ease-in-out infinite"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
       }else if(anel==='centaurus'){
-        html+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800);animation:centaurusRotate 3s linear infinite;box-shadow:0 0 14px rgba(255,179,0,.7)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
-        html+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800);animation:centaurusRotate 3s linear infinite;box-shadow:0 0 14px rgba(255,179,0,.7)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
       }else if(anel==='sombrero'){
-        html+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020);animation:sombreroPulse 1.6s ease-in-out infinite;box-shadow:0 0 14px rgba(255,60,110,.8)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
-        html+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020);animation:sombreroPulse 1.6s ease-in-out infinite"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
       }else{
-        html+='<div class="aval-card-avatar" style="border:2px solid #cd9f6a;box-shadow:0 0 6px rgba(205,159,106,.6)">'+ini+'</div>';
+        h+='<div class="aval-card-avatar" style="border:2.5px solid #cd9f6a;box-shadow:0 0 7px rgba(205,159,106,.65)">'+ini+'</div>';
       }
-      return html+'</div>';
+      return h+'</div>';
     }
 
     conteudo.innerHTML='<div class="avals-lista-wrap">'+data.map(function(a){
-      var perfil=perfisMap[a.user_email]||{};
-      var mpPlano=marspassMap[a.user_email]||null;
-      var mpInfo=mpPlano?MP_INFO[mpPlano]:null;
-      var tituloMostrar=perfil.titulo_exibido||null;
-      var nome=esc(perfil.nome||a.user_nome||'Cliente');
+      var pf=perfisMap[a.user_email]||{};
+      var mp=marspassMap[a.user_email]||null;
+      var mpi=mp?MP[mp]:null;
+      var titulo=pf.titulo_exibido||null;
+      var nome=esc(pf.nome||a.user_nome||'Cliente');
       var ini=nome.trim()[0].toUpperCase();
       var dt=a.created_at?new Date(a.created_at).toLocaleDateString('pt-BR'):'—';
-      var stars='';for(var i=1;i<=5;i++) stars+='<span style="color:'+(i<=(a.estrelas||0)?'#FFD700':'#2a2a3a')+'">★</span>';
+      /* Estrelas separadas, cor forte */
+      var stars='';for(var i=1;i<=5;i++) stars+='<span style="color:'+(i<=(a.estrelas||0)?'#FFD700':'#2a2a3a');stars+=';font-size:14px">★</span>';
       var comentario=a.comentario?'<div class="aval-card-comentario">'+esc(a.comentario)+'</div>':'';
 
-      /* Badge MarsPass no canto */
-      var mpBadge=mpInfo?'<div style="position:absolute;top:10px;right:12px;display:flex;align-items:center;gap:4px;font-size:8px;font-weight:900;letter-spacing:1.5px;padding:3px 9px;border-radius:99px;background:rgba(0,0,0,.5);border:1px solid '+mpInfo.cor+';color:'+mpInfo.cor+'">'+mpInfo.icon+' '+mpInfo.nome.toUpperCase()+'</div>':'';
+      /* Badge MarsPass canto superior direito */
+      var badge=mpi?'<div style="position:absolute;top:10px;right:10px;font-size:7.5px;font-weight:900;letter-spacing:1.5px;padding:3px 8px;border-radius:99px;background:rgba(0,0,0,.55);border:1px solid '+mpi.cor+';color:'+mpi.cor+'">'+mpi.icon+' '+mpi.nome.toUpperCase()+'</div>':'';
 
-      /* Título com destaque MarsPass */
-      var MP_TITULOS=['Andromedano','Trianguriano','Centauriano','Sombrerano'];
+      /* Título com cor e glow para MarsPass, dourado neutro para os demais */
       var tituloHtml='';
-      if(tituloMostrar){
-        var isMpTitulo=MP_TITULOS.indexOf(tituloMostrar)!==-1&&mpInfo;
-        tituloHtml=isMpTitulo
-          ?'<span style="margin-left:7px;font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;'+mpInfo.tituloStyle+';vertical-align:middle">'+mpInfo.icon+' '+esc(tituloMostrar)+'</span>'
-          :'<span style="margin-left:7px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,183,0,.85);vertical-align:middle">✦ '+esc(tituloMostrar)+'</span>';
+      if(titulo){
+        var isMp=MP_TITULOS.indexOf(titulo)!==-1&&mpi;
+        tituloHtml=isMp
+          ?'<span style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;'+mpi.ts+'">'+mpi.icon+' '+esc(titulo)+'</span>'
+          :'<span style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,183,0,.85)">✦ '+esc(titulo)+'</span>';
       }
 
-      /* Estilo do card */
-      var cardStyle=mpInfo
-        ?'background:'+mpInfo.cardBg+';border-color:'+mpInfo.cardBorder+';box-shadow:0 4px 20px rgba(0,0,0,.3),0 0 0 1px '+mpInfo.cardBorder+' inset'
-        :'';
+      /* Card background para MarsPass */
+      var cardStyle=mpi?'background:'+mpi.bg+';border-color:'+mpi.border+';box-shadow:0 2px 16px rgba(0,0,0,.3)':'';
 
-      return '<div class="aval-card" style="'+cardStyle+';position:relative">'+
-        mpBadge+
+      return '<div class="aval-card" style="'+cardStyle+'">'+
+        badge+
         '<div class="aval-card-top">'+
           '<div class="aval-card-user">'+
-            buildAvatar(a.user_email,ini)+
-            '<div>'+
-              '<div class="aval-card-nome">'+nome+tituloHtml+'</div>'+
+            avatar(a.user_email,ini)+
+            '<div class="aval-card-meta">'+
+              '<div class="aval-card-nome">'+nome+(tituloHtml?'&nbsp;'+tituloHtml:'')+'</div>'+
               '<div class="aval-card-data">'+dt+'</div>'+
+              '<div class="aval-card-stars-row">'+stars+'</div>'+
             '</div>'+
           '</div>'+
-          '<div class="aval-card-stars" style="font-size:15px;letter-spacing:1px">'+stars+'</div>'+
         '</div>'+
         comentario+
       '</div>';
