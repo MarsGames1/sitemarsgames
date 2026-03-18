@@ -301,6 +301,42 @@ body.tema-claro .exit-sub{color:#666}
 .nav-links{display:none}
 .nav-search{display:none}
 .nav-discord{display:none}
+
+/* Botão de busca visível só no mobile, ao lado do avatar/perfil */
+.nav-mob-search-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:10px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.04);
+  cursor:pointer;color:#888;flex-shrink:0;
+  transition:border-color .2s,color .2s;
+}
+.nav-mob-search-btn:hover{border-color:#555;color:#fff}
+.nav-mob-search-btn svg{pointer-events:none}
+
+/* Overlay de busca mobile (cobre tela inteira) */
+.mob-search-overlay{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:rgba(6,6,8,.97);backdrop-filter:blur(20px);
+  padding:14px 16px;
+  display:none;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border2);
+  animation:slideDown .2s ease;
+}
+.mob-search-overlay.open{display:flex}
+.mob-search-overlay input{
+  flex:1;background:var(--surface);border:1px solid var(--border2);
+  border-radius:10px;padding:12px 16px;font-size:15px;color:#fff;
+  font-family:'Montserrat',sans-serif;outline:none;
+  transition:border-color .2s;
+}
+.mob-search-overlay input:focus{border-color:rgba(232,66,26,.5)}
+.mob-search-overlay input::placeholder{color:#444}
+.mob-close-btn{
+  width:40px;height:40px;border-radius:10px;border:1px solid var(--border2);
+  background:transparent;color:#666;cursor:pointer;font-size:20px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mob-close-btn:hover{color:#fff;border-color:#555}
 /* Carrinho */
 .nav-cart{
   display:flex;align-items:center;justify-content:center;
@@ -394,6 +430,7 @@ body.tema-claro .exit-sub{color:#666}
   .nav-logo-text{font-size:17px}
   .nav-hamburger{display:none}
   .nav-mobile-menu{display:none!important}
+  .nav-mob-search-btn{display:none} /* Só mobile */
   .nav-login{width:auto;padding:7px 14px;gap:7px;font-size:11px;font-weight:700;letter-spacing:.5px}
   .nav-login-label{display:inline}
   .nav-discord{
@@ -2915,6 +2952,59 @@ footer::before{
   .hero-stats{grid-template-columns:repeat(2,1fr)}
   .cats-explore-title{font-size:clamp(18px,7vw,28px)}
 }
+
+/* ── MOBILE: botão busca e overlay ── */
+@media(max-width:767px){
+  .nav-mob-search-btn{display:flex}
+
+  /* Overlay de busca: padding seguro para o notch do iOS */
+  .mob-search-overlay{
+    padding:env(safe-area-inset-top,14px) 16px 14px;
+    padding-top:max(14px,env(safe-area-inset-top));
+  }
+
+  /* Carrossel MV: cards menores e mais densos */
+  .mv-card{min-height:auto}
+  .mv-img-wrap{aspect-ratio:3/4}
+
+  /* Grid de produtos: 2 colunas compactas */
+  .prods-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .prod-card{border-radius:10px}
+  .prod-img-wrap{aspect-ratio:16/9}
+  .prod-name{font-size:10px;min-height:auto;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+  .prod-price{font-size:14px}
+  .prod-plat{font-size:7px}
+  .prod-body{padding:8px 8px 10px;gap:3px}
+  .prod-btn{font-size:9px;padding:8px 4px;min-height:36px;border-radius:7px}
+
+  /* Botão surpresa: não sobrepõe o carrinho */
+  .surpresa-btn{bottom:72px;right:14px}
+
+  /* Store wrap: menos padding lateral */
+  .store-wrap{padding:10px 10px 70px}
+
+  /* Seção Boa da Semana mobile: cobre full */
+  .boa-covers-mobile{padding:0 10px 12px}
+  .boa-cover-mobile{flex:0 0 130px;height:174px}
+
+  /* Modal: safe area bottom no iOS */
+  .modal-box{padding-bottom:env(safe-area-inset-bottom,0px)}
+
+  /* Navegar modal: botões maiores */
+  .modal-close{min-width:44px;min-height:44px}
+}
+
+@media(max-width:360px){
+  .prods-grid{gap:6px}
+  .prod-body{padding:6px 6px 8px}
+  .prod-name{font-size:9px}
+  .prod-price{font-size:13px}
+  .prod-btn{font-size:8px;min-height:32px}
+  .nav-right{gap:4px}
+  .nav-cart{min-width:36px;width:36px;height:36px}
+  .nav-hamburger{min-width:36px;width:36px;height:36px}
+  .nav-mob-search-btn{width:36px;height:36px}
+}
 </style>
 </head>
 <body>
@@ -3305,6 +3395,10 @@ footer::before{
       <svg class="nav-cart-icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       <div class="cart-count" id="cartCount">0</div>
     </button>
+    <!-- Busca mobile (ao lado do avatar/perfil) -->
+    <button class="nav-mob-search-btn" onclick="abrirBuscaMob()" aria-label="Buscar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <!-- Hambúrguer (mobile only) -->
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -3314,6 +3408,14 @@ footer::before{
 
 <!-- Menu Mobile -->
 <div class="nav-mobile-menu" id="navMobileMenu">
+
+<!-- Overlay de busca mobile -->
+<div class="mob-search-overlay" id="mobSearchOverlay">
+  <input type="search" id="mobSearchInput" placeholder="Buscar jogo..." autocomplete="off"
+    oninput="mobBuscar(this.value)"
+    onkeydown="if(event.key==='Escape')fecharBuscaMob()">
+  <button class="mob-close-btn" onclick="fecharBuscaMob()">✕</button>
+</div>
   <!-- Busca -->
   <div class="nav-mobile-search">
     <input type="text" placeholder="Buscar jogo..." oninput="buscar(this.value);document.getElementById('searchInput')&&(document.getElementById('searchInput').value=this.value)">
@@ -3514,111 +3616,75 @@ function aplicarFavs(){
 </script>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ── Carrossel de produtos — carregado do Supabase ── */
 (function(){
-  /* ── Dados dos produtos ── */
-  var MV_PRODUTOS=[
-    {name:"Resident Evil Requiem",             oldPrice:"R$ 229,99",price:"R$ 11,99",img:"https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/library_600x900.jpg",link:"produto.html?nome=Resident+Evil+Requiem",ribbon:"imperdivel",esgotado:true},
-    {name:"Black Myth: Wukong",                oldPrice:"R$ 229,99",price:"R$ 11,99",img:"https://static.wixstatic.com/media/afd2cb_0443d9aeb6d44153803477f2ea37e664~mv2.jpg",link:"produto.html?nome=Black+Myth%3A+Wukong",ribbon:null,esgotado:true},
-    {name:"DOOM: The Dark Ages",               oldPrice:"R$ 349,90",price:"R$ 14,99",img:"https://static.wixstatic.com/media/2130b9_7ba8c6d055cd4469aecd51216d41d448~mv2.avif",link:"produto.html?nome=DOOM+The+Dark+Ages",ribbon:"imperdivel",esgotado:false},
-    {name:"The First Berserker: Khazan",       oldPrice:"R$ 229,50",price:"R$ 11,99",img:"https://static.wixstatic.com/media/afd2cb_ad2ff235a4ed408e9a9243f8a17db44e~mv2.jpg",link:"produto.html?nome=The+First+Berserker%3A+Khazan",ribbon:"imperdivel",esgotado:false},
-    {name:"Kingdom Come: Deliverance II",      oldPrice:"R$ 299,00",price:"R$ 8,99", img:"https://static.wixstatic.com/media/afd2cb_70f50387c35747b088c1df20b61f9ebf~mv2.webp",link:"produto.html?nome=Kingdom+Come%3A+Deliverance+II",ribbon:null,esgotado:false},
-    {name:"Resident Evil 4 Remake",            oldPrice:"R$ 169,00",price:"R$ 7,99", img:"https://static.wixstatic.com/media/2130b9_b35a788a0f034be98bf5fbf2f222912c~mv2.jpg",link:"produto.html?nome=Resident+Evil+4+Remake",ribbon:"novidade",esgotado:false},
-    {name:"Ninja Gaiden 4",                    oldPrice:"R$ 299,00",price:"R$ 10,99",img:"https://static.wixstatic.com/media/afd2cb_6a18762e226d4c51ab4a0693bb623a00~mv2.jpg",link:"produto.html?nome=Ninja+Gaiden+4",ribbon:null,esgotado:false},
-    {name:"WWE 2K20",                          oldPrice:"R$ 379,99",price:"R$ 11,99",img:"https://static.wixstatic.com/media/afd2cb_f05ef98f5c3c4f12a736eaaff0d0d1a2~mv2.jpg",link:"produto.html?nome=WWE+2K20",ribbon:null,esgotado:false},
-    {name:"GOD EATER 3",                       oldPrice:"R$ 229,90",price:"R$ 9,99", img:"https://static.wixstatic.com/media/afd2cb_527200e3c0d045c5bfd910754da75cdf~mv2.webp",link:"produto.html?nome=GOD+EATER+3",ribbon:null,esgotado:false},
-    {name:"Captain Tsubasa: Rise of New Champions",oldPrice:"R$ 154,90",price:"R$ 6,99",img:"https://static.wixstatic.com/media/afd2cb_0790580923884cec9ff367cacbad1691~mv2.webp",link:"produto.html?nome=Captain+Tsubasa%3A+Rise+of+New+Champions",ribbon:"imperdivel",esgotado:false},
-    {name:"Combo: DOOM Eternal + Little Hope", oldPrice:"R$ 233,90",price:"R$ 11,99",img:"https://static.wixstatic.com/media/afd2cb_b9f379562b9b4be18f2dea73b4430f97~mv2.jpeg",link:"produto.html?nome=Combo+Hell+%26+Hope%3A+DOOM+Eternal+%2B+Little+Hope",ribbon:"combo",esgotado:false},
-    {name:"Atelier Ryza 2: Lost Legends",      oldPrice:"R$ 199,00",price:"R$ 11,99",img:"https://static.wixstatic.com/media/afd2cb_19944ce89acf4f2aa2b072058be26c72~mv2.avif",link:"produto.html?nome=Atelier+Ryza+2%3A+Lost+Legends+%26+the+Secret+Fairy",ribbon:"imperdivel",esgotado:false},
-    {name:"WorldBox - God Simulator",          oldPrice:"R$ 59,99", price:"R$ 1,99", img:"https://static.wixstatic.com/media/afd2cb_9a1c469014bc4419a81f1d53380d1d8e~mv2.jpg",link:"produto.html?nome=WorldBox+-+God+Simulator",ribbon:null,esgotado:false},
-    {name:"Bundle Astrum Dissensus AAA",       oldPrice:"R$ 699,99",price:"R$ 69,90",img:"https://static.wixstatic.com/media/2130b9_baff928b6ced450b9273be8a572e161a~mv2.jpeg",link:"produto.html?nome=Bundle+Astrum+Dissensus+AAA",ribbon:"bundle",esgotado:false},
-    {name:"Chave Steam Aleatória Gold",        oldPrice:"",         price:"R$ 19,99",img:"https://static.wixstatic.com/media/2130b9_7dd7a2604651464aaaf70695667f3d5e~mv2.png",link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Gold",ribbon:"novidade",esgotado:false}
-  ];
-
   var MV_LABELS={imperdivel:'Imperdível',combo:'Combo',bundle:'Bundle',novidade:'Novidade'};
   var MV_URGENCY=['12 pessoas viram hoje','Muito procurado','8 pessoas estão vendo agora','Muito procurado hoje','5 vendidos esta semana'];
+  var track=document.getElementById('mvTrack');
+  var CARD_W, GAP=14, CLONES=4;
+  var pos=CLONES, animating=false, N=0, STEP=0, offsetPx=0;
 
-  function mvCalcDesc(old,cur){
-    var o=parseFloat((old||'').replace(/[^\d,]/g,'').replace(',','.'));
-    var c=parseFloat((cur||'').replace(/[^\d,]/g,'').replace(',','.'));
+  function getCardW(){return window.innerWidth>=1024?270:window.innerWidth>=768?252:216;}
+
+  function mvCalcDesc(orig,atual){
+    if(!orig||!atual)return null;
+    var o=parseFloat(String(orig).replace(/[^\d,]/g,'').replace(',','.'));
+    var c=parseFloat(String(atual).replace(/[^\d,]/g,'').replace(',','.'));
     if(!o||!c||o<=c)return null;
     return Math.round((1-c/o)*100);
   }
 
   function mvBuildCard(p,idx){
-    var rtype=p.esgotado?'esgotado-r':(p.ribbon||null);
-    var ribbon=rtype?'<div class="mv-ribbon-wrap"><div class="mv-ribbon '+rtype+'">'+(p.esgotado?'Esgotado':MV_LABELS[p.ribbon])+'</div></div>':'';
-    var pct=mvCalcDesc(p.oldPrice,p.price);
-    var disc=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
-    var base=p.oldPrice?'<div class="mv-old-price">'+p.oldPrice+'</div>':'';
-    var urg=!p.esgotado?'<div class="mv-urgency"><div class="mv-urgency-dot"></div><span class="mv-urgency-txt">'+MV_URGENCY[idx%MV_URGENCY.length]+'</span></div>':'';
-    var dis=p.esgotado?' mv-dis':'';
-    var lbl=p.esgotado?'ESGOTADO':'COMPRAR AGORA';
-    var buyEvt=p.esgotado?'onclick="event.stopPropagation()"':'data-mvbuy="'+p.link+'"';
-    return '<div class="mv-card'+(p.esgotado?' mv-esgotado':'')+'" data-mvlink="'+p.link+'" data-mvid="'+p.name+'">'+
-      ribbon+
-      '<button class="mv-wish" data-mvwl="1" data-pid="'+p.name+'" title="Favoritar">'+
+    var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
+    var preco='R$ '+Number(p.preco||0).toFixed(2).replace('.',',');
+    var precoOrig=p.preco_original?'R$ '+Number(p.preco_original).toFixed(2).replace('.',','):'';
+    var pct=mvCalcDesc(p.preco_original,p.preco);
+    var link='produto.html?id='+p.id;
+    var ribbon=!ok?'esgotado-r':p.categoria==='Combos e Bundles'?'bundle':p.categoria==='Steam Key / Outros'?'novidade':null;
+    var ribbonLabel=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Combo':p.categoria==='Steam Key / Outros'?'Key':'';
+    var ribbonHtml=ribbon?'<div class="mv-ribbon-wrap"><div class="mv-ribbon '+ribbon+'">'+ribbonLabel+'</div></div>':'';
+    var discHtml=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
+    var baseHtml=precoOrig?'<div class="mv-old-price">'+precoOrig+'</div>':'';
+    var urgHtml=ok?'<div class="mv-urgency"><div class="mv-urgency-dot"></div><span class="mv-urgency-txt">'+MV_URGENCY[idx%MV_URGENCY.length]+'</span></div>':'';
+    var dis=ok?'':' mv-dis';
+    var lbl=ok?'COMPRAR AGORA':'ESGOTADO';
+    var buyEvt=ok?'data-mvbuy="'+link+'"':'onclick="event.stopPropagation()"';
+    return '<div class="mv-card'+(ok?'':' mv-esgotado')+'" data-mvlink="'+link+'" data-mvid="'+escMv(p.id)+'">'+
+      ribbonHtml+
+      '<button class="mv-wish" data-mvwl="1" data-pid="'+escMv(p.nome)+'" title="Favoritar">'+
         '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
       '</button>'+
       '<div class="mv-card-inner">'+
         '<div class="mv-img-wrap">'+
-          '<img class="mv-img" src="'+p.img+'" alt="'+p.name+'" loading="lazy" decoding="async">'+
+          (p.imagem?'<img class="mv-img" src="'+escMv(p.imagem)+'" alt="'+escMv(p.nome)+'" loading="lazy" decoding="async">':
+            '<div class="mv-img" style="background:var(--dim);display:flex;align-items:center;justify-content:center;color:#333;font-size:28px">🎮</div>')+
         '</div>'+
         '<div class="mv-info">'+
-          '<h3 class="mv-name">'+p.name+'</h3>'+
-          '<div class="mv-price-area">'+disc+base+'<div class="mv-price">'+p.price+'</div></div>'+
-          urg+
+          '<h3 class="mv-name">'+escMv(p.nome)+'</h3>'+
+          '<div class="mv-price-area">'+discHtml+baseHtml+'<div class="mv-price">'+preco+'</div></div>'+
+          urgHtml+
           '<button class="mv-buy'+dis+'" '+buyEvt+'>'+lbl+'</button>'+
         '</div>'+
       '</div>'+
     '</div>';
   }
 
-  /* Carrossel infinito */
-  var CARD_W, GAP=14, CLONES=4, N=MV_PRODUTOS.length;
-  var track=document.getElementById('mvTrack');
-  var pos=CLONES, animating=false;
+  function escMv(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-  function getCardW(){
-    return window.innerWidth>=1024?270:window.innerWidth>=768?252:216;
+  function applyT(anim){
+    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
+    track.style.transform='translateX(-'+offsetPx+'px)';
   }
-  CARD_W=getCardW();
-  var STEP=CARD_W+GAP;
-  var offsetPx=pos*STEP;
 
-  /* Monta HTML */
-  var h='';
-  for(var i=N-CLONES;i<N;i++) h+=mvBuildCard(MV_PRODUTOS[i],i);
-  for(var j=0;j<N;j++)        h+=mvBuildCard(MV_PRODUTOS[j],j);
-  for(var k=0;k<CLONES;k++)   h+=mvBuildCard(MV_PRODUTOS[k],k);
-  track.innerHTML=h;
-  setTimeout(aplicarFavs,50);
   function resizeCards(){
     CARD_W=getCardW();STEP=CARD_W+GAP;
     var cards=track.querySelectorAll('.mv-card');
     cards.forEach(function(c){c.style.flexBasis=CARD_W+'px';c.style.minWidth=CARD_W+'px'});
     offsetPx=pos*STEP;applyT(false);
   }
-  resizeCards();
-  window.addEventListener('resize',resizeCards,{passive:true});
-
-  /* Delegação de eventos */
-  track.addEventListener('click',function(e){
-    var buy=e.target.closest('[data-mvbuy]');
-    var wl =e.target.closest('[data-mvwl]');
-    var card=e.target.closest('[data-mvlink]');
-    if(buy) {e.stopPropagation();window.location.href=buy.dataset.mvbuy;return}
-    if(wl)  {e.stopPropagation();toggleWish(wl);return}
-    if(card){window.location.href=card.dataset.mvlink}
-  });
-
-  function applyT(anim){
-    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
-    track.style.transform='translateX(-'+offsetPx+'px)';
-  }
-  applyT(false);
 
   function mvSlide(dir){
-    if(animating)return;
+    if(animating||N===0)return;
     animating=true;pos+=dir;offsetPx+=dir*STEP;
     applyT(true);
     setTimeout(function(){
@@ -3628,31 +3694,91 @@ function aplicarFavs(){
     },420);
   }
 
-  document.getElementById('mvBtnL').addEventListener('click',function(){mvSlide(-1)});
-  document.getElementById('mvBtnR').addEventListener('click',function(){mvSlide(1)});
+  function iniciarCarrossel(produtos){
+    N=produtos.length;
+    if(N===0){track.innerHTML='<div style="padding:40px;color:#555;font-size:12px">Nenhum produto disponível.</div>';return;}
 
-  /* Autoplay via requestIdleCallback */
-  var mvAutoId;
-  function mvSchedule(){
-    if('requestIdleCallback' in window){
-      requestIdleCallback(function(){mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},4500)},{timeout:5000});
-    } else {
-      mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},4500);
+    /* Monta HTML com clones para loop infinito */
+    var h='';
+    for(var i=N-CLONES;i<N;i++) h+=mvBuildCard(produtos[i],i);
+    for(var j=0;j<N;j++)        h+=mvBuildCard(produtos[j],j);
+    for(var k=0;k<CLONES;k++)   h+=mvBuildCard(produtos[k],k);
+    track.innerHTML=h;
+    setTimeout(aplicarFavs,50);
+
+    CARD_W=getCardW();STEP=CARD_W+GAP;
+    pos=CLONES;offsetPx=pos*STEP;
+    resizeCards();
+    window.addEventListener('resize',resizeCards,{passive:true});
+
+    /* Eventos */
+    track.addEventListener('click',function(e){
+      var buy=e.target.closest('[data-mvbuy]');
+      var wl =e.target.closest('[data-mvwl]');
+      var card=e.target.closest('[data-mvlink]');
+      if(buy) {e.stopPropagation();window.location.href=buy.dataset.mvbuy;return}
+      if(wl)  {e.stopPropagation();toggleWish(wl);return}
+      if(card){window.location.href=card.dataset.mvlink}
+    });
+
+    applyT(false);
+
+    var mvBtnL=document.getElementById('mvBtnL');
+    var mvBtnR=document.getElementById('mvBtnR');
+    if(mvBtnL) mvBtnL.addEventListener('click',function(){mvSlide(-1)});
+    if(mvBtnR) mvBtnR.addEventListener('click',function(){mvSlide(1)});
+
+    var mvAutoId;
+    function mvSchedule(){
+      if('requestIdleCallback' in window){
+        requestIdleCallback(function(){mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},4500)},{timeout:5000});
+      } else {
+        mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},4500);
+      }
+    }
+    mvSchedule();
+    track.addEventListener('mouseenter',function(){clearTimeout(mvAutoId)},{passive:true});
+    track.addEventListener('mouseleave',mvSchedule,{passive:true});
+
+    var touchX=null;
+    track.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;clearTimeout(mvAutoId)},{passive:true});
+    track.addEventListener('touchend',function(e){
+      if(touchX===null)return;
+      var dx=e.changedTouches[0].clientX-touchX;
+      if(Math.abs(dx)>40)mvSlide(dx<0?1:-1);
+      touchX=null;mvSchedule();
+    },{passive:true});
+
+    /* Realtime: atualiza card se produto for editado */
+    if(typeof sb!=='undefined'){
+      sb.channel('mv-produtos')
+        .on('postgres_changes',{event:'UPDATE',schema:'public',table:'produtos'},function(payload){
+          var p=payload.new;
+          /* Atualiza todas as imagens/nomes deste produto no carrossel */
+          track.querySelectorAll('[data-mvid="'+escMv(p.id)+'"]').forEach(function(card){
+            var img=card.querySelector('.mv-img');
+            if(img&&img.tagName==='IMG'&&p.imagem) img.src=p.imagem;
+            var nm=card.querySelector('.mv-name');
+            if(nm) nm.textContent=p.nome||'';
+            var price=card.querySelector('.mv-price');
+            if(price) price.textContent='R$ '+Number(p.preco||0).toFixed(2).replace('.',',');
+          });
+        }).subscribe();
     }
   }
-  mvSchedule();
-  track.addEventListener('mouseenter',function(){clearTimeout(mvAutoId)},{passive:true});
-  track.addEventListener('mouseleave',mvSchedule,{passive:true});
 
-  /* Touch/swipe */
-  var touchX=null;
-  track.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;clearTimeout(mvAutoId)},{passive:true});
-  track.addEventListener('touchend',function(e){
-    if(touchX===null)return;
-    var dx=e.changedTouches[0].clientX-touchX;
-    if(Math.abs(dx)>40)mvSlide(dx<0?1:-1);
-    touchX=null;mvSchedule();
-  },{passive:true});
+  /* Carrega do Supabase quando disponível */
+  function tryCarregar(){
+    if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
+    sb.from('produtos').select('id,nome,preco,preco_original,imagem,categoria,estoque,ativo')
+      .eq('ativo',true).order('created_at',{ascending:false}).limit(20)
+      .then(function(res){
+        iniciarCarrossel(res.data||[]);
+      }).catch(function(){
+        iniciarCarrossel([]);
+      });
+  }
+  tryCarregar();
 })();
 </script>
 
@@ -4512,6 +4638,33 @@ function toggleNavSearch(){
   if(open){exp.classList.remove('open');fecharNavSugg();}
   else{exp.classList.add('open');setTimeout(function(){var i=document.getElementById('searchInput');if(i)i.focus();},60);}
 }
+
+/* ── Busca mobile overlay ── */
+function abrirBuscaMob(){
+  var ov=document.getElementById('mobSearchOverlay');
+  if(!ov)return;
+  ov.classList.add('open');
+  setTimeout(function(){var inp=document.getElementById('mobSearchInput');if(inp)inp.focus();},100);
+}
+function fecharBuscaMob(){
+  var ov=document.getElementById('mobSearchOverlay');
+  if(ov) ov.classList.remove('open');
+  var inp=document.getElementById('mobSearchInput');
+  if(inp){inp.value='';mobBuscar('');}
+}
+function mobBuscar(q){
+  /* Sincroniza com a busca da loja na mesma página */
+  buscaAtual=(q||'').trim();
+  renderProdutos();
+  /* Rastreia busca */
+  clearTimeout(window._mobBuscaTimer);
+  if(buscaAtual.length>=2){
+    window._mobBuscaTimer=setTimeout(function(){
+      try{sb.from('buscas_log').insert({termo:buscaAtual,created_at:new Date().toISOString()}).then(function(){}).catch(function(){});}catch(e){}
+    },1200);
+  }
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')fecharBuscaMob();});
 function recolherSearch(){
   var inp=document.getElementById('searchInput');
   if(inp&&!inp.value){
@@ -5218,7 +5371,7 @@ window.addEventListener('resize',function(){
 function loadScript(src, cb) {
   var s = document.createElement('script');
   s.src = src; s.onload = cb;
-  s.onerror = function(){ console.warn('Falha:', src); };
+  s.onerror = function(){ if(cb) cb(true); }; /* passa erro para o callback */
   document.head.appendChild(s);
 }
 
@@ -5267,7 +5420,6 @@ function initThree() {
     }
     var geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-    /* Tamanho uniforme por camada — sizeAttenuation já dá profundidade */
     var mat = new THREE.PointsMaterial({
       size: rnd(sMin, sMax),
       map: spW, transparent:true, opacity:1,
@@ -5277,12 +5429,9 @@ function initThree() {
     return new THREE.Points(geo, mat);
   }
 
-  /* 3 camadas de profundidade */
   var l1 = makeLayer(2600, 9, 22, 0.020, 0.032); l1.material.opacity = 0.50;
   var l2 = makeLayer(800,  4,  9, 0.035, 0.055); l2.material.opacity = 0.70;
   var l3 = makeLayer(100,  2,  4, 0.065, 0.110); l3.material.opacity = 0.88;
-
-  /* Estrelas coloridas espalhadas */
   var lB = makeLayer(180, 3, 18, 0.030, 0.060); lB.material.map = spB; lB.material.opacity = 0.30;
   var lY = makeLayer(100, 3, 14, 0.028, 0.055); lY.material.map = spY; lY.material.opacity = 0.28;
   var lR = makeLayer(60,  3, 12, 0.022, 0.045); lR.material.map = spR; lR.material.opacity = 0.22;
@@ -5339,11 +5488,9 @@ function initThree() {
   (function animate(){
     requestAnimationFrame(animate);
     var t = clock.getElapsedTime();
-    /* Rotação contínua suave em Y + oscilação sinusoidal em X/Z — sensação de flutuar */
     galaxy.rotation.y =  t * 0.01296;
     galaxy.rotation.x =  Math.sin(t * 0.00378) * 0.1944;
     galaxy.rotation.z =  Math.sin(t * 0.002376) * 0.1296;
-    /* Twinkle suave */
     l1.material.opacity = 0.48 + 0.07 * Math.sin(t * 0.27 + 0.8);
     l3.material.opacity = 0.85 + 0.06 * Math.sin(t * 0.18 + 1.5);
     renderer.render(scene, cam);
@@ -5352,11 +5499,30 @@ function initThree() {
 }
 
 function dispararThree(){
-  loadScript('https://unpkg.com/three@0.128.0/build/three.min.js', function(){
-    if(typeof THREE !== 'undefined') initThree();
-    else console.warn('THREE não carregou');
+  /* Pula em mobile (economiza bateria) e em conexões lentas */
+  var isMobile = window.innerWidth < 768;
+  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var isSlow = conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g');
+  if(isMobile || isSlow) return;
+
+  /* CDN principal: jsDelivr (sem rate limit, rápido no BR) */
+  var CDN1 = 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';
+  /* Fallback: cdnjs */
+  var CDN2 = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+
+  loadScript(CDN1, function(err){
+    if(!err && typeof THREE !== 'undefined'){
+      initThree();
+    } else {
+      /* Tenta o fallback silenciosamente */
+      loadScript(CDN2, function(err2){
+        if(!err2 && typeof THREE !== 'undefined') initThree();
+        /* Se falhar, simplesmente não exibe a galáxia — sem warning no console */
+      });
+    }
   });
 }
+
 if(document.readyState==='complete') dispararThree();
 else window.addEventListener('load', dispararThree);
 </script>
