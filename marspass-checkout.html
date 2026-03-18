@@ -189,8 +189,132 @@ body{
 }
 .btn-loja:hover{color:#888}
 
-/* ── STEP EXPIRADO ── */
-#step-expirado{padding:48px 36px;text-align:center;display:none}
+/* ── BOARDING PASS GALÁCTICO ── */
+@keyframes rocketFly{0%,100%{transform:translateX(0) rotate(-5deg)}50%{transform:translateX(8px) rotate(5deg)}}
+@keyframes barcodeGlow{0%,100%{opacity:.7}50%{opacity:1;filter:brightness(1.3)}}
+@keyframes bpShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+
+.boarding-pass{
+  background:linear-gradient(150deg,#0c0c20 0%,#12102a 60%,#0c0c20 100%);
+  border:1px solid var(--plan-color);
+  border-radius:16px;overflow:hidden;margin:16px 0 8px;
+  box-shadow:0 0 30px var(--plan-glow),0 8px 32px rgba(0,0,0,.6);
+  position:relative;
+}
+.boarding-pass::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(124,106,247,.08) 0%,transparent 60%),
+    radial-gradient(ellipse at 70% 100%,rgba(255,60,110,.06) 0%,transparent 60%);
+}
+
+/* Topo airline */
+.bp-airline{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 20px;
+  background:linear-gradient(90deg,rgba(124,106,247,.15),rgba(255,60,110,.1));
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.bp-airline-logo{font-size:18px}
+.bp-airline-name{
+  font-family:'Orbitron',sans-serif;font-size:9px;font-weight:900;
+  letter-spacing:3px;color:#fff;flex:1;
+}
+.bp-airline-name span{color:var(--plan-color)}
+.bp-flight-num{
+  font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;
+  color:rgba(255,255,255,.4);letter-spacing:2px;
+}
+
+/* Rota */
+.bp-route{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 20px 14px;
+}
+.bp-station{flex:0 0 auto;text-align:center}
+.bp-station-dest{text-align:right}
+.bp-code{
+  font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+  color:#fff;line-height:1;letter-spacing:2px;
+}
+.bp-city{font-size:9px;font-weight:700;color:#444;letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+.bp-route-line{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
+.bp-route-dots{
+  position:absolute;left:0;right:0;height:1px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.15) 0,rgba(255,255,255,.15) 4px,transparent 4px,transparent 8px);
+}
+.bp-rocket-anim{font-size:20px;position:relative;z-index:1;animation:rocketFly 2s ease-in-out infinite}
+
+/* Info passageiro */
+.bp-info{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:rgba(255,255,255,.04);
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.bp-info-col{
+  padding:10px 12px;background:#0c0c20;
+}
+.bp-info-label{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#333;margin-bottom:4px}
+.bp-info-val{font-size:10px;font-weight:900;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Separador perfurado */
+.bp-tear{
+  display:flex;align-items:center;
+  position:relative;padding:0 -12px;
+  border-top:1px dashed rgba(255,255,255,.08);
+}
+.bp-tear-circle{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--bg,#07070d);
+  flex-shrink:0;margin-top:-10px;
+}
+.bp-tear-left{margin-left:-10px}
+.bp-tear-right{margin-right:-10px;margin-left:auto}
+.bp-tear-line{flex:1;border-top:1px dashed rgba(255,255,255,.1)}
+
+/* Canhoto / stub */
+.bp-stub{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 20px;
+}
+.bp-stub-left{flex:1}
+.bp-barcode{
+  height:36px;overflow:hidden;margin-bottom:4px;
+  animation:barcodeGlow 3s ease-in-out infinite;
+}
+.bp-barcode-inner{
+  height:100%;
+  background:repeating-linear-gradient(90deg,
+    var(--plan-color) 0,var(--plan-color) 2px,
+    transparent 2px,transparent 3px,
+    #fff 3px,#fff 4px,
+    transparent 4px,transparent 5px,
+    var(--plan-color) 5px,var(--plan-color) 6px,
+    transparent 6px,transparent 9px,
+    #fff 9px,#fff 10px,
+    transparent 10px,transparent 12px,
+    var(--plan-color) 12px,var(--plan-color) 13px,
+    transparent 13px,transparent 16px,
+    #fff 16px,#fff 17px,
+    transparent 17px,transparent 20px
+  );
+  opacity:.8;
+}
+.bp-barcode-num{font-family:monospace;font-size:8px;color:#333;letter-spacing:2px}
+.bp-stub-right{text-align:center;flex-shrink:0}
+.bp-stub-badge{font-size:28px;filter:drop-shadow(0 0 8px var(--plan-color))}
+.bp-stub-plan{
+  font-family:'Orbitron',sans-serif;font-size:8px;font-weight:900;
+  letter-spacing:2px;color:var(--plan-color);margin-top:2px;
+}
+.bp-stub-seat{font-size:7px;color:#333;font-weight:700;letter-spacing:1px;margin-top:2px}
+
+.bp-download-btn{
+  width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);color:#666;
+  font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:all .2s;margin-top:8px;
+}
+.bp-download-btn:hover{border-color:rgba(255,255,255,.2);color:#aaa;background:rgba(255,255,255,.07)}
 .expirado-icon{font-size:52px;margin-bottom:16px;display:block}
 .expirado-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#fff;margin-bottom:8px}
 .expirado-sub{font-size:12px;color:#555;margin-bottom:24px;line-height:1.7}
@@ -332,12 +456,83 @@ body{
     <div class="seguranca" style="margin-top:16px">🔒 Pagamento seguro via Mercado Pago</div>
   </div>
 
-  <!-- STEP 3: Sucesso -->
-  <div id="step-sucesso">
+  <!-- STEP 3: Sucesso + Boarding Pass -->
+  <div id="step-sucesso" style="padding:36px 28px 32px">
     <div class="sucesso-check" id="sucessoCheck">🎉</div>
     <div class="sucesso-title" id="sucessoTitle">MarsPass ativado!</div>
-    <p class="sucesso-sub" id="sucessoSub">Sua assinatura foi ativada com sucesso. Seus benefícios já estão disponíveis no seu perfil!</p>
-    <a href="perfil.html#marspass" class="btn-perfil">👤 Ver meu perfil e benefícios</a>
+    <p class="sucesso-sub" id="sucessoSub">Pagamento confirmado! Bem-vindo ao universo MarsPass.</p>
+
+    <!-- BOARDING PASS / TICKET GALÁCTICO -->
+    <div class="boarding-pass" id="boardingPass">
+      <!-- Faixa superior com nome da companhia -->
+      <div class="bp-airline">
+        <span class="bp-airline-logo">🚀</span>
+        <span class="bp-airline-name">MARS<span>GAMES</span> GALAXY PASS</span>
+        <span class="bp-flight-num" id="bpFlightNum">MG-001</span>
+      </div>
+
+      <!-- Rota: Marte → Galáxia -->
+      <div class="bp-route">
+        <div class="bp-station">
+          <div class="bp-code">MRT</div>
+          <div class="bp-city">Estação Marte</div>
+        </div>
+        <div class="bp-route-line">
+          <div class="bp-route-dots"></div>
+          <div class="bp-rocket-anim">🛸</div>
+        </div>
+        <div class="bp-station bp-station-dest">
+          <div class="bp-code" id="bpDestCode">AND</div>
+          <div class="bp-city" id="bpDestCity">Galáxia Andrômeda</div>
+        </div>
+      </div>
+
+      <!-- Info do passageiro -->
+      <div class="bp-info">
+        <div class="bp-info-col">
+          <div class="bp-info-label">PASSAGEIRO</div>
+          <div class="bp-info-val" id="bpPassenger">—</div>
+        </div>
+        <div class="bp-info-col">
+          <div class="bp-info-label">CLASSE</div>
+          <div class="bp-info-val" id="bpClasse">ANDRÔMEDA</div>
+        </div>
+        <div class="bp-info-col">
+          <div class="bp-info-label">EMBARQUE</div>
+          <div class="bp-info-val" id="bpDate">—</div>
+        </div>
+        <div class="bp-info-col">
+          <div class="bp-info-label">VALIDADE</div>
+          <div class="bp-info-val" id="bpValidade">30 DIAS</div>
+        </div>
+      </div>
+
+      <!-- Separador perfurado -->
+      <div class="bp-tear">
+        <div class="bp-tear-circle bp-tear-left"></div>
+        <div class="bp-tear-line"></div>
+        <div class="bp-tear-circle bp-tear-right"></div>
+      </div>
+
+      <!-- Stub do ticket (canhoto) -->
+      <div class="bp-stub">
+        <div class="bp-stub-left">
+          <div class="bp-barcode" id="bpBarcode">
+            <div class="bp-barcode-inner"></div>
+          </div>
+          <div class="bp-barcode-num" id="bpBarcodeNum">MG-000000</div>
+        </div>
+        <div class="bp-stub-right">
+          <div class="bp-stub-badge" id="bpStubBadge">🌀</div>
+          <div class="bp-stub-plan" id="bpStubPlan">ANDRÔMEDA</div>
+          <div class="bp-stub-seat">ASSENTO: COSMOS</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="bp-download-btn" onclick="baixarTicket()">📥 Baixar ticket</button>
+
+    <a href="perfil.html#marspass" class="btn-perfil" style="margin-top:12px">👤 Ver meu perfil e benefícios</a>
     <a href="sorteio.html" class="btn-perfil" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">🎲 Acessar sorteios exclusivos</a>
     <a href="index.html" class="btn-loja">Voltar à loja →</a>
   </div>
@@ -552,10 +747,12 @@ function iniciarPolling(reference){
     try{
       var r=await sb.auth.getSession();
       if(!r.data||!r.data.session) return;
+      var email=r.data.session.user.email;
 
       var{data:assinatura}=await sb.from('marspass_assinaturas')
         .select('status,plano')
         .eq('referencia_pagamento',reference)
+        .eq('user_email',email)   /* garante que só o dono vê */
         .maybeSingle();
 
       if(assinatura&&assinatura.status==='ativo'){
@@ -586,18 +783,56 @@ function copiarCodigo(){
   });
 }
 
-/* ── SUCESSO ── */
-function mostrarSucesso(){
+/* ── SUCESSO + BOARDING PASS ── */
+async function mostrarSucesso(){
   var pl=PLANOS[planoKey];
   document.getElementById('step-pix').style.display='none';
   document.getElementById('step-sucesso').style.display='block';
   document.getElementById('sucessoCheck').textContent=pl.icon;
   document.getElementById('sucessoTitle').textContent='MarsPass '+pl.nome+' ativado!';
-  document.getElementById('sucessoSub').textContent=
-    'Pagamento confirmado! Seus '+pl.beneficios[0].t.replace(/<[^>]*>/g,'')+' e demais benefícios já estão ativos no seu perfil. Bem-vindo ao universo MarsPass!';
+  document.getElementById('sucessoSub').textContent='Pagamento confirmado! Bem-vindo ao universo MarsPass.';
+
+  /* Preenche o boarding pass */
+  var destinos={
+    andromeda:{code:'AND',city:'Galáxia Andrômeda',classe:'ANDRÔMEDA'},
+    triangulo:{code:'TRI',city:'Galáxia Triângulo',classe:'TRIÂNGULO'},
+    centaurus:{code:'CEN',city:'Galáxia Centaurus',classe:'CENTAURUS'},
+    sombrero:{code:'SOM',city:'Galáxia Sombrero',classe:'SOMBRERO'}
+  };
+  var dest=destinos[planoKey]||destinos.andromeda;
+  var hoje=new Date();
+  var venc=new Date(hoje);venc.setDate(venc.getDate()+30);
+  var flightNum='MG-'+String(Math.floor(Math.random()*9000)+1000);
+  var barcodeNum='MG-'+Date.now().toString().slice(-6);
+
+  document.getElementById('bpFlightNum').textContent=flightNum;
+  document.getElementById('bpDestCode').textContent=dest.code;
+  document.getElementById('bpDestCity').textContent=dest.city;
+  document.getElementById('bpClasse').textContent=dest.classe;
+  document.getElementById('bpDate').textContent=hoje.toLocaleDateString('pt-BR');
+  document.getElementById('bpValidade').textContent=venc.toLocaleDateString('pt-BR');
+  document.getElementById('bpStubBadge').textContent=pl.icon;
+  document.getElementById('bpStubPlan').textContent=pl.nome.toUpperCase();
+  document.getElementById('bpBarcodeNum').textContent=barcodeNum;
+  document.getElementById('bpBarcode').title=barcodeNum;
+
+  /* Nome do passageiro via sessão */
+  try{
+    var r=await sb.auth.getSession();
+    if(r.data&&r.data.session){
+      var meta=r.data.session.user.user_metadata||{};
+      var nome=(meta.full_name||meta.name||r.data.session.user.email||'Cosmonauta').split(' ')[0].toUpperCase();
+      document.getElementById('bpPassenger').textContent=nome;
+    }
+  }catch(e){document.getElementById('bpPassenger').textContent='COSMONAUTA';}
 
   lancarConfetti();
   sessionStorage.removeItem('mp_plano_intencao');
+}
+
+function baixarTicket(){
+  /* Canvas-based download do ticket */
+  showToast('📥 Salve a página como imagem pelo menu do navegador!');
 }
 
 /* ── EXPIRADO ── */

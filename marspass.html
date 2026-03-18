@@ -41,8 +41,24 @@ body{
 /* ── PREMIUM STARS ── */
 .stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 @keyframes starDrift{0%{transform:translateY(0) translateX(0);opacity:var(--so)}50%{transform:translateY(var(--sy,-8px)) translateX(var(--sx,4px));opacity:1}100%{transform:translateY(0) translateX(0);opacity:var(--so)}}
-@keyframes starShoot{0%{transform:translateX(0) translateY(0);opacity:0}10%{opacity:1}100%{transform:translateX(var(--tx,200px)) translateY(var(--ty,100px));opacity:0}}
+@keyframes starShoot{0%{transform:translateX(0) translateY(0) scaleX(1);opacity:0}5%{opacity:1}100%{transform:translateX(var(--tx,200px)) translateY(var(--ty,100px)) scaleX(4);opacity:0}}
 @keyframes starPulse{0%,100%{transform:scale(1);opacity:var(--so,.3)}50%{transform:scale(2.2);opacity:1}}
+@keyframes warpStreak{
+  0%{transform:translateZ(0) scale(.1);opacity:0}
+  10%{opacity:1}
+  100%{transform:translateZ(800px) scale(3);opacity:0}
+}
+
+/* Estrelas de warp */
+.warp-container{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;perspective:400px;perspective-origin:50% 50%}
+.warp-star{
+  position:absolute;border-radius:50%;background:#fff;
+  width:2px;height:2px;
+  animation:warpStreak var(--wd,2s) ease-in infinite var(--wdel,0s);
+  left:var(--wx,50%);top:var(--wy,50%);
+  box-shadow:0 0 4px #fff;
+}
+
 .star{position:absolute;border-radius:50%;background:#fff;
   animation:starDrift var(--dur,4s) ease-in-out infinite var(--del,0s);
   opacity:var(--so,.4);
@@ -471,6 +487,7 @@ body{
 
 <!-- Stars -->
 <div class="stars" id="starsContainer"></div>
+<div class="warp-container" id="warpContainer"></div>
 <div class="nebula"></div>
 
 <!-- Navbar -->
@@ -788,12 +805,11 @@ function showToast(msg){
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},3000);
 }
 
-/* Stars Premium */
+/* Stars Premium + Warp */
 (function(){
   var container=document.getElementById('starsContainer');
   var colors=['','','','','color-p','color-r','color-b','bright','bright'];
 
-  /* 160 estrelas normais com drift */
   for(var i=0;i<160;i++){
     var s=document.createElement('div');
     var cls=colors[Math.floor(Math.random()*colors.length)];
@@ -807,12 +823,11 @@ function showToast(msg){
       'left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;'+
       '--dur:'+(Math.random()*5+3)+'s;'+
       '--del:'+(Math.random()*8)+'s;'+
-      '--so:'+soVal+';'+
-      '--sy:'+syVal+'px;--sx:'+sxVal+'px';
+      '--so:'+soVal+';--sy:'+syVal+'px;--sx:'+sxVal+'px';
     container.appendChild(s);
   }
 
-  /* 6 estrelas cadentes */
+  /* Shooting stars */
   for(var j=0;j<6;j++){
     var sh=document.createElement('div');
     sh.className='star shooter';
@@ -826,6 +841,21 @@ function showToast(msg){
       '--ty:'+Math.round(Math.sin(angle*Math.PI/180)*dist)+'px;'+
       'transform:rotate('+angle+'deg)';
     container.appendChild(sh);
+  }
+
+  /* Warp speed stars — saem do centro */
+  var warpContainer=document.getElementById('warpContainer');
+  for(var w=0;w<50;w++){
+    var ws=document.createElement('div');
+    ws.className='warp-star';
+    /* Posição aleatória em torno do centro */
+    var wx=(35+Math.random()*30)+'%';
+    var wy=(30+Math.random()*40)+'%';
+    ws.style.cssText=
+      '--wx:'+wx+';--wy:'+wy+';'+
+      '--wd:'+(Math.random()*3+1.5)+'s;'+
+      '--wdel:'+(Math.random()*4)+'s';
+    warpContainer.appendChild(ws);
   }
 })();
 </script>
