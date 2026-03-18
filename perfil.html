@@ -2743,9 +2743,19 @@ function renderConquistas(perfil){
     titulosDesbloqueados.push({nome:TITULOS_NIVEL[nn],fonte:'Nível '+nn+' (desbloqueado)'});
   }
 
+  /* Conquistas desbloqueadas — verifica e persiste títulos novos */
+  var conquistasNovas=[];
+  var conquistasJaGrantadas=perfil.conquistas_desbloqueadas||[];
+
   grid.innerHTML=CONQUISTAS.map(function(c){
     var desbloqueada=c.req(perfil);
-    if(desbloqueada)titulosDesbloqueados.push({nome:c.titulo,fonte:'Conquista: '+c.nome});
+    if(desbloqueada){
+      titulosDesbloqueados.push({nome:c.titulo,fonte:'Conquista: '+c.nome});
+      /* Se esta conquista nunca foi gravada no perfil, marca para gravar */
+      if(conquistasJaGrantadas.indexOf(c.id)===-1){
+        conquistasNovas.push(c);
+      }
+    }
     return '<div class="conquista-card '+(desbloqueada?'desbloqueada':'bloqueada')+'">'+
       (desbloqueada?'<div class="conquista-pts">+'+c.pts+' pts</div>':'<div class="conquista-lock">🔒</div>')+
       '<span class="conquista-icon">'+c.icon+'</span>'+
@@ -2754,6 +2764,35 @@ function renderConquistas(perfil){
       (desbloqueada?'<div class="conquista-titulo">"'+c.titulo+'"</div>':'')+
     '</div>';
   }).join('');
+
+  /* Persiste conquistas novas e pontos bônus */
+  if(conquistasNovas.length>0&&userSession){
+    (async function(){
+      try{
+        var todosIds=conquistasJaGrantadas.concat(conquistasNovas.map(function(c){return c.id}));
+        await sb.from('perfis').update({conquistas_desbloqueadas:todosIds}).eq('id',userSession.user.id);
+
+        /* Soma pontos bônus das conquistas novas */
+        var bonusTotal=conquistasNovas.reduce(function(s,c){return s+(c.pts||0)},0);
+        if(bonusTotal>0){
+          var{data:mp}=await sb.from('marspoints').select('pontos,historico').eq('user_email',userSession.user.email).maybeSingle();
+          var ptsAtuais=mp?mp.pontos||0:0;
+          var hist=(mp&&mp.historico)||[];
+          conquistasNovas.forEach(function(c){
+            if(c.pts>0){
+              hist.unshift({descricao:'🏆 Conquista desbloqueada: '+c.nome+' — "'+c.titulo+'"',pontos:c.pts,data:new Date().toISOString(),tipo:'conquista'});
+            }
+          });
+          await sb.from('marspoints').upsert({user_email:userSession.user.email,pontos:ptsAtuais+bonusTotal,historico:hist.slice(0,50)},{onConflict:'user_email'});
+        }
+
+        /* Notifica o usuário sobre conquistas novas */
+        conquistasNovas.forEach(function(c){
+          showToast('🏆 Conquista desbloqueada: "'+c.titulo+'"'+(c.pts>0?' +'+c.pts+' pts':''));
+        });
+      }catch(e){console.warn('[conquistas grant]',e);}
+    })();
+  }
 
   /* Injeta títulos MarsPass se o usuário tiver assinatura ativa */
   if(window._marspassPlanoAtivo){
