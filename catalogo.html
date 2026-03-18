@@ -103,8 +103,45 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:900;
   display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
 
+/* Mobile search button */
+.nav-search-btn{
+  display:none;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:10px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.04);
+  cursor:pointer;color:#aaa;transition:border-color .2s,color .2s;flex-shrink:0;
+}
+.nav-search-btn:hover{border-color:#555;color:#fff}
+.nav-search-btn svg{width:16px;height:16px;flex-shrink:0}
+@media(max-width:640px){
+  .nav-search-btn{display:flex}
+  .nav-btn:not(.nav-btn-keep){display:none}
+}
+
+/* Mobile search overlay */
+.mob-search-overlay{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  background:rgba(10,10,14,.98);backdrop-filter:blur(20px);
+  padding:12px 16px;border-bottom:1px solid var(--border2);
+  display:none;align-items:center;gap:10px;
+  animation:fadeUp .2s ease;
+}
+.mob-search-overlay.open{display:flex}
+.mob-search-overlay input{
+  flex:1;background:var(--surface);border:1px solid var(--border2);
+  border-radius:10px;padding:12px 14px;font-size:14px;color:#fff;
+  font-family:'Montserrat',sans-serif;outline:none;
+  transition:border-color .2s;
+}
+.mob-search-overlay input:focus{border-color:rgba(232,66,26,.5)}
+.mob-search-overlay input::placeholder{color:#444}
+.mob-search-close{
+  width:40px;height:40px;border-radius:10px;border:1px solid var(--border2);
+  background:transparent;color:#aaa;cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
 /* HEADER */
-.page-header{position:relative;z-index:1;padding:32px 16px 0;max-width:1280px;margin:0 auto}
+.page-header{position:relative;z-index:1;padding:24px 16px 0;max-width:1280px;margin:0 auto}
 @media(min-width:768px){.page-header{padding:40px 32px 0}}
 .page-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .page-title{font-family:'Orbitron',sans-serif;font-size:clamp(22px,3.5vw,36px);font-weight:900;
@@ -114,7 +151,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 /* FILTROS */
 .filters-bar{
   display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-  margin-bottom:24px;
+  margin-bottom:16px;
 }
 .filter-search{
   display:flex;align-items:center;gap:0;
@@ -131,28 +168,38 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .filter-search input::placeholder{color:#444}
 .filter-search svg{width:16px;height:16px;flex-shrink:0;color:#444;margin-right:12px}
 .filter-count{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;align-self:center}
+@media(max-width:640px){
+  .filter-search{display:none} /* Substituída pelo overlay mobile */
+  .filters-bar{margin-bottom:12px}
+  .filter-count{font-size:10px}
+  .page-title{margin-bottom:14px}
+  .page-eyebrow{display:none}
+}
 
 /* Pills de categoria */
 .cats-pills{
-  display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;
   scrollbar-width:none;-webkit-overflow-scrolling:touch;
-  margin-bottom:24px;
+  margin-bottom:16px;
 }
 .cats-pills::-webkit-scrollbar{display:none}
 .cat-pill{
   display:flex;align-items:center;gap:6px;
-  padding:9px 16px;border-radius:99px;
+  padding:8px 14px;border-radius:99px;
   border:1px solid var(--border);background:var(--card);
   font-size:10px;font-weight:700;color:var(--muted);
   letter-spacing:.5px;cursor:pointer;white-space:nowrap;flex-shrink:0;
-  transition:border-color .2s,color .2s,background .2s;min-height:40px;
+  transition:border-color .2s,color .2s,background .2s;min-height:36px;
   text-decoration:none;
 }
 .cat-pill:hover{border-color:var(--border2);color:#aaa}
 .cat-pill.active{border-color:var(--mars);color:var(--orange);background:var(--mars-dim)}
+@media(max-width:480px){
+  .cat-pill{font-size:9px;padding:7px 12px;min-height:34px}
+}
 
 /* GRID */
-.store-wrap{position:relative;z-index:1;padding:0 16px 80px;max-width:1280px;margin:0 auto}
+.store-wrap{position:relative;z-index:1;padding:0 12px 80px;max-width:1280px;margin:0 auto}
 @media(min-width:768px){.store-wrap{padding:0 32px 80px}}
 .prods-grid{
   display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
@@ -188,13 +235,19 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .prod-price{font-size:16px;font-weight:900;color:var(--green);margin-top:2px}
 .prod-price.esgotado{color:#333}
 .prod-btn{
-  width:100%;padding:9px;border-radius:8px;border:none;margin-top:6px;
+  width:100%;padding:10px;border-radius:8px;border:none;margin-top:6px;
   font-family:'Montserrat',sans-serif;font-size:9px;font-weight:900;
   letter-spacing:1px;text-transform:uppercase;cursor:pointer;
-  transition:box-shadow .2s,background .2s;min-height:38px;
+  transition:box-shadow .2s,background .2s;min-height:40px;
 }
 .prod-btn-buy{background:var(--mars-dim);color:var(--orange);border:1px solid rgba(232,66,26,.3)}
 .prod-btn-dis{background:#111;color:#333;cursor:not-allowed;border:1px solid #1a1a1a}
+@media(max-width:480px){
+  .prod-name{font-size:10px}
+  .prod-price{font-size:14px}
+  .prod-body{padding:8px}
+  .prod-btn{font-size:8px;min-height:36px;padding:8px}
+}
 .loader-wrap{display:flex;align-items:center;justify-content:center;
   padding:80px;gap:12px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1px;grid-column:1/-1}
 .spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--mars);border-radius:50%;animation:spin .7s linear infinite}
@@ -234,10 +287,14 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     <div class="nav-logo-text">Mars<span>Games</span></div>
   </a>
   <div class="nav-right">
+    <!-- Botão de busca mobile -->
+    <button class="nav-search-btn" onclick="abrirBuscaMob()" aria-label="Buscar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <a class="nav-btn" href="index.html">Início</a>
     <a class="nav-btn" href="promocoes.html" style="color:var(--orange);border-color:rgba(232,66,26,.3)">Promoções</a>
     <!-- Login / Avatar com anel de nível -->
-    <a class="nav-btn" href="perfil.html" id="navLogin">
+    <a class="nav-btn nav-btn-keep" href="perfil.html" id="navLogin">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Entrar
     </a>
@@ -254,6 +311,12 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     </button>
   </div>
 </nav>
+
+<!-- BUSCA MOBILE OVERLAY -->
+<div class="mob-search-overlay" id="mobSearchOverlay">
+  <input type="search" id="mobSearchInput" placeholder="Buscar jogo..." oninput="buscar(this.value);document.getElementById('searchInput').value=this.value" autocomplete="off" autofocus>
+  <button class="mob-search-close" onclick="fecharBuscaMob()">✕</button>
+</div>
 
 <div class="page-header">
   <div class="page-eyebrow">MarsGames — Steam Offline PC</div>
@@ -454,6 +517,29 @@ async function checkout() {
     if (btn) { btn.disabled = false; btn.textContent = 'Finalizar compra'; }
   }
 }
+function abrirBuscaMob(){
+  var overlay=document.getElementById('mobSearchOverlay');
+  overlay.classList.add('open');
+  setTimeout(function(){
+    var inp=document.getElementById('mobSearchInput');
+    if(inp)inp.focus();
+  },100);
+}
+function fecharBuscaMob(){
+  var overlay=document.getElementById('mobSearchOverlay');
+  overlay.classList.remove('open');
+  /* Limpa busca ao fechar */
+  var inp=document.getElementById('mobSearchInput');
+  if(inp){inp.value='';}
+  document.getElementById('searchInput').value='';
+  buscaAtual='';
+  renderProdutos();
+}
+/* Fecha com ESC */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') fecharBuscaMob();
+});
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 

@@ -1163,10 +1163,15 @@ async function carregarAvaliacoesProduto(produtoNome){
         sb.from('marspass_assinaturas').select('user_email,plano').in('user_email',emails)
           .eq('status','ativo').gt('data_vencimento',new Date().toISOString())
       ]);
-      (perfisRes.data||[]).forEach(function(p){perfisMap[p.email]=p;});
-      (pontosRes.data||[]).forEach(function(p){pontosMap[p.user_email]=p.pontos||0;});
+      (perfisRes.data||[]).forEach(function(p){
+        if(p.email) perfisMap[p.email]=p;
+      });
+      (pontosRes.data||[]).forEach(function(p){
+        if(p.user_email) pontosMap[p.user_email]=p.pontos||0;
+      });
       var OP=['andromeda','triangulo','centaurus','sombrero'];
       (mpRes.data||[]).forEach(function(p){
+        if(!p.user_email) return;
         var cur=marspassMap[p.user_email];
         if(!cur||OP.indexOf(p.plano)>OP.indexOf(cur)) marspassMap[p.user_email]=p.plano;
       });
@@ -1232,8 +1237,11 @@ async function carregarAvaliacoesProduto(produtoNome){
       var nome=esc(pf.nome||a.user_nome||'Cliente');
       var ini=nome.trim()[0].toUpperCase();
       var dt=a.created_at?new Date(a.created_at).toLocaleDateString('pt-BR'):'—';
-      /* Estrelas separadas, cor forte */
-      var stars='';for(var i=1;i<=5;i++) stars+='<span style="color:'+(i<=(a.estrelas||0)?'#FFD700':'#2a2a3a');stars+=';font-size:14px">★</span>';
+      /* Estrelas - linha separada, cor forte */
+      var stars='';
+      for(var si=1;si<=5;si++){
+        stars+='<span style="color:'+(si<=(a.estrelas||0)?'#FFD700':'#2a2a3a')+';font-size:14px;line-height:1">★</span>';
+      }
       var comentario=a.comentario?'<div class="aval-card-comentario">'+esc(a.comentario)+'</div>':'';
 
       /* Badge MarsPass canto superior direito */
