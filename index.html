@@ -4880,8 +4880,7 @@ async function checkout() {
     sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
     sessionStorage.setItem('mg_user_email', session.user.email);
     sessionStorage.setItem('mg_user_id', session.user.id);
-    sessionStorage.setItem('mg_access_token', session.access_token);
-    sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
+    /* tokens não necessários: Supabase persiste sessão via storageKey:'mg_auth' */
     /* Passa cupom e desconto para o checkout */
     if(cupomAtual && desconto>0){
       sessionStorage.setItem('mg_cupom', JSON.stringify({
@@ -5037,13 +5036,7 @@ async function atualizarNavbar(session){
     if(event==='SIGNED_OUT'){ atualizarNavbar(null); }
     else if(session){ atualizarNavbar(session); carregarFavsDoSupabase(session); }
   });
-  [300,800,2000].forEach(function(ms){
-    setTimeout(function(){
-      sb.auth.getSession().then(function(r){
-        if(r.data && r.data.session) atualizarNavbar(r.data.session);
-      });
-    }, ms);
-  });
+  /* onAuthStateChange já cobre a atualização da navbar — polling removido */
   /* Mostra banner MarsPass sempre */
   var mpBanner=document.getElementById('marspassBannerWrap');
   if(mpBanner) mpBanner.style.display='block';
