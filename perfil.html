@@ -715,148 +715,164 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
 
-/* ── Bronze: anel giratório âmbar ── */
+/* ══ ANÉIS AVATAR HERO — sistema inset puro, nunca vaza ══
+   .avatar-ring       = 96×96 (= wrap), gira
+   .avatar-ring::before = máscara central (inset:6px → 84px), cobre o centro
+   .avatar-inner      = 80×80, z-index:1, clip-path garante foto redonda
+   Halo/shimmer extra via ::after dentro do ring (inset não sai do wrap)
+══════════════════════════════════════════════════════════ */
+
+/* ── Bronze: disco âmbar giratório + raios solares ── */
+@keyframes bronzeRingRotate{to{transform:rotate(360deg)}}
+@keyframes bronzePulse{0%,100%{filter:drop-shadow(0 0 5px rgba(205,127,50,.5))}50%{filter:drop-shadow(0 0 14px rgba(205,127,50,.9))}}
 .avatar-bronze .avatar-ring{
-  background:conic-gradient(from 0deg,#5a2e00,#c87820,#f0c060,#cd8030,#f5d080,#b06010,#5a2e00);
-  animation:diaRotate 4s linear infinite;
-  box-shadow:0 0 12px rgba(205,127,50,.6),0 0 24px rgba(180,100,30,.3);
+  background:conic-gradient(from 0deg,#3d1e00,#a86020,#e8b060,#f5d080,#cd8030,#7a3800,#3d1e00);
+  animation:bronzeRingRotate 5s linear infinite;
+  box-shadow:0 0 12px rgba(205,127,50,.5),0 0 22px rgba(180,100,30,.25);
 }
 .avatar-bronze .avatar-ring::before{
-  content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg);z-index:0;
+  /* máscara central — deixa anel de 6px visível */
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  background:var(--bg);z-index:0;
+}
+.avatar-bronze .avatar-ring::after{
+  /* raios solares girando no sentido oposto */
+  content:'';position:absolute;inset:2px;border-radius:50%;
+  background:conic-gradient(from 0deg,
+    transparent 0deg, rgba(205,159,106,.25) 18deg, transparent 36deg,
+    transparent 72deg, rgba(205,159,106,.18) 90deg, transparent 108deg,
+    transparent 144deg,rgba(205,159,106,.22) 162deg, transparent 180deg,
+    transparent 216deg,rgba(205,159,106,.18) 234deg, transparent 252deg
+  );
+  animation:bronzeRingRotate 10s linear infinite reverse;
+  pointer-events:none;z-index:0;
 }
 .avatar-bronze .avatar-inner{border:none;position:relative;z-index:1}
-.avatar-bronze .perfil-avatar-wrap{
-  animation:bronzePulse 3s ease-in-out infinite;
-}
-@keyframes bronzePulse{
-  0%,100%{filter:drop-shadow(0 0 6px rgba(205,127,50,.5))}
-  50%{filter:drop-shadow(0 0 16px rgba(205,127,50,.9))}
-}
+.avatar-bronze .perfil-avatar-wrap{animation:bronzePulse 3s ease-in-out infinite}
 
-/* ── Prata: duplo anel oposto ── */
+/* ── Prata: anel mercúrio duplo + flash orbital ── */
+@keyframes prataRotate{to{transform:rotate(-360deg)}}
+@keyframes prataFlash{to{transform:rotate(360deg)}}
+@keyframes prataShimmer{0%,100%{filter:drop-shadow(0 0 5px rgba(200,210,230,.4))}50%{filter:drop-shadow(0 0 18px rgba(255,255,255,.65))}}
 .avatar-prata .avatar-ring{
-  background:conic-gradient(from 0deg,#333,#bbb,#fff,#ccc,#eee,#aaa,#333);
-  animation:diaRotate 3s linear infinite reverse;
-  box-shadow:0 0 14px rgba(220,220,240,.5),0 0 28px rgba(200,200,220,.2);
+  background:conic-gradient(from 0deg,#1a1a2e,#b0b0cc,#ffffff,#d0d0e8,#f0f0ff,#a0a0bb,#1a1a2e);
+  animation:prataRotate 4s linear infinite;
+  box-shadow:0 0 14px rgba(220,220,240,.45),0 0 28px rgba(200,200,220,.18);
 }
 .avatar-prata .avatar-ring::before{
-  content:'';position:absolute;width:86px;height:86px;border-radius:50%;background:var(--bg);z-index:0;
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  background:var(--bg);z-index:0;
 }
 .avatar-prata .avatar-ring::after{
-  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
-  background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.55) 78%,transparent 90%);
-  animation:diaRotate 2s linear infinite;z-index:-1;pointer-events:none;
+  /* segundo anel mais fino, direção oposta */
+  content:'';position:absolute;inset:3px;border-radius:50%;
+  background:conic-gradient(from 120deg,
+    transparent 60%,rgba(255,255,255,.55) 73%,transparent 85%,
+    transparent 95%,rgba(255,255,255,.35) 100%
+  );
+  animation:prataFlash 2.8s linear infinite;
+  pointer-events:none;z-index:0;
 }
 .avatar-prata .avatar-inner{border:none;position:relative;z-index:1}
-.avatar-prata .perfil-avatar-wrap{
-  animation:prataShimmer 2.8s ease-in-out infinite;
-}
-@keyframes prataShimmer{
-  0%,100%{filter:drop-shadow(0 0 6px rgba(200,210,230,.4))}
-  50%{filter:drop-shadow(0 0 20px rgba(255,255,255,.7))}
-}
+.avatar-prata .perfil-avatar-wrap{animation:prataShimmer 2.8s ease-in-out infinite}
 
-/* ── Ouro: anel triplo dourado ── */
+/* ── Ouro: anel triplo dourado + centelha orbitante ── */
+@keyframes ouroRotate{to{transform:rotate(360deg)}}
+@keyframes ouroRotateRev{to{transform:rotate(-360deg)}}
+@keyframes ouroPulse{0%,100%{filter:drop-shadow(0 0 7px rgba(255,200,0,.5))}50%{filter:drop-shadow(0 0 20px rgba(255,215,0,.95))}}
 .avatar-ouro .avatar-ring{
-  background:conic-gradient(from 0deg,#6a3800,#e8a800,#ffdd00,#ffe880,#ffd000,#c07800,#6a3800);
-  animation:diaRotate 2s linear infinite;
-  filter:blur(.3px);
-  box-shadow:0 0 18px rgba(255,200,0,.6),0 0 36px rgba(255,160,0,.3);
+  background:conic-gradient(from 0deg,#3a1c00,#c87800,#ffdd00,#fff8a0,#ffe000,#b06000,#3a1c00);
+  animation:ouroRotate 2.5s linear infinite;
+  box-shadow:0 0 16px rgba(255,200,0,.55),0 0 32px rgba(255,160,0,.25);
 }
 .avatar-ouro .avatar-ring::before{
-  content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  background:var(--bg);z-index:0;filter:none;
 }
 .avatar-ouro .avatar-ring::after{
-  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.65) 62%,rgba(255,255,180,.85) 68%,transparent 78%);
-  animation:diaRotate 2.5s linear infinite reverse;filter:blur(.5px);z-index:-1;pointer-events:none;
+  /* halo de centelha girando sentido oposto */
+  content:'';position:absolute;inset:2px;border-radius:50%;
+  background:conic-gradient(from 0deg,
+    transparent 50%,rgba(255,240,100,.55) 60%,rgba(255,255,180,.9) 65%,rgba(255,240,100,.55) 70%,transparent 80%
+  );
+  animation:ouroRotateRev 1.8s linear infinite;
+  filter:blur(.4px);pointer-events:none;z-index:0;
 }
 .avatar-ouro .avatar-inner{border:none;position:relative;z-index:1}
-.avatar-ouro .perfil-avatar-wrap{
-  animation:ouroPulse 2s ease-in-out infinite;
-}
-@keyframes ouroPulse{
-  0%,100%{filter:drop-shadow(0 0 8px rgba(255,200,0,.5))}
-  50%{filter:drop-shadow(0 0 22px rgba(255,215,0,.95))}
-}
+.avatar-ouro .perfil-avatar-wrap{animation:ouroPulse 2s ease-in-out infinite}
 
-/* ── Esmeralda: triplo anel verde ── */
+/* ── Esmeralda: cristal verde intenso + halo reverso ── */
+@keyframes esmRotate{to{transform:rotate(360deg)}}
+@keyframes esmRotateRev{to{transform:rotate(-360deg)}}
+@keyframes esmPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,200,80,.5))}50%{filter:drop-shadow(0 0 24px rgba(0,255,120,.9))}}
 .avatar-esmeralda .avatar-ring{
-  background:conic-gradient(from 0deg,#002010,#00aa44,#00ff77,#80ffcc,#00ff88,#009933,#002010);
-  animation:diaRotate 1.5s linear infinite;
-  filter:blur(.2px);
-  box-shadow:0 0 20px rgba(0,255,100,.55),0 0 40px rgba(0,200,80,.3);
+  background:conic-gradient(from 0deg,#001208,#00aa44,#00ff88,#80ffcc,#00ffaa,#009933,#001208);
+  animation:esmRotate 1.8s linear infinite;
+  box-shadow:0 0 18px rgba(0,255,100,.5),0 0 36px rgba(0,200,80,.25);
 }
 .avatar-esmeralda .avatar-ring::before{
-  content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  background:var(--bg);z-index:0;filter:none;
 }
 .avatar-esmeralda .avatar-ring::after{
-  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.55) 46%,rgba(150,255,180,.8) 55%,transparent 68%);
-  animation:diaRotate 2.2s linear infinite reverse;filter:blur(1px);z-index:-1;pointer-events:none;
+  content:'';position:absolute;inset:2px;border-radius:50%;
+  background:conic-gradient(from 0deg,
+    transparent 28%,rgba(0,255,100,.5) 42%,rgba(150,255,180,.85) 50%,rgba(0,255,100,.5) 58%,transparent 70%
+  );
+  animation:esmRotateRev 2.4s linear infinite;
+  filter:blur(.8px);pointer-events:none;z-index:0;
 }
 .avatar-esmeralda .avatar-inner{border:none;position:relative;z-index:1}
-.avatar-esmeralda .perfil-avatar-wrap{
-  animation:esmPulse 1.8s ease-in-out infinite;
-}
-@keyframes esmPulse{
-  0%,100%{filter:drop-shadow(0 0 10px rgba(0,200,80,.55))}
-  50%{filter:drop-shadow(0 0 28px rgba(0,255,120,.9))}
-}
+.avatar-esmeralda .perfil-avatar-wrap{animation:esmPulse 1.8s ease-in-out infinite}
 
-/* ── Diamante: disco conic-gradient girando + inner sem borda ── */
+/* ── Diamante: arco-íris cósmico giratório ── */
+@keyframes diaGlowPulse{0%,100%{filter:drop-shadow(0 0 10px rgba(185,242,255,.6))}50%{filter:drop-shadow(0 0 24px rgba(167,139,250,.9))}}
 .avatar-diamante .avatar-ring{
-  background:conic-gradient(
-    from 0deg,
+  background:conic-gradient(from 0deg,
     #b9f2ff 0%,#a78bfa 15%,#ffffff 28%,
     #00ffff 42%,#e0b0ff 58%,#ffffff 72%,
     #7b61ff 85%,#b9f2ff 100%
   );
   animation:diaRotate 2.5s linear infinite;
-  box-shadow:
-    0 0 18px rgba(185,242,255,.6),
-    0 0 36px rgba(123,97,255,.35);
+  box-shadow:0 0 18px rgba(185,242,255,.6),0 0 36px rgba(123,97,255,.3);
 }
-/* Máscara: cobre o centro do disco deixando só o anel visível */
 .avatar-diamante .avatar-ring::before{
-  content:'';
-  position:absolute;
-  width:88px;height:88px;
-  border-radius:50%;
-  background:var(--bg);
-  z-index:0;
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  background:var(--bg);z-index:0;
 }
 .avatar-diamante .avatar-inner{
-  border:none;
-  position:relative;
-  z-index:1;
+  border:none;position:relative;z-index:1;
   box-shadow:0 0 0 1px rgba(185,242,255,.2);
 }
+.avatar-diamante .perfil-avatar-wrap{animation:diaGlowPulse 2.5s ease-in-out infinite}
 
 /* ── ANÉIS MARSPASS NO AVATAR DO PERFIL ── */
 @keyframes andromedaPulse{0%,100%{box-shadow:0 0 10px 2px rgba(124,106,247,.5)}50%{box-shadow:0 0 22px 6px rgba(124,106,247,.9),0 0 36px 4px rgba(255,60,110,.3)}}
-@keyframes centaurusRotate{0%{background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300)}100%{background:conic-gradient(from 360deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300)}}
+@keyframes centaurusRotate{to{transform:rotate(360deg)}}
 @keyframes sombreroPulse{0%,100%{box-shadow:0 0 12px 3px rgba(255,60,110,.6)}50%{box-shadow:0 0 28px 8px rgba(255,60,110,1),0 0 44px 5px rgba(255,60,110,.3)}}
 
 .avatar-andromeda .avatar-ring{
-  border:2.5px solid #7c6af7;
+  border:3px solid transparent;
+  background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8) border-box;
   animation:andromedaPulse 2s ease-in-out infinite;
 }
+.avatar-andromeda .avatar-ring::before{content:'';position:absolute;inset:6px;border-radius:50%;background:var(--bg);z-index:0}
 .avatar-andromeda .avatar-inner{border:none;position:relative;z-index:1}
 
 .avatar-centaurus .avatar-ring{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffe566,#ffb300) border-box;
+  background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800);
   box-shadow:0 0 14px rgba(255,179,0,.7),0 0 28px rgba(255,107,0,.3);
-  animation:spin 3s linear infinite;
+  animation:centaurusRotate 3s linear infinite;
 }
+.avatar-centaurus .avatar-ring::before{content:'';position:absolute;inset:6px;border-radius:50%;background:var(--bg);z-index:0}
 .avatar-centaurus .avatar-inner{border:none;position:relative;z-index:1}
 
 .avatar-sombrero .avatar-ring{
-  border:2.5px solid #ff3c6e;
-  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e) border-box;
+  background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020);
+  animation:centaurusRotate 2s linear infinite;
   animation:sombreroPulse 1.6s ease-in-out infinite;
 }
+.avatar-sombrero .avatar-ring::before{content:'';position:absolute;inset:6px;border-radius:50%;background:var(--bg);z-index:0}
 .avatar-sombrero .avatar-inner{border:none;position:relative;z-index:1}
 
 /* Badge de nível */
@@ -1354,11 +1370,6 @@ body.tema-claro .section-loader{color:var(--muted)}
   .perfil-avatar-wrap{width:96px;height:96px}
   .avatar-ring{width:96px;height:96px}
   .avatar-inner{width:84px;height:84px}
-  .avatar-bronze .avatar-ring::before,
-  .avatar-prata .avatar-ring::before,
-  .avatar-ouro .avatar-ring::before,
-  .avatar-esmeralda .avatar-ring::before{width:88px;height:88px}
-  .avatar-diamante .avatar-ring::before{width:88px;height:88px}
   .perfil-avatar-fallback{font-size:30px}
   .perfil-info{min-width:unset;width:100%}
   .perfil-nome{font-size:18px;text-align:center}
