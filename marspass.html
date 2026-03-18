@@ -38,16 +38,39 @@ body{
   color:var(--text);min-height:100vh;overflow-x:hidden;
 }
 
-/* ── STARS BG ── */
+/* ── PREMIUM STARS ── */
 .stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.star{position:absolute;border-radius:50%;background:#fff;animation:starTwinkle var(--dur,3s) ease-in-out infinite}
+@keyframes starDrift{0%{transform:translateY(0) translateX(0);opacity:var(--so)}50%{transform:translateY(var(--sy,-8px)) translateX(var(--sx,4px));opacity:1}100%{transform:translateY(0) translateX(0);opacity:var(--so)}}
+@keyframes starShoot{0%{transform:translateX(0) translateY(0);opacity:0}10%{opacity:1}100%{transform:translateX(var(--tx,200px)) translateY(var(--ty,100px));opacity:0}}
+@keyframes starPulse{0%,100%{transform:scale(1);opacity:var(--so,.3)}50%{transform:scale(2.2);opacity:1}}
+.star{position:absolute;border-radius:50%;background:#fff;
+  animation:starDrift var(--dur,4s) ease-in-out infinite var(--del,0s);
+  opacity:var(--so,.4);
+}
+.star.bright{
+  background:radial-gradient(circle,#fff,rgba(185,242,255,.8));
+  animation:starPulse var(--dur,3s) ease-in-out infinite var(--del,0s);
+  box-shadow:0 0 4px rgba(255,255,255,.6);
+}
+.star.color-p{background:radial-gradient(circle,#d4c4ff,#7c6af7);box-shadow:0 0 3px #7c6af7}
+.star.color-r{background:radial-gradient(circle,#ffb4c8,#ff3c6e);box-shadow:0 0 3px #ff3c6e}
+.star.color-b{background:radial-gradient(circle,#b4e8ff,#00d4ff);box-shadow:0 0 3px #00d4ff}
+.star.shooter{
+  width:1px!important;height:60px!important;border-radius:0!important;
+  background:linear-gradient(to bottom,transparent,#fff,transparent);
+  opacity:0;
+  animation:starShoot var(--dur,2s) ease-out infinite var(--del,0s);
+}
 
-/* ── NEBULA ── */
+/* ── NEBULA animada ── */
+@keyframes nebulaDrift{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 .nebula{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse at 20% 20%,rgba(124,106,247,.07) 0%,transparent 50%),
-    radial-gradient(ellipse at 80% 80%,rgba(255,60,110,.06) 0%,transparent 50%),
-    radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.04) 0%,transparent 60%);
+    radial-gradient(ellipse at 20% 20%,rgba(124,106,247,.09) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(255,60,110,.07) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.05) 0%,transparent 60%),
+    radial-gradient(ellipse at 10% 70%,rgba(255,179,0,.04) 0%,transparent 40%);
+  animation:nebulaDrift 8s ease-in-out infinite;
 }
 
 /* ── NAVBAR ── */
@@ -765,20 +788,44 @@ function showToast(msg){
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},3000);
 }
 
-/* Stars */
+/* Stars Premium */
 (function(){
   var container=document.getElementById('starsContainer');
-  for(var i=0;i<120;i++){
+  var colors=['','','','','color-p','color-r','color-b','bright','bright'];
+
+  /* 160 estrelas normais com drift */
+  for(var i=0;i<160;i++){
     var s=document.createElement('div');
-    s.className='star';
-    var size=Math.random()*2+.5;
+    var cls=colors[Math.floor(Math.random()*colors.length)];
+    s.className='star'+(cls?' '+cls:'');
+    var size=Math.random()*(cls==='bright'?2.5:1.8)+.4;
+    var soVal=(Math.random()*.5+.15).toFixed(2);
+    var syVal=(Math.random()*16-8).toFixed(1);
+    var sxVal=(Math.random()*10-5).toFixed(1);
     s.style.cssText=
       'width:'+size+'px;height:'+size+'px;'+
       'left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;'+
-      '--dur:'+(Math.random()*4+2)+'s;'+
-      'animation-delay:'+(Math.random()*5)+'s;'+
-      'opacity:'+(Math.random()*.6+.2);
+      '--dur:'+(Math.random()*5+3)+'s;'+
+      '--del:'+(Math.random()*8)+'s;'+
+      '--so:'+soVal+';'+
+      '--sy:'+syVal+'px;--sx:'+sxVal+'px';
     container.appendChild(s);
+  }
+
+  /* 6 estrelas cadentes */
+  for(var j=0;j<6;j++){
+    var sh=document.createElement('div');
+    sh.className='star shooter';
+    var angle=Math.random()*30+15;
+    var dist=Math.random()*300+150;
+    sh.style.cssText=
+      'left:'+Math.random()*80+'%;top:'+Math.random()*40+'%;'+
+      '--dur:'+(Math.random()*4+3)+'s;'+
+      '--del:'+(Math.random()*20+j*4)+'s;'+
+      '--tx:'+Math.round(Math.cos(angle*Math.PI/180)*dist)+'px;'+
+      '--ty:'+Math.round(Math.sin(angle*Math.PI/180)*dist)+'px;'+
+      'transform:rotate('+angle+'deg)';
+    container.appendChild(sh);
   }
 })();
 </script>

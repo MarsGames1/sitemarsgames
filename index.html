@@ -2719,9 +2719,27 @@ footer::before{
 }
 .nav-nivel-diamante .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
 .nav-nivel-diamante .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navDiaGlow 2.5s ease-in-out infinite}
-/* ═══════════════════════════════════════════════
-   MOBILE OVERHAUL — melhorias globais ≤ 768px
-═══════════════════════════════════════════════ */
+
+/* ── ANÉIS MARSPASS NA NAVBAR (index) ── */
+@keyframes navAndromedaPulse{0%,100%{box-shadow:0 0 8px 2px rgba(124,106,247,.55)}50%{box-shadow:0 0 20px 6px rgba(124,106,247,.95),0 0 34px 3px rgba(255,60,110,.35)}}
+@keyframes navMarspassRotate{to{transform:rotate(360deg)}}
+@keyframes navSombreroPulse{0%,100%{box-shadow:0 0 8px 2px rgba(255,60,110,.55)}50%{box-shadow:0 0 22px 7px rgba(255,60,110,.95),0 0 36px 3px rgba(255,60,110,.3)}}
+
+.nav-nivel-andromeda .nav-user-avatar{border-color:#7c6af7!important;animation:navAndromedaPulse 2s ease-in-out infinite}
+.nav-nivel-centaurus .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffe566,#ffb300);
+  animation:navMarspassRotate 2s linear infinite;
+  box-shadow:0 0 14px rgba(255,179,0,.6);
+}
+.nav-nivel-centaurus .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
+.nav-nivel-centaurus .nav-user-avatar{border:none!important;position:relative;z-index:1}
+.nav-nivel-sombrero .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e);
+  animation:navMarspassRotate 1.8s linear infinite;
+  box-shadow:0 0 16px rgba(255,60,110,.7);
+}
+.nav-nivel-sombrero .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0}
+.nav-nivel-sombrero .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navSombreroPulse 1.8s ease-in-out infinite}
 @media(max-width:767px){
 
   /* ── Navbar ── */
@@ -4979,15 +4997,17 @@ async function atualizarNavbar(session){
       fallback.textContent   = inicial;
     }
 
-    /* Busca pontos para definir o nível do anel */
+    /* Busca pontos E anel escolhido para o anel correto */
     try{
-      var mp = await sb.from('marspoints')
-        .select('pontos')
-        .eq('user_email', session.user.email)
-        .maybeSingle();
-      var pts   = (mp.data && mp.data.pontos) || 0;
-      var nivel = getNavNivel(pts);
-      wrap.className = 'nav-avatar-wrap nav-nivel-' + nivel;
+      var[mpRes, perfilRes] = await Promise.all([
+        sb.from('marspoints').select('pontos').eq('user_email', session.user.email).maybeSingle(),
+        sb.from('perfis').select('anel_escolhido').eq('email', session.user.email).maybeSingle()
+      ]);
+      var pts   = (mpRes.data && mpRes.data.pontos) || 0;
+      var anelEscolhido = (perfilRes.data && perfilRes.data.anel_escolhido) || null;
+      /* Usa anel escolhido se salvo, senão usa o nível */
+      var nivelRing = anelEscolhido || getNavNivel(pts);
+      wrap.className = 'nav-avatar-wrap nav-nivel-' + nivelRing;
     }catch(e){
       wrap.className = 'nav-avatar-wrap nav-nivel-bronze';
     }

@@ -694,10 +694,18 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* TABS */
 .tabs-wrap{position:relative;margin-bottom:24px;display:flex;align-items:flex-end;gap:0}
-.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex:1;
+.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:thin;flex:1;
   border-bottom:1px solid var(--border);padding-bottom:0;
-  -webkit-overflow-scrolling:touch;}
-.tabs::-webkit-scrollbar{display:none}
+  -webkit-overflow-scrolling:touch;
+  scrollbar-color:rgba(124,106,247,.4) transparent;
+}
+.tabs::-webkit-scrollbar{height:3px}
+.tabs::-webkit-scrollbar-track{background:transparent}
+.tabs::-webkit-scrollbar-thumb{
+  background:linear-gradient(90deg,#7c6af7,#ff3c6e);
+  border-radius:99px;
+}
+.tabs::-webkit-scrollbar-thumb:hover{background:linear-gradient(90deg,#9d8fff,#ff88aa)}
 /* Sombra indicando scroll à direita */
 .tabs-wrap::after{
   content:'';position:absolute;top:0;right:80px;bottom:4px;width:40px;
@@ -1546,23 +1554,23 @@ body.tema-claro .section-loader{color:var(--muted)}
       <div class="tickets-nivel-list">
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--bronze)">🥉 Bronze</span>
-          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
+          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--prata)">🥈 Prata</span>
-          <span class="tickets-nivel-bonus">+1 ticket/semana</span>
+          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--ouro)">🥇 Ouro</span>
-          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+4 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--esm)">💚 Esmeralda</span>
-          <span class="tickets-nivel-bonus">+2 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+4 tickets/semana</span>
         </div>
         <div class="tickets-nivel-item">
           <span class="tickets-nivel-nome" style="color:var(--dia)">💎 Diamante</span>
-          <span class="tickets-nivel-bonus">+3 tickets/semana</span>
+          <span class="tickets-nivel-bonus">+5 tickets/semana</span>
         </div>
       </div>
       <div style="margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(255,183,0,.05);border:1px solid rgba(255,183,0,.15);font-size:10px;color:#888;font-weight:600;line-height:1.6">
@@ -2901,7 +2909,7 @@ async function carregarTicketsPerfil(user){
   if(!data){
     var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
     var pts=(mp.data&&mp.data.pontos)||0;
-    var bonus=pts>=5000?3:pts>=1000?2:pts>=500?2:1;
+    var bonus=pts>=5000?5:pts>=1000?4:pts>=500?4:pts>=100?3:3;
     var{data:novo}=await sb.from('tickets').insert({
       user_id:user.id,user_email:user.email,
       quantidade:bonus,total_acumulado:bonus,
@@ -2920,7 +2928,7 @@ async function carregarTicketsPerfil(user){
 
   /* Bonus semanal baseado no nível */
   var nivel=getNivel(perfilData?perfilData.pontos||0:0);
-  var bonus=nivel.nome==='Diamante'?3:nivel.nome==='Esmeralda'?2:nivel.nome==='Ouro'?2:1;
+  var bonus=nivel.nome==='Diamante'?5:nivel.nome==='Esmeralda'?4:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:3;
   document.getElementById('ticketsBonusPorSemana').textContent='+'+bonus;
 
   /* Timer renovação */
