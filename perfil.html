@@ -55,15 +55,14 @@
 @keyframes navDiaRotate{to{transform:rotate(360deg)}}
 @keyframes navDiaGlow{0%,100%{box-shadow:0 0 16px rgba(185,242,255,.6),0 0 32px rgba(123,97,255,.35)}50%{box-shadow:0 0 28px rgba(185,242,255,.9),0 0 52px rgba(167,139,250,.6),0 0 72px rgba(0,255,255,.25)}}
 
-.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nav-avatar-ring{position:absolute;inset:-3px;border-radius:50%;z-index:0}
+.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;overflow:visible}
+.nav-avatar-ring{position:absolute;inset:0;border-radius:50%;z-index:0;pointer-events:none}
 .nav-user-avatar{
   width:34px;height:34px;border-radius:50%;
   border:2.5px solid #444;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
   position:relative;z-index:1;
-  clip-path:circle(50%);-webkit-clip-path:circle(50%);
   background:#131318;
 }
 .nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
@@ -88,9 +87,9 @@
   box-shadow:0 0 10px rgba(205,159,106,.5),inset 0 0 6px rgba(205,159,106,.2);
 }
 .avatar-bronze .avatar-ring::before{
-  content:'';position:absolute;inset:-4px;border-radius:50%;
+  content:'';position:absolute;inset:2px;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 0deg,rgba(205,159,106,.3) 20deg,transparent 40deg,transparent 60deg,rgba(205,159,106,.2) 80deg,transparent 100deg,transparent 140deg,rgba(205,159,106,.3) 160deg,transparent 180deg,transparent 220deg,rgba(205,159,106,.2) 240deg,transparent 260deg);
-  animation:bronzeRay 8s linear infinite;
+  animation:bronzeRay 8s linear infinite;pointer-events:none;
 }
 .avatar-bronze .avatar-inner{border:none;position:relative;z-index:1}
 .avatar-bronze .perfil-avatar-wrap::after{
@@ -134,10 +133,10 @@
   animation:ouroGlow 2.5s ease-in-out infinite;
 }
 .avatar-ouro .avatar-ring::before{
-  content:'';position:absolute;inset:-3px;border-radius:50%;
+  content:'';position:absolute;inset:2px;border-radius:50%;
   border:1px solid transparent;
   background:conic-gradient(from 90deg,transparent 0deg,rgba(255,215,0,.6) 30deg,transparent 60deg,transparent 120deg,rgba(255,215,0,.4) 150deg,transparent 180deg,transparent 240deg,rgba(255,215,0,.5) 270deg,transparent 300deg) border-box;
-  animation:ouroSpin 6s linear infinite;
+  animation:ouroSpin 6s linear infinite;pointer-events:none;
 }
 .avatar-ouro .avatar-ring::after{
   content:'★';position:absolute;
@@ -287,7 +286,7 @@
 }
 .avatar-sombrero .avatar-inner{border:none;position:relative;z-index:1}
 .avatar-sombrero .perfil-avatar-wrap::before{
-  content:'';position:absolute;inset:-8px;border-radius:50%;
+  content:'';position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 0deg,rgba(255,60,110,.15) 30deg,transparent 60deg,transparent 90deg,rgba(255,60,110,.1) 120deg,transparent 150deg,transparent 180deg,rgba(255,60,110,.15) 210deg,transparent 240deg,transparent 270deg,rgba(255,60,110,.1) 300deg,transparent 330deg);
   animation:sombSpin2 6s linear infinite;
   pointer-events:none;
@@ -305,9 +304,10 @@
 }
 .nav-nivel-prata .nav-avatar-ring::before{content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e}
 .nav-nivel-prata .nav-avatar-ring::after{
-  content:'';position:absolute;inset:-5px;border-radius:50%;
+  content:'';position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.6) 78%,transparent 90%);
   animation:navPrataRotate 2s linear infinite reverse;
+  pointer-events:none;
 }
 .nav-nivel-prata .nav-user-avatar{border:none!important;animation:navPrataGlow 2.8s ease-in-out infinite}
 
@@ -330,10 +330,10 @@
 }
 .nav-nivel-ouro .nav-avatar-ring::after{
   content:'';
-  position:absolute;inset:-5px;border-radius:50%;
+  position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 52%,rgba(255,220,60,.4) 60%,rgba(255,250,150,.85) 66%,rgba(255,220,60,.4) 72%,transparent 80%);
   animation:navOuroRotate 2.8s linear infinite reverse;
-  filter:blur(.6px);
+  filter:blur(.6px);pointer-events:none;
 }
 .nav-nivel-ouro .nav-user-avatar{border:none!important;animation:navOuroGlow 2s ease-in-out infinite}
 
@@ -357,7 +357,7 @@
   box-shadow:inset 0 0 0 1.5px rgba(0,255,120,.2),inset 0 0 6px rgba(0,200,80,.12);
 }
 .nav-nivel-esmeralda .nav-avatar-ring::after{
-  content:'';position:absolute;inset:-5px;border-radius:50%;
+  content:'';position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 0deg,
     transparent 30%,
     rgba(0,255,120,.5) 44%,
@@ -366,7 +366,7 @@
     transparent 72%
   );
   animation:navEsmRotateRev 2s linear infinite;
-  filter:blur(.8px);
+  filter:blur(.8px);pointer-events:none;
 }
 .nav-nivel-esmeralda .nav-user-avatar{
   border:none!important;
@@ -675,15 +675,15 @@ body.tema-claro .section-loader{color:var(--muted)}
 .perfil-avatar-wrap{
   position:relative;
   flex-shrink:0;
-  width:86px;height:86px;
+  width:96px;height:96px;
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
 }
 
-/* Anel externo — usado apenas pelo diamante como disco giratório */
+/* Anel externo — usado pelos níveis como disco giratório */
 .avatar-ring{
   position:absolute;
-  width:86px;height:86px;
+  width:96px;height:96px;
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   /* padrão: invisível */
@@ -722,7 +722,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 0 12px rgba(205,127,50,.6),0 0 24px rgba(180,100,30,.3);
 }
 .avatar-bronze .avatar-ring::before{
-  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;
+  content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg);z-index:0;
 }
 .avatar-bronze .avatar-inner{border:none;position:relative;z-index:1}
 .avatar-bronze .perfil-avatar-wrap{
@@ -740,12 +740,12 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 0 14px rgba(220,220,240,.5),0 0 28px rgba(200,200,220,.2);
 }
 .avatar-prata .avatar-ring::before{
-  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;
+  content:'';position:absolute;width:86px;height:86px;border-radius:50%;background:var(--bg);z-index:0;
 }
 .avatar-prata .avatar-ring::after{
-  content:'';position:absolute;width:92px;height:92px;border-radius:50%;
+  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
   background:conic-gradient(from 60deg,transparent 65%,rgba(255,255,255,.55) 78%,transparent 90%);
-  animation:diaRotate 2s linear infinite;z-index:-1;
+  animation:diaRotate 2s linear infinite;z-index:-1;pointer-events:none;
 }
 .avatar-prata .avatar-inner{border:none;position:relative;z-index:1}
 .avatar-prata .perfil-avatar-wrap{
@@ -764,12 +764,12 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 0 18px rgba(255,200,0,.6),0 0 36px rgba(255,160,0,.3);
 }
 .avatar-ouro .avatar-ring::before{
-  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+  content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
 }
 .avatar-ouro .avatar-ring::after{
   content:'';position:absolute;width:94px;height:94px;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 50%,rgba(255,230,80,.65) 62%,rgba(255,255,180,.85) 68%,transparent 78%);
-  animation:diaRotate 2.5s linear infinite reverse;filter:blur(.5px);z-index:-1;
+  animation:diaRotate 2.5s linear infinite reverse;filter:blur(.5px);z-index:-1;pointer-events:none;
 }
 .avatar-ouro .avatar-inner{border:none;position:relative;z-index:1}
 .avatar-ouro .perfil-avatar-wrap{
@@ -788,12 +788,12 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 0 20px rgba(0,255,100,.55),0 0 40px rgba(0,200,80,.3);
 }
 .avatar-esmeralda .avatar-ring::before{
-  content:'';position:absolute;width:78px;height:78px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
+  content:'';position:absolute;width:88px;height:88px;border-radius:50%;background:var(--bg);z-index:0;filter:none;
 }
 .avatar-esmeralda .avatar-ring::after{
-  content:'';position:absolute;width:96px;height:96px;border-radius:50%;
+  content:'';position:absolute;width:94px;height:94px;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 30%,rgba(0,255,100,.55) 46%,rgba(150,255,180,.8) 55%,transparent 68%);
-  animation:diaRotate 2.2s linear infinite reverse;filter:blur(1px);z-index:-1;
+  animation:diaRotate 2.2s linear infinite reverse;filter:blur(1px);z-index:-1;pointer-events:none;
 }
 .avatar-esmeralda .avatar-inner{border:none;position:relative;z-index:1}
 .avatar-esmeralda .perfil-avatar-wrap{
@@ -821,7 +821,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 .avatar-diamante .avatar-ring::before{
   content:'';
   position:absolute;
-  width:80px;height:80px;
+  width:88px;height:88px;
   border-radius:50%;
   background:var(--bg);
   z-index:0;
@@ -1325,7 +1325,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   .nav-logo-text{font-size:14px;letter-spacing:1.5px}
   .nav-right{gap:6px}
   .nav-btn{padding:7px 10px;font-size:9px}
-  .nav-avatar-wrap{width:36px;height:36px}
+  .nav-avatar-wrap{width:40px;height:40px}
   .nav-user-avatar{width:32px;height:32px}
 
   /* ── Login card ── */
@@ -1353,11 +1353,11 @@ body.tema-claro .section-loader{color:var(--muted)}
   }
   .perfil-avatar-wrap{width:96px;height:96px}
   .avatar-ring{width:96px;height:96px}
-  .avatar-inner{width:88px;height:88px}
+  .avatar-inner{width:84px;height:84px}
   .avatar-bronze .avatar-ring::before,
   .avatar-prata .avatar-ring::before,
   .avatar-ouro .avatar-ring::before,
-  .avatar-esmeralda .avatar-ring::before{width:86px;height:86px}
+  .avatar-esmeralda .avatar-ring::before{width:88px;height:88px}
   .avatar-diamante .avatar-ring::before{width:88px;height:88px}
   .perfil-avatar-fallback{font-size:30px}
   .perfil-info{min-width:unset;width:100%}
@@ -2433,6 +2433,8 @@ async function carregarPerfil(user){
   carregarFavoritos(user.id);
   carregarHistoricoPontosEmail(user.email);
   carregarTicketsHero(user);
+  /* Carrega MarsPass automaticamente pois é a aba ativa por padrão */
+  carregarMarsPassPerfil(user);
 }
 
 function renderPerfil(p){
@@ -2905,11 +2907,12 @@ function showTab(id,el){
   if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
   if(id==='marspoints-perfil' && userSession) carregarMarsPointsPerfil(userSession.user);
   if(id==='premios' && userSession) carregarPremios(userSession.user);
-  if(id==='marspass-perfil' && userSession) carregarMarsPassPerfil(userSession.user);
+  if(id==='marspass-perfil' && userSession) carregarMarsPassPerfil(userSession.user, true);
 }
 
 /* ── ABA MARSPASS — GALÁXIA COM ESTRELAS ANIMADAS ── */
 var mpStarsGeradas=false;
+var _mpJaCarregado=false;
 function gerarEstrelasMarsPass(){
   if(mpStarsGeradas) return;
   mpStarsGeradas=true;
@@ -2944,7 +2947,10 @@ var TODOS_ANEIS=[
 var ORDEM_NIVEL=['bronze','prata','ouro','esmeralda','diamante'];
 var ORDEM_PLANO=['andromeda','triangulo','centaurus','sombrero'];
 
-async function carregarMarsPassPerfil(user){
+async function carregarMarsPassPerfil(user, forcado){
+  /* Na carga inicial automática, só roda uma vez; cliques manuais (forcado=true) sempre rodam */
+  if(!forcado && _mpJaCarregado) return;
+  _mpJaCarregado=true;
   gerarEstrelasMarsPass();
 
   document.getElementById('mp-perfil-loader').style.display='flex';
@@ -3163,7 +3169,7 @@ async function solicitarJogoMarsPass(assinaturaId){
   }).eq('id',assinaturaId);
   if(error){showToast('Erro: '+error.message,true);return;}
   showToast('🎮 Solicitação enviada! Entregamos em até 48h.');
-  if(userSession) carregarMarsPassPerfil(userSession.user);
+  if(userSession) carregarMarsPassPerfil(userSession.user, true);
 }
 
 /* ── Abre tab pelo hash da URL (ex: perfil.html#marspass) ── */
@@ -3612,9 +3618,17 @@ function abrirBeneficiosModal(planoAtivo){
   if(planoAtivo) trocarPlanoBenef(planoAtivo, document.querySelector('.mp-benef-tab[data-plano="'+planoAtivo+'"]'));
 }
 function fecharBeneficiosModal(event){
-  if(event && event.target!==document.getElementById('mpBenefOverlay')) return;
-  document.getElementById('mpBenefOverlay').classList.remove('open');
-  document.body.style.overflow='';
+  /* Se chamado sem argumento (botão X, ESC, botões assinar) — fecha sempre */
+  if(!event){
+    document.getElementById('mpBenefOverlay').classList.remove('open');
+    document.body.style.overflow='';
+    return;
+  }
+  /* Se chamado pelo click no overlay — só fecha se clicou no fundo */
+  if(event.target===document.getElementById('mpBenefOverlay')){
+    document.getElementById('mpBenefOverlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
 }
 function trocarPlanoBenef(plano, tabEl){
   document.querySelectorAll('.mp-benef-tab').forEach(function(t){t.classList.remove('active')});
@@ -3625,7 +3639,7 @@ function trocarPlanoBenef(plano, tabEl){
 }
 /* Fecha com ESC */
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape') fecharBeneficiosModal({target:document.getElementById('mpBenefOverlay')});
+  if(e.key==='Escape') fecharBeneficiosModal();
 });
 
 /* ══════════════════════════════════════════════════════
