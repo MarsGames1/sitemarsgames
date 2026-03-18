@@ -74,8 +74,224 @@
   font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
 }
 
-/* ── Bronze: anel giratório âmbar ── */
-.nav-nivel-bronze .nav-avatar-ring{
+/* ══════════════════════════════════════════════════════
+   ANÉIS EXCLUSIVOS — CSS AVANÇADO
+   Cada anel tem identidade visual única e elaborada
+══════════════════════════════════════════════════════ */
+
+/* ── Bronze: Anel âmbar com raios solares ── */
+@keyframes bronzeRay{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.avatar-bronze .avatar-ring{
+  border:2px solid transparent;
+  background:
+    conic-gradient(from 0deg,#8B5E3C,#cd9f6a,#e8c080,#f5d090,#cd9f6a,#8B5E3C) border-box;
+  box-shadow:0 0 10px rgba(205,159,106,.5),inset 0 0 6px rgba(205,159,106,.2);
+}
+.avatar-bronze .avatar-ring::before{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg,rgba(205,159,106,.3) 20deg,transparent 40deg,transparent 60deg,rgba(205,159,106,.2) 80deg,transparent 100deg,transparent 140deg,rgba(205,159,106,.3) 160deg,transparent 180deg,transparent 220deg,rgba(205,159,106,.2) 240deg,transparent 260deg);
+  animation:bronzeRay 8s linear infinite;
+}
+.avatar-bronze .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-bronze .perfil-avatar-wrap::after{
+  content:'🥉';position:absolute;bottom:-2px;left:-2px;font-size:10px;z-index:5;
+  filter:drop-shadow(0 0 4px rgba(205,159,106,.8));
+}
+
+/* ── Prata: Duplo anel mercúrio com pulso ── */
+@keyframes prataOrbit{from{transform:rotate(0deg) translateX(44px) rotate(0deg)}to{transform:rotate(360deg) translateX(44px) rotate(-360deg)}}
+@keyframes prataOrbit2{from{transform:rotate(180deg) translateX(44px) rotate(-180deg)}to{transform:rotate(540deg) translateX(44px) rotate(-540deg)}}
+@keyframes prataPulse{0%,100%{box-shadow:0 0 8px rgba(200,200,220,.4),0 0 0 1px rgba(200,200,220,.2)}50%{box-shadow:0 0 18px rgba(200,200,220,.7),0 0 0 2px rgba(200,200,220,.4)}}
+.avatar-prata .avatar-ring{
+  border:1.5px solid #c8c8dc;
+  box-shadow:0 0 12px rgba(200,200,220,.5),inset 0 0 8px rgba(200,200,220,.1);
+  animation:prataPulse 3s ease-in-out infinite;
+}
+.avatar-prata .avatar-ring::before{
+  content:'';position:absolute;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle,#fff,#a0a0cc);
+  box-shadow:0 0 8px rgba(200,200,220,.9);
+  top:50%;left:50%;margin:-3px 0 0 -3px;
+  animation:prataOrbit 4s linear infinite;
+}
+.avatar-prata .avatar-ring::after{
+  content:'';position:absolute;width:4px;height:4px;border-radius:50%;
+  background:radial-gradient(circle,#ddd,#8080aa);
+  box-shadow:0 0 6px rgba(200,200,220,.8);
+  top:50%;left:50%;margin:-2px 0 0 -2px;
+  animation:prataOrbit2 3s linear infinite;
+}
+.avatar-prata .avatar-inner{border:none;position:relative;z-index:1}
+
+/* ── Ouro: Anel triplo com centelhas ── */
+@keyframes ouroSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes ouroSpin2{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes ouroOrb{from{transform:rotate(0deg) translateX(46px) rotate(0deg)}to{transform:rotate(360deg) translateX(46px) rotate(-360deg)}}
+@keyframes ouroGlow{0%,100%{box-shadow:0 0 12px rgba(255,215,0,.5),0 0 24px rgba(255,179,0,.2)}50%{box-shadow:0 0 24px rgba(255,215,0,.8),0 0 48px rgba(255,179,0,.4),0 0 64px rgba(255,179,0,.1)}}
+.avatar-ouro .avatar-ring{
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#B8860B,#FFD700,#FFF8DC,#FFD700,#DAA520,#FFD700,#B8860B) border-box;
+  animation:ouroGlow 2.5s ease-in-out infinite;
+}
+.avatar-ouro .avatar-ring::before{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  border:1px solid transparent;
+  background:conic-gradient(from 90deg,transparent 0deg,rgba(255,215,0,.6) 30deg,transparent 60deg,transparent 120deg,rgba(255,215,0,.4) 150deg,transparent 180deg,transparent 240deg,rgba(255,215,0,.5) 270deg,transparent 300deg) border-box;
+  animation:ouroSpin 6s linear infinite;
+}
+.avatar-ouro .avatar-ring::after{
+  content:'★';position:absolute;
+  top:50%;left:50%;margin:-4px 0 0 -4px;
+  font-size:8px;color:#FFD700;
+  animation:ouroOrb 3s linear infinite;
+  filter:drop-shadow(0 0 4px #FFD700);
+}
+.avatar-ouro .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-ouro .perfil-avatar-wrap::after{
+  content:'⭐';position:absolute;bottom:-2px;right:-2px;font-size:10px;z-index:5;
+  animation:ouroSpin 4s linear infinite;filter:drop-shadow(0 0 6px #FFD700);
+}
+
+/* ── Esmeralda: Cristal vivo com halo ── */
+@keyframes esmCrystal{0%,100%{box-shadow:0 0 14px rgba(80,200,120,.6),0 0 28px rgba(80,200,120,.2),inset 0 0 10px rgba(80,200,120,.1)}50%{box-shadow:0 0 28px rgba(80,200,120,.9),0 0 56px rgba(80,200,120,.4),inset 0 0 20px rgba(80,200,120,.2)}}
+@keyframes esmOrb{from{transform:rotate(45deg) translateX(46px) rotate(-45deg)}to{transform:rotate(405deg) translateX(46px) rotate(-405deg)}}
+@keyframes esmOrb2{from{transform:rotate(225deg) translateX(46px) rotate(-225deg)}to{transform:rotate(585deg) translateX(46px) rotate(-585deg)}}
+.avatar-esmeralda .avatar-ring{
+  border:2px solid #50c878;
+  animation:esmCrystal 2.5s ease-in-out infinite;
+  background:linear-gradient(135deg,rgba(80,200,120,.1),rgba(0,255,100,.05));
+}
+.avatar-esmeralda .avatar-ring::before{
+  content:'';position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle,#90ffb0,#50c878);
+  box-shadow:0 0 10px rgba(80,200,120,1),0 0 20px rgba(80,200,120,.5);
+  top:50%;left:50%;margin:-3.5px 0 0 -3.5px;
+  animation:esmOrb 3s linear infinite;
+}
+.avatar-esmeralda .avatar-ring::after{
+  content:'';position:absolute;width:4px;height:4px;border-radius:50%;
+  background:radial-gradient(circle,#ffffff,#90ffb0);
+  box-shadow:0 0 8px rgba(80,200,120,1);
+  top:50%;left:50%;margin:-2px 0 0 -2px;
+  animation:esmOrb2 2s linear infinite;
+}
+.avatar-esmeralda .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-esmeralda .nav-user-avatar,.avatar-esmeralda .perfil-avatar{
+  filter:drop-shadow(0 0 6px rgba(80,200,120,.4));
+}
+
+/* ── Diamante: Prisma arco-íris em rotação ── */
+@keyframes diaRotate{0%{background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#ffb4c8,#b9f2ff)}25%{background:conic-gradient(from 90deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#ffb4c8,#b9f2ff)}50%{background:conic-gradient(from 180deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#ffb4c8,#b9f2ff)}75%{background:conic-gradient(from 270deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#ffb4c8,#b9f2ff)}100%{background:conic-gradient(from 360deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#ffb4c8,#b9f2ff)}}
+@keyframes diaGlow{0%,100%{box-shadow:0 0 16px rgba(185,242,255,.6),0 0 32px rgba(167,139,250,.3)}33%{box-shadow:0 0 20px rgba(255,180,200,.7),0 0 40px rgba(123,97,255,.4)}66%{box-shadow:0 0 18px rgba(0,255,255,.6),0 0 36px rgba(185,242,255,.3)}}
+@keyframes diaOrb{from{transform:rotate(0deg) translateX(48px) rotate(0deg)}to{transform:rotate(360deg) translateX(48px) rotate(-360deg)}}
+.avatar-diamante .avatar-ring{
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#7b61ff,#ffb4c8,#b9f2ff) border-box;
+  animation:diaGlow 3s ease-in-out infinite;
+}
+.avatar-diamante .avatar-ring::before{
+  content:'';position:absolute;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle,#fff,#b9f2ff);
+  box-shadow:0 0 12px rgba(185,242,255,1),0 0 24px rgba(185,242,255,.5);
+  top:50%;left:50%;margin:-4px 0 0 -4px;
+  animation:diaOrb 2.5s linear infinite;
+}
+.avatar-diamante .avatar-ring::after{
+  content:'💎';position:absolute;top:50%;left:50%;
+  font-size:8px;margin:-5px 0 0 -5px;
+  animation:diaOrb 4s linear infinite reverse;
+  filter:drop-shadow(0 0 6px rgba(185,242,255,.9));
+}
+.avatar-diamante .avatar-inner{border:none;position:relative;z-index:1}
+
+/* ── Andrômeda (MarsPass): Galáxia espiral roxa ── */
+@keyframes androSpiral{0%{transform:rotate(0deg);background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8)}100%{transform:rotate(360deg);background:conic-gradient(from 360deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8)}}
+@keyframes androOrb1{from{transform:rotate(0deg) translateX(48px) rotate(0deg)}to{transform:rotate(360deg) translateX(48px) rotate(-360deg)}}
+@keyframes androOrb2{from{transform:rotate(120deg) translateX(44px) rotate(-120deg)}to{transform:rotate(480deg) translateX(44px) rotate(-480deg)}}
+@keyframes androOrb3{from{transform:rotate(240deg) translateX(40px) rotate(-240deg)}to{transform:rotate(600deg) translateX(40px) rotate(-600deg)}}
+@keyframes androPulse{0%,100%{box-shadow:0 0 16px rgba(124,106,247,.7),0 0 32px rgba(124,106,247,.3),0 0 64px rgba(255,60,110,.1)}50%{box-shadow:0 0 28px rgba(124,106,247,1),0 0 56px rgba(124,106,247,.5),0 0 80px rgba(255,60,110,.2)}}
+.avatar-andromeda .avatar-ring{
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8) border-box;
+  animation:androPulse 2.5s ease-in-out infinite;
+}
+.avatar-andromeda .avatar-ring::before{
+  content:'';position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle,#fff,#c4b8ff);
+  box-shadow:0 0 12px rgba(124,106,247,1),0 0 24px rgba(124,106,247,.5);
+  top:50%;left:50%;margin:-3.5px 0 0 -3.5px;
+  animation:androOrb1 3s linear infinite;
+}
+.avatar-andromeda .avatar-ring::after{
+  content:'';position:absolute;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle,#ffb4c8,#ff3c6e);
+  box-shadow:0 0 10px rgba(255,60,110,1),0 0 20px rgba(255,60,110,.4);
+  top:50%;left:50%;margin:-2.5px 0 0 -2.5px;
+  animation:androOrb2 2s linear infinite;
+}
+.avatar-andromeda .avatar-inner{border:none;position:relative;z-index:1}
+
+/* ── Centaurus (MarsPass): Estrela âmbar em colapso ── */
+@keyframes centSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes centFlare{0%,100%{box-shadow:0 0 20px rgba(255,179,0,.8),0 0 40px rgba(255,107,0,.4),0 0 60px rgba(255,179,0,.1)}50%{box-shadow:0 0 36px rgba(255,200,0,1),0 0 60px rgba(255,107,0,.7),0 0 100px rgba(255,200,0,.2)}}
+@keyframes centOrb{from{transform:rotate(0deg) translateX(48px) rotate(0deg)}to{transform:rotate(360deg) translateX(48px) rotate(-360deg)}}
+@keyframes centOrb2{from{transform:rotate(90deg) translateX(42px) rotate(-90deg)}to{transform:rotate(450deg) translateX(42px) rotate(-450deg)}}
+@keyframes centOrb3{from{transform:rotate(180deg) translateX(48px) rotate(-180deg)}to{transform:rotate(540deg) translateX(48px) rotate(-540deg)}}
+.avatar-centaurus .avatar-ring{
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800) border-box;
+  animation:centSpin 4s linear infinite,centFlare 2s ease-in-out infinite;
+}
+.avatar-centaurus .avatar-ring::before{
+  content:'';position:absolute;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle,#fff9e0,#ffb300);
+  box-shadow:0 0 14px rgba(255,179,0,1),0 0 28px rgba(255,179,0,.6);
+  top:50%;left:50%;margin:-4px 0 0 -4px;
+  animation:centOrb 2s linear infinite;
+}
+.avatar-centaurus .avatar-ring::after{
+  content:'';position:absolute;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle,#ffe0a0,#ff6b00);
+  box-shadow:0 0 10px rgba(255,107,0,1),0 0 20px rgba(255,107,0,.5);
+  top:50%;left:50%;margin:-2.5px 0 0 -2.5px;
+  animation:centOrb3 3s linear infinite;
+}
+.avatar-centaurus .avatar-inner{border:none;position:relative;z-index:1}
+
+/* ── Sombrero (MarsPass): Buraco negro rosa — o mais raro ── */
+@keyframes sombSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes sombSpin2{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes sombPulse{0%,100%{box-shadow:0 0 20px rgba(255,60,110,.9),0 0 40px rgba(255,60,110,.4),0 0 80px rgba(192,16,64,.2)}25%{box-shadow:0 0 32px rgba(255,80,160,1),0 0 64px rgba(255,60,110,.6),0 0 100px rgba(255,60,110,.25)}50%{box-shadow:0 0 16px rgba(255,60,110,.7),0 0 32px rgba(192,16,64,.3),0 0 60px rgba(255,60,110,.1)}75%{box-shadow:0 0 40px rgba(255,100,180,1),0 0 80px rgba(255,60,110,.7),0 0 120px rgba(255,60,110,.3)}}
+@keyframes sombOrb1{from{transform:rotate(0deg) translateX(50px) rotate(0deg)}to{transform:rotate(360deg) translateX(50px) rotate(-360deg)}}
+@keyframes sombOrb2{from{transform:rotate(60deg) translateX(46px) rotate(-60deg)}to{transform:rotate(420deg) translateX(46px) rotate(-420deg)}}
+@keyframes sombOrb3{from{transform:rotate(120deg) translateX(42px) rotate(-120deg)}to{transform:rotate(480deg) translateX(42px) rotate(-480deg)}}
+@keyframes sombOrb4{from{transform:rotate(180deg) translateX(50px) rotate(-180deg)}to{transform:rotate(540deg) translateX(50px) rotate(-540deg)}}
+.avatar-sombrero .avatar-ring{
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020) border-box;
+  animation:sombSpin 3s linear infinite,sombPulse 1.8s ease-in-out infinite;
+}
+.avatar-sombrero .avatar-ring::before{
+  content:'';position:absolute;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle,#fff,#ff80a0);
+  box-shadow:0 0 14px rgba(255,60,110,1),0 0 28px rgba(255,60,110,.7),0 0 42px rgba(255,60,110,.3);
+  top:50%;left:50%;margin:-4px 0 0 -4px;
+  animation:sombOrb1 1.5s linear infinite;
+}
+.avatar-sombrero .avatar-ring::after{
+  content:'';position:absolute;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle,#ffccdd,#ff3c6e);
+  box-shadow:0 0 10px rgba(255,60,110,1),0 0 20px rgba(255,60,110,.6);
+  top:50%;left:50%;margin:-2.5px 0 0 -2.5px;
+  animation:sombOrb4 2.2s linear infinite;
+}
+.avatar-sombrero .avatar-inner{border:none;position:relative;z-index:1}
+.avatar-sombrero .perfil-avatar-wrap::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg,rgba(255,60,110,.15) 30deg,transparent 60deg,transparent 90deg,rgba(255,60,110,.1) 120deg,transparent 150deg,transparent 180deg,rgba(255,60,110,.15) 210deg,transparent 240deg,transparent 270deg,rgba(255,60,110,.1) 300deg,transparent 330deg);
+  animation:sombSpin2 6s linear infinite;
+  pointer-events:none;
+}
   background:conic-gradient(from 0deg,#5a2e00,#c87820,#f0c060,#cd8030,#f5d080,#b06010,#5a2e00);
   animation:navBronzeRotate 4s linear infinite;
 }
@@ -168,33 +384,37 @@
 }
 .nav-nivel-diamante .nav-user-avatar{border:none!important;position:relative;z-index:1;animation:navDiaGlow 2.5s ease-in-out infinite}
 
-/* ── ANÉIS MARSPASS NA NAVBAR ── */
-@keyframes navAndromedaPulse{0%,100%{box-shadow:0 0 8px 2px rgba(124,106,247,.6)}50%{box-shadow:0 0 20px 6px rgba(124,106,247,1),0 0 34px 4px rgba(255,60,110,.4)}}
-@keyframes navCentaurusRotate{to{transform:rotate(360deg)}}
-@keyframes navSombreroPulse{0%,100%{box-shadow:0 0 8px 2px rgba(255,60,110,.6)}50%{box-shadow:0 0 22px 7px rgba(255,60,110,1),0 0 36px 4px rgba(255,60,110,.3)}}
 
-.nav-nivel-andromeda .nav-user-avatar{
-  border-color:#7c6af7!important;
-  animation:navAndromedaPulse 2s ease-in-out infinite;
+/* ── ANÉIS MARSPASS NA NAVBAR — versão premium ── */
+@keyframes navAndroOrb{from{transform:rotate(0deg) translateX(16px) rotate(0deg)}to{transform:rotate(360deg) translateX(16px) rotate(-360deg)}}
+@keyframes navCentSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes navSombSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+.nav-nivel-andromeda .nav-avatar-ring{
+  border:2px solid transparent!important;
+  background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8) border-box;
+  box-shadow:0 0 14px rgba(124,106,247,.8),0 0 28px rgba(124,106,247,.3),0 0 42px rgba(255,60,110,.1);
+  animation:androPulse 2.5s ease-in-out infinite;
 }
+.nav-nivel-andromeda .nav-user-avatar{border:none!important;position:relative;z-index:1}
+
 .nav-nivel-centaurus .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffe566,#ffb300);
-  animation:navCentaurusRotate 2s linear infinite;
-  box-shadow:0 0 14px rgba(255,179,0,.6);
+  border:2px solid transparent!important;
+  background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800) border-box;
+  box-shadow:0 0 14px rgba(255,179,0,.8),0 0 28px rgba(255,107,0,.3);
+  animation:navCentSpin 4s linear infinite,centFlare 2s ease-in-out infinite;
 }
-.nav-nivel-centaurus .nav-avatar-ring::before{
-  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0;
-}
-.nav-nivel-centaurus .nav-user-avatar{border:none;position:relative;z-index:1}
+.nav-nivel-centaurus .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0}
+.nav-nivel-centaurus .nav-user-avatar{border:none!important;position:relative;z-index:1}
+
 .nav-nivel-sombrero .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e);
-  animation:navCentaurusRotate 1.8s linear infinite;
-  box-shadow:0 0 16px rgba(255,60,110,.7);
+  border:2px solid transparent!important;
+  background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020) border-box;
+  box-shadow:0 0 18px rgba(255,60,110,.9),0 0 36px rgba(255,60,110,.4);
+  animation:navSombSpin 3s linear infinite,sombPulse 1.8s ease-in-out infinite;
 }
-.nav-nivel-sombrero .nav-avatar-ring::before{
-  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0;
-}
-.nav-nivel-sombrero .nav-user-avatar{border:none;position:relative;z-index:1}
+.nav-nivel-sombrero .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0}
+.nav-nivel-sombrero .nav-user-avatar{border:none!important;position:relative;z-index:1}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -839,41 +1059,58 @@ body.tema-claro .section-loader{color:var(--muted)}
 .anel-option.ativo .anel-name{color:var(--green)}
 .anel-lock{font-size:10px;color:#333;margin-top:2px}
 
-/* Preview de anel no avatar pequeno */
+/* Preview de anel no seletor — miniaturas dos anéis exclusivos */
+.anel-preview{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;position:relative;
+  background:rgba(255,255,255,.03);
+}
 .anel-preview.anel-bronze{
-  border:2.5px solid #cd9f6a;
+  border:2px solid #cd9f6a;
   box-shadow:0 0 8px rgba(205,159,106,.6),0 0 16px rgba(205,159,106,.2);
+  background:radial-gradient(circle at 30% 30%,rgba(232,192,128,.15),transparent);
 }
 .anel-preview.anel-prata{
-  border:2.5px solid #e8e8e8;
-  box-shadow:0 0 8px rgba(232,232,232,.7),0 0 16px rgba(255,255,255,.2);
+  border:2px solid #e0e0f0;
+  box-shadow:0 0 10px rgba(220,220,240,.7),0 0 20px rgba(200,200,220,.2);
+  background:radial-gradient(circle at 30% 30%,rgba(220,220,240,.15),transparent);
 }
 .anel-preview.anel-ouro{
-  border:2.5px solid #FFD700;
-  box-shadow:0 0 10px rgba(255,215,0,.8),0 0 20px rgba(255,215,0,.3);
+  border:2px solid #FFD700;
+  box-shadow:0 0 12px rgba(255,215,0,.8),0 0 24px rgba(255,179,0,.3);
+  background:radial-gradient(circle at 30% 30%,rgba(255,215,0,.2),transparent);
+  animation:ouroGlow 2.5s ease-in-out infinite;
 }
 .anel-preview.anel-esmeralda{
-  border:2.5px solid #50c878;
-  box-shadow:0 0 10px rgba(80,200,120,.8),0 0 20px rgba(80,200,120,.3);
+  border:2px solid #50c878;
+  box-shadow:0 0 12px rgba(80,200,120,.8),0 0 24px rgba(80,200,120,.3);
+  background:radial-gradient(circle at 30% 30%,rgba(80,200,120,.15),transparent);
+  animation:esmCrystal 2.5s ease-in-out infinite;
 }
 .anel-preview.anel-diamante{
-  border:2.5px solid transparent;
-  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#7b61ff,#b9f2ff) border-box;
-  box-shadow:0 0 12px rgba(185,242,255,.7),0 0 24px rgba(123,97,255,.3);
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#7b61ff,#ffb4c8,#b9f2ff) border-box;
+  box-shadow:0 0 14px rgba(185,242,255,.7),0 0 28px rgba(123,97,255,.3);
+  animation:diaGlow 3s ease-in-out infinite;
 }
 .anel-preview.anel-andromeda{
-  border:2.5px solid #7c6af7;
-  box-shadow:0 0 10px rgba(124,106,247,.8),0 0 20px rgba(124,106,247,.3);
+  border:2px solid #7c6af7;
+  background:conic-gradient(from 0deg,rgba(60,31,168,.3),rgba(124,106,247,.4),rgba(255,60,110,.2),rgba(124,106,247,.4),rgba(60,31,168,.3)) border-box;
+  box-shadow:0 0 14px rgba(124,106,247,.8),0 0 28px rgba(124,106,247,.3),0 0 42px rgba(255,60,110,.1);
+  animation:androPulse 2.5s ease-in-out infinite;
 }
 .anel-preview.anel-centaurus{
-  border:2.5px solid #ffb300;
-  background:conic-gradient(from 0deg,#ffb300,#ff6b00,#ffb300,#ffe566,#ffb300) border-box;
-  box-shadow:0 0 12px rgba(255,179,0,.8),0 0 24px rgba(255,107,0,.3);
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800) border-box;
+  box-shadow:0 0 14px rgba(255,179,0,.8),0 0 28px rgba(255,107,0,.3);
+  animation:centFlare 2s ease-in-out infinite;
 }
 .anel-preview.anel-sombrero{
-  border:2.5px solid #ff3c6e;
-  background:conic-gradient(from 0deg,#ff3c6e,#ff80a0,#c01040,#ff3c6e) border-box;
-  box-shadow:0 0 12px rgba(255,60,110,.8),0 0 24px rgba(255,60,110,.3);
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020) border-box;
+  box-shadow:0 0 16px rgba(255,60,110,.9),0 0 32px rgba(255,60,110,.4);
+  animation:sombPulse 1.8s ease-in-out infinite;
 }
 /* MarsTickets */
 .tickets-hero{
@@ -1363,7 +1600,8 @@ body.tema-claro .section-loader{color:var(--muted)}
   <!-- TABS -->
   <div class="tabs-wrap">
   <div class="tabs">
-    <div class="tab active" onclick="showTab('beneficios',this)">Benefícios</div>
+    <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)">🌌 MarsPass</div>
+    <div class="tab" onclick="showTab('beneficios',this)">Benefícios</div>
     <div class="tab" onclick="showTab('conquistas',this)">Conquistas</div>
     <div class="tab" onclick="showTab('pedidos',this)">Meus Pedidos</div>
     <div class="tab" onclick="showTab('favoritos',this)">Favoritos</div>
@@ -1371,14 +1609,13 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
-    <div class="tab tab-marspass" onclick="showTab('marspass-perfil',this)">🌌 MarsPass</div>
   </div>
   <!-- Botão Editar separado — não some no overflow -->
   <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
   </div>
 
   <!-- BENEFÍCIOS -->
-  <div class="tab-content active" id="tab-beneficios">
+  <div class="tab-content" id="tab-beneficios">
     <div class="beneficios-grid">
       <div class="benef-card nivel-bronze" id="benef-bronze">
         <span class="benef-emoji">🥉</span>
@@ -1597,7 +1834,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   </div>
 
   <!-- MARSPASS -->
-  <div class="tab-content" id="tab-marspass-perfil">
+  <div class="tab-content active" id="tab-marspass-perfil">
     <div class="marspass-tab-universe" id="mpUniverse">
       <!-- Estrelas animadas geradas por JS -->
       <div class="mp-stars" id="mpStars"></div>
