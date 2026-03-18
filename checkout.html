@@ -10,7 +10,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--gold:#ffb800;}
-body{background:#07070c;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;}
+body{-webkit-tap-highlight-color:transparent;background:#07070c;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.02) 1px,transparent 1px);background-size:48px 48px;z-index:0;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -77,6 +77,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a28;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;font-weight:700;color:#eee;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){
+  .card{padding:28px 20px;border-radius:20px;}
+  .logo{font-size:18px;}
+  .total-valor{font-size:18px;}
+  .metodo{padding:14px 16px;gap:12px;}
+  .metodo-icon{width:38px;height:38px;font-size:18px;}
+  .metodo-nome{font-size:12px;}
+  .btn-pagar{padding:14px;font-size:12px;}
+  .item-nome{font-size:10px;}
+  .item-preco{font-size:11px;}
+}
 </style>
 </head>
 <body>
@@ -135,7 +147,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 
 <script>
 const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6anRsZ2hwc3lneGtpdmd3Z3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDg2MjEsImV4cCI6MjA1OTcyNDYyMX0.VHNkuBNkNkDFAkV3HiNl0zGSbEiWDVmYZ5PGJ9pBmOA';
+const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'mg_auth' }

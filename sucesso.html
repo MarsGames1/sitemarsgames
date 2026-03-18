@@ -29,7 +29,7 @@
 @keyframes starPop{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.3) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 
 html{scroll-behavior:smooth}
-body{background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow-x:hidden;}
+body{-webkit-tap-highlight-color:transparent;background:var(--bg);font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow-x:hidden;}
 
 /* Grid bg */
 body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.018) 1px,transparent 1px);background-size:48px 48px;z-index:0;}
@@ -120,6 +120,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .btn-primary:hover{box-shadow:0 8px 40px rgba(0,255,85,.42);transform:translateY(-2px);}
 .btn-secondary{display:flex;align-items:center;justify-content:center;padding:13px;border-radius:14px;background:transparent;border:1px solid rgba(255,255,255,.07);color:#555;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
 .btn-secondary:hover{border-color:rgba(255,255,255,.18);color:#ccc;}
+
+@media(max-width:480px){
+  .card{padding:28px 20px;border-radius:20px;}
+  .chave-box{padding:16px;}
+  .chave-val{font-size:13px;letter-spacing:1px;}
+  h1{font-size:20px;}
+  .btn-primary,.btn-secondary{padding:13px 16px;font-size:11px;}
+}
 </style>
 </head>
 <body>
