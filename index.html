@@ -315,28 +315,46 @@ body.tema-claro .exit-sub{color:#666}
 
 /* Overlay de busca mobile (cobre tela inteira) */
 .mob-search-overlay{
-  position:fixed;top:0;left:0;right:0;z-index:9999;
-  background:rgba(6,6,8,.97);backdrop-filter:blur(20px);
-  padding:14px 16px;
-  display:none;align-items:center;gap:10px;
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:9999;
+  background:rgba(6,6,8,.98);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:10px 12px;
+  display:none;
+  align-items:center;
+  gap:10px;
   border-bottom:1px solid var(--border2);
-  animation:slideDown .2s ease;
+  box-shadow:0 4px 24px rgba(0,0,0,.6);
+  /* Safe area iOS */
+  padding-top:max(10px, env(safe-area-inset-top));
 }
 .mob-search-overlay.open{display:flex}
 .mob-search-overlay input{
-  flex:1;background:var(--surface);border:1px solid var(--border2);
-  border-radius:10px;padding:12px 16px;font-size:15px;color:#fff;
-  font-family:'Montserrat',sans-serif;outline:none;
+  flex:1;
+  min-width:0;
+  background:var(--surface,#1a1a20);
+  border:1.5px solid var(--border2,#323240);
+  border-radius:10px;
+  padding:13px 16px;
+  font-size:16px; /* 16px evita zoom automático no iOS */
+  color:#fff;
+  font-family:'Montserrat',sans-serif;
+  outline:none;
+  -webkit-appearance:none;
   transition:border-color .2s;
 }
-.mob-search-overlay input:focus{border-color:rgba(232,66,26,.5)}
-.mob-search-overlay input::placeholder{color:#444}
+.mob-search-overlay input:focus{border-color:rgba(232,66,26,.6)}
+.mob-search-overlay input::placeholder{color:#555}
 .mob-close-btn{
-  width:40px;height:40px;border-radius:10px;border:1px solid var(--border2);
-  background:transparent;color:#666;cursor:pointer;font-size:20px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:42px;height:42px;flex-shrink:0;
+  border-radius:10px;border:1px solid var(--border2,#323240);
+  background:rgba(255,255,255,.06);color:#aaa;
+  cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .15s,border-color .15s;
 }
-.mob-close-btn:hover{color:#fff;border-color:#555}
+.mob-close-btn:hover,.mob-close-btn:active{color:#fff;border-color:#555}
 /* Carrinho */
 .nav-cart{
   display:flex;align-items:center;justify-content:center;
@@ -3406,16 +3424,18 @@ footer::before{
   </div>
 </nav>
 
-<!-- Menu Mobile -->
-<div class="nav-mobile-menu" id="navMobileMenu">
-
-<!-- Overlay de busca mobile -->
+<!-- Overlay de busca mobile — FORA do menu para não ser cortado pelo overflow -->
 <div class="mob-search-overlay" id="mobSearchOverlay">
+  <button class="mob-close-btn" onclick="fecharBuscaMob()" style="flex-shrink:0">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
   <input type="search" id="mobSearchInput" placeholder="Buscar jogo..." autocomplete="off"
     oninput="mobBuscar(this.value)"
     onkeydown="if(event.key==='Escape')fecharBuscaMob()">
-  <button class="mob-close-btn" onclick="fecharBuscaMob()">✕</button>
 </div>
+
+<!-- Menu Mobile -->
+<div class="nav-mobile-menu" id="navMobileMenu">
   <!-- Busca -->
   <div class="nav-mobile-search">
     <input type="text" placeholder="Buscar jogo..." oninput="buscar(this.value);document.getElementById('searchInput')&&(document.getElementById('searchInput').value=this.value)">
@@ -4816,18 +4836,34 @@ function renderProdutos(){
   if(countEl) countEl.textContent=lista.length+' jogos encontrados';
   if(!grid) return;
   if(lista.length===0){grid.innerHTML='<div class="loader-wrap" style="grid-column:1/-1">Nenhum jogo encontrado.</div>';return;}
+  var isMob=window.innerWidth<768;
   grid.innerHTML=lista.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
-    // Badge NOVO — produtos criados nos últimos 7 dias
     var isNovo=p.created_at&&(new Date()-new Date(p.created_at))<7*24*60*60*1000;
-    // Estoque baixo — menos de 5 unidades
     var estoqueBaixo=p.estoque!==null&&p.estoque!==undefined&&p.estoque>0&&p.estoque<=5;
     var tag=!ok?'<div class="prod-tag tag-esgotado">Esgotado</div>':
             isNovo?'<div class="prod-tag tag-novo-badge">NOVO</div>':
             p.categoria==='Combos e Bundles'?'<div class="prod-tag tag-combo">Combo</div>':
             p.categoria==='Steam Key / Outros'?'<div class="prod-tag tag-key-badge">Key</div>':
             '<div class="prod-tag tag-oferta">Oferta</div>';
-    var estoqueTag=estoqueBaixo?'<div class="prod-estoque-baixo">⚡ Restam '+p.estoque+'</div>':'';;
+    var estoqueTag=estoqueBaixo?'<div class="prod-estoque-baixo">⚡ Restam '+p.estoque+'</div>':'';
+    /* Mobile: <a> link nativo = navegação instantânea sem JS */
+    /* Desktop: <div> abre modal local */
+    if(isMob){
+      return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s;text-decoration:none;display:flex;flex-direction:column">'+
+        '<div class="prod-img-wrap">'+
+          (p.imagem?'<img class="prod-img" src="'+p.imagem+'" alt="'+esc(p.nome)+'" loading="lazy">':'')+
+          tag+
+        '</div>'+
+        '<div class="prod-body">'+
+          '<div class="prod-name">'+esc(p.nome)+'</div>'+
+          '<div class="prod-plat">'+esc(p.plataforma||'Steam')+'</div>'+
+          '<div class="prod-price">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+          '<button class="prod-btn '+(ok?'prod-btn-buy':'prod-btn-dis')+'" '+(ok?'':'disabled')+
+            ' onclick="event.preventDefault();event.stopPropagation();addCarrinho(\''+p.id+'\')">'+(ok?'Ver produto':'Esgotado')+'</button>'+
+        '</div>'+
+      '</a>';
+    }
     return '<div class="prod-card" style="animation-delay:'+(i%12*.04)+'s" onclick="abrirModal(\''+p.id+'\')">'+
       '<div class="prod-img-wrap">'+
         (p.imagem?'<img class="prod-img" src="'+p.imagem+'" alt="'+esc(p.nome)+'" loading="lazy">':'')+
@@ -4865,6 +4901,11 @@ function buscar(q){
 
 /* ── MODAL ── */
 function abrirModal(id){
+  /* No mobile, vai direto para a página do produto (mais rápido) */
+  if(window.innerWidth < 768){
+    window.location.href='produto.html?id='+encodeURIComponent(id);
+    return;
+  }
   var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
   prodModalAtual=p;
   document.getElementById('modalImg').src=p.imagem||'';
