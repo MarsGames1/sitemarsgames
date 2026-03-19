@@ -7,7 +7,24 @@
 <meta name="description" content="Loja virtual de jogos para PC. Chaves Steam com até 90% de desconto. Entrega imediata 24h.">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var _tentativas = 0;
+  function _loadSDK(src, fallback){
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onerror = function(){
+      if(fallback){ var s2=document.createElement('script'); s2.src=fallback; s2.async=true; document.head.appendChild(s2); }
+    };
+    document.head.appendChild(s);
+  }
+  _loadSDK(
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+  );
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -755,7 +772,10 @@ body.tema-claro .exit-sub{color:#666}
 }
 @media(min-width:768px){.hero{align-items:center;min-height:100vh}}
 .hero-video-wrap{
-  position:absolute;inset:0;z-index:0;background:#060608;
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 60% 40%, rgba(232,66,26,.12) 0%, rgba(6,6,8,1) 65%),
+             radial-gradient(ellipse at 20% 80%, rgba(0,255,85,.06) 0%, transparent 50%),
+             #060608;
 }
 .hero-video-wrap video{
   position:absolute;inset:0;width:100%;height:100%;
@@ -3470,19 +3490,7 @@ footer::before{
 <!-- ══ HERO ══ -->
 <section class="hero">
   <div class="hero-bg"></div>
-  <!-- Vídeo de fundo: preload=none + autoplay lazy via JS para máxima performance -->
   <div class="hero-video-wrap" id="heroVideoWrap">
-    <video
-      id="heroVideo"
-      muted
-      autoplay
-      loop
-      playsinline
-      preload="auto"
-      aria-hidden="true"
-    >
-      <source src="https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/forza.webm" type="video/webm">
-    </video>
     <div class="hero-video-overlay"></div>
   </div>
   <div class="hero-scan"></div>
@@ -4618,7 +4626,17 @@ function aplicarFavs(){
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+var sb = null;
+var _sbTentativas = 0;
+function initSupabase(){
+  var lib = window.supabase || window.Supabase;
+  if(!lib || !lib.createClient){
+    _sbTentativas++;
+    if(_sbTentativas > 80){ console.error('[MarsGames] SDK Supabase nao carregou em 8s'); return; }
+    setTimeout(initSupabase, 100);
+    return;
+  }
+  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
   auth:{
     flowType:'implicit',
     detectSessionInUrl:true,
@@ -4627,6 +4645,9 @@ var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
     storageKey:'mg_auth'
   }
 });
+  onSupabaseReady();
+}
+setTimeout(initSupabase, 50);
 
 /* ══ TEMA CLARO — aplicar em todas as páginas ══ */
 (function(){
@@ -5301,7 +5322,8 @@ async function atualizarNavbar(session){
     _navDebounce=setTimeout(function(){atualizarNavbar(session);},50);
   }
 
-  sb.auth.getSession().then(function(r){
+  function onSupabaseReady(){
+sb.auth.getSession().then(function(r){
     if(r.data && r.data.session){
       navComDebounce(r.data.session);
       carregarFavsDoSupabase(r.data.session);
@@ -5396,42 +5418,7 @@ window.addEventListener('resize',function(){
   menu.addEventListener('mouseleave',closeMenu);
 })();
 
-/* ── HERO VIDEO — lazy load após página pronta ── */
-(function(){
-  // Respeita preferência por menos movimento (acessibilidade)
-  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Não carrega em conexões lentas
-  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  var slowConn = conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g' || conn.saveData);
 
-  if(prefersReduced || slowConn) return;
-
-  function initVideo(){
-    var video = document.getElementById('heroVideo');
-    if(!video) return;
-    // Source já está no HTML — só precisa dar play e fazer fade-in
-    var played = false;
-    function tryPlay(){
-      if(played) return;
-      played = true;
-      video.classList.add('ready');
-      video.play().catch(function(){});
-    }
-    video.addEventListener('canplay', tryPlay, {once:true});
-    video.addEventListener('loadeddata', tryPlay, {once:true});
-    // Forçar após 1s se canplay não disparar
-    setTimeout(function(){
-      if(!played){ tryPlay(); }
-    }, 1000);
-  }
-
-  // Iniciar vídeo após load
-  if(document.readyState === 'complete'){
-    setTimeout(initVideo, 300);
-  } else {
-    window.addEventListener('load', function(){ setTimeout(initVideo, 300); });
-  }
-})();
 
 /* ══ GALÁXIA — UNIVERSO REALISTA ══ */
 function loadScript(src, cb) {
