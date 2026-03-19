@@ -3903,7 +3903,6 @@ function aplicarAnelAvatar(anelId){
   /* Avatar no perfil hero */
   var avatarWrap=document.getElementById('avatarWrap');
   if(avatarWrap){
-    /* Remove classes de anel */
     avatarWrap.className='perfil-avatar-wrap '+(mapaClasse[anelId]||'avatar-bronze');
   }
   /* Avatar na navbar — nav-nivel-* */
@@ -3915,6 +3914,12 @@ function aplicarAnelAvatar(anelId){
       andromeda:'nav-nivel-andromeda',centaurus:'nav-nivel-centaurus',sombrero:'nav-nivel-sombrero'
     };
     navWrap.className='nav-avatar-wrap '+(mapaNav[anelId]||'nav-nivel-bronze');
+  }
+  /* Invalida cache para forçar reload na próxima visita */
+  if(userSession&&userSession.user&&typeof window._invalidarCacheAnel==='function'){
+    window._invalidarCacheAnel(userSession.user.email);
+    /* Atualiza cache com novo anel imediatamente */
+    try{localStorage.setItem('mg_nav_'+userSession.user.email,JSON.stringify({anel:anelId,ts:Date.now()}));}catch(e){}
   }
 }
 
@@ -4337,6 +4342,7 @@ async function atualizarNavbar(session){
   var imgAvatar=document.getElementById('navAvatarImg');
   var fallback=document.getElementById('navAvatarFallback');
   if(!wrap) return;
+
   if(session&&session.user){
     var meta=session.user.user_metadata||{};
     var avatarUrl=meta.avatar_url||meta.picture||'';
@@ -4344,6 +4350,8 @@ async function atualizarNavbar(session){
     var inicial=(nome.trim()[0]||'U').toUpperCase();
     if(btnLogin) btnLogin.style.display='none';
     wrap.style.display='flex';
+
+    /* Mostra avatar imediatamente */
     if(avatarUrl){
       if(imgAvatar){imgAvatar.src=avatarUrl;imgAvatar.style.display='block';}
       if(fallback) fallback.style.display='none';
@@ -4351,26 +4359,49 @@ async function atualizarNavbar(session){
       if(imgAvatar) imgAvatar.style.display='none';
       if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
     }
-    try{
-      var[mpRes, perfilRes]=await Promise.all([
-        sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
-        sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
-      ]);
-      var pts=(mpRes.data&&mpRes.data.pontos)||0;
-      var anelNav=(perfilRes.data&&perfilRes.data.anel_escolhido)||getNavNivel(pts);
-      var mapaNav={
-        bronze:'bronze',prata:'prata',ouro:'ouro',esmeralda:'esmeralda',diamante:'diamante',
-        andromeda:'andromeda',centaurus:'centaurus',sombrero:'sombrero'
-      };
-      wrap.className='nav-avatar-wrap nav-nivel-'+(mapaNav[anelNav]||getNavNivel(pts));
-    }catch(e){wrap.className='nav-avatar-wrap nav-nivel-bronze';}
+
+    /* Aplica anel do cache imediatamente (sem esperar query) */
+    var cacheKey='mg_nav_'+session.user.email;
+    var cached=null;
+    try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null');}catch(e){}
+    if(cached&&cached.anel){
+      wrap.className='nav-avatar-wrap nav-nivel-'+cached.anel;
+    } else {
+      wrap.className='nav-avatar-wrap nav-nivel-bronze'; /* fallback enquanto carrega */
+    }
+
+    /* Só busca do banco se o cache tiver mais de 2 minutos */
+    var agora=Date.now();
+    var cacheOk=cached&&(agora-(cached.ts||0)<120000);
+    if(!cacheOk){
+      try{
+        var[mpRes,perfilRes]=await Promise.all([
+          sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
+          sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
+        ]);
+        var pts=(mpRes.data&&mpRes.data.pontos)||0;
+        var mapaNav={
+          bronze:'bronze',prata:'prata',ouro:'ouro',esmeralda:'esmeralda',diamante:'diamante',
+          andromeda:'andromeda',centaurus:'centaurus',sombrero:'sombrero'
+        };
+        var anelNav=(perfilRes.data&&perfilRes.data.anel_escolhido)||getNavNivel(pts);
+        var classeAnel=mapaNav[anelNav]||getNavNivel(pts);
+        wrap.className='nav-avatar-wrap nav-nivel-'+classeAnel;
+        /* Salva no cache */
+        try{localStorage.setItem(cacheKey,JSON.stringify({anel:classeAnel,ts:agora}));}catch(e){}
+      }catch(e){/* mantém fallback bronze */}
+    }
   } else {
     if(btnLogin) btnLogin.style.display='flex';
     wrap.style.display='none';
   }
 }
+/* Invalida cache do anel quando usuário muda o anel no perfil */
+window._invalidarCacheAnel=function(email){
+  try{localStorage.removeItem('mg_nav_'+(email||''));}catch(e){}
+};
 sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
-setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});}, 100);
+setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});},100);
 
 /* ══════════════════════════════════════════════════════
    BENEFÍCIOS MODAL — controle de abas
