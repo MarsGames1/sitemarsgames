@@ -751,28 +751,108 @@ function iniciarTimer(minutos){
   },1000);
 }
 
-/* ── POLLING ── */
+/* ── POLLING — com fallback duplo ── */
+/*
+  Fluxo normal: webhook MP → edge function → marspass_assinaturas.status='ativo'
+  Fallback 1  : chama a edge function manualmente para forçar a verificação no MP
+  Fallback 2  : consulta direto a tabela de pedidos para status pago/aprovado/entregue
+  Assim, mesmo que o webhook falhe, o usuário é redirecionado após o pagamento.
+*/
+var _pollTentativas=0;
+var _POLL_MAX=72; /* 6 minutos = 72 × 5s */
+
 function iniciarPolling(reference){
   clearInterval(pollInterval);
+  _pollTentativas=0;
+
   pollInterval=setInterval(async function(){
+    if(_pollTentativas>=_POLL_MAX){
+      /* Esgotou tentativas mas o timer ainda não expirou — encerra sem redirecionar */
+      clearInterval(pollInterval);
+      _atualizarAguardando('⚠️ Verifique seu banco e recarregue a página.','#ff8888');
+      return;
+    }
+    _pollTentativas++;
+
     try{
       var r=await sb.auth.getSession();
       if(!r.data||!r.data.session) return;
-      var email=r.data.session.user.email;
+      var session=r.data.session;
+      var email=session.user.email;
 
+      /* ── Caminho 1: tabela marspass_assinaturas (webhook já atualizou) ── */
       var{data:assinatura}=await sb.from('marspass_assinaturas')
         .select('status,plano')
         .eq('referencia_pagamento',reference)
-        .eq('user_email',email)   /* garante que só o dono vê */
+        .eq('user_email',email)
         .maybeSingle();
 
       if(assinatura&&assinatura.status==='ativo'){
-        clearInterval(pollInterval);
-        clearInterval(timerInterval);
-        mostrarSucesso();
+        _confirmarPagamento();
+        return;
       }
-    }catch(e){console.error('Polling erro:',e);}
+
+      /* ── Fallback 1: aciona edge function para verificar no MP e ativar ── */
+      /* (só a cada 3 tentativas para não sobrecarregar) */
+      if(_pollTentativas%3===0){
+        try{
+          var res=await fetch(SUPABASE_URL+'/functions/v1/mp-confirmar-pagamento',{
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization':'Bearer '+session.access_token
+            },
+            body:JSON.stringify({reference:reference,payment_id:(pixData&&pixData.payment_id)||''})
+          });
+          if(res.ok){
+            var d=await res.json();
+            if(d.aprovado||d.status==='ativo'){
+              _confirmarPagamento();
+              return;
+            }
+          }
+        }catch(ef){console.warn('[polling fallback edge]',ef);}
+      }
+
+      /* ── Fallback 2: consulta tabela pedidos diretamente ── */
+      if(_pollTentativas%3===0){
+        try{
+          var urlPedido=SUPABASE_URL+'/rest/v1/pedidos'
+            +'?or=(reference.eq.'+encodeURIComponent(reference)+',referencia_pagamento.eq.'+encodeURIComponent(reference)+')'
+            +'&status=in.(pago,aprovado,entregue,ativo)'
+            +'&order=created_at.desc&limit=1';
+          var resPed=await fetch(urlPedido,{
+            headers:{
+              'apikey':SUPABASE_KEY,
+              'Authorization':'Bearer '+session.access_token,
+              'Accept':'application/json'
+            }
+          });
+          if(resPed.ok){
+            var rows=await resPed.json();
+            if(rows&&rows.length>0){
+              _confirmarPagamento();
+              return;
+            }
+          }
+        }catch(ep){console.warn('[polling fallback pedidos]',ep);}
+      }
+
+    }catch(e){console.error('[polling erro geral]',e);}
   },5000);
+}
+
+function _confirmarPagamento(){
+  clearInterval(pollInterval);
+  clearInterval(timerInterval);
+  mostrarSucesso();
+}
+
+function _atualizarAguardando(msg,cor){
+  var box=document.querySelector('.aguardando-txt strong');
+  if(box){box.textContent=msg;if(cor)box.style.color=cor;}
+  var spin=document.querySelector('.aguardando-spin');
+  if(spin){spin.style.borderTopColor=cor||'#888';}
 }
 
 /* ── COPIAR CÓDIGO ── */
