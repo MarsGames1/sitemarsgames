@@ -6,7 +6,27 @@
 <title>MarsGames — Meu Perfil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* Carrega Supabase SDK com fallback de CDN para mobile com CDN bloqueado/lento */
+(function(){
+  function loadSDK(src, fallbackSrc){
+    var s = document.createElement('script');
+    s.src = src;
+    s.onerror = function(){
+      if(fallbackSrc){
+        var s2 = document.createElement('script');
+        s2.src = fallbackSrc;
+        document.head.appendChild(s2);
+      }
+    };
+    document.head.appendChild(s);
+  }
+  loadSDK(
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+  );
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2092,8 +2112,22 @@ body.tema-claro .section-loader{color:var(--muted)}
 <!-- LOADING -->
 <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;min-height:80vh;flex-direction:column;gap:16px;position:relative;z-index:1">
   <div style="width:36px;height:36px;border:3px solid rgba(0,255,85,.15);border-top-color:#00ff55;border-radius:50%;animation:spin 0.7s linear infinite"></div>
-  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#555">Verificando sessão...</div>
+  <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#555" id="loadingMsg">Verificando sessão...</div>
+  <div id="loadingDemorado" style="display:none;text-align:center;padding:0 32px">
+    <div style="font-size:11px;color:#444;font-weight:600;margin-bottom:12px">Conexão lenta detectada...</div>
+    <button onclick="mostrarLogin()" style="padding:10px 22px;border-radius:8px;border:1px solid rgba(0,255,85,.3);background:rgba(0,255,85,.07);color:#00ff55;font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer">
+      Fazer login manualmente
+    </button>
+  </div>
 </div>
+<script>
+/* Mostra botão de fallback se demorar mais de 5s */
+setTimeout(function(){
+  var d = document.getElementById('loadingDemorado');
+  var ls = document.getElementById('loading-screen');
+  if(d && ls && ls.style.display !== 'none') d.style.display = 'block';
+}, 5000);
+</script>
 
 <!-- LOGIN -->
 <div id="login-screen" style="display:none">
@@ -2817,9 +2851,17 @@ var sb, userSession=null, perfilData=null;
 })();
 
 // Aguardar Supabase carregar
+var _initTentativas = 0;
 function initSupabase(){
   var lib=window.supabase||window.Supabase;
   if(!lib||!lib.createClient){
+    _initTentativas++;
+    /* Timeout máximo: 8s (80 tentativas × 100ms) — mobile lento não fica preso para sempre */
+    if(_initTentativas > 80){
+      console.error('[MarsGames] SDK Supabase não carregou em 8s — mostrando tela de login');
+      mostrarLogin();
+      return;
+    }
     setTimeout(initSupabase,100);
     return;
   }
@@ -3079,13 +3121,25 @@ async function checkAuth() {
   var _jaCarregou = false;
 
   function _iniciarSessao(user, session) {
-    if(_jaCarregou) return; /* evita dupla chamada */
+    if(_jaCarregou) return;
     _jaCarregou = true;
     userSession = session;
     mostrarPerfil();
     carregarPerfil(user);
   }
 
+  /* Tenta getSession imediatamente — mais rápido que esperar onAuthStateChange no mobile */
+  try {
+    var r = await sb.auth.getSession();
+    if(r.data && r.data.session) {
+      _iniciarSessao(r.data.session.user, r.data.session);
+      return; /* saiu rápido, não precisa do listener abaixo */
+    }
+  } catch(e) {
+    console.warn('[checkAuth] getSession imediato falhou:', e.message);
+  }
+
+  /* Sem sessão local: escuta o onAuthStateChange (cobre redirect do OAuth) */
   sb.auth.onAuthStateChange(function(event, session){
     if(event === 'SIGNED_IN' && session){
       history.replaceState(null, '', window.location.pathname);
@@ -3105,7 +3159,9 @@ async function checkAuth() {
     }
   });
 
-  /* Fallback com delay — só executa se onAuthStateChange não disparou ainda */
+  /* Fallback adaptativo: mobile tem 3s, desktop 1.5s */
+  var isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  var fallbackDelay = isMobile ? 3000 : 1500;
   setTimeout(function(){
     if(_jaCarregou) return;
     sb.auth.getSession().then(function(r){
@@ -3115,7 +3171,15 @@ async function checkAuth() {
         mostrarLogin();
       }
     }).catch(function(){ mostrarLogin(); });
-  }, 600);
+  }, fallbackDelay);
+
+  /* Segurança máxima: se nada resolver em 8s, mostra login */
+  setTimeout(function(){
+    if(!_jaCarregou){
+      console.warn('[checkAuth] timeout de 8s — forçando tela de login');
+      mostrarLogin();
+    }
+  }, 8000);
 }
 
 async function carregarPerfil(user){
