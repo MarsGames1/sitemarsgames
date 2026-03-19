@@ -939,137 +939,205 @@ body.tema-claro .section-loader{color:var(--muted)}
 /* ══ TABS — NOVO SISTEMA DE BOTÕES ══ */
 .tabs-wrap{
   margin-bottom:28px;
-  background:rgba(255,255,255,.02);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:14px;
+  background:rgba(255,255,255,.015);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:20px;
+  padding:12px;
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-  gap:8px;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:7px;
 }
-/* Oculta botão Editar dentro do grid junto aos outros */
+/* ── Botão Editar Perfil ── */
 .tab-editar-btn{
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  padding:10px 14px;border-radius:10px;
-  font-size:11px;font-weight:700;letter-spacing:.4px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 14px;border-radius:12px;
+  font-size:10.5px;font-weight:800;letter-spacing:.5px;
   font-family:'Montserrat',sans-serif;cursor:pointer;
-  background:rgba(0,255,85,.05);
-  border:1px solid rgba(0,255,85,.12);
+  background:rgba(0,255,85,.06);
+  border:1px solid rgba(0,255,85,.14);
   color:#4a9060;
-  transition:all .18s;white-space:nowrap;
+  transition:all .2s;white-space:nowrap;
 }
 .tab-editar-btn:hover{
-  background:rgba(0,255,85,.1);
-  border-color:rgba(0,255,85,.3);
+  background:rgba(0,255,85,.12);
+  border-color:rgba(0,255,85,.35);
   color:var(--green);
-  transform:translateY(-1px);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,255,85,.12);
 }
 .tab-editar-btn.active{
   background:rgba(0,255,85,.14);
-  border-color:rgba(0,255,85,.45);
+  border-color:rgba(0,255,85,.5);
   color:var(--green);
-  box-shadow:0 0 16px rgba(0,255,85,.15);
+  box-shadow:0 0 20px rgba(0,255,85,.18);
 }
 
+/* ── Tab base ── */
 .tab{
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  padding:10px 14px;border-radius:10px;
-  font-size:11px;font-weight:700;letter-spacing:.4px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 12px;border-radius:12px;
+  font-size:10.5px;font-weight:800;letter-spacing:.3px;
   cursor:pointer;white-space:nowrap;
   background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);
-  color:#484860;
-  transition:all .18s;
+  border:1px solid rgba(255,255,255,.07);
+  color:#505068;
+  transition:all .2s;
   position:relative;overflow:hidden;
 }
-.tab::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);
-  opacity:0;transition:opacity .18s;
+.tab::after{
+  content:'';position:absolute;bottom:0;left:10%;right:10%;height:2px;
+  border-radius:2px 2px 0 0;opacity:0;transition:opacity .2s;
 }
 .tab:hover{
-  background:rgba(255,255,255,.06);
-  border-color:rgba(255,255,255,.14);
-  color:#aaa;
-  transform:translateY(-1px);
+  background:rgba(255,255,255,.07);
+  border-color:rgba(255,255,255,.16);
+  color:#bbb;
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
 }
-.tab:hover::before{opacity:1}
 .tab.active{
-  transform:translateY(-1px);
-  box-shadow:0 4px 18px rgba(0,0,0,.3);
+  transform:translateY(-2px);
 }
-/* Estilo padrão ativo — verde */
+.tab.active::after{opacity:1;}
+
+/* ── Estilo ativo padrão (verde) ── */
 .tab.active:not(.tab-marspass):not(.tab-marspoints):not(.tab-tickets):not(.tab-premios):not(.tab-dna){
-  background:rgba(0,255,85,.1);
-  border-color:rgba(0,255,85,.35);
+  background:rgba(0,255,85,.08);
+  border-color:rgba(0,255,85,.3);
   color:var(--green);
-  box-shadow:0 4px 18px rgba(0,255,85,.12);
+  box-shadow:0 6px 20px rgba(0,255,85,.1);
+}
+.tab.active:not(.tab-marspass):not(.tab-marspoints):not(.tab-tickets):not(.tab-premios):not(.tab-dna)::after{
+  background:var(--green);
 }
 
 .tab-content{display:none;animation:fadeUp .3s ease both}
 .tab-content.active{display:block}
 
-/* ── Marspass ── */
-.tab-marspass{border-color:rgba(124,106,247,.15);color:#6a5ee0}
-.tab-marspass:hover{border-color:rgba(124,106,247,.35);color:#9d8fff}
+/* ══ MARSPASS — DESTAQUE DOURADO PREMIUM ══ */
+@keyframes marspassShimmer{
+  0%{background-position:-200% center}
+  100%{background-position:200% center}
+}
+@keyframes marspassGlow{
+  0%,100%{box-shadow:0 0 10px rgba(255,215,0,.2),0 4px 20px rgba(255,184,0,.1)}
+  50%{box-shadow:0 0 20px rgba(255,215,0,.4),0 4px 28px rgba(255,184,0,.25)}
+}
+.tab-marspass{
+  background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,140,0,.06));
+  border-color:rgba(255,200,0,.25);
+  color:#c8a000;
+  position:relative;
+}
+.tab-marspass::before{
+  content:'';position:absolute;inset:0;border-radius:12px;
+  background:linear-gradient(90deg,transparent,rgba(255,215,0,.08),transparent);
+  background-size:200% 100%;
+  animation:marspassShimmer 3s ease-in-out infinite;
+  pointer-events:none;
+}
+.tab-marspass:hover{
+  background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,140,0,.1));
+  border-color:rgba(255,200,0,.5);
+  color:#FFD700;
+  box-shadow:0 6px 22px rgba(255,200,0,.2);
+}
 .tab-marspass.active{
-  background:linear-gradient(135deg,rgba(124,106,247,.18),rgba(255,60,110,.1));
-  border-color:rgba(124,106,247,.5);color:#c4b8ff;
-  box-shadow:0 4px 18px rgba(124,106,247,.18);
+  background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,140,0,.12));
+  border-color:rgba(255,200,0,.6);
+  color:#FFD700;
+  box-shadow:0 6px 24px rgba(255,200,0,.25);
+  animation:marspassGlow 2.5s ease-in-out infinite;
 }
-/* ── MarsPoints ── */
-.tab-marspoints{border-color:rgba(0,255,85,.1);color:#3a7a50}
-.tab-marspoints:hover{border-color:rgba(0,255,85,.3);color:var(--green)}
-.tab-marspoints.active{
-  background:rgba(0,255,85,.12);
-  border-color:rgba(0,255,85,.4);color:var(--green);
-  box-shadow:0 4px 18px rgba(0,255,85,.14);
+.tab-marspass.active::after{
+  background:linear-gradient(90deg,#FFD700,#ff9500,#FFD700);
+  opacity:1;
 }
-/* ── Tickets ── */
-.tab-tickets{border-color:rgba(255,183,0,.1);color:#7a6010}
-.tab-tickets:hover{border-color:rgba(255,183,0,.35);color:var(--amber)}
-.tab-tickets.active{
-  background:rgba(255,183,0,.1);
-  border-color:rgba(255,183,0,.4);color:var(--amber);
-  box-shadow:0 4px 18px rgba(255,183,0,.14);
-}
-/* ── Prêmios ── */
-.tab-premios{border-color:rgba(255,215,0,.1);color:#7a6800}
-.tab-premios:hover{border-color:rgba(255,215,0,.35);color:var(--ouro)}
-.tab-premios.active{
-  background:rgba(255,215,0,.1);
-  border-color:rgba(255,215,0,.4);color:var(--ouro);
-  box-shadow:0 4px 18px rgba(255,215,0,.14);
-}
-/* ── DNA Alien ── */
-.tab-dna{border-color:rgba(0,255,231,.1);color:#1a6060}
-.tab-dna:hover{border-color:rgba(0,255,231,.35);color:#00ffe7}
-.tab-dna.active{
-  background:rgba(0,255,231,.08);
-  border-color:rgba(0,255,231,.4);color:#00ffe7;
-  box-shadow:0 4px 18px rgba(0,255,231,.12);
+/* Badge de estrela no MarsPass */
+.tab-marspass .tab-star{
+  font-size:11px;filter:drop-shadow(0 0 4px rgba(255,215,0,.8));
 }
 
+/* ── MarsPoints ── */
+.tab-marspoints{border-color:rgba(0,255,85,.1);color:#2a7040}
+.tab-marspoints:hover{border-color:rgba(0,255,85,.3);color:var(--green);background:rgba(0,255,85,.05);}
+.tab-marspoints.active{background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.4);color:var(--green);box-shadow:0 6px 20px rgba(0,255,85,.12);}
+.tab-marspoints.active::after{background:var(--green);}
+
+/* ── Tickets ── */
+.tab-tickets{border-color:rgba(255,183,0,.12);color:#6a5010}
+.tab-tickets:hover{border-color:rgba(255,183,0,.35);color:var(--amber);background:rgba(255,183,0,.05);}
+.tab-tickets.active{background:rgba(255,183,0,.1);border-color:rgba(255,183,0,.45);color:var(--amber);box-shadow:0 6px 20px rgba(255,183,0,.12);}
+.tab-tickets.active::after{background:var(--amber);}
+
+/* ── Prêmios ── */
+.tab-premios{border-color:rgba(255,215,0,.1);color:#6a5800}
+.tab-premios:hover{border-color:rgba(255,215,0,.35);color:#FFD700;background:rgba(255,215,0,.05);}
+.tab-premios.active{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.45);color:#FFD700;box-shadow:0 6px 20px rgba(255,215,0,.12);}
+.tab-premios.active::after{background:#FFD700;}
+
+/* ── DNA Alien ── */
+.tab-dna{border-color:rgba(0,255,231,.1);color:#1a5a5a}
+.tab-dna:hover{border-color:rgba(0,255,231,.3);color:#00ffe7;background:rgba(0,255,231,.05);}
+.tab-dna.active{background:rgba(0,255,231,.08);border-color:rgba(0,255,231,.4);color:#00ffe7;box-shadow:0 6px 20px rgba(0,255,231,.1);}
+.tab-dna.active::after{background:#00ffe7;}
+
 /* ── Aniversário ── */
-.tab-aniversario{border-color:rgba(255,45,122,.15)!important;color:#8a3060}
-.tab-aniversario:hover{border-color:rgba(255,45,122,.35)!important;color:#ff2d7a!important;background:rgba(255,45,122,.06)!important}
-.tab-aniversario.active{color:#ff2d7a!important;background:rgba(255,45,122,.1)!important;border-color:rgba(255,45,122,.5)!important;box-shadow:0 4px 18px rgba(255,45,122,.15)!important}
-.tab-aniversario.active::after{background:#ff2d7a!important}
+.tab-aniversario{border-color:rgba(255,45,122,.15);color:#8a2050}
+.tab-aniversario:hover{border-color:rgba(255,45,122,.35);color:#ff2d7a;background:rgba(255,45,122,.06);}
+.tab-aniversario.active{color:#ff2d7a;background:rgba(255,45,122,.1);border-color:rgba(255,45,122,.5);box-shadow:0 6px 20px rgba(255,45,122,.12);}
+.tab-aniversario.active::after{background:#ff2d7a;}
+
 /* ── Câmbio ── */
-.tab-cambio{border-color:rgba(0,255,231,.12)!important;color:#1a6a60}
-.tab-cambio:hover{border-color:rgba(0,255,231,.3)!important;color:#00ffe7!important;background:rgba(0,255,231,.05)!important}
-.tab-cambio.active{color:#00ffe7!important;background:rgba(0,255,231,.08)!important;border-color:rgba(0,255,231,.4)!important;box-shadow:0 4px 18px rgba(0,255,231,.12)!important}
-.tab-cambio.active::after{background:#00ffe7!important}
+.tab-cambio{border-color:rgba(0,255,231,.12);color:#1a6060}
+.tab-cambio:hover{border-color:rgba(0,255,231,.3);color:#00ffe7;background:rgba(0,255,231,.05);}
+.tab-cambio.active{color:#00ffe7;background:rgba(0,255,231,.08);border-color:rgba(0,255,231,.4);box-shadow:0 6px 20px rgba(0,255,231,.1);}
+.tab-cambio.active::after{background:#00ffe7;}
+
 /* ── Loja MP ── */
-.tab-loja-mp{border-color:rgba(255,194,0,.15)!important;color:#6a5800}
-.tab-loja-mp:hover{border-color:rgba(255,194,0,.35)!important;color:#ffc200!important;background:rgba(255,194,0,.05)!important}
-.tab-loja-mp.active{color:#ffc200!important;background:rgba(255,194,0,.1)!important;border-color:rgba(255,194,0,.45)!important;box-shadow:0 4px 18px rgba(255,194,0,.14)!important}
-.tab-loja-mp.active::after{background:#ffc200!important}
+.tab-loja-mp{border-color:rgba(255,194,0,.15);color:#5a4800}
+.tab-loja-mp:hover{border-color:rgba(255,194,0,.4);color:#ffc200;background:rgba(255,194,0,.06);}
+.tab-loja-mp.active{color:#ffc200;background:rgba(255,194,0,.1);border-color:rgba(255,194,0,.5);box-shadow:0 6px 20px rgba(255,194,0,.12);}
+.tab-loja-mp.active::after{background:#ffc200;}
+
 /* ── Planeta ── */
-.tab-planeta{border-color:rgba(0,184,230,.12)!important;color:#1a5060}
-.tab-planeta:hover{border-color:rgba(0,184,230,.35)!important;color:#00b8e6!important;background:rgba(0,184,230,.05)!important}
-.tab-planeta.active{color:#00b8e6!important;background:rgba(0,184,230,.1)!important;border-color:rgba(0,184,230,.45)!important;box-shadow:0 4px 18px rgba(0,184,230,.14)!important}
-.tab-planeta.active::after{background:#00b8e6!important}
+.tab-planeta{border-color:rgba(0,184,230,.12);color:#1a4860}
+.tab-planeta:hover{border-color:rgba(0,184,230,.35);color:#00b8e6;background:rgba(0,184,230,.05);}
+.tab-planeta.active{color:#00b8e6;background:rgba(0,184,230,.1);border-color:rgba(0,184,230,.45);box-shadow:0 6px 20px rgba(0,184,230,.12);}
+.tab-planeta.active::after{background:#00b8e6;}
+
+/* ══ MOBILE — tabs em scroll horizontal ══ */
+@media(max-width:767px){
+  .tabs-wrap{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overflow-y:hidden;
+    gap:6px;
+    padding:10px;
+    border-radius:14px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    margin-bottom:20px;
+  }
+  .tabs-wrap::-webkit-scrollbar{display:none;}
+  .tab,.tab-editar-btn{
+    flex-shrink:0;
+    font-size:10px;
+    padding:9px 12px;
+    border-radius:10px;
+    white-space:nowrap;
+  }
+  /* MarsPass ocupa destaque maior no mobile */
+  .tab-marspass{
+    order:-1; /* sempre primeiro */
+    padding:9px 16px;
+    font-size:10.5px;
+  }
+}
+@media(max-width:380px){
+  .tab,.tab-editar-btn{font-size:9.5px;padding:8px 10px;}
+}
 
 /* ════════════════════════════════════════════
    ABA ANIVERSÁRIO
@@ -2138,7 +2206,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 
   <!-- TABS -->
   <div class="tabs-wrap">
-    <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)">🌌 MarsPass</div>
+    <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)"><span class="tab-star">✦</span> MarsPass <span style="font-size:8px;background:linear-gradient(135deg,#FFD700,#ff9500);color:#000;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;margin-left:2px">PRO</span></div>
     <div class="tab" onclick="showTab('beneficios',this)">🎖️ Benefícios</div>
     <div class="tab" onclick="showTab('conquistas',this)">🏅 Conquistas</div>
     <div class="tab" onclick="showTab('pedidos',this)">📦 Meus Pedidos</div>
