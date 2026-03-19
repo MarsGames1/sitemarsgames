@@ -974,148 +974,73 @@ body.tema-claro .section-loader{color:var(--muted)}
 .tab-marspoints.active{color:var(--green)!important;border-bottom-color:var(--green)!important}
 .tab-premios{color:var(--ouro)!important;border-bottom-color:transparent}
 .tab-premios.active{color:var(--ouro)!important;border-bottom-color:var(--ouro)!important}
+/* ══ DNA ALIENÍGENA ══ */
 .tab-dna{color:#00ffe7!important;border-bottom-color:transparent}
 .tab-dna.active{color:#00ffe7!important;border-bottom-color:#00ffe7!important}
-
-/* ══ DNA ALIENÍGENA ══ */
 @keyframes dnaBarGrow{to{transform:scaleX(1)}}
 @keyframes dnaReveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @keyframes dnaShim{0%{background-position:200%}100%{background-position:-200%}}
-@keyframes dnaHelixSpin{to{transform:rotate(360deg)}}
 @keyframes dnaPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 @keyframes dnaScanPulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.35);opacity:0}}
-@keyframes dnaCodeBlink{0%,100%{opacity:1}50%{opacity:0}}
-
-#tab-dna{font-family:'Montserrat',sans-serif;}
-
-.dna-eyebrow{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:4px;color:#00ffe7;opacity:.6;text-transform:uppercase;text-align:center;margin-bottom:6px;}
-.dna-titulo{font-family:'Orbitron',sans-serif;font-size:clamp(18px,4vw,28px);font-weight:900;text-align:center;margin-bottom:4px;background:linear-gradient(135deg,#00ffe7,#9f3fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.dna-desc{font-size:12px;color:#555;text-align:center;margin-bottom:20px;line-height:1.6;}
-
-/* Species badge */
-.dna-species-wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;}
-.dna-species-chip{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:6px 14px;border-radius:99px;
-  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  border:1px solid;cursor:pointer;transition:all .2s;
-}
-.dna-species-chip.active{box-shadow:0 0 18px currentColor;}
-
-/* MarsPass exclusive badge */
-.dna-marspass-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:4px 10px;border-radius:6px;
-  font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
-  background:linear-gradient(135deg,rgba(124,106,247,.2),rgba(255,60,110,.15));
-  border:1px solid rgba(124,106,247,.4);color:#c4b8ff;margin-left:6px;
-}
-
-/* Hero result card */
-.dna-hero-card{
-  background:linear-gradient(160deg,#050d1a,#080418);
-  border:1px solid rgba(0,255,231,.15);border-radius:18px;
-  padding:28px;margin-bottom:18px;position:relative;overflow:hidden;
-  animation:dnaReveal .5s ease both;
-}
-.dna-hero-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,#00ffe7,#9f3fff,#00ffe7,transparent);
-  background-size:200%;animation:dnaShim 3s linear infinite;
-}
-.dna-helix-deco{position:absolute;right:-16px;top:0;bottom:0;width:140px;opacity:.12;pointer-events:none;overflow:hidden;}
-.dna-helix-deco canvas{display:block;}
-
-.dna-alien-eyebrow{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:3px;color:#00ffe7;opacity:.65;text-transform:uppercase;margin-bottom:6px;}
-.dna-alien-name{font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,34px);font-weight:900;line-height:1.05;margin-bottom:4px;}
-.dna-alien-sub{font-size:13px;color:#4a5168;letter-spacing:.5px;margin-bottom:8px;}
-.dna-alien-desc{font-size:12px;color:#6a7090;line-height:1.65;margin-bottom:20px;max-width:520px;}
-
-/* MarsPass exclusive species tag */
-.dna-excl-tag{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;border-radius:6px;font-size:9px;font-weight:900;
-  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;
-  background:linear-gradient(135deg,rgba(124,106,247,.25),rgba(255,60,110,.18));
-  border:1px solid rgba(124,106,247,.5);color:#c4b8ff;
-}
-
-/* DNA strands */
-.dna-strands{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
-.dna-strand{display:flex;align-items:center;gap:10px;}
-.dna-strand-label{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;width:78px;flex-shrink:0;color:#4a5168;}
-.dna-strand-bar{flex:1;height:7px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden;}
-.dna-strand-fill{height:100%;border-radius:4px;transform-origin:left;transform:scaleX(0);animation:dnaBarGrow .7s cubic-bezier(.34,1.56,.64,1) forwards;}
-.dna-strand-pct{font-family:'Orbitron',monospace;font-size:11px;width:32px;text-align:right;flex-shrink:0;}
-
-/* DNA code */
-.dna-code-box{background:rgba(0,255,231,.03);border:1px solid rgba(0,255,231,.09);border-radius:10px;padding:12px 16px;margin-bottom:18px;}
-.dna-code-lbl{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:3px;color:#333;text-transform:uppercase;margin-bottom:6px;}
-.dna-code{font-family:'Share Tech Mono',monospace,'Courier New',monospace;font-size:11px;color:#00ffe7;letter-spacing:2px;word-break:break-all;line-height:1.9;opacity:.75;}
-
-/* Traits */
-.dna-traits{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px;}
-.dna-trait{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:12px;}
-.dna-trait-icon{font-size:18px;margin-bottom:5px;}
-.dna-trait-name{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:1.5px;color:#3a4058;text-transform:uppercase;margin-bottom:3px;}
-.dna-trait-val{font-size:13px;font-weight:700;color:#dde2f5;}
-
-/* Bottom grid */
-.dna-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
-@media(max-width:560px){.dna-bottom{grid-template-columns:1fr;}.dna-traits{grid-template-columns:1fr 1fr;}}
-.dna-card-sm{background:#080d1c;border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:16px;}
-.dna-card-sm-title{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#3a4058;text-transform:uppercase;margin-bottom:12px;}
-
-/* Compat */
-.dna-compat-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);}
-.dna-compat-item:last-child{border-bottom:none;}
-.dna-compat-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.dna-compat-info{flex:1;}
-.dna-compat-name{font-size:12px;font-weight:700;color:#dde2f5;}
-.dna-compat-type{font-size:10px;color:#3a4058;}
-.dna-compat-score{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;}
-
-/* Evo */
-.dna-evo-step{display:flex;align-items:center;gap:10px;padding:7px 0;position:relative;}
-.dna-evo-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;position:relative;z-index:2;}
-.dna-evo-line{position:absolute;left:4.5px;top:19px;bottom:-7px;width:2px;background:rgba(255,255,255,.05);}
-.dna-evo-step:last-child .dna-evo-line{display:none;}
-.dna-evo-step.cur .dna-evo-dot{animation:dnaPulse 1.4s ease-in-out infinite;}
-.dna-evo-info{flex:1;}
-.dna-evo-name{font-size:12px;font-weight:700;}
-.dna-evo-req{font-size:10px;color:#3a4058;}
-.dna-evo-lock{font-size:14px;opacity:.28;}
-
-/* Scan btn */
-.dna-scan-btn{
-  display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
-  background:linear-gradient(135deg,rgba(0,255,231,.1),rgba(159,63,255,.07));
-  border:1px solid rgba(0,255,231,.25);border-radius:12px;
-  padding:15px 24px;cursor:pointer;transition:all .25s;
-  font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#00ffe7;
-  position:relative;overflow:hidden;margin-bottom:20px;
-}
-.dna-scan-btn:hover{border-color:rgba(0,255,231,.5);box-shadow:0 0 24px rgba(0,255,231,.15);transform:translateY(-1px);}
-.dna-scan-icon{width:30px;height:30px;border:1.5px solid #00ffe7;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;}
-.dna-scan-icon::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(0,255,231,.3);animation:dnaScanPulse 2s ease-in-out infinite;}
-
-/* Library grid */
-.dna-lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:16px;max-height:280px;overflow-y:auto;padding-right:4px;}
-.dna-lib-grid::-webkit-scrollbar{width:3px}
-.dna-lib-grid::-webkit-scrollbar-track{background:transparent}
-.dna-lib-grid::-webkit-scrollbar-thumb{background:rgba(0,255,231,.2);border-radius:2px}
-.dna-game-card{background:#0c1226;border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:10px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;text-align:center;}
-.dna-game-card.sel{border-color:rgba(0,255,231,.4);background:rgba(0,255,231,.05);}
-.dna-game-card.sel::before{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:#00ffe7;font-weight:900;}
-.dna-game-card:hover{transform:translateY(-2px);border-color:rgba(0,255,231,.2);}
-.dna-game-cover{font-size:26px;margin-bottom:5px;line-height:1;}
-.dna-game-title{font-size:9px;font-weight:700;color:#dde2f5;line-height:1.3;margin-bottom:3px;}
-.dna-game-genre{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;display:inline-block;}
-
-/* share row */
-.dna-share{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-.dna-share-btn{flex:1;min-width:110px;padding:10px 14px;border-radius:9px;border:1px solid rgba(0,255,231,.18);background:rgba(0,255,231,.05);color:#00ffe7;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
-.dna-share-btn:hover{background:rgba(0,255,231,.1);border-color:rgba(0,255,231,.35);}
+.dna-eyebrow{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:4px;color:#00ffe7;opacity:.6;text-transform:uppercase;text-align:center;margin-bottom:6px}
+.dna-titulo{font-family:'Orbitron',sans-serif;font-size:clamp(18px,4vw,28px);font-weight:900;text-align:center;margin-bottom:4px;background:linear-gradient(135deg,#00ffe7,#9f3fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dna-desc{font-size:12px;color:#555;text-align:center;margin-bottom:20px;line-height:1.6}
+.dna-hero-card{background:linear-gradient(160deg,#050d1a,#080418);border:1px solid rgba(0,255,231,.15);border-radius:18px;padding:28px;margin-bottom:18px;position:relative;overflow:hidden;animation:dnaReveal .5s ease both}
+.dna-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#00ffe7,#9f3fff,#00ffe7,transparent);background-size:200%;animation:dnaShim 3s linear infinite}
+.dna-helix-deco{position:absolute;right:-16px;top:0;bottom:0;width:140px;opacity:.12;pointer-events:none;overflow:hidden}
+.dna-alien-name{font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,34px);font-weight:900;line-height:1.05;margin-bottom:4px}
+.dna-alien-sub{font-size:13px;color:#4a5168;letter-spacing:.5px;margin-bottom:8px}
+.dna-alien-desc{font-size:12px;color:#6a7090;line-height:1.65;margin-bottom:20px;max-width:520px}
+.dna-excl-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:6px;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;background:linear-gradient(135deg,rgba(124,106,247,.25),rgba(255,60,110,.18));border:1px solid rgba(124,106,247,.5);color:#c4b8ff}
+.dna-strands{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
+.dna-strand{display:flex;align-items:center;gap:10px}
+.dna-strand-label{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;width:78px;flex-shrink:0;color:#4a5168}
+.dna-strand-bar{flex:1;height:7px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.dna-strand-fill{height:100%;border-radius:4px;transform-origin:left;transform:scaleX(0);animation:dnaBarGrow .7s cubic-bezier(.34,1.56,.64,1) forwards}
+.dna-strand-pct{font-family:monospace;font-size:11px;width:32px;text-align:right;flex-shrink:0}
+.dna-code-box{background:rgba(0,255,231,.03);border:1px solid rgba(0,255,231,.09);border-radius:10px;padding:12px 16px;margin-bottom:18px}
+.dna-code-lbl{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:3px;color:#333;text-transform:uppercase;margin-bottom:6px}
+.dna-code{font-family:'Courier New',monospace;font-size:11px;color:#00ffe7;letter-spacing:2px;word-break:break-all;line-height:1.9;opacity:.75}
+.dna-traits{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.dna-trait{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:12px}
+.dna-trait-icon{font-size:18px;margin-bottom:5px}
+.dna-trait-name{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:1.5px;color:#3a4058;text-transform:uppercase;margin-bottom:3px}
+.dna-trait-val{font-size:13px;font-weight:700;color:#dde2f5}
+.dna-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media(max-width:560px){.dna-bottom{grid-template-columns:1fr}}
+.dna-card-sm{background:#080d1c;border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:16px}
+.dna-card-sm-title{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#3a4058;text-transform:uppercase;margin-bottom:12px}
+.dna-compat-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.dna-compat-item:last-child{border-bottom:none}
+.dna-compat-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.dna-compat-info{flex:1}
+.dna-compat-name{font-size:12px;font-weight:700;color:#dde2f5}
+.dna-compat-type{font-size:10px;color:#3a4058}
+.dna-compat-score{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700}
+.dna-evo-step{display:flex;align-items:center;gap:10px;padding:7px 0;position:relative}
+.dna-evo-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;position:relative;z-index:2}
+.dna-evo-line{position:absolute;left:4.5px;top:19px;bottom:-7px;width:2px;background:rgba(255,255,255,.05)}
+.dna-evo-step:last-child .dna-evo-line{display:none}
+.dna-evo-step.cur .dna-evo-dot{animation:dnaPulse 1.4s ease-in-out infinite}
+.dna-evo-info{flex:1}
+.dna-evo-name{font-size:12px;font-weight:700}
+.dna-evo-req{font-size:10px;color:#3a4058}
+.dna-evo-lock{font-size:14px;opacity:.28}
+.dna-scan-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;background:linear-gradient(135deg,rgba(0,255,231,.1),rgba(159,63,255,.07));border:1px solid rgba(0,255,231,.25);border-radius:12px;padding:15px 24px;cursor:pointer;transition:all .25s;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#00ffe7;margin-bottom:20px}
+.dna-scan-btn:hover{border-color:rgba(0,255,231,.5);box-shadow:0 0 24px rgba(0,255,231,.15);transform:translateY(-1px)}
+.dna-scan-icon{width:30px;height:30px;border:1.5px solid #00ffe7;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.dna-scan-icon::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(0,255,231,.3);animation:dnaScanPulse 2s ease-in-out infinite}
+.dna-lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:16px;max-height:280px;overflow-y:auto;padding-right:4px}
+.dna-game-card{background:#0c1226;border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:10px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;text-align:center}
+.dna-game-card.sel{border-color:rgba(0,255,231,.4);background:rgba(0,255,231,.05)}
+.dna-game-card.sel::before{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:#00ffe7;font-weight:900}
+.dna-game-card:hover{transform:translateY(-2px);border-color:rgba(0,255,231,.2)}
+.dna-game-cover{font-size:26px;margin-bottom:5px;line-height:1}
+.dna-game-title{font-size:9px;font-weight:700;color:#dde2f5;line-height:1.3;margin-bottom:3px}
+.dna-game-genre{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;display:inline-block}
+.dna-share{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.dna-share-btn{flex:1;min-width:110px;padding:10px 14px;border-radius:9px;border:1px solid rgba(0,255,231,.18);background:rgba(0,255,231,.05);color:#00ffe7;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.dna-share-btn:hover{background:rgba(0,255,231,.1);border-color:rgba(0,255,231,.35)}
 .tab-marspass{color:#7c6af7!important;border-bottom-color:transparent}
 .tab-marspass.active{color:#7c6af7!important;border-bottom-color:#7c6af7!important}
 
@@ -1884,6 +1809,7 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
     <div class="tab tab-dna" onclick="showTab('dna',this)">🧬 DNA Alien</div>
+  </div>
   <!-- Botão Editar separado — não some no overflow -->
   <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
   </div>
@@ -2113,9 +2039,8 @@ body.tema-claro .section-loader{color:var(--muted)}
     <div class="dna-titulo">DNA ALIENÍGENA</div>
     <p class="dna-desc">Seus jogos e status de assinante revelam sua espécie dentro da galáxia MarsGames.</p>
 
-    <!-- biblioteca de jogos -->
     <div style="margin-bottom:10px">
-      <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#3a4058;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;">Sua biblioteca <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#3a4058;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Sua biblioteca <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
       <div class="dna-lib-grid" id="dnaLibGrid"><div style="color:#444;font-size:12px;text-align:center;padding:20px;grid-column:1/-1">Carregando biblioteca...</div></div>
     </div>
 
@@ -2126,12 +2051,11 @@ body.tema-claro .section-loader{color:var(--muted)}
       DECODIFICAR MEU DNA ALIENÍGENA
     </button>
 
-    <!-- resultado — oculto até scan -->
     <div id="dnaResult" style="display:none">
       <div class="dna-hero-card" id="dnaHeroCard">
         <div class="dna-helix-deco"><canvas id="dnaHelixCanvas" width="140" height="360"></canvas></div>
-        <div style="position:relative;z-index:2;">
-          <div class="dna-alien-eyebrow">Espécie Identificada · Sequência Ativa</div>
+        <div style="position:relative;z-index:2">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:3px;color:#00ffe7;opacity:.65;text-transform:uppercase;margin-bottom:6px">Espécie Identificada · Sequência Ativa</div>
           <div id="dnaExclTag" style="display:none" class="dna-excl-tag">✦ EXCLUSIVO MARSPASS</div>
           <div class="dna-alien-name" id="dnaAlienName">—</div>
           <div class="dna-alien-sub" id="dnaAlienSub">—</div>
@@ -2161,6 +2085,8 @@ body.tema-claro .section-loader{color:var(--muted)}
       </div>
     </div>
   </div>
+
+  <!-- MARSPASS -->
   <div class="tab-content active" id="tab-marspass-perfil">
     <div class="marspass-tab-universe" id="mpUniverse">
       <!-- Estrelas animadas geradas por JS -->
@@ -4327,382 +4253,161 @@ function iniciarRealtimePerfil(userEmail){
   /* Fallback máximo de 30s */
   setTimeout(function(){clearInterval(_checkInterval);},30000);
 })();
+</script>
+<script>
+
 /* ══════════════════════════════════════════
-   DNA ALIENÍGENA — Integrado ao perfil
+   DNA ALIENÍGENA — integrado ao perfil
+   Calcula espécie a partir de pedidos reais
 ══════════════════════════════════════════ */
 (function(){
 
-/* ── GÊNEROS ── */
 var DNA_GENRES={
-  RPG:    {color:'#9f3fff',label:'RPG'},
-  ACAO:   {color:'#ff1f30',label:'Ação'},
-  TERROR: {color:'#7030a0',label:'Terror'},
-  ESTRAT: {color:'#00b8e6',label:'Estratégia'},
-  SPORT:  {color:'#00e87a',label:'Esporte'},
+  RPG:{color:'#9f3fff',label:'RPG'},
+  ACAO:{color:'#ff1f30',label:'Ação'},
+  TERROR:{color:'#7030a0',label:'Terror'},
+  ESTRAT:{color:'#00b8e6',label:'Estratégia'},
+  SPORT:{color:'#00e87a',label:'Esporte'},
   CORRIDA:{color:'#ffc200',label:'Corrida'},
-  PLAT:   {color:'#ff5e00',label:'Plataforma'},
-  PUZZLE: {color:'#00ffe7',label:'Puzzle'},
+  PLAT:{color:'#ff5e00',label:'Plataforma'},
+  PUZZLE:{color:'#00ffe7',label:'Puzzle'}
 };
 
-/* ── BIBLIOTECA BASE (enriquecida com mais títulos) ── */
 var DNA_GAMES=[
-  {id:1, title:'Elden Ring',      cover:'🏔️', genres:['RPG','ACAO'],      bg:'linear-gradient(135deg,#2d1a4a,#1a0a2e)'},
-  {id:2, title:'FIFA 25',         cover:'⚽',  genres:['SPORT'],            bg:'linear-gradient(135deg,#004a1a,#001a0a)'},
-  {id:3, title:'Dark Souls III',  cover:'💀',  genres:['RPG','ACAO'],      bg:'linear-gradient(135deg,#1a0a00,#0a0505)'},
-  {id:4, title:'Resident Evil 4', cover:'🧟',  genres:['TERROR','ACAO'],   bg:'linear-gradient(135deg,#1a1a00,#0a0a00)'},
-  {id:5, title:'Age of Empires',  cover:'⚔️',  genres:['ESTRAT'],          bg:'linear-gradient(135deg,#1a1000,#0d0800)'},
-  {id:6, title:'Mario Kart',      cover:'🏎️',  genres:['CORRIDA','PLAT'],  bg:'linear-gradient(135deg,#4a1a00,#2a0a00)'},
-  {id:7, title:'Hollow Knight',   cover:'🦋',  genres:['PLAT','ACAO'],     bg:'linear-gradient(135deg,#0a1a2a,#050d15)'},
-  {id:8, title:'Terraria',        cover:'⛏️',  genres:['PUZZLE','PLAT'],   bg:'linear-gradient(135deg,#0a2a1a,#051510)'},
-  {id:9, title:'Dead Space',      cover:'🚀',  genres:['TERROR','ACAO'],   bg:'linear-gradient(135deg,#001a2a,#000d15)'},
-  {id:10,title:'Civilization VI', cover:'🌍',  genres:['ESTRAT','PUZZLE'], bg:'linear-gradient(135deg,#1a0a00,#0d0500)'},
-  {id:11,title:'Celeste',         cover:'🏔️',  genres:['PLAT','PUZZLE'],   bg:'linear-gradient(135deg,#1a0a2a,#0a0515)'},
-  {id:12,title:'The Witcher 3',   cover:'🗡️',  genres:['RPG','ACAO'],      bg:'linear-gradient(135deg,#0a1a0a,#050d05)'},
-  {id:13,title:'Gran Turismo',    cover:'🏁',  genres:['CORRIDA'],         bg:'linear-gradient(135deg,#1a1500,#0d0a00)'},
-  {id:14,title:'Returnal',        cover:'🌀',  genres:['ACAO','PUZZLE'],   bg:'linear-gradient(135deg,#001a1a,#000d0d)'},
-  {id:15,title:'Disco Elysium',   cover:'🎭',  genres:['RPG','PUZZLE'],    bg:'linear-gradient(135deg,#1a0505,#0d0202)'},
-  {id:16,title:'Hades',           cover:'🔱',  genres:['ACAO','RPG'],      bg:'linear-gradient(135deg,#2a0505,#150202)'},
-  {id:17,title:'Forza Horizon',   cover:'🚗',  genres:['CORRIDA'],         bg:'linear-gradient(135deg,#1a1800,#0d0c00)'},
-  {id:18,title:'Portal 2',        cover:'🌀',  genres:['PUZZLE'],          bg:'linear-gradient(135deg,#001a20,#000d10)'},
-  {id:19,title:'Sekiro',          cover:'⛩️',  genres:['ACAO','RPG'],      bg:'linear-gradient(135deg,#1a0800,#0d0400)'},
-  {id:20,title:'Stardew Valley',  cover:'🌾',  genres:['PUZZLE','RPG'],    bg:'linear-gradient(135deg,#0a1a05,#050d02)'},
-  {id:21,title:'Doom Eternal',    cover:'👿',  genres:['ACAO'],            bg:'linear-gradient(135deg,#2a0000,#150000)'},
-  {id:22,title:'PES / eFootball', cover:'🏆',  genres:['SPORT'],           bg:'linear-gradient(135deg,#001040,#000820)'},
-  {id:23,title:'Phasmophobia',    cover:'👻',  genres:['TERROR'],          bg:'linear-gradient(135deg,#0a0010,#050008)'},
-  {id:24,title:'StarCraft II',    cover:'🛸',  genres:['ESTRAT'],          bg:'linear-gradient(135deg,#00001a,#00000d)'},
+  {id:1,title:'Elden Ring',cover:'🏔️',genres:['RPG','ACAO'],bg:'linear-gradient(135deg,#2d1a4a,#1a0a2e)'},
+  {id:2,title:'FIFA 25',cover:'⚽',genres:['SPORT'],bg:'linear-gradient(135deg,#004a1a,#001a0a)'},
+  {id:3,title:'Dark Souls III',cover:'💀',genres:['RPG','ACAO'],bg:'linear-gradient(135deg,#1a0a00,#0a0505)'},
+  {id:4,title:'Resident Evil 4',cover:'🧟',genres:['TERROR','ACAO'],bg:'linear-gradient(135deg,#1a1a00,#0a0a00)'},
+  {id:5,title:'Age of Empires',cover:'⚔️',genres:['ESTRAT'],bg:'linear-gradient(135deg,#1a1000,#0d0800)'},
+  {id:6,title:'Mario Kart',cover:'🏎️',genres:['CORRIDA','PLAT'],bg:'linear-gradient(135deg,#4a1a00,#2a0a00)'},
+  {id:7,title:'Hollow Knight',cover:'🦋',genres:['PLAT','ACAO'],bg:'linear-gradient(135deg,#0a1a2a,#050d15)'},
+  {id:8,title:'Terraria',cover:'⛏️',genres:['PUZZLE','PLAT'],bg:'linear-gradient(135deg,#0a2a1a,#051510)'},
+  {id:9,title:'Dead Space',cover:'🚀',genres:['TERROR','ACAO'],bg:'linear-gradient(135deg,#001a2a,#000d15)'},
+  {id:10,title:'Civilization VI',cover:'🌍',genres:['ESTRAT','PUZZLE'],bg:'linear-gradient(135deg,#1a0a00,#0d0500)'},
+  {id:11,title:'Celeste',cover:'🏔️',genres:['PLAT','PUZZLE'],bg:'linear-gradient(135deg,#1a0a2a,#0a0515)'},
+  {id:12,title:'The Witcher 3',cover:'🗡️',genres:['RPG','ACAO'],bg:'linear-gradient(135deg,#0a1a0a,#050d05)'},
+  {id:13,title:'Gran Turismo',cover:'🏁',genres:['CORRIDA'],bg:'linear-gradient(135deg,#1a1500,#0d0a00)'},
+  {id:14,title:'Returnal',cover:'🌀',genres:['ACAO','PUZZLE'],bg:'linear-gradient(135deg,#001a1a,#000d0d)'},
+  {id:15,title:'Disco Elysium',cover:'🎭',genres:['RPG','PUZZLE'],bg:'linear-gradient(135deg,#1a0505,#0d0202)'},
+  {id:16,title:'Hades',cover:'🔱',genres:['ACAO','RPG'],bg:'linear-gradient(135deg,#2a0505,#150202)'},
+  {id:17,title:'Forza Horizon',cover:'🚗',genres:['CORRIDA'],bg:'linear-gradient(135deg,#1a1800,#0d0c00)'},
+  {id:18,title:'Portal 2',cover:'🌀',genres:['PUZZLE'],bg:'linear-gradient(135deg,#001a20,#000d10)'},
+  {id:19,title:'Sekiro',cover:'⛩️',genres:['ACAO','RPG'],bg:'linear-gradient(135deg,#1a0800,#0d0400)'},
+  {id:20,title:'Stardew Valley',cover:'🌾',genres:['PUZZLE','RPG'],bg:'linear-gradient(135deg,#0a1a05,#050d02)'},
+  {id:21,title:'Doom Eternal',cover:'👿',genres:['ACAO'],bg:'linear-gradient(135deg,#2a0000,#150000)'},
+  {id:22,title:'PES / eFootball',cover:'🏆',genres:['SPORT'],bg:'linear-gradient(135deg,#001040,#000820)'},
+  {id:23,title:'Phasmophobia',cover:'👻',genres:['TERROR'],bg:'linear-gradient(135deg,#0a0010,#050008)'},
+  {id:24,title:'StarCraft II',cover:'🛸',genres:['ESTRAT'],bg:'linear-gradient(135deg,#00001a,#00000d)'}
 ];
 
-/* ── ESPÉCIES ──
-   Hierarquia: Terrícola → Marciano → espécies por gênero → exclusivos MarsPass
-   marspassRequired: null = qualquer um | 'any' = qualquer plano | 'premium' = centaurus/sombrero
-*/
 var DNA_ALIENS=[
-  /* ── TERRÍCOLA: nenhum jogo selecionado ── */
-  {
-    id:'terricola', name:'TERRÍCOLA PERDIDO', subtitle:'Explorador em Busca de Destino',
-    color:'#4a8fff', color2:'#00c8ff',
-    marspassRequired: null, exclusive: false,
-    requires:{}, defaultWhenEmpty: true,
-    desc:'Você ainda está explorando o universo dos jogos. Cada título que descobrir vai revelar o alien que existe dentro de você. A jornada começa aqui.',
-    traits:[
-      {icon:'🌍',name:'Origem',val:'Terra'},
-      {icon:'🔭',name:'Curiosidade',val:'Crescente'},
-      {icon:'🎮',name:'Experiência',val:'Iniciante'},
-      {icon:'✨',name:'Potencial',val:'Ilimitado'},
-    ],
-    compat:[
-      {name:'Marciano Nômade',score:90,color:'#e8421a',icon:'🚀',type:'Vizinhos de Galáxia'},
-      {name:'Berserker Kragoth',score:55,color:'#ff1f30',icon:'⚡',type:'Encontro Fascinante'},
-      {name:'Logic Daemon',score:70,color:'#00ffe7',icon:'🧩',type:'Professor Natural'},
-    ],
-    evo:[
-      {name:'Terrícola Perdido',req:'Você está aqui',color:'#4a8fff',current:true},
-      {name:'Marciano Nômade',req:'Selecione 3+ jogos',color:'#e8421a',current:false},
-      {name:'Escolha sua espécie',req:'Gênero dominante',color:'#00ffe7',current:false},
-    ],
-    codeChars:'ATCG',
-  },
-  /* ── MARCIANO: base, gênero misto ou 1-2 jogos ── */
-  {
-    id:'marciano', name:'MARCIANO NÔMADE', subtitle:'Viajante das Fronteiras Digitais',
-    color:'#e8421a', color2:'#ff6b2b',
-    marspassRequired: null, exclusive: false,
-    requires:{_minGames:2},
-    desc:'Você transita por gêneros sem se fixar a um só mundo. Sua versatilidade é uma arma. Poucos aliens conseguem sobreviver em tantos biomas digitais quanto você.',
-    traits:[
-      {icon:'🚀',name:'Mobilidade',val:'Extrema'},
-      {icon:'🌌',name:'Adaptação',val:'Rápida'},
-      {icon:'🎯',name:'Versatilidade',val:'Alta'},
-      {icon:'🔥',name:'Paixão',val:'Intensa'},
-    ],
-    compat:[
-      {name:'Berserker Kragoth',score:78,color:'#ff1f30',icon:'💢',type:'Rivalidade Saudável'},
-      {name:'Phantom Sage',score:82,color:'#9f3fff',icon:'🔮',type:'Parceiros de Exploração'},
-      {name:'Speed Daemon',score:74,color:'#ffc200',icon:'⚡',type:'Companheiros de Pista'},
-    ],
-    evo:[
-      {name:'Terrícola Perdido',req:'Início',color:'#4a5168',current:false},
-      {name:'Marciano Nômade',req:'Você está aqui',color:'#e8421a',current:true},
-      {name:'Especialista',req:'Gênero dominante (40%+)',color:'#00ffe7',current:false},
-      {name:'Lenda Galáctica',req:'MarsPass ativo',color:'#7c6af7',current:false},
-    ],
-    codeChars:'GCTA',
-  },
-  /* ── GÊNERO: AÇÃO ── */
-  {
-    id:'berserker', name:'BERSERKER KRAGOTH', subtitle:'Predador das Trevas Digitais',
-    color:'#ff1f30', color2:'#ff5e00', marspassRequired:null, exclusive:false,
-    requires:{ACAO:40},
-    desc:'Você não joga — você caça. Seus reflexos são processados em nanossegundos e sua tolerância à derrota é literalmente zero. Vive para o próximo combate.',
-    traits:[
-      {icon:'⚡',name:'Reflexo',val:'Absurdo'},
-      {icon:'💢',name:'Agressividade',val:'Máxima'},
-      {icon:'🎯',name:'Precisão',val:'Cirúrgica'},
-      {icon:'🔥',name:'Intensidade',val:'Lendária'},
-    ],
-    compat:[
-      {name:'Phantom Sage',score:94,color:'#9f3fff',icon:'🔮',type:'Aliado Ideal'},
-      {name:'Speed Daemon',score:81,color:'#ffc200',icon:'⚡',type:'Rival Respeitado'},
-      {name:'Marciano Nômade',score:78,color:'#e8421a',icon:'🚀',type:'Parente Próximo'},
-    ],
-    evo:[
-      {name:'Recruit Grunta',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Warrior Krath',req:'3 jogos de ação',color:'#ff5e00',current:false},
-      {name:'Berserker Kragoth',req:'Você está aqui',color:'#ff1f30',current:true},
-      {name:'Warlord Zexan',req:'8+ ação',color:'#ff2d7a',current:false},
-      {name:'Apex Predator Vryn',req:'Domínio total',color:'#ffc200',current:false},
-    ],
-    codeChars:'ATCG',
-  },
-  /* ── GÊNERO: RPG ── */
-  {
-    id:'sage', name:'PHANTOM SAGE VELTHIS', subtitle:'Tecelão de Mundos Imaginários',
-    color:'#9f3fff', color2:'#00b8e6', marspassRequired:null, exclusive:false,
-    requires:{RPG:40},
-    desc:'Você não termina jogos — você habita neles. Conhece a lore de memória, lê cada item de inventário e chora com NPCs que ninguém mais percebeu.',
-    traits:[
-      {icon:'📖',name:'Lore',val:'Infinito'},
-      {icon:'🧠',name:'Imersão',val:'Total'},
-      {icon:'🗺️',name:'Exploração',val:'Compulsiva'},
-      {icon:'✨',name:'Paciência',val:'Sobrehumana'},
-    ],
-    compat:[
-      {name:'Logic Daemon',score:88,color:'#00ffe7',icon:'🧩',type:'Aliado Ideal'},
-      {name:'Berserker Kragoth',score:94,color:'#ff1f30',icon:'⚡',type:'Aliado Complementar'},
-      {name:'Marciano Nômade',score:82,color:'#e8421a',icon:'🚀',type:'Explorador Aliado'},
-    ],
-    evo:[
-      {name:'Wanderer Thal',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Scholar Veth',req:'2 RPGs',color:'#7030d0',current:false},
-      {name:'Phantom Sage Velthis',req:'Você está aqui',color:'#9f3fff',current:true},
-      {name:'Archmage Sorvyn',req:'6+ RPGs',color:'#c060ff',current:false},
-      {name:'Omni Sage Etherion',req:'Lenda suprema',color:'#ffc200',current:false},
-    ],
-    codeChars:'GCTA',
-  },
-  /* ── GÊNERO: ESTRATÉGIA ── */
-  {
-    id:'tactician', name:'IRON TACTICIAN XORATH', subtitle:'Calculador de Batalhas Estelares',
-    color:'#00b8e6', color2:'#00ffe7', marspassRequired:null, exclusive:false,
-    requires:{ESTRAT:40},
-    desc:'Enquanto outros reagem, você já previu os próximos 12 movimentos. Não perde tempo com emoção — apenas cálculo frio e execução perfeita do plano.',
-    traits:[
-      {icon:'♟️',name:'Planejamento',val:'5 anos à frente'},
-      {icon:'📊',name:'Análise',val:'Clínica'},
-      {icon:'🏗️',name:'Construção',val:'Obsessiva'},
-      {icon:'🧮',name:'Eficiência',val:'Máxima'},
-    ],
-    compat:[
-      {name:'Phantom Sage',score:82,color:'#9f3fff',icon:'🔮',type:'Aliado Estratégico'},
-      {name:'Logic Daemon',score:96,color:'#00ffe7',icon:'🧩',type:'Dupla Imbatível'},
-      {name:'Berserker Kragoth',score:38,color:'#ff1f30',icon:'💢',type:'Caos Indesejado'},
-    ],
-    evo:[
-      {name:'Scout Drath',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Commander Vorh',req:'2 estratégias',color:'#0080b0',current:false},
-      {name:'Iron Tactician Xorath',req:'Você está aqui',color:'#00b8e6',current:true},
-      {name:'Grand Marshal Tyrak',req:'6+ estratégias',color:'#00ffe7',current:false},
-      {name:'Supreme Overlord Nexis',req:'Controle total',color:'#ffc200',current:false},
-    ],
-    codeChars:'CGAT',
-  },
-  /* ── GÊNERO: CORRIDA / PLATAFORMA ── */
-  {
-    id:'speedrunner', name:'SPEED DAEMON VRAXIS', subtitle:'Fantasma das Pistas Interestelares',
-    color:'#ffc200', color2:'#ff5e00', marspassRequired:null, exclusive:false,
-    requires:{CORRIDA:30,PLAT:20},
-    desc:'Um milissegundo a mais é um fracasso. Você morre 400 vezes no mesmo obstáculo com sorriso no rosto porque desta vez vai conseguir. E consegue.',
-    traits:[
-      {icon:'💨',name:'Velocidade',val:'Absurda'},
-      {icon:'🎮',name:'Precisão',val:'Pixel Perfect'},
-      {icon:'⏱️',name:'Tempo',val:'Sagrado'},
-      {icon:'🔄',name:'Repetição',val:'Infinita'},
-    ],
-    compat:[
-      {name:'Berserker Kragoth',score:81,color:'#ff1f30',icon:'🔥',type:'Rivalidade Épica'},
-      {name:'Logic Daemon',score:70,color:'#00ffe7',icon:'🧩',type:'Parceria Técnica'},
-      {name:'Phantom Sage',score:35,color:'#9f3fff',icon:'📖',type:'Mundos Opostos'},
-    ],
-    evo:[
-      {name:'Rookie Racer Blix',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Turbo Pilot Zax',req:'2 corridas',color:'#c09000',current:false},
-      {name:'Speed Daemon Vraxis',req:'Você está aqui',color:'#ffc200',current:true},
-      {name:'Lightspeed Ghost Fynn',req:'5+ corridas',color:'#ff5e00',current:false},
-      {name:'Temporal Phantom Kael',req:'Lenda eterna',color:'#ff2d7a',current:false},
-    ],
-    codeChars:'TACG',
-  },
-  /* ── GÊNERO: TERROR ── */
-  {
-    id:'horror', name:'VOID LURKER NETHYS', subtitle:'Habitante das Trevas Profundas',
-    color:'#7030a0', color2:'#ff2d7a', marspassRequired:null, exclusive:false,
-    requires:{TERROR:40},
-    desc:'Você paga pra sofrer. Apaga as luzes, coloca fone e literalmente chora — mas não para. Algo nessa tortura te faz sentir mais vivo do que qualquer outra coisa.',
-    traits:[
-      {icon:'😱',name:'Tolerância',val:'Nenhuma'},
-      {icon:'🌑',name:'Ambientação',val:'Abissal'},
-      {icon:'💜',name:'Masoquismo',val:'Alto'},
-      {icon:'🔦',name:'Sobrevivência',val:'Improvável'},
-    ],
-    compat:[
-      {name:'Berserker Kragoth',score:65,color:'#ff1f30',icon:'💢',type:'Caçador e Presa'},
-      {name:'Phantom Sage',score:75,color:'#9f3fff',icon:'🔮',type:'Almas Torturadas'},
-      {name:'Void Architect',score:88,color:'#7c6af7',icon:'🌌',type:'Lendas do Abismo'},
-    ],
-    evo:[
-      {name:'Curious Mortal Wryn',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Fear Seeker Morth',req:'2 terror',color:'#501070',current:false},
-      {name:'Void Lurker Nethys',req:'Você está aqui',color:'#7030a0',current:true},
-      {name:'Nightmare Weaver Zal',req:'5+ terror',color:'#9040c0',current:false},
-      {name:'Elder Horror Xythis',req:'Sem retorno',color:'#ff2d7a',current:false},
-    ],
-    codeChars:'TGCA',
-  },
-  /* ── GÊNERO: PUZZLE ── */
-  {
-    id:'puzzle', name:'LOGIC DAEMON QUERYX', subtitle:'Solucionador de Paradoxos Quânticos',
-    color:'#00ffe7', color2:'#00b8e6', marspassRequired:null, exclusive:false,
-    requires:{PUZZLE:35},
-    desc:'Você olha pra um puzzle e vê a solução antes de entender o problema. Não é inteligência — é uma forma diferente de ver o universo. Literal.',
-    traits:[
-      {icon:'🧩',name:'Lógica',val:'Impecável'},
-      {icon:'🔍',name:'Observação',val:'Microscópica'},
-      {icon:'💡',name:'Insight',val:'Frequente'},
-      {icon:'⏳',name:'Paciência',val:'Infinita'},
-    ],
-    compat:[
-      {name:'Iron Tactician',score:96,color:'#00b8e6',icon:'♟️',type:'Dupla Perfeita'},
-      {name:'Phantom Sage',score:88,color:'#9f3fff',icon:'🔮',type:'Mentes Complementares'},
-      {name:'Speed Daemon',score:50,color:'#ffc200',icon:'💨',type:'Ritmos Diferentes'},
-    ],
-    evo:[
-      {name:'Seeker Quelith',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Analyst Vex',req:'2 puzzles',color:'#00a090',current:false},
-      {name:'Logic Daemon Queryx',req:'Você está aqui',color:'#00ffe7',current:true},
-      {name:'Paradox Master Zyne',req:'5+ puzzles',color:'#00ffff',current:false},
-      {name:'Omniscient Kalyx',req:'Tudo resolvido',color:'#ffc200',current:false},
-    ],
-    codeChars:'CATG',
-  },
-  /* ── GÊNERO: ESPORTE ── */
-  {
-    id:'athlete', name:'ASTRO ATHLETE KYROS', subtitle:'Campeão das Arenas Interestelares',
-    color:'#00e87a', color2:'#00b8e6', marspassRequired:null, exclusive:false,
-    requires:{SPORT:40},
-    desc:'Para você cada partida é uma final de mundial. Conhece cada estatística, cada jogador, cada tática. Esporte não é diversão — é religião.',
-    traits:[
-      {icon:'🏆',name:'Competição',val:'Feroz'},
-      {icon:'📈',name:'Ranking',val:'Obsessão'},
-      {icon:'🤝',name:'Fair Play',val:'Opcional'},
-      {icon:'💪',name:'Grit',val:'Extremo'},
-    ],
-    compat:[
-      {name:'Speed Daemon',score:85,color:'#ffc200',icon:'💨',type:'Rivalidade Esportiva'},
-      {name:'Iron Tactician',score:77,color:'#00b8e6',icon:'♟️',type:'Análise + Execução'},
-      {name:'Berserker Kragoth',score:66,color:'#ff1f30',icon:'💢',type:'Jogo Físico'},
-    ],
-    evo:[
-      {name:'Amateur Pyxis',req:'Iniciante',color:'#4a5168',current:false},
-      {name:'Pro Striker Lyx',req:'2 esportes',color:'#009950',current:false},
-      {name:'Astro Athlete Kyros',req:'Você está aqui',color:'#00e87a',current:true},
-      {name:'Galaxy MVP Zorak',req:'5+ esportes',color:'#00ffaa',current:false},
-      {name:'Legend Titan Oryxis',req:'Eternamente',color:'#ffc200',current:false},
-    ],
-    codeChars:'GCAT',
-  },
-
-  /* ══ EXCLUSIVOS MARSPASS ══ */
-
-  /* Andrômeda / Triângulo — qualquer plano ativo */
-  {
-    id:'void_architect', name:'VOID ARCHITECT ZYRETH', subtitle:'Construtor das Realidades Paralelas',
-    color:'#7c6af7', color2:'#ff3c6e', marspassRequired:'any', exclusive:true,
-    requires:{RPG:20,ESTRAT:20},
-    desc:'Assinante MarsPass. Você não joga dentro do universo — você o constrói. Mente analítica com alma de explorador, Zyreth molda realidades onde outros apenas existem.',
-    traits:[
-      {icon:'🌌',name:'Arquitetura',val:'Cósmica'},
-      {icon:'🔮',name:'Visão',val:'Multidimensional'},
-      {icon:'⚗️',name:'Criação',val:'Compulsiva'},
-      {icon:'👑',name:'Status',val:'MarsPass Ativo'},
-    ],
-    compat:[
-      {name:'Phantom Sage',score:97,color:'#9f3fff',icon:'🔮',type:'Almas Gêmeas'},
-      {name:'Iron Tactician',score:91,color:'#00b8e6',icon:'♟️',type:'Dupla Construtora'},
-      {name:'Nebula Sovereign',score:88,color:'#ff3c6e',icon:'🌟',type:'Lendas da Galáxia'},
-    ],
-    evo:[
-      {name:'Marciano Nômade',req:'Jornada iniciada',color:'#4a5168',current:false},
-      {name:'Architect Aspirante',req:'MarsPass Andrômeda',color:'#5a4fd4',current:false},
-      {name:'Void Architect Zyreth',req:'Você está aqui',color:'#7c6af7',current:true},
-      {name:'Nebula Sovereign',req:'Plano Centaurus/Sombrero',color:'#ff3c6e',current:false},
-    ],
-    codeChars:'GCTA',
-  },
-
-  /* Centaurus / Sombrero — plano premium */
-  {
-    id:'nebula_sovereign', name:'NEBULA SOVEREIGN VELYXIS', subtitle:'Soberana das Galáxias Sem Nome',
-    color:'#ff3c6e', color2:'#ffc200', marspassRequired:'premium', exclusive:true,
-    requires:{},
-    desc:'Plano Centaurus ou Sombrero. A forma mais elevada de existência no universo MarsGames. Velyxis não pertence a nenhuma espécie — ela é a espécie. Sua presença redefine o jogo.',
-    traits:[
-      {icon:'🌟',name:'Raridade',val:'1 em Galáxia'},
-      {icon:'👑',name:'Status',val:'Soberana'},
-      {icon:'🌌',name:'Influência',val:'Universal'},
-      {icon:'💫',name:'MarsPass',val:'Centaurus/Sombrero'},
-    ],
-    compat:[
-      {name:'Void Architect',score:88,color:'#7c6af7',icon:'🌌',type:'Lendas Aliadas'},
-      {name:'Phantom Sage',score:95,color:'#9f3fff',icon:'🔮',type:'Poder Máximo'},
-      {name:'Todos os Aliens',score:99,color:'#ffc200',icon:'✨',type:'Ascendência Total'},
-    ],
-    evo:[
-      {name:'Void Architect',req:'Andrômeda/Triângulo',color:'#7c6af7',current:false},
-      {name:'Nebula Sovereign Velyxis',req:'Você está aqui — Centaurus/Sombrero',color:'#ff3c6e',current:true},
-    ],
-    codeChars:'GCTA',
-  },
+  {id:'terricola',name:'TERRÍCOLA PERDIDO',subtitle:'Explorador em Busca de Destino',
+   color:'#4a8fff',color2:'#00c8ff',defaultWhenEmpty:true,exclusive:false,
+   desc:'Você ainda está explorando o universo dos jogos. Cada título que descobrir vai revelar o alien dentro de você.',
+   traits:[{icon:'🌍',name:'Origem',val:'Terra'},{icon:'🔭',name:'Curiosidade',val:'Crescente'},{icon:'🎮',name:'Experiência',val:'Iniciante'},{icon:'✨',name:'Potencial',val:'Ilimitado'}],
+   compat:[{name:'Marciano Nômade',score:90,color:'#e8421a',icon:'🚀',type:'Vizinhos de Galáxia'},{name:'Logic Daemon',score:70,color:'#00ffe7',icon:'🧩',type:'Professor Natural'},{name:'Berserker',score:55,color:'#ff1f30',icon:'⚡',type:'Encontro Fascinante'}],
+   evo:[{name:'Terrícola Perdido',req:'Você está aqui',color:'#4a8fff',current:true},{name:'Marciano Nômade',req:'3+ jogos',color:'#e8421a',current:false},{name:'Especialista',req:'Gênero dominante',color:'#00ffe7',current:false}],
+   codeChars:'ATCG'},
+  {id:'marciano',name:'MARCIANO NÔMADE',subtitle:'Viajante das Fronteiras Digitais',
+   color:'#e8421a',color2:'#ff6b2b',exclusive:false,
+   desc:'Você transita por gêneros sem se fixar a um só mundo. Sua versatilidade é uma arma rara na galáxia.',
+   traits:[{icon:'🚀',name:'Mobilidade',val:'Extrema'},{icon:'🌌',name:'Adaptação',val:'Rápida'},{icon:'🎯',name:'Versatilidade',val:'Alta'},{icon:'🔥',name:'Paixão',val:'Intensa'}],
+   compat:[{name:'Berserker Kragoth',score:78,color:'#ff1f30',icon:'💢',type:'Rivalidade Saudável'},{name:'Phantom Sage',score:82,color:'#9f3fff',icon:'🔮',type:'Exploração Conjunta'},{name:'Speed Daemon',score:74,color:'#ffc200',icon:'⚡',type:'Companheiros'}],
+   evo:[{name:'Terrícola Perdido',req:'Início',color:'#4a5168',current:false},{name:'Marciano Nômade',req:'Você está aqui',color:'#e8421a',current:true},{name:'Especialista',req:'40%+ em um gênero',color:'#00ffe7',current:false},{name:'Lenda MarsPass',req:'MarsPass ativo',color:'#7c6af7',current:false}],
+   codeChars:'GCTA'},
+  {id:'berserker',name:'BERSERKER KRAGOTH',subtitle:'Predador das Trevas Digitais',
+   color:'#ff1f30',color2:'#ff5e00',exclusive:false,requires:{ACAO:40},
+   desc:'Você não joga — você caça. Reflexos em nanossegundos e tolerância zero à derrota.',
+   traits:[{icon:'⚡',name:'Reflexo',val:'Absurdo'},{icon:'💢',name:'Agressividade',val:'Máxima'},{icon:'🎯',name:'Precisão',val:'Cirúrgica'},{icon:'🔥',name:'Intensidade',val:'Lendária'}],
+   compat:[{name:'Phantom Sage',score:94,color:'#9f3fff',icon:'🔮',type:'Aliado Ideal'},{name:'Speed Daemon',score:81,color:'#ffc200',icon:'⚡',type:'Rival Respeitado'},{name:'Marciano Nômade',score:78,color:'#e8421a',icon:'🚀',type:'Parente Próximo'}],
+   evo:[{name:'Recruit Grunta',req:'Iniciante',color:'#4a5168',current:false},{name:'Warrior Krath',req:'3 ações',color:'#ff5e00',current:false},{name:'Berserker Kragoth',req:'Você está aqui',color:'#ff1f30',current:true},{name:'Warlord Zexan',req:'8+ ação',color:'#ff2d7a',current:false},{name:'Apex Predator',req:'Domínio total',color:'#ffc200',current:false}],
+   codeChars:'ATCG'},
+  {id:'sage',name:'PHANTOM SAGE VELTHIS',subtitle:'Tecelão de Mundos Imaginários',
+   color:'#9f3fff',color2:'#00b8e6',exclusive:false,requires:{RPG:40},
+   desc:'Você não termina jogos — você habita neles. Conhece a lore de memória e chora com NPCs.',
+   traits:[{icon:'📖',name:'Lore',val:'Infinito'},{icon:'🧠',name:'Imersão',val:'Total'},{icon:'🗺️',name:'Exploração',val:'Compulsiva'},{icon:'✨',name:'Paciência',val:'Sobrehumana'}],
+   compat:[{name:'Logic Daemon',score:88,color:'#00ffe7',icon:'🧩',type:'Aliado Ideal'},{name:'Berserker Kragoth',score:94,color:'#ff1f30',icon:'⚡',type:'Complementar'},{name:'Marciano Nômade',score:82,color:'#e8421a',icon:'🚀',type:'Explorador'}],
+   evo:[{name:'Wanderer Thal',req:'Iniciante',color:'#4a5168',current:false},{name:'Scholar Veth',req:'2 RPGs',color:'#7030d0',current:false},{name:'Phantom Sage Velthis',req:'Você está aqui',color:'#9f3fff',current:true},{name:'Archmage Sorvyn',req:'6+ RPGs',color:'#c060ff',current:false},{name:'Omni Sage',req:'Lenda suprema',color:'#ffc200',current:false}],
+   codeChars:'GCTA'},
+  {id:'tactician',name:'IRON TACTICIAN XORATH',subtitle:'Calculador de Batalhas Estelares',
+   color:'#00b8e6',color2:'#00ffe7',exclusive:false,requires:{ESTRAT:40},
+   desc:'Enquanto outros reagem, você já previu os próximos 12 movimentos.',
+   traits:[{icon:'♟️',name:'Planejamento',val:'5 anos à frente'},{icon:'📊',name:'Análise',val:'Clínica'},{icon:'🏗️',name:'Construção',val:'Obsessiva'},{icon:'🧮',name:'Eficiência',val:'Máxima'}],
+   compat:[{name:'Phantom Sage',score:82,color:'#9f3fff',icon:'🔮',type:'Estratégico'},{name:'Logic Daemon',score:96,color:'#00ffe7',icon:'🧩',type:'Dupla Imbatível'},{name:'Berserker',score:38,color:'#ff1f30',icon:'💢',type:'Caos Indesejado'}],
+   evo:[{name:'Scout Drath',req:'Iniciante',color:'#4a5168',current:false},{name:'Commander Vorh',req:'2 estratégias',color:'#0080b0',current:false},{name:'Iron Tactician',req:'Você está aqui',color:'#00b8e6',current:true},{name:'Grand Marshal',req:'6+ estratégias',color:'#00ffe7',current:false},{name:'Supreme Overlord',req:'Controle total',color:'#ffc200',current:false}],
+   codeChars:'CGAT'},
+  {id:'speedrunner',name:'SPEED DAEMON VRAXIS',subtitle:'Fantasma das Pistas Interestelares',
+   color:'#ffc200',color2:'#ff5e00',exclusive:false,requires:{CORRIDA:30,PLAT:20},
+   desc:'Um milissegundo a mais é fracasso. Você morre 400 vezes sorrindo porque desta vez vai.',
+   traits:[{icon:'💨',name:'Velocidade',val:'Absurda'},{icon:'🎮',name:'Precisão',val:'Pixel Perfect'},{icon:'⏱️',name:'Tempo',val:'Sagrado'},{icon:'🔄',name:'Repetição',val:'Infinita'}],
+   compat:[{name:'Berserker',score:81,color:'#ff1f30',icon:'🔥',type:'Rivalidade Épica'},{name:'Logic Daemon',score:70,color:'#00ffe7',icon:'🧩',type:'Parceria Técnica'},{name:'Phantom Sage',score:35,color:'#9f3fff',icon:'📖',type:'Mundos Opostos'}],
+   evo:[{name:'Rookie Racer',req:'Iniciante',color:'#4a5168',current:false},{name:'Turbo Pilot',req:'2 corridas',color:'#c09000',current:false},{name:'Speed Daemon Vraxis',req:'Você está aqui',color:'#ffc200',current:true},{name:'Lightspeed Ghost',req:'5+ corridas',color:'#ff5e00',current:false},{name:'Temporal Phantom',req:'Lenda eterna',color:'#ff2d7a',current:false}],
+   codeChars:'TACG'},
+  {id:'horror',name:'VOID LURKER NETHYS',subtitle:'Habitante das Trevas Profundas',
+   color:'#7030a0',color2:'#ff2d7a',exclusive:false,requires:{TERROR:40},
+   desc:'Você paga pra sofrer. Apaga as luzes, coloca fone e chora — mas não para.',
+   traits:[{icon:'😱',name:'Tolerância',val:'Nenhuma'},{icon:'🌑',name:'Ambientação',val:'Abissal'},{icon:'💜',name:'Masoquismo',val:'Alto'},{icon:'🔦',name:'Sobrevivência',val:'Improvável'}],
+   compat:[{name:'Berserker',score:65,color:'#ff1f30',icon:'💢',type:'Caçador e Presa'},{name:'Phantom Sage',score:75,color:'#9f3fff',icon:'🔮',type:'Almas Torturadas'},{name:'Iron Tactician',score:40,color:'#00b8e6',icon:'♟️',type:'Lógica vs Caos'}],
+   evo:[{name:'Curious Mortal',req:'Iniciante',color:'#4a5168',current:false},{name:'Fear Seeker',req:'2 terror',color:'#501070',current:false},{name:'Void Lurker Nethys',req:'Você está aqui',color:'#7030a0',current:true},{name:'Nightmare Weaver',req:'5+ terror',color:'#9040c0',current:false},{name:'Elder Horror',req:'Sem retorno',color:'#ff2d7a',current:false}],
+   codeChars:'TGCA'},
+  {id:'puzzle',name:'LOGIC DAEMON QUERYX',subtitle:'Solucionador de Paradoxos Quânticos',
+   color:'#00ffe7',color2:'#00b8e6',exclusive:false,requires:{PUZZLE:35},
+   desc:'Você vê a solução antes de entender o problema. É uma forma diferente de ver o universo.',
+   traits:[{icon:'🧩',name:'Lógica',val:'Impecável'},{icon:'🔍',name:'Observação',val:'Microscópica'},{icon:'💡',name:'Insight',val:'Frequente'},{icon:'⏳',name:'Paciência',val:'Infinita'}],
+   compat:[{name:'Iron Tactician',score:96,color:'#00b8e6',icon:'♟️',type:'Dupla Perfeita'},{name:'Phantom Sage',score:88,color:'#9f3fff',icon:'🔮',type:'Mentes Complementares'},{name:'Speed Daemon',score:50,color:'#ffc200',icon:'💨',type:'Ritmos Diferentes'}],
+   evo:[{name:'Seeker Quelith',req:'Iniciante',color:'#4a5168',current:false},{name:'Analyst Vex',req:'2 puzzles',color:'#00a090',current:false},{name:'Logic Daemon Queryx',req:'Você está aqui',color:'#00ffe7',current:true},{name:'Paradox Master',req:'5+ puzzles',color:'#00ffff',current:false},{name:'Omniscient Kalyx',req:'Tudo resolvido',color:'#ffc200',current:false}],
+   codeChars:'CATG'},
+  {id:'athlete',name:'ASTRO ATHLETE KYROS',subtitle:'Campeão das Arenas Interestelares',
+   color:'#00e87a',color2:'#00b8e6',exclusive:false,requires:{SPORT:40},
+   desc:'Cada partida é uma final de mundial. Conhece cada estatística, cada jogador, cada tática.',
+   traits:[{icon:'🏆',name:'Competição',val:'Feroz'},{icon:'📈',name:'Ranking',val:'Obsessão'},{icon:'🤝',name:'Fair Play',val:'Opcional'},{icon:'💪',name:'Grit',val:'Extremo'}],
+   compat:[{name:'Speed Daemon',score:85,color:'#ffc200',icon:'💨',type:'Rivalidade'},{name:'Iron Tactician',score:77,color:'#00b8e6',icon:'♟️',type:'Análise+Execução'},{name:'Berserker',score:66,color:'#ff1f30',icon:'💢',type:'Jogo Físico'}],
+   evo:[{name:'Amateur Pyxis',req:'Iniciante',color:'#4a5168',current:false},{name:'Pro Striker Lyx',req:'2 esportes',color:'#009950',current:false},{name:'Astro Athlete Kyros',req:'Você está aqui',color:'#00e87a',current:true},{name:'Galaxy MVP Zorak',req:'5+ esportes',color:'#00ffaa',current:false},{name:'Legend Titan',req:'Eternamente',color:'#ffc200',current:false}],
+   codeChars:'GCAT'},
+  {id:'void_architect',name:'VOID ARCHITECT ZYRETH',subtitle:'Construtor das Realidades Paralelas',
+   color:'#7c6af7',color2:'#ff3c6e',exclusive:true,marspassRequired:'any',
+   desc:'Assinante MarsPass. Você não joga dentro do universo — você o constrói.',
+   traits:[{icon:'🌌',name:'Arquitetura',val:'Cósmica'},{icon:'🔮',name:'Visão',val:'Multidimensional'},{icon:'⚗️',name:'Criação',val:'Compulsiva'},{icon:'👑',name:'Status',val:'MarsPass Ativo'}],
+   compat:[{name:'Phantom Sage',score:97,color:'#9f3fff',icon:'🔮',type:'Almas Gêmeas'},{name:'Iron Tactician',score:91,color:'#00b8e6',icon:'♟️',type:'Dupla Construtora'},{name:'Nebula Sovereign',score:88,color:'#ff3c6e',icon:'🌟',type:'Lendas'}],
+   evo:[{name:'Marciano Nômade',req:'Início',color:'#4a5168',current:false},{name:'Void Architect Zyreth',req:'Você está aqui',color:'#7c6af7',current:true},{name:'Nebula Sovereign',req:'Centaurus/Sombrero',color:'#ff3c6e',current:false}],
+   codeChars:'GCTA'},
+  {id:'nebula_sovereign',name:'NEBULA SOVEREIGN VELYXIS',subtitle:'Soberana das Galáxias Sem Nome',
+   color:'#ff3c6e',color2:'#ffc200',exclusive:true,marspassRequired:'premium',
+   desc:'Plano Centaurus ou Sombrero. A forma mais elevada de existência no universo MarsGames.',
+   traits:[{icon:'🌟',name:'Raridade',val:'1 em Galáxia'},{icon:'👑',name:'Status',val:'Soberana'},{icon:'🌌',name:'Influência',val:'Universal'},{icon:'💫',name:'MarsPass',val:'Centaurus/Sombrero'}],
+   compat:[{name:'Void Architect',score:88,color:'#7c6af7',icon:'🌌',type:'Lendas Aliadas'},{name:'Phantom Sage',score:95,color:'#9f3fff',icon:'🔮',type:'Poder Máximo'},{name:'Todos os Aliens',score:99,color:'#ffc200',icon:'✨',type:'Ascendência Total'}],
+   evo:[{name:'Void Architect',req:'Andrômeda/Triângulo',color:'#7c6af7',current:false},{name:'Nebula Sovereign',req:'Você está aqui',color:'#ff3c6e',current:true}],
+   codeChars:'GCTA'}
 ];
 
 var dnaSelected=new Set();
 var dnaCurrentAlien=null;
 
-/* ── CARREGAR BIBLIOTECA DO SUPABASE ── */
 async function dnaCarregarBiblioteca(){
   var grid=document.getElementById('dnaLibGrid');
   if(!grid) return;
-  var jogosEncontrados=[];
-
+  var found=[];
   try{
     if(userSession){
-      /* Busca pedidos pagos/entregues e extrai nomes dos itens */
-      var{data:pedidos}=await sb.from('pedidos')
-        .select('itens').or('user_id.eq.'+userSession.user.id+',user_email.eq.'+userSession.user.email)
+      var{data:peds}=await sb.from('pedidos')
+        .select('itens,produto_nome,status')
+        .or('user_id.eq.'+userSession.user.id+',user_email.eq.'+userSession.user.email)
         .in('status',['pago','entregue','aprovado']);
-      if(pedidos&&pedidos.length){
-        var nomesPedidos=new Set();
-        pedidos.forEach(function(p){
-          var itens=p.itens;
-          if(typeof itens==='string') try{itens=JSON.parse(itens);}catch(e){itens=[];}
-          if(Array.isArray(itens)) itens.forEach(function(i){if(i.nome||i.title||i.name) nomesPedidos.add((i.nome||i.title||i.name).toLowerCase());});
+      if(peds&&peds.length){
+        var nomes=new Set();
+        peds.forEach(function(p){
+          var it=p.itens;
+          if(typeof it==='string') try{it=JSON.parse(it);}catch(e){it=[];}
+          if(Array.isArray(it)) it.forEach(function(i){nomes.add((i.nome||i.title||i.name||'').toLowerCase());});
+          else if(p.produto_nome) nomes.add(p.produto_nome.toLowerCase());
         });
-        /* Mapeia nomes dos pedidos para os jogos do DNA */
         DNA_GAMES.forEach(function(g){
-          if(nomesPedidos.has(g.title.toLowerCase())||
-             [...nomesPedidos].some(function(n){return n.includes(g.title.toLowerCase().slice(0,8));})){
-            jogosEncontrados.push(g.id);
-          }
+          if([...nomes].some(function(n){return n.includes(g.title.toLowerCase().slice(0,6));})) found.push(g.id);
         });
       }
     }
   }catch(e){}
-
-  /* Se não achou jogos via pedidos, pré-seleciona aleatoriamente para demo */
-  if(jogosEncontrados.length===0){
-    jogosEncontrados=[1,3,7,12,16];
-  }
-
-  dnaSelected=new Set(jogosEncontrados);
+  dnaSelected=new Set(found.length?found:[1,3,7,12,16]);
   dnaRenderLib();
 }
 
@@ -4714,12 +4419,11 @@ function dnaRenderLib(){
     var gc=DNA_GENRES[g.genres[0]];
     var card=document.createElement('div');
     card.className='dna-game-card'+(dnaSelected.has(g.id)?' sel':'');
-    card.innerHTML=
-      '<div class="dna-game-cover">'+g.cover+'</div>'+
+    card.innerHTML='<div class="dna-game-cover">'+g.cover+'</div>'+
       '<div class="dna-game-title">'+g.title+'</div>'+
       '<span class="dna-game-genre" style="background:'+gc.color+'22;color:'+gc.color+';border:1px solid '+gc.color+'44">'+gc.label+'</span>';
     card.onclick=function(){
-      if(dnaSelected.has(g.id))dnaSelected.delete(g.id);
+      if(dnaSelected.has(g.id)) dnaSelected.delete(g.id);
       else dnaSelected.add(g.id);
       dnaRenderLib();
     };
@@ -4727,161 +4431,126 @@ function dnaRenderLib(){
   });
 }
 
-/* ── COMPUTE SCORES ── */
 function dnaComputeScores(){
-  var scores={};
-  Object.keys(DNA_GENRES).forEach(function(g){scores[g]=0;});
+  var scores={RPG:0,ACAO:0,TERROR:0,ESTRAT:0,SPORT:0,CORRIDA:0,PLAT:0,PUZZLE:0};
   var total=0;
   dnaSelected.forEach(function(id){
-    var game=DNA_GAMES.find(function(g){return g.id===id;});
-    if(!game) return;
-    game.genres.forEach(function(genre){scores[genre]=(scores[genre]||0)+1;total++;});
+    var g=DNA_GAMES.find(function(x){return x.id===id;});
+    if(!g) return;
+    g.genres.forEach(function(genre){scores[genre]++;total++;});
   });
-  if(total>0) Object.keys(scores).forEach(function(g){scores[g]=Math.round((scores[g]/total)*100);});
+  if(total>0) Object.keys(scores).forEach(function(k){scores[k]=Math.round(scores[k]/total*100);});
   return scores;
 }
 
-/* ── PICK ALIEN com lógica MarsPass ── */
 function dnaPickAlien(scores){
   var plano=window._marspassPlanoAtivo||null;
-  /* Sem jogos selecionados → Terrícola */
-  if(dnaSelected.size===0){
-    return DNA_ALIENS.find(function(a){return a.defaultWhenEmpty;});
-  }
-  /* Nebula Sovereign: plano premium (centaurus/sombrero) */
-  if(plano==='centaurus'||plano==='sombrero'){
-    return DNA_ALIENS.find(function(a){return a.id==='nebula_sovereign';});
-  }
-  /* Void Architect: qualquer plano MarsPass */
+  if(dnaSelected.size===0) return DNA_ALIENS.find(function(a){return a.defaultWhenEmpty;});
+  if(plano==='centaurus'||plano==='sombrero') return DNA_ALIENS.find(function(a){return a.id==='nebula_sovereign';});
   if(plano){
-    /* Verifica se tem gênero dominante para espécies normais primeiro */
-    var best=dnaPickByGenre(scores);
-    /* Se o melhor match for fraco (marciano), promove para Void Architect */
-    if(best&&best.id==='marciano') return DNA_ALIENS.find(function(a){return a.id==='void_architect';});
-    /* Tem gênero dominante — mantém espécie do gênero (sem promoção forçada) */
-    return best;
+    var byGenre=dnaPickByGenre(scores);
+    if(byGenre&&byGenre.id==='marciano') return DNA_ALIENS.find(function(a){return a.id==='void_architect';});
+    return byGenre;
   }
-  /* Sem MarsPass — lógica por gênero normal */
   return dnaPickByGenre(scores);
 }
 
 function dnaPickByGenre(scores){
-  var candidates=DNA_ALIENS.filter(function(a){
-    return !a.exclusive && !a.defaultWhenEmpty && a.id!=='marciano';
-  });
-  var best=null, bestScore=-1;
-  candidates.forEach(function(alien){
+  var best=null,bestScore=-1;
+  DNA_ALIENS.filter(function(a){return !a.exclusive&&!a.defaultWhenEmpty&&a.id!=='marciano'&&a.requires;}).forEach(function(a){
     var match=0;
-    Object.entries(alien.requires).forEach(function(pair){
-      var genre=pair[0], threshold=pair[1];
-      if(genre==='_minGames') return;
-      match+=(scores[genre]||0);
-    });
-    if(match>bestScore){bestScore=match;best=alien;}
+    Object.keys(a.requires).forEach(function(g){match+=(scores[g]||0);});
+    if(match>bestScore){bestScore=match;best=a;}
   });
-  /* Fallback: Marciano se nenhum atingiu limiar */
   if(!best||bestScore<20) return DNA_ALIENS.find(function(a){return a.id==='marciano';});
   return best;
 }
 
-/* ── GERAR CÓDIGO DNA ── */
 function dnaGenCode(alien,scores){
-  var chars=alien.codeChars;
-  var code='';
-  var seed=Object.values(scores).reduce(function(a,b){return a+b;},0)||42;
+  var chars=alien.codeChars,code='',seed=Object.values(scores).reduce(function(a,b){return a+b;},0)||42;
   for(var i=0;i<32;i++){
-    var idx=((seed*(i+1))+(i*7)+13)%chars.length;
-    code+=chars[Math.floor(Math.abs(idx))%chars.length];
+    code+=chars[Math.abs(Math.floor((seed*(i+1)+i*7+13)%chars.length))%chars.length];
     if((i+1)%8===0&&i<31) code+=' ';
   }
   return code;
 }
 
-/* ── RUN SCAN ── */
 window.dnaRunScan=function(){
   var scores=dnaComputeScores();
-  var alien=dnaPickAlien(scores);
-  dnaCurrentAlien=alien;
-  dnaRenderResult(alien,scores);
+  dnaCurrentAlien=dnaPickAlien(scores);
+  dnaRenderResult(dnaCurrentAlien,scores);
   document.getElementById('dnaResult').style.display='block';
-  setTimeout(function(){
-    document.getElementById('dnaResult').scrollIntoView({behavior:'smooth',block:'start'});
-  },100);
+  setTimeout(function(){document.getElementById('dnaResult').scrollIntoView({behavior:'smooth',block:'start'});},100);
 };
 
-/* ── RENDER RESULT ── */
 function dnaRenderResult(alien,scores){
-  /* Hero card accent */
   var card=document.getElementById('dnaHeroCard');
-  card.style.borderColor=alien.color+'44';
-
-  /* Exclusive tag */
-  var excl=document.getElementById('dnaExclTag');
-  if(alien.exclusive){
-    excl.style.display='inline-flex';
-    var plano=window._marspassPlanoAtivo||'';
-    var planoNomes={andromeda:'Andrômeda',triangulo:'Triângulo',centaurus:'Centaurus',sombrero:'Sombrero'};
-    excl.textContent='✦ EXCLUSIVO MARSPASS'+(plano?' — '+( planoNomes[plano]||plano.toUpperCase()):'');
-  } else {
-    excl.style.display='none';
+  if(card) card.style.borderColor=alien.color+'44';
+  var exclEl=document.getElementById('dnaExclTag');
+  if(exclEl){
+    if(alien.exclusive){
+      exclEl.style.display='inline-flex';
+      var planoNomes={andromeda:'Andrômeda',triangulo:'Triângulo',centaurus:'Centaurus',sombrero:'Sombrero'};
+      var plano=window._marspassPlanoAtivo||'';
+      exclEl.textContent='✦ EXCLUSIVO MARSPASS'+(plano?' — '+( planoNomes[plano]||plano.toUpperCase()):'');
+    } else {
+      exclEl.style.display='none';
+    }
   }
-
-  /* Name */
   var nameEl=document.getElementById('dnaAlienName');
-  nameEl.textContent=alien.name;
-  nameEl.style.background='linear-gradient(135deg,'+alien.color+','+alien.color2+')';
-  nameEl.style.webkitBackgroundClip='text';
-  nameEl.style.webkitTextFillColor='transparent';
-  nameEl.style.backgroundClip='text';
-  document.getElementById('dnaAlienSub').textContent=alien.subtitle;
-  document.getElementById('dnaAlienDesc').textContent=alien.desc;
+  if(nameEl){
+    nameEl.textContent=alien.name;
+    nameEl.style.background='linear-gradient(135deg,'+alien.color+','+alien.color2+')';
+    nameEl.style.webkitBackgroundClip='text';
+    nameEl.style.webkitTextFillColor='transparent';
+    nameEl.style.backgroundClip='text';
+  }
+  var subEl=document.getElementById('dnaAlienSub');if(subEl) subEl.textContent=alien.subtitle;
+  var descEl=document.getElementById('dnaAlienDesc');if(descEl) descEl.textContent=alien.desc;
 
-  /* Strands */
   var strandsEl=document.getElementById('dnaStrands');
-  strandsEl.innerHTML='';
-  var entries=Object.entries(scores).filter(function(e){return e[1]>0;}).sort(function(a,b){return b[1]-a[1];});
-  if(entries.length===0){
-    strandsEl.innerHTML='<div style="font-size:11px;color:#3a4058">Nenhum gênero detectado — selecione jogos acima.</div>';
-  } else {
-    entries.forEach(function(pair,i){
-      var gc=DNA_GENRES[pair[0]];
-      strandsEl.innerHTML+=
-        '<div class="dna-strand">'+
-          '<div class="dna-strand-label">'+gc.label+'</div>'+
-          '<div class="dna-strand-bar"><div class="dna-strand-fill" style="width:'+pair[1]+'%;background:linear-gradient(90deg,'+gc.color+','+gc.color+'aa);animation-delay:'+(i*.08)+'s"></div></div>'+
-          '<div class="dna-strand-pct" style="color:'+gc.color+'">'+pair[1]+'%</div>'+
-        '</div>';
-    });
+  if(strandsEl){
+    var entries=Object.entries(scores).filter(function(e){return e[1]>0;}).sort(function(a,b){return b[1]-a[1];});
+    strandsEl.innerHTML=entries.length
+      ? entries.map(function(pair,i){
+          var gc=DNA_GENRES[pair[0]];
+          return '<div class="dna-strand"><div class="dna-strand-label">'+gc.label+'</div>'+
+            '<div class="dna-strand-bar"><div class="dna-strand-fill" style="width:'+pair[1]+'%;background:linear-gradient(90deg,'+gc.color+','+gc.color+'aa);animation-delay:'+(i*.08)+'s"></div></div>'+
+            '<div class="dna-strand-pct" style="color:'+gc.color+'">'+pair[1]+'%</div></div>';
+        }).join('')
+      : '<div style="font-size:11px;color:#3a4058">Nenhum gênero detectado</div>';
   }
 
-  /* Code */
-  var code=dnaGenCode(alien,scores);
-  var cols=['#00ffe7','#9f3fff','#ffc200','#ff1f30'];
-  document.getElementById('dnaCodeEl').innerHTML=code.split('').map(function(c,i){
-    if(c===' ') return '<span style="margin-right:6px"> </span>';
-    return '<span style="color:'+cols[i%4]+'">'+c+'</span>';
+  var codeEl=document.getElementById('dnaCodeEl');
+  if(codeEl){
+    var cols=['#00ffe7','#9f3fff','#ffc200','#ff1f30'];
+    codeEl.innerHTML=dnaGenCode(alien,scores).split('').map(function(ch,i){
+      if(ch===' ') return '<span style="margin-right:6px"> </span>';
+      return '<span style="color:'+cols[i%4]+'">'+ch+'</span>';
+    }).join('');
+  }
+
+  var traitsEl=document.getElementById('dnaTraits');
+  if(traitsEl) traitsEl.innerHTML=alien.traits.map(function(t){
+    return '<div class="dna-trait"><div class="dna-trait-icon">'+t.icon+'</div>'+
+      '<div class="dna-trait-name">'+t.name+'</div>'+
+      '<div class="dna-trait-val">'+t.val+'</div></div>';
   }).join('');
 
-  /* Traits */
-  document.getElementById('dnaTraits').innerHTML=alien.traits.map(function(t){
-    return '<div class="dna-trait"><div class="dna-trait-icon">'+t.icon+'</div><div class="dna-trait-name">'+t.name+'</div><div class="dna-trait-val">'+t.val+'</div></div>';
-  }).join('');
-
-  /* Compat */
-  document.getElementById('dnaCompatList').innerHTML=alien.compat.map(function(c){
-    var scoreColor=c.score>75?'#00e87a':c.score>50?'#ffc200':'#ff1f30';
+  var compatEl=document.getElementById('dnaCompatList');
+  if(compatEl) compatEl.innerHTML=alien.compat.map(function(cp){
+    var sc=cp.score>75?'#00e87a':cp.score>50?'#ffc200':'#ff1f30';
     return '<div class="dna-compat-item">'+
-      '<div class="dna-compat-av" style="background:'+c.color+'22;border:1px solid '+c.color+'44">'+c.icon+'</div>'+
-      '<div class="dna-compat-info"><div class="dna-compat-name">'+c.name+'</div><div class="dna-compat-type">'+c.type+'</div></div>'+
-      '<div class="dna-compat-score" style="color:'+scoreColor+'">'+c.score+'%</div>'+
-    '</div>';
+      '<div class="dna-compat-av" style="background:'+cp.color+'22;border:1px solid '+cp.color+'44">'+cp.icon+'</div>'+
+      '<div class="dna-compat-info"><div class="dna-compat-name">'+cp.name+'</div><div class="dna-compat-type">'+cp.type+'</div></div>'+
+      '<div class="dna-compat-score" style="color:'+sc+'">'+cp.score+'%</div></div>';
   }).join('');
 
-  /* Evo */
-  document.getElementById('dnaEvoPath').innerHTML=alien.evo.map(function(e,i){
+  var evoEl=document.getElementById('dnaEvoPath');
+  if(evoEl) evoEl.innerHTML=alien.evo.map(function(e,i){
     return '<div class="dna-evo-step'+(e.current?' cur':'')+'">'+
       '<div style="position:relative">'+
-        '<div class="dna-evo-dot" style="background:'+e.color+';box-shadow:'+(e.current?'0 0 10px '+e.color:'none')+'"></div>'+
+        '<div class="dna-evo-dot" style="background:'+e.color+';'+(e.current?'box-shadow:0 0 10px '+e.color:'')+'"></div>'+
         (i<alien.evo.length-1?'<div class="dna-evo-line"></div>':'')+
       '</div>'+
       '<div class="dna-evo-info">'+
@@ -4892,76 +4561,54 @@ function dnaRenderResult(alien,scores){
     '</div>';
   }).join('');
 
-  /* Helix animation */
   dnaDrawHelix(alien);
 }
 
-/* ── HELIX ANIMATION ── */
 function dnaDrawHelix(alien){
   var canvas=document.getElementById('dnaHelixCanvas');
   if(!canvas) return;
-  var ctx=canvas.getContext('2d');
-  var t=0;
-  function hexToRgb(hex){
-    var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    return r+','+g+','+b;
-  }
-  var c1=hexToRgb(alien.color), c2=hexToRgb(alien.color2);
-  function frame(){
+  var ctx=canvas.getContext('2d'),t=0;
+  function hexRgb(h){return parseInt(h.slice(1,3),16)+','+parseInt(h.slice(3,5),16)+','+parseInt(h.slice(5,7),16);}
+  var c1=hexRgb(alien.color),c2=hexRgb(alien.color2);
+  (function frame(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    var W=canvas.width,H=canvas.height,cx=W/2,amp=W*.36,freq=.025,speed=.014;
+    var W=canvas.width,H=canvas.height,cx=W/2,amp=W*.36,freq=.025;
     for(var y=0;y<H;y+=2){
-      var phase=y*freq+t;
-      var x1=cx+Math.cos(phase)*amp;
-      var x2=cx+Math.cos(phase+Math.PI)*amp;
-      var alpha=(.5+.5*Math.sin(phase))*.75;
-      ctx.beginPath();ctx.arc(x1,y,2.5,0,Math.PI*2);
+      var ph=y*freq+t,alpha=(.5+.5*Math.sin(ph))*.75;
+      ctx.beginPath();ctx.arc(cx+Math.cos(ph)*amp,y,2.5,0,Math.PI*2);
       ctx.fillStyle='rgba('+c1+','+alpha+')';ctx.fill();
-      ctx.beginPath();ctx.arc(x2,y,2.5,0,Math.PI*2);
+      ctx.beginPath();ctx.arc(cx+Math.cos(ph+Math.PI)*amp,y,2.5,0,Math.PI*2);
       ctx.fillStyle='rgba('+c2+','+alpha+')';ctx.fill();
-      if(y%20===0){ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.strokeStyle='rgba(255,255,255,'+(alpha*.25)+')';ctx.lineWidth=1;ctx.stroke();}
+      if(y%20===0){
+        ctx.beginPath();ctx.moveTo(cx+Math.cos(ph)*amp,y);ctx.lineTo(cx+Math.cos(ph+Math.PI)*amp,y);
+        ctx.strokeStyle='rgba(255,255,255,'+(alpha*.25)+')';ctx.lineWidth=1;ctx.stroke();
+      }
     }
-    t+=speed;
-    requestAnimationFrame(frame);
-  }
-  frame();
+    t+=.014;requestAnimationFrame(frame);
+  })();
 }
 
-/* ── SHARE / COPY ── */
 window.dnaCopy=function(){
   if(!dnaCurrentAlien) return;
   var code=document.getElementById('dnaCodeEl').textContent.replace(/\s+/g,' ').trim();
-  navigator.clipboard.writeText('Meu DNA Alienígena MarsGames\nEspécie: '+dnaCurrentAlien.name+'\nSequência: '+code+'\nDescubra em marsgames.com').then(function(){
-    dnaToast('DNA copiado para a área de transferência!');
-  });
+  navigator.clipboard.writeText('Meu DNA MarsGames\nEspécie: '+dnaCurrentAlien.name+'\nSequência: '+code+'\nDescubra em marsgames.com')
+    .then(function(){showToast('DNA copiado!');});
 };
 window.dnaShare=function(){
   if(!dnaCurrentAlien) return;
-  var txt='🧬 Meu DNA MarsGames revelou: '+dnaCurrentAlien.name+' — '+dnaCurrentAlien.subtitle+' 🚀 marsgames.com';
-  if(navigator.share){navigator.share({title:'MarsGames DNA',text:txt});}
-  else{navigator.clipboard.writeText(txt).then(function(){dnaToast('Texto copiado — cole onde quiser!');});}
+  var txt='🧬 Meu DNA MarsGames: '+dnaCurrentAlien.name+' — '+dnaCurrentAlien.subtitle+' 🚀 marsgames.com';
+  if(navigator.share) navigator.share({title:'MarsGames DNA',text:txt});
+  else navigator.clipboard.writeText(txt).then(function(){showToast('Texto copiado!');});
 };
 
-function dnaToast(msg){
-  var t=document.getElementById('toast');
-  if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}
-  t.textContent=msg;t.className='show';
-  clearTimeout(t._t);t._t=setTimeout(function(){t.className='';},2600);
-}
-
-/* ── HOOK NO showTab ── */
 var _origShowTab=window.showTab;
 window.showTab=function(id,el){
   _origShowTab(id,el);
   if(id==='dna') dnaCarregarBiblioteca();
 };
 
-/* Carrega se a aba já estiver ativa ao iniciar (improvável mas seguro) */
-if(document.getElementById('tab-dna')&&document.getElementById('tab-dna').classList.contains('active')){
-  dnaCarregarBiblioteca();
-}
-
 })();
+
 </script>
 </body>
 </html>
