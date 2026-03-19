@@ -159,9 +159,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 
   <!-- SUCESSO -->
   <div id="stateSuccess">
-    <div class="success-icon">✅</div>
-    <div class="success-title">Pix <span>Confirmado!</span></div>
+    <div class="success-icon" id="successIcon">✅</div>
+    <div class="success-title" id="successTitle">Pix <span>Confirmado!</span></div>
     <div class="success-sub" id="successSub">Sua chave está pronta. Bons jogos! 🎮</div>
+
+    <!-- Tela especial para câmbio concluído -->
+    <div id="cambioResultBox" style="display:none;margin-bottom:20px">
+      <div style="background:rgba(0,255,85,.06);border:1px solid rgba(0,255,85,.2);border-radius:16px;padding:24px;text-align:center">
+        <div style="font-size:48px;margin-bottom:8px" id="cambioResultIcon">🎟️</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#00ff55;margin-bottom:4px" id="cambioResultQtd">+5 Tickets</div>
+        <div style="font-size:12px;color:#555;margin-bottom:16px" id="cambioResultDesc">creditados na sua conta agora</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <div style="background:rgba(255,194,0,.08);border:1px solid rgba(255,194,0,.2);border-radius:10px;padding:10px 16px;font-size:11px;color:#ffc200;font-weight:700" id="cambioResultMP">-200 MP debitados</div>
+          <div style="background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);border-radius:10px;padding:10px 16px;font-size:11px;color:#00ff55;font-weight:700" id="cambioResultSaldo">Novo saldo: —</div>
+        </div>
+      </div>
+    </div>
 
     <div id="chavesSection"></div>
 
@@ -169,7 +182,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
       ⭐ +<span id="ptsGanhos">0</span> MarsPoints ganhos!
     </div>
 
-    <a class="btn-primary" href="perfil.html">🎮 Ver meus pedidos</a>
+    <a class="btn-primary" id="successBtn" href="perfil.html">🎮 Ver meus pedidos</a>
     <a class="btn-secondary" href="index.html">Continuar comprando</a>
   </div>
 
@@ -280,7 +293,6 @@ function copiarPix() {
 }
 
 // ── REDIRECIONA PARA SUCESSO ──
-// Após confirmação do PIX, credita benefícios (MP, tickets, XP) conforme o tipo
 async function irParaSucesso(ref) {
   clearInterval(timerInterval);
   confetti();
@@ -293,30 +305,32 @@ async function irParaSucesso(ref) {
   document.querySelector('.poll-dot').style.background = '#00ff55';
   document.querySelector('.poll-dot').style.animation = 'none';
 
-  // Detecta tipo da compra e credita benefícios
-  const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
-  const tipo = itens[0]?.tipo || '';
+  const itens   = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+  const tipo    = itens[0]?.tipo || '';
 
-  try {
-    if (tipo === 'marspoints') {
-      // Compra de pacote MP — credita marspoints + bonus
-      await creditarPacoteMP();
-    } else if (tipo === 'cambio') {
-      // Taxa de câmbio paga — executa o câmbio
-      await executarCambioPosPagemento();
-    }
-  } catch(e) {
-    console.error('[irParaSucesso crédito]', e);
-  }
+  if (tipo === 'marspoints') {
+    await creditarPacoteMP().catch(e => console.error('[MP crédito]', e));
+    show('stateSuccess');
+    document.getElementById('successTitle').innerHTML = 'MarsPoints <span>Creditados!</span>';
+    document.getElementById('successSub').textContent = 'Seus MarsPoints estão disponíveis agora!';
+    document.getElementById('successBtn').href        = 'perfil.html#loja-mp';
+    document.getElementById('successBtn').textContent = '⭐ Ver meus MarsPoints';
+    setTimeout(() => { window.location.href = 'perfil.html#loja-mp'; }, 5000);
 
-  setTimeout(() => {
-    // Se for loja/câmbio, volta para perfil ao invés de sucesso.html
-    if (tipo === 'marspoints' || tipo === 'cambio') {
-      window.location.href = 'perfil.html#loja-mp';
-    } else {
+  } else if (tipo === 'cambio') {
+    show('stateSuccess');
+    document.getElementById('successTitle').innerHTML = 'Pix <span>Confirmado!</span>';
+    document.getElementById('successSub').textContent = 'Processando câmbio...';
+    document.getElementById('successBtn').style.display = 'none';
+    // Executa câmbio — atualiza a tela internamente quando terminar
+    await executarCambioPosPagemento();
+
+  } else {
+    show('stateSuccess');
+    setTimeout(() => {
       window.location.href = 'sucesso.html?ref=' + encodeURIComponent(refFinal);
-    }
-  }, 1800);
+    }, 1800);
+  }
 }
 
 // Credita Marspoints após pagamento confirmado
@@ -391,98 +405,177 @@ async function creditarPacoteMP() {
 
 // Executa o câmbio após pagamento da taxa via Pix
 async function executarCambioPosPagemento() {
-  if (!userEmail) return;
   const cambioRaw = sessionStorage.getItem('mg_cambio_pendente');
-  if (!cambioRaw) return;
+  if (!cambioRaw) {
+    _mostrarErroCambio('Dados do câmbio não encontrados. Entre em contato.');
+    return;
+  }
   const cambio = JSON.parse(cambioRaw);
-  const token = accessToken || SUPA_KEY;
+  console.log('[cambio pós-pix] iniciando:', cambio);
 
-  console.log('[cambio pós-pix] executando:', cambio);
+  // Inicializa SDK Supabase com sessão do usuário para passar no RLS
+  let sb = null;
+  try {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+    // Restaura sessão salva pelo perfil.html
+    if (accessToken && refreshToken) {
+      await sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    }
+  } catch(e) {
+    console.warn('[cambio] erro init sb:', e);
+    _mostrarErroCambio('Erro de autenticação. Verifique seu perfil.');
+    return;
+  }
+
+  const email        = userEmail || cambio.user_email || '';
+  const custoMP      = parseInt(cambio.custo_mp) || 0;
+  const recompensaVal = parseInt(cambio.recompensa_val) || 1;
+  const recompensaTipo = cambio.recompensa_tipo || cambio.item_tipo || '';
 
   try {
-    // 1. Busca saldo atual do banco (fonte da verdade)
-    const mpRes = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
-      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-    });
-    const mpRows = await mpRes.json();
-    const mpAtual = (mpRows && mpRows[0] && mpRows[0].pontos) || 0;
-    const custoMP = cambio.custo_mp || 0;
-    const novoMP = Math.max(0, mpAtual - custoMP);
-    const hist = (mpRows && mpRows[0] && mpRows[0].historico) || [];
+    // 1. Busca saldo atual de MP no banco
+    const { data: mpRow } = await sb
+      .from('marspoints')
+      .select('pontos, historico')
+      .eq('user_email', email)
+      .maybeSingle();
+
+    const mpAtual = (mpRow && mpRow.pontos) || 0;
+    const novoMP  = Math.max(0, mpAtual - custoMP);
+    const hist    = (mpRow && mpRow.historico) || [];
     hist.unshift({
       pontos: -custoMP,
-      descricao: 'Câmbio (pós-pix): ' + cambio.item_nome,
+      descricao: 'Câmbio: ' + cambio.item_nome,
       data: new Date().toISOString(),
       tipo: 'cambio'
     });
 
     // 2. Debita MP
-    await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
-      method: 'POST',
-      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ user_email: userEmail, pontos: novoMP, historico: hist.slice(0, 50) })
-    });
-    console.log('[cambio pós-pix] MP debitado:', custoMP, '→ saldo:', novoMP);
+    const { error: mpErr } = await sb
+      .from('marspoints')
+      .upsert({ user_email: email, pontos: novoMP, historico: hist.slice(0, 50) }, { onConflict: 'user_email' });
+    if (mpErr) throw new Error('Erro ao debitar MP: ' + mpErr.message);
+    console.log('[cambio] MP debitado:', custoMP, '→ novo saldo:', novoMP);
 
-    // 3. Credita recompensa conforme tipo
-    const recompensaVal = cambio.recompensa_val || 1;
-    const recompensaTipo = cambio.recompensa_tipo || cambio.item_tipo || '';
-
+    // 3. Credita recompensa
+    let descRecompensa = '';
     if (recompensaTipo === 'ct-ticket') {
-      const tktRes = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
-        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-      });
-      const tktRows = await tktRes.json();
-      const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade) || 0;
-      const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
-      const novoTkt = tktAtual + recompensaVal;
-      await fetch(`${SUPA_URL}/rest/v1/tickets`, {
-        method: 'POST',
-        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({ user_email: userEmail, quantidade: novoTkt, total_acumulado: tktTotal + recompensaVal, ultima_renovacao: new Date().toISOString() })
-      });
-      console.log('[cambio pós-pix] Tickets creditados:', recompensaVal, '→ novo saldo:', novoTkt);
-      document.getElementById('pollMsg').textContent = `✅ +${recompensaVal} Tickets creditados! -${custoMP} MP`;
+      const { data: tktRow } = await sb
+        .from('tickets')
+        .select('quantidade, total_acumulado')
+        .eq('user_email', email)
+        .maybeSingle();
+
+      const tktAtual = (tktRow && tktRow.quantidade) || 0;
+      const tktTotal = (tktRow && tktRow.total_acumulado) || 0;
+      const novoTkt  = tktAtual + recompensaVal;
+
+      const { error: tktErr } = await sb
+        .from('tickets')
+        .upsert({
+          user_email: email,
+          quantidade: novoTkt,
+          total_acumulado: tktTotal + recompensaVal,
+          ultima_renovacao: new Date().toISOString()
+        }, { onConflict: 'user_email' });
+      if (tktErr) throw new Error('Erro ao creditar tickets: ' + tktErr.message);
+
+      descRecompensa = `+${recompensaVal} Marstickets`;
+      console.log('[cambio] Tickets creditados:', recompensaVal, '→ total:', novoTkt);
 
     } else if (recompensaTipo === 'ct-xp') {
-      // XP via localStorage + tentativa no banco
-      const xpAtual = parseInt(localStorage.getItem('mg_planeta_xp') || '0');
+      // XP: tenta banco, fallback localStorage
+      let xpAtual = 0;
+      try {
+        const { data: plRow } = await sb
+          .from('planetas')
+          .select('xp')
+          .eq('user_email', email)
+          .maybeSingle();
+        xpAtual = (plRow && plRow.xp) || parseInt(localStorage.getItem('mg_planeta_xp') || '0');
+      } catch(_) {
+        xpAtual = parseInt(localStorage.getItem('mg_planeta_xp') || '0');
+      }
       const novoXP = xpAtual + recompensaVal;
       localStorage.setItem('mg_planeta_xp', String(novoXP));
       try {
-        await fetch(`${SUPA_URL}/rest/v1/planetas`, {
-          method: 'POST',
-          headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-          body: JSON.stringify({ user_email: userEmail, xp: novoXP, updated_at: new Date().toISOString() })
-        });
+        await sb.from('planetas').upsert(
+          { user_email: email, xp: novoXP, updated_at: new Date().toISOString() },
+          { onConflict: 'user_email' }
+        );
       } catch(_) {}
-      console.log('[cambio pós-pix] XP creditado:', recompensaVal);
-      document.getElementById('pollMsg').textContent = `✅ +${recompensaVal} XP creditados! -${custoMP} MP`;
+
+      descRecompensa = `+${recompensaVal} XP`;
+      console.log('[cambio] XP creditado:', recompensaVal, '→ total:', novoXP);
     }
 
-    // 4. Registra histórico câmbio
-    await fetch(`${SUPA_URL}/rest/v1/cambio_historico`, {
-      method: 'POST',
-      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_email: userEmail,
-        item_nome: cambio.item_nome,
-        tipo: recompensaTipo,
-        mp_gasto: custoMP,
-        recompensa: cambio.recompensa,
-        taxa: (cambio.taxa_pct || 0) + '%',
-        taxa_reais: cambio.taxa_reais || 0,
-        created_at: new Date().toISOString()
-      })
+    // 4. Histórico câmbio (silencioso — tabela pode não existir)
+    await sb.from('cambio_historico').insert({
+      user_email: email,
+      item_nome: cambio.item_nome,
+      tipo: recompensaTipo,
+      mp_gasto: custoMP,
+      recompensa: cambio.recompensa,
+      taxa: (cambio.taxa_pct || 0) + '%',
+      taxa_reais: cambio.taxa_reais || 0,
+      created_at: new Date().toISOString()
     }).catch(() => {});
 
     sessionStorage.removeItem('mg_cambio_pendente');
-    console.log('[cambio pós-pix] concluído com sucesso');
+    console.log('[cambio pós-pix] ✅ concluído');
+
+    // 5. Mostra tela de sucesso do câmbio
+    _mostrarSucessoCambio(cambio, recompensaVal, recompensaTipo, descRecompensa, novoMP, custoMP);
 
   } catch(e) {
     console.error('[cambio pós-pix] erro:', e);
-    document.getElementById('pollMsg').textContent = '⚠️ Pix pago mas erro ao creditar — entre em contato.';
+    _mostrarErroCambio('Pagamento confirmado, mas ocorreu um erro ao creditar. Entre em contato informando: ' + cambio.item_nome);
   }
+}
+
+/* Tela de sucesso do câmbio */
+function _mostrarSucessoCambio(cambio, recompensaVal, tipo, descRecompensa, novoMP, custoMP) {
+  const icones = { 'ct-ticket': '🎟️', 'ct-xp': '⚡', 'ct-game': '🎮' };
+  const icone  = icones[tipo] || '✅';
+  const cores  = { 'ct-ticket': '#ffc200', 'ct-xp': '#00ffe7', 'ct-game': '#9f3fff' };
+  const cor    = cores[tipo] || '#00ff55';
+
+  // Atualiza ícone e título
+  document.getElementById('successIcon').textContent = icone;
+  document.getElementById('successIcon').style.cssText += `;background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.3)`;
+  document.getElementById('successTitle').innerHTML = 'Câmbio <span>Concluído!</span>';
+  document.getElementById('successSub').textContent  = 'Seus itens foram creditados agora mesmo.';
+
+  // Mostra box de resultado
+  const box = document.getElementById('cambioResultBox');
+  box.style.display = 'block';
+
+  document.getElementById('cambioResultIcon').textContent = icone;
+  document.getElementById('cambioResultQtd').style.color  = cor;
+  document.getElementById('cambioResultQtd').textContent  = descRecompensa;
+  document.getElementById('cambioResultDesc').textContent = 'creditados na sua conta';
+
+  document.getElementById('cambioResultMP').textContent    = '−' + custoMP.toLocaleString('pt-BR') + ' MP debitados';
+  document.getElementById('cambioResultSaldo').textContent = 'Saldo restante: ' + novoMP.toLocaleString('pt-BR') + ' MP';
+
+  // Botão vai para perfil aba câmbio
+  const btn = document.getElementById('successBtn');
+  btn.style.display    = 'flex';
+  btn.href             = 'perfil.html#cambio';
+  btn.textContent      = '💼 Ver meu perfil atualizado';
+}
+
+/* Tela de erro do câmbio */
+function _mostrarErroCambio(msg) {
+  document.getElementById('successIcon').textContent = '⚠️';
+  document.getElementById('successTitle').innerHTML  = 'Atenção <span style="color:#ffb800">necessária</span>';
+  document.getElementById('successSub').textContent  = msg || 'Erro ao processar câmbio.';
+  const btn = document.getElementById('successBtn');
+  btn.style.display  = 'flex';
+  btn.href           = 'perfil.html#cambio';
+  btn.textContent    = '📋 Ir para o Câmbio';
 }
 
 // ── POLLING: edge function + consulta direta ao banco ──
