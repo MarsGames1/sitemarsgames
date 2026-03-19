@@ -2520,16 +2520,21 @@ async function atualizarNavbar(session){
   }
 }
 sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
-setTimeout(function(){
-  sb.auth.getSession().then(function(r){
-    var session=r.data?r.data.session:null;
-    atualizarNavbar(session);
-    /* Garante userSession global para PvP e outros módulos */
-    if(session&&typeof userSession!=='undefined'&&!userSession){
-      userSession=session;
-    }
-  });
-}, 100);
+(function(){
+  var _nb=null, _nk='';
+  setTimeout(function(){
+    sb.auth.getSession().then(function(r){
+      var session=r.data?r.data.session:null;
+      var k=session?session.user.email:'null';
+      if(k===_nk) return;
+      _nk=k; clearTimeout(_nb);
+      _nb=setTimeout(function(){
+        atualizarNavbar(session);
+        if(session&&typeof userSession!=='undefined'&&!userSession) userSession=session;
+      },80);
+    });
+  }, 100);
+})();
 </script>
 
 <script>

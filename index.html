@@ -5242,7 +5242,7 @@ async function atualizarNavbar(session){
     btnLogin.style.display = 'none';
     wrap.style.display     = 'flex';
 
-    /* Foto ou inicial */
+    /* Foto ou inicial — imediato, sem esperar banco */
     if(avatarUrl){
       imgAvatar.src          = avatarUrl;
       imgAvatar.style.display= 'block';
@@ -5253,19 +5253,34 @@ async function atualizarNavbar(session){
       fallback.textContent   = inicial;
     }
 
-    /* Busca pontos E anel escolhido para o anel correto */
-    try{
-      var[mpRes, perfilRes] = await Promise.all([
-        sb.from('marspoints').select('pontos').eq('user_email', session.user.email).maybeSingle(),
-        sb.from('perfis').select('anel_escolhido').eq('email', session.user.email).maybeSingle()
-      ]);
-      var pts   = (mpRes.data && mpRes.data.pontos) || 0;
-      var anelEscolhido = (perfilRes.data && perfilRes.data.anel_escolhido) || null;
-      /* Usa anel escolhido se salvo, senão usa o nível */
-      var nivelRing = anelEscolhido || getNavNivel(pts);
-      wrap.className = 'nav-avatar-wrap nav-nivel-' + nivelRing;
-    }catch(e){
+    /* Aplica anel do cache imediatamente */
+    var cacheKey = 'mg_nav_' + session.user.email;
+    var cached = null;
+    try{ cached = JSON.parse(localStorage.getItem(cacheKey) || 'null'); }catch(e){}
+    if(cached && cached.anel){
+      wrap.className = 'nav-avatar-wrap nav-nivel-' + cached.anel;
+    } else {
       wrap.className = 'nav-avatar-wrap nav-nivel-bronze';
+    }
+
+    /* Só busca do banco se cache tiver mais de 2 minutos */
+    var agora = Date.now();
+    var cacheOk = cached && (agora - (cached.ts||0) < 120000);
+    if(!cacheOk){
+      try{
+        var[mpRes, perfilRes] = await Promise.all([
+          sb.from('marspoints').select('pontos').eq('user_email', session.user.email).maybeSingle(),
+          sb.from('perfis').select('anel_escolhido').eq('email', session.user.email).maybeSingle()
+        ]);
+        var pts          = (mpRes.data && mpRes.data.pontos) || 0;
+        var anelEscolhido= (perfilRes.data && perfilRes.data.anel_escolhido) || null;
+        var nivelRing    = anelEscolhido || getNavNivel(pts);
+        wrap.className   = 'nav-avatar-wrap nav-nivel-' + nivelRing;
+        /* Salva cache */
+        try{ localStorage.setItem(cacheKey, JSON.stringify({anel: nivelRing, ts: agora})); }catch(e){}
+      }catch(e){
+        /* mantém o que já estava */
+      }
     }
   } else {
     btnLogin.style.display = 'flex';
@@ -5274,18 +5289,28 @@ async function atualizarNavbar(session){
 }
 /* Lê sessão assim que sb é criado */
 (function iniciarAuth(){
+  var _navDebounce=null;
+  var _navUltimaChave='';
+
+  /* Versão com debounce — evita múltiplas chamadas paralelas */
+  function navComDebounce(session){
+    var chave=session?session.user.email:'null';
+    if(chave===_navUltimaChave) return; /* mesma sessão, ignora */
+    _navUltimaChave=chave;
+    clearTimeout(_navDebounce);
+    _navDebounce=setTimeout(function(){atualizarNavbar(session);},50);
+  }
+
   sb.auth.getSession().then(function(r){
     if(r.data && r.data.session){
-      atualizarNavbar(r.data.session);
+      navComDebounce(r.data.session);
       carregarFavsDoSupabase(r.data.session);
     }
   });
   sb.auth.onAuthStateChange(function(event, session){
-    if(event==='SIGNED_OUT'){ atualizarNavbar(null); }
-    else if(session){ atualizarNavbar(session); carregarFavsDoSupabase(session); }
+    if(event==='SIGNED_OUT'){ _navUltimaChave=''; atualizarNavbar(null); }
+    else if(session){ navComDebounce(session); carregarFavsDoSupabase(session); }
   });
-  /* onAuthStateChange já cobre a atualização da navbar — polling removido */
-  /* Mostra banner MarsPass sempre */
   var mpBanner=document.getElementById('marspassBannerWrap');
   if(mpBanner) mpBanner.style.display='block';
 })();

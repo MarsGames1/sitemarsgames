@@ -3736,9 +3736,16 @@ async function carregarMarsPassPerfil(user, forcado){
   var a=assRes.data;
   var anelSalvo=(perfilRes.data&&perfilRes.data.anel_escolhido)||null;
 
-  /* Determina nível atual do usuário */
-  var nivelAtual=(perfilData&&getNivel(perfilData.pontos||0).nome||'bronze').toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  /* Determina nível atual do usuário — busca pontos frescos se perfilData não tiver */
+  var _pontos=(perfilData&&perfilData.pontos)||0;
+  /* Se não tem pontos em memória, busca do banco agora */
+  if(!_pontos && userSession){
+    try{
+      var{data:mpFresh}=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
+      _pontos=(mpFresh&&mpFresh.pontos)||0;
+    }catch(e){}
+  }
+  var nivelAtual=getNivel(_pontos).nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 
   /* Salva plano globalmente para que renderConquistas inclua títulos MarsPass */
   window._marspassPlanoAtivo = a ? a.plano : null;
@@ -4401,7 +4408,19 @@ window._invalidarCacheAnel=function(email){
   try{localStorage.removeItem('mg_nav_'+(email||''));}catch(e){}
 };
 sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
-setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});},100);
+/* Fallback getSession com debounce para não duplicar com onAuthStateChange */
+(function(){
+  var _nb=null, _nk='';
+  setTimeout(function(){
+    sb.auth.getSession().then(function(r){
+      var s=r.data?r.data.session:null;
+      var k=s?s.user.email:'null';
+      if(k===_nk) return;
+      _nk=k; clearTimeout(_nb);
+      _nb=setTimeout(function(){atualizarNavbar(s);},80);
+    });
+  },120);
+})();
 
 /* ══════════════════════════════════════════════════════
    BENEFÍCIOS MODAL — controle de abas
@@ -5403,16 +5422,27 @@ async function cambioCarregarTudo(){
       var dispEl=document.getElementById('cambioTaxaDisp');
       if(dispEl) dispEl.textContent=cfgRes.data.value;
     }
+    /* Usa dados do banco se existirem, senão usa defaults — nunca deixa vazio */
     if(itensRes.data && itensRes.data.length){
       _cambioItems=itensRes.data.map(function(it){
         return{id:it.id,tipo:it.tipo||'ct-ticket',icon:it.icon||'⭐',
           nome:it.nome,cat:it.cat||(it.tipo==='ct-ticket'?'MARSTICKETS':it.tipo==='ct-xp'?'XP DO PLANETA':'BÔNUS'),
           custo:it.custo||100,recompensa:it.recompensa||'+1',
-          toVal:it.toVal||it.recompensa_valor||1,color:it.tipo==='ct-ticket'?'#00e87a':it.tipo==='ct-xp'?'#00b8e6':'#9f3fff',
+          toVal:it.toVal||it.recompensa_valor||1,
+          color:it.tipo==='ct-ticket'?'#00e87a':it.tipo==='ct-xp'?'#00b8e6':'#9f3fff',
           badge:it.badge||null,ativo:it.ativo!==false};
       });
-    }else{_cambioItems=CAMBIO_DEFAULTS.slice();}
-  }catch(e){_cambioItems=CAMBIO_DEFAULTS.slice();}
+    } else {
+      /* Tabela vazia ou não existe — usa defaults */
+      console.log('[cambio] tabela vazia ou inexistente — usando defaults');
+      _cambioItems=CAMBIO_DEFAULTS.slice();
+    }
+  }catch(e){
+    console.warn('[cambio] erro ao carregar:',e.message,'— usando defaults');
+    _cambioItems=CAMBIO_DEFAULTS.slice();
+  }
+  /* Garante que nunca fica sem itens */
+  if(!_cambioItems.length) _cambioItems=CAMBIO_DEFAULTS.slice();
   await cambioRecarregarSaldos();
   cambioRenderHist();
 }
@@ -5422,16 +5452,15 @@ async function cambioRecarregarSaldos(){
   if(!userSession){renderCambioGrid();return;}
   var email=userSession.user.email;
   try{
-    var[mpRes,tktRes,plRes]=await Promise.all([
+    var[mpRes,tktRes]=await Promise.all([
       sb.from('marspoints').select('pontos').eq('user_email',email).maybeSingle(),
-      sb.from('tickets').select('quantidade').eq('user_email',email).maybeSingle(),
-      sb.from('planetas').select('xp').eq('user_email',email).maybeSingle()
+      sb.from('tickets').select('quantidade').eq('user_email',email).maybeSingle()
     ]);
     _cambioMPAtual=(mpRes.data&&mpRes.data.pontos)||0;
     _cambioTktAtual=(tktRes.data&&tktRes.data.quantidade)||0;
-    _cambioXPAtual=(plRes.data&&plRes.data.xp)||0;
-  }catch(e){}
-  // Atualiza displays
+    /* XP do planeta: usa valor em memória do módulo planeta (sem query extra) */
+    _cambioXPAtual=parseInt(localStorage.getItem('mg_planeta_xp')||'0');
+  }catch(e){console.warn('[cambio saldos]',e);}
   var mpEl=document.getElementById('cambioSaldoMP');
   if(mpEl) mpEl.textContent=_cambioMPAtual.toLocaleString('pt-BR');
   var tktEl=document.getElementById('cambioSaldoTickets');
