@@ -1724,6 +1724,20 @@ function showToast(msg,erro){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function pad(n){return String(n).padStart(2,'0')}
 
+/* pvpRenderArena definida ANTES do onAuthStateChange para garantir disponibilidade no INITIAL_SESSION */
+function pvpRenderArena(){
+  var cta=document.getElementById('pvpCtaLogin');
+  var salas=document.getElementById('pvpSalas');
+  if(!cta||!salas) return;
+  if(userSession&&userSession.user){
+    cta.style.display='none';
+    salas.style.display='block';
+  } else {
+    cta.style.display='block';
+    salas.style.display='none';
+  }
+}
+
 /* ── AUTH ── */
 sb.auth.onAuthStateChange(function(event,session){
   if(event==='INITIAL_SESSION'||event==='SIGNED_IN'){
@@ -1733,11 +1747,22 @@ sb.auth.onAuthStateChange(function(event,session){
       document.getElementById('navPerfilBtn').style.display='flex';
       document.getElementById('ticketStrip').style.display='block';
       carregarTickets(session.user);
+      /* Sempre atualiza pvpSalas independente da aba atual */
+      pvpRenderArena();
+      if(typeof rdAtualizarMpDisplay==='function') rdAtualizarMpDisplay();
+      if(typeof spaAtualizarNavMp==='function') spaAtualizarNavMp();
+      if(typeof atualizarNavbar==='function') atualizarNavbar(session);
     } else {
       document.getElementById('navLoginBtn').style.display='flex';
       document.getElementById('navPerfilBtn').style.display='none';
+      pvpRenderArena(); /* mostra CTA login */
     }
     carregarSorteio(tipoAtual);
+  }
+  if(event==='SIGNED_OUT'){
+    userSession=null;
+    pvpRenderArena();
+    if(typeof atualizarNavbar==='function') atualizarNavbar(null);
   }
 });
 
@@ -2606,17 +2631,7 @@ function spaGo(page){
   } else if(page === 'arena'){
     document.getElementById('pageArena').classList.add('visible');
     document.getElementById('spaBtnArena').classList.add('active');
-    /* Garante que userSession está definido antes de renderizar */
-    if(userSession){
-      if(typeof pvpRenderArena === 'function') pvpRenderArena();
-      if(typeof pvpCarregarLeaderboard === 'function') pvpCarregarLeaderboard();
-    } else {
-      sb.auth.getSession().then(function(r){
-        if(r.data&&r.data.session) userSession=r.data.session;
-        if(typeof pvpRenderArena === 'function') pvpRenderArena();
-        if(typeof pvpCarregarLeaderboard === 'function') pvpCarregarLeaderboard();
-      });
-    }
+    _pvpRenderComSessao();
   } else if(page === 'roda'){
     document.getElementById('pageRoda').classList.add('visible');
     document.getElementById('spaBtnRoda').classList.add('active');
@@ -3002,11 +3017,35 @@ var PVP_QS={
 var pvpSalaAtual=null,pvpQuestoes=[],pvpQAtual=0,pvpPts1=0,pvpPts2=0,pvpMisses2=0,pvpResultados=[],pvpRespondeu=false,pvpTimer=null;
 var PVP_TEMPO=10;
 
-function pvpRenderArena(){
-  var cta=document.getElementById('pvpCtaLogin'),salas=document.getElementById('pvpSalas');
-  if(!cta||!salas) return;
-  if(userSession&&userSession.user){cta.style.display='none';salas.style.display='block';}
-  else{cta.style.display='block';salas.style.display='none';}
+/* Renderiza arena garantindo que a sessão foi carregada — com retry */
+function _pvpRenderComSessao(){
+  if(userSession){
+    pvpRenderArena();
+    if(typeof pvpCarregarLeaderboard==='function') pvpCarregarLeaderboard();
+    return;
+  }
+  /* Sessão ainda não chegou — mostra algo imediatamente e aguarda */
+  pvpRenderArena(); /* mostra CTA de login por ora */
+  sb.auth.getSession().then(function(r){
+    if(r.data&&r.data.session){
+      userSession=r.data.session;
+      pvpRenderArena(); /* re-renderiza com sessão real */
+      if(typeof pvpCarregarLeaderboard==='function') pvpCarregarLeaderboard();
+    }
+  }).catch(function(){});
+  /* Retry extra após 800ms — garante que o Supabase terminou de inicializar */
+  setTimeout(function(){
+    if(spaAtual!=='arena') return;
+    if(!userSession){
+      sb.auth.getSession().then(function(r){
+        if(r.data&&r.data.session){
+          userSession=r.data.session;
+          pvpRenderArena();
+          if(typeof pvpCarregarLeaderboard==='function') pvpCarregarLeaderboard();
+        }
+      });
+    }
+  },800);
 }
 var PVP_PIX_CHAVE='marsgames@pagamentos.com';
 var pvpPagamentoPendente=null;
@@ -3350,21 +3389,3 @@ async function pvpCarregarLeaderboard(){
 }
 document.getElementById('pvpModalBg').addEventListener('click',function(e){if(e.target===this)pvpFecharModal();});
 document.getElementById('rdOverlay').addEventListener('click',function(e){if(e.target===this)rdCloseModal();});
-
-/* Auth hook — atualiza PvP, Roda e anel da navbar quando faz login */
-sb.auth.onAuthStateChange(function(event,session){
-  if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
-    userSession=session;
-    if(session){
-      if(typeof pvpRenderArena==='function') pvpRenderArena();
-      if(typeof rdAtualizarMpDisplay==='function') rdAtualizarMpDisplay();
-      if(typeof spaAtualizarNavMp==='function') spaAtualizarNavMp();
-      if(typeof atualizarNavbar==='function') atualizarNavbar(session);
-    }
-  }
-  if(event==='SIGNED_OUT'){
-    userSession=null;
-    if(typeof pvpRenderArena==='function') pvpRenderArena();
-    if(typeof atualizarNavbar==='function') atualizarNavbar(null);
-  }
-});
