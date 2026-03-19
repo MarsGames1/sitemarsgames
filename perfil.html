@@ -3076,138 +3076,113 @@ async function checkAuth() {
   mostrarLoading();
   sessionStorage.removeItem('mg_login_in_progress');
 
-  // Supabase processa o #access_token automaticamente com flowType:'implicit'
-  // Escutar eventos em vez de ler o hash manualmente
+  var _jaCarregou = false;
+
+  function _iniciarSessao(user, session) {
+    if(_jaCarregou) return; /* evita dupla chamada */
+    _jaCarregou = true;
+    userSession = session;
+    mostrarPerfil();
+    carregarPerfil(user);
+  }
+
   sb.auth.onAuthStateChange(function(event, session){
     if(event === 'SIGNED_IN' && session){
       history.replaceState(null, '', window.location.pathname);
-      userSession = session;
-      mostrarPerfil();
-      carregarPerfil(session.user);
+      _iniciarSessao(session.user, session);
     }
     if(event === 'SIGNED_OUT'){
       userSession = null;
+      _jaCarregou = false;
       mostrarLogin();
     }
     if(event === 'INITIAL_SESSION'){
       if(session){
-        userSession = session;
-        mostrarPerfil();
-        carregarPerfil(session.user);
+        _iniciarSessao(session.user, session);
       } else if(!window.location.hash.includes('access_token')){
         mostrarLogin();
       }
     }
   });
 
-  // Fallback: leitura direta da sessão
-  try {
-    const { data } = await sb.auth.getSession();
-    if(data?.session){
-      userSession = data.session;
-      mostrarPerfil();
-      carregarPerfil(data.session.user);
-    }
-  } catch(e){}
+  /* Fallback com delay — só executa se onAuthStateChange não disparou ainda */
+  setTimeout(function(){
+    if(_jaCarregou) return;
+    sb.auth.getSession().then(function(r){
+      if(r.data && r.data.session){
+        _iniciarSessao(r.data.session.user, r.data.session);
+      } else if(!_jaCarregou){
+        mostrarLogin();
+      }
+    }).catch(function(){ mostrarLogin(); });
+  }, 600);
 }
 
 async function carregarPerfil(user){
   var nome=user.user_metadata.full_name||user.user_metadata.name||user.email.split('@')[0];
   var avatar=user.user_metadata.avatar_url||user.user_metadata.picture||null;
 
-  /* Mostra dados do Google imediatamente enquanto busca o banco */
+  /* ── FASE 1: Renderiza com dados do Google imediatamente (0ms) ── */
   var fallback={id:user.id,email:user.email,nome:nome,avatar_url:avatar,
     pontos:0,total_gasto:0,total_pedidos:0,total_avaliacoes:0,
     rpg_comprados:0,promo_comprados:0,indicacoes:0};
   renderPerfil(fallback);
 
+  /* ── FASE 2: Queries críticas em paralelo (perfil + MP + tickets) ── */
   try{
-    /* Busca tudo em paralelo: perfil, pontos, pedidos, avaliações, indicações */
-    var [perfilRes, mpRes, pedsRes, avalsRes, indicRes] = await Promise.all([
+    var [perfilRes, mpRes, tktRes] = await Promise.all([
       sb.from('perfis').upsert(
         {id:user.id,email:user.email,nome:nome,avatar_url:avatar,
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
       sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle(),
-      /* Conta pedidos pagos/entregues — filtra por email (mais confiável) */
-      sb.from('pedidos').select('id,valor,status')
-        .eq('user_email',user.email)
-        .in('status',['pago','entregue']),
-      /* Conta avaliações deste usuário */
-      sb.from('avaliacoes').select('id',{count:'exact'})
-        .eq('user_email',user.email),
-      /* Conta indicações convertidas */
-      sb.from('indicacoes').select('id',{count:'exact'})
-        .eq('indicador_email',user.email)
-        .eq('convertida',true)
+      sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle()
     ]);
 
-    var perfil=perfilRes.data||fallback;
-
-    /* Injeta pontos e histórico */
+    var perfil = perfilRes.data || fallback;
     if(mpRes.data){
-      perfil.pontos=mpRes.data.pontos||0;
-      perfil.historico=mpRes.data.historico||[];
+      perfil.pontos    = mpRes.data.pontos || 0;
+      perfil.historico = mpRes.data.historico || [];
     }
 
-    /* Injeta contagens reais das tabelas */
-    var pedidos=pedsRes.data||[];
-    perfil.total_pedidos=pedidos.length||0;
-    perfil.total_gasto=pedidos.reduce(function(s,p){return s+Number(p.valor||0);},0);
-
-    /* Conta jogos RPG comprados analisando os itens dos pedidos */
-    var rpgCount=0;
-    pedidos.forEach(function(ped){
-      var itens=[];
-      try{itens=typeof ped.itens==='string'?JSON.parse(ped.itens):ped.itens||[];}catch(e){}
-      itens.forEach(function(item){
-        var cat=(item.categoria||item.cat||'').toLowerCase();
-        if(cat.indexOf('rpg')!==-1||cat.indexOf('ação')!==-1||cat.indexOf('acao')!==-1) rpgCount++;
-      });
-    });
-    perfil.rpg_comprados=rpgCount;
-    /* Toda compra na MarsGames é uma oferta/promoção */
-    perfil.promo_comprados=perfil.total_pedidos;
-
-    /* Avaliações reais */
-    perfil.total_avaliacoes=avalsRes.count||0;
-
-    /* Indicações */
-    try{perfil.indicacoes=indicRes.count||0;}catch(e){perfil.indicacoes=0;}
-
-    perfilData=perfil;
+    perfilData = perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
     renderConquistas(perfil);
 
+    /* Tickets no hero — usa dado já carregado */
+    var tktQtd = (tktRes.data && tktRes.data.quantidade) || 0;
+    var hTkt = document.getElementById('heroTicketCount');
+    if(hTkt) hTkt.textContent = tktQtd;
+    meusTickets = tktQtd;
+
+    /* MarsPass — aba padrão, carrega junto */
+    carregarMarsPassPerfil(user);
+
   }catch(e){
     console.error('Erro perfil banco:',e);
-    /* Tenta ao menos pegar pontos e avaliações mesmo no erro */
     try{
-      var [mp, avals, peds] = await Promise.all([
-        sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle(),
-        sb.from('avaliacoes').select('id',{count:'exact'}).eq('user_email',user.email),
-        sb.from('pedidos').select('id',{count:'exact'}).eq('user_email',user.email).in('status',['pago','entregue'])
-      ]);
-      if(mp.data) fallback.pontos=mp.data.pontos||0;
-      fallback.total_avaliacoes=avals.count||0;
-      fallback.total_pedidos=peds.count||0;
+      var mpFb = await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
+      if(mpFb.data) fallback.pontos = mpFb.data.pontos || 0;
     }catch(_){}
-    perfilData=fallback;
+    perfilData = fallback;
     renderPerfil(fallback);
     carregarBeneficiosCupom(fallback);
     renderConquistas(fallback);
+    carregarMarsPassPerfil(user);
   }
 
-  carregarPedidos(user.id);
-  carregarFavoritos(user.id);
-  carregarHistoricoPontosEmail(user.email);
-  carregarTicketsHero(user);
-  /* Carrega MarsPass automaticamente pois é a aba ativa por padrão */
-  carregarMarsPassPerfil(user);
-  /* Checa se subiu de nível e dá XP bônus ao planeta */
-  verificarLevelUpXP(user);
+  /* ── FASE 3: Secundário em background (não bloqueia renderização) ── */
+  setTimeout(function(){
+    carregarPedidos(user.id);
+    carregarHistoricoPontosEmail(user.email);
+  }, 100);
+
+  setTimeout(function(){
+    carregarFavoritos(user.id);
+    verificarLevelUpXP(user);
+  }, 400);
 }
 
 /* Verifica subida de nível e concede XP bônus ao planeta */
@@ -3732,15 +3707,57 @@ async function carregarTicketsHero(user){
   }catch(e){}
 }
 
-function showTab(id,el){
+/* Cache de abas já carregadas — evita re-fetch desnecessário */
+var _tabsCarregadas = {};
+
+function showTab(id, el){
   document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active')});
   document.querySelectorAll('.tab,.tab-editar-btn').forEach(function(t){t.classList.remove('active')});
   document.getElementById('tab-'+id).classList.add('active');
-  if(el)el.classList.add('active');
-  if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);
-  if(id==='marspoints-perfil' && userSession) carregarMarsPointsPerfil(userSession.user);
-  if(id==='premios' && userSession) carregarPremios(userSession.user);
-  if(id==='marspass-perfil' && userSession) carregarMarsPassPerfil(userSession.user, true);
+  if(el) el.classList.add('active');
+
+  if(!userSession) return;
+  var u = userSession.user;
+
+  /* Lazy load por aba — só carrega na primeira vez que abre */
+  if(id === 'tickets' && !_tabsCarregadas.tickets){
+    _tabsCarregadas.tickets = true;
+    carregarTicketsPerfil(u);
+  }
+  if(id === 'marspoints-perfil' && !_tabsCarregadas.marspoints){
+    _tabsCarregadas.marspoints = true;
+    carregarMarsPointsPerfil(u);
+  }
+  if(id === 'premios' && !_tabsCarregadas.premios){
+    _tabsCarregadas.premios = true;
+    carregarPremios(u);
+  }
+  if(id === 'meus-pedidos' && !_tabsCarregadas.pedidos){
+    _tabsCarregadas.pedidos = true;
+    carregarPedidos(u.id);
+  }
+  if(id === 'favoritos' && !_tabsCarregadas.favoritos){
+    _tabsCarregadas.favoritos = true;
+    carregarFavoritos(u.id);
+  }
+  if(id === 'historico' && !_tabsCarregadas.historico){
+    _tabsCarregadas.historico = true;
+    carregarHistoricoPontosEmail(u.email);
+  }
+  if(id === 'cambio'){
+    /* Câmbio sempre recarrega saldos ao abrir (leve) */
+    if(!_tabsCarregadas.cambio){
+      _tabsCarregadas.cambio = true;
+      cambioCarregarTudo();
+    } else {
+      /* Só atualiza saldos, sem recarregar itens */
+      if(Date.now() - (_cambioUltimaRecarga||0) > 30000) cambioRecarregarSaldos();
+    }
+  }
+  /* MarsPass — força reload para refletir mudanças */
+  if(id === 'marspass-perfil'){
+    carregarMarsPassPerfil(u, true);
+  }
 }
 
 /* ── ABA MARSPASS — GALÁXIA COM ESTRELAS ANIMADAS ── */
@@ -3805,16 +3822,9 @@ async function carregarMarsPassPerfil(user, forcado){
   var a=assRes.data;
   var anelSalvo=(perfilRes.data&&perfilRes.data.anel_escolhido)||null;
 
-  /* Determina nível atual do usuário — busca pontos frescos se perfilData não tiver */
-  var _pontos=(perfilData&&perfilData.pontos)||0;
-  /* Se não tem pontos em memória, busca do banco agora */
-  if(!_pontos && userSession){
-    try{
-      var{data:mpFresh}=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
-      _pontos=(mpFresh&&mpFresh.pontos)||0;
-    }catch(e){}
-  }
-  var nivelAtual=getNivel(_pontos).nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  /* Determina nível atual do usuário — usa perfilData em memória, sem query extra */
+  var _pontos = (perfilData && perfilData.pontos) || 0;
+  var nivelAtual = getNivel(_pontos).nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 
   /* Salva plano globalmente para que renderConquistas inclua títulos MarsPass */
   window._marspassPlanoAtivo = a ? a.plano : null;
