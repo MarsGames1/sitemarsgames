@@ -2963,6 +2963,13 @@ async function logout(){
   _fazendoLogout=true;
   var btn=document.getElementById('btnLogout');
   if(btn){btn.textContent='Saindo...';btn.disabled=true;}
+  /* Desinscreve canal realtime para liberar conexão no servidor */
+  if(typeof _realtimeChannel!=='undefined'&&_realtimeChannel){
+    try{sb.removeChannel(_realtimeChannel);}catch(e){}
+    _realtimeChannel=null;
+  }
+  /* Para animação do planeta */
+  if(typeof _planetaTabAtiva!=='undefined') _planetaTabAtiva=false;
   try{
     await sb.auth.signOut({scope:'local'});
   }catch(e){ console.error(e); }
@@ -5186,6 +5193,8 @@ window.dnaShare=function(){
 
 var _origShowTab=window.showTab;
 window.showTab=function(id,el){
+  /* Pausa animação do planeta quando sai da aba */
+  if(id!=='planeta' && typeof _planetaTabAtiva!=='undefined') _planetaTabAtiva=false;
   _origShowTab(id,el);
   if(id==='dna') dnaCarregarBiblioteca();
   if(id==='aniversario') bdayInit();
@@ -5323,6 +5332,7 @@ function bdayConfetti(){
 var cambioInitDone=false;
 var _cambioMPAtual=0, _cambioTktAtual=0, _cambioXPAtual=0;
 var _cambioTaxa=0.05;
+var _cambioUltimaRecarga=0;
 
 // Items padrão — serão sobreescritos pelo Supabase se houver
 var CAMBIO_DEFAULTS=[
@@ -5336,7 +5346,12 @@ var CAMBIO_DEFAULTS=[
 var _cambioItems=[];
 
 window.cambioInit=function(){
-  if(cambioInitDone){cambioRecarregarSaldos();return;}
+  if(cambioInitDone){
+    /* Só refaz query de saldos se passou mais de 30s */
+    if(Date.now()-_cambioUltimaRecarga>30000) cambioRecarregarSaldos();
+    else renderCambioGrid(); /* só re-renderiza com dados já em memória */
+    return;
+  }
   cambioInitDone=true;
   cambioCarregarTudo();
 };
@@ -5369,6 +5384,7 @@ async function cambioCarregarTudo(){
 }
 
 async function cambioRecarregarSaldos(){
+  _cambioUltimaRecarga=Date.now();
   if(!userSession){renderCambioGrid();return;}
   var email=userSession.user.email;
   try{
@@ -5821,6 +5837,7 @@ function planetaAtualizarTech(){
 }
 
 window.planetaInit=function(){
+  _planetaTabAtiva=true;
   if(planetaInitDone){
     planetaCarregarSupabase();
     return;
@@ -5924,6 +5941,7 @@ function drawSpaceBg(ctx,w,h){
       col:gold?'rgba(255,210,100,':'rgba(255,255,255,'});
   }
   (function starLoop(){
+    if(document.hidden){requestAnimationFrame(starLoop);return;}
     ctx.clearRect(0,0,w,h);
     ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
     ctx.fillStyle=ng;ctx.fillRect(0,0,w,h);
@@ -6063,7 +6081,13 @@ function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1,vy
 function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.6+Math.random()*.5};}
 function mkMeteor(w,h){return{x:-20+Math.random()*w*.4,y:Math.random()*h*.3,vx:4+Math.random()*7,vy:2+Math.random()*4,a:.5+Math.random()*.5};}
 
+var _planetaTabAtiva=false;
 function planetaLoop(){
+  /* Pausa quando tab do navegador está em segundo plano OU aba planeta não aberta */
+  if(document.hidden||!_planetaTabAtiva){
+    requestAnimationFrame(planetaLoop);
+    return;
+  }
   planetaNoiseT+=0.008;
   planetaDrawPlanet();
   planetaUpdateWeather();

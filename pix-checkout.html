@@ -566,7 +566,7 @@ async function pollPagamento(paymentId, ref) {
   }
 
   if (pollTentativas < POLL_MAX) {
-    setTimeout(() => pollPagamento(paymentId, ref), 3000);
+    setTimeout(() => pollPagamento(paymentId, ref), 5000); /* 5s em vez de 3s — reduz carga no DB */
   } else {
     // Esgotou tentativas — para câmbio/MP vai direto para o perfil executar
     document.getElementById('pollMsg').textContent = 'Verificando pagamento...';
