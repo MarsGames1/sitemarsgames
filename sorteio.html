@@ -1565,80 +1565,31 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
           <span class="pvp-pix-valor-num" id="pvpPixValor">R$ 2,00</span>
         </div>
         <div class="pvp-pix-qr-wrap">
-          <div class="pvp-pix-qr" id="pvpPixQR">
-            <!-- QR gerado via CSS/SVG estático representando PIX -->
-            <svg viewBox="0 0 120 120" width="110" height="110" xmlns="http://www.w3.org/2000/svg">
-              <rect width="120" height="120" fill="#fff" rx="6"/>
-              <!-- Canto superior esquerdo -->
-              <rect x="8" y="8" width="34" height="34" rx="3" fill="none" stroke="#000" stroke-width="3.5"/>
-              <rect x="14" y="14" width="22" height="22" rx="2" fill="#000"/>
-              <!-- Canto superior direito -->
-              <rect x="78" y="8" width="34" height="34" rx="3" fill="none" stroke="#000" stroke-width="3.5"/>
-              <rect x="84" y="14" width="22" height="22" rx="2" fill="#000"/>
-              <!-- Canto inferior esquerdo -->
-              <rect x="8" y="78" width="34" height="34" rx="3" fill="none" stroke="#000" stroke-width="3.5"/>
-              <rect x="14" y="84" width="22" height="22" rx="2" fill="#000"/>
-              <!-- Módulos centrais -->
-              <rect x="52" y="8" width="6" height="6" fill="#000"/>
-              <rect x="60" y="8" width="6" height="6" fill="#000"/>
-              <rect x="52" y="16" width="6" height="6" fill="#000"/>
-              <rect x="60" y="24" width="6" height="6" fill="#000"/>
-              <rect x="52" y="32" width="6" height="6" fill="#000"/>
-              <rect x="8" y="52" width="6" height="6" fill="#000"/>
-              <rect x="16" y="52" width="6" height="6" fill="#000"/>
-              <rect x="8" y="60" width="6" height="6" fill="#000"/>
-              <rect x="24" y="60" width="6" height="6" fill="#000"/>
-              <rect x="8" y="68" width="6" height="6" fill="#000"/>
-              <rect x="52" y="52" width="6" height="6" fill="#000"/>
-              <rect x="60" y="52" width="6" height="6" fill="#000"/>
-              <rect x="68" y="52" width="6" height="6" fill="#000"/>
-              <rect x="52" y="60" width="6" height="6" fill="#000"/>
-              <rect x="68" y="60" width="6" height="6" fill="#000"/>
-              <rect x="52" y="68" width="6" height="6" fill="#000"/>
-              <rect x="60" y="68" width="6" height="6" fill="#000"/>
-              <rect x="68" y="68" width="6" height="6" fill="#000"/>
-              <rect x="76" y="52" width="6" height="6" fill="#000"/>
-              <rect x="84" y="52" width="6" height="6" fill="#000"/>
-              <rect x="76" y="60" width="6" height="6" fill="#000"/>
-              <rect x="92" y="60" width="6" height="6" fill="#000"/>
-              <rect x="100" y="60" width="6" height="6" fill="#000"/>
-              <rect x="76" y="68" width="6" height="6" fill="#000"/>
-              <rect x="84" y="76" width="6" height="6" fill="#000"/>
-              <rect x="92" y="76" width="6" height="6" fill="#000"/>
-              <rect x="52" y="76" width="6" height="6" fill="#000"/>
-              <rect x="60" y="84" width="6" height="6" fill="#000"/>
-              <rect x="52" y="92" width="6" height="6" fill="#000"/>
-              <rect x="68" y="84" width="6" height="6" fill="#000"/>
-              <rect x="76" y="92" width="6" height="6" fill="#000"/>
-              <rect x="100" y="52" width="6" height="6" fill="#000"/>
-              <rect x="100" y="68" width="6" height="6" fill="#000"/>
-              <rect x="92" y="92" width="6" height="6" fill="#000"/>
-              <rect x="100" y="84" width="6" height="6" fill="#000"/>
-              <rect x="100" y="100" width="6" height="6" fill="#000"/>
-              <rect x="84" y="100" width="6" height="6" fill="#000"/>
-              <!-- Símbolo PIX central mínimo -->
-              <text x="60" y="46" text-anchor="middle" font-size="9" font-weight="900" fill="#32bcad" font-family="Arial">PIX</text>
-            </svg>
+          <div class="pvp-pix-qr" id="pvpQrWrap">
+            <!-- QR real injetado via JS ao chamar mp-criar-pix -->
+            <div style="width:120px;height:120px;display:flex;align-items:center;justify-content:center">
+              <div style="width:32px;height:32px;border:3px solid rgba(0,200,100,.2);border-top-color:#00cc55;border-radius:50%;animation:pvpSpin 0.7s linear infinite"></div>
+            </div>
           </div>
-          <div style="font-size:9px;color:#666;text-align:center;margin-top:6px;letter-spacing:.5px">QR Code ilustrativo — use a chave abaixo</div>
+          <div style="font-size:9px;color:#666;text-align:center;margin-top:6px;letter-spacing:.5px">QR Code gerado via Mercado Pago</div>
         </div>
         <div class="pvp-pix-chave-box">
-          <span class="pvp-pix-chave-label">Chave PIX</span>
+          <span class="pvp-pix-chave-label">Pix Copia e Cola</span>
           <div class="pvp-pix-chave-row">
-            <span class="pvp-pix-chave-val" id="pvpPixChave">marsgames@pagamentos.com</span>
+            <span class="pvp-pix-chave-val" id="pvpPixChave" style="font-size:10px;opacity:.7">Gerando código...</span>
             <button class="pvp-pix-copy-btn" onclick="pvpCopiarChave()">📋 Copiar</button>
           </div>
         </div>
         <div class="pvp-pix-steps">
           <div class="pvp-pix-step"><span class="pvp-pix-step-num">1</span><span>Abra seu banco e acesse Pix</span></div>
-          <div class="pvp-pix-step"><span class="pvp-pix-step-num">2</span><span>Escaneie o QR ou use a chave acima</span></div>
-          <div class="pvp-pix-step"><span class="pvp-pix-step-num">3</span><span>Clique em "Já paguei" após o pagamento</span></div>
+          <div class="pvp-pix-step"><span class="pvp-pix-step-num">2</span><span>Escaneie o QR ou copie o código acima</span></div>
+          <div class="pvp-pix-step"><span class="pvp-pix-step-num">3</span><span>Confirmação automática após pagamento</span></div>
         </div>
         <div class="pvp-pix-btns">
-          <button class="pvp-btn-demo pvp-pix-pago-btn" id="pvpPixPagoBtn" onclick="pvpConfirmarPagamento()">✅ Já paguei — Entrar na sala</button>
+          <button class="pvp-btn-demo pvp-pix-pago-btn" id="pvpPixPagoBtn" onclick="pvpConfirmarPagamento()">✅ Já paguei — Verificar agora</button>
           <button class="pvp-btn-cancel" onclick="pvpFecharModal()">Cancelar</button>
         </div>
-        <div class="pvp-pix-aviso">⚠️ O admin confirmará o pagamento. Em caso de não aprovação, o valor é reembolsado.</div>
+        <div class="pvp-pix-aviso">⚡ Confirmação automática via Mercado Pago. Após o pagamento a sala é liberada em segundos.</div>
       </div>
 
       <!-- TELA AGUARDANDO CONFIRMAÇÃO -->
@@ -1705,7 +1656,7 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
@@ -2454,6 +2405,7 @@ function lancarConfetti(){
     onScroll('.perfil-hero',{y:22,opacity:0,duration:.65},0);
     onScroll('.sorteio-card',{y:26,opacity:0,duration:.65},0);
     /* sorteio-tab removido do GSAP — ficava com opacity:0 permanente */
+    /* encerrado-card e sem-sorteio TAMBÉM excluídos — display é controlado via JS */
     onScroll('.vencedor-card',{scale:.95,opacity:0,duration:.7},0);
     onScroll('.tinfo-card',{y:14,opacity:0},.07);
     onScroll('.historico-item',{x:-14,opacity:0},.05);
@@ -2535,7 +2487,7 @@ function getNavNivel(pts){
   return 'bronze';
 }
 async function atualizarNavbar(session){
-  var btnLogin=document.getElementById('navLogin');
+  var btnLogin=document.getElementById('navLoginBtn'); /* ID correto: navLoginBtn */
   var wrap=document.getElementById('navAvatarWrap');
   var imgAvatar=document.getElementById('navAvatarImg');
   var fallback=document.getElementById('navAvatarFallback');
@@ -2546,6 +2498,7 @@ async function atualizarNavbar(session){
     var nome=meta.full_name||meta.name||session.user.email||'';
     var inicial=(nome.trim()[0]||'U').toUpperCase();
     if(btnLogin) btnLogin.style.display='none';
+    document.getElementById('navPerfilBtn') && (document.getElementById('navPerfilBtn').style.display='flex');
     wrap.style.display='flex';
     if(avatarUrl){
       if(imgAvatar){imgAvatar.src=avatarUrl;imgAvatar.style.display='block';}
@@ -2995,6 +2948,9 @@ function pvpRenderArena(){
 var PVP_PIX_CHAVE='marsgames@pagamentos.com';
 var pvpPagamentoPendente=null;
 var pvpConfirmacaoInterval=null;
+var pvpPixPaymentId=null;
+var pvpPixReference=null;
+var pvpPixPollAtivo=false;
 
 function pvpAbrirSala(tier){
   pvpSalaAtual=PVP_SALAS[tier]; pvpSalaAtual._tier=tier;
@@ -3002,15 +2958,117 @@ function pvpAbrirSala(tier){
   document.getElementById('pvpInfoSala').textContent=pvpSalaAtual.name;
   document.getElementById('pvpInfoEntrada').textContent=pvpSalaAtual.entrada;
   document.getElementById('pvpInfoPremio').textContent=pvpSalaAtual.premio;
-  /* Preenche tela PIX */
+  /* Reseta tela PIX */
   document.getElementById('pvpPixValor').textContent=pvpSalaAtual.entrada;
-  document.getElementById('pvpPixChave').textContent=PVP_PIX_CHAVE;
+  pvpPixPaymentId=null; pvpPixReference=null; pvpPixPollAtivo=false;
   pvpMostrarTela('pix');
   document.getElementById('pvpModalBg').classList.add('open');
+  /* Gera Pix real automaticamente */
+  pvpGerarPixReal();
 }
+
+async function pvpGerarPixReal(){
+  var btn=document.getElementById('pvpPixPagoBtn');
+  btn.disabled=true; btn.textContent='Gerando Pix...';
+  /* Mostra loading no QR */
+  var qrWrap=document.getElementById('pvpQrWrap');
+  if(qrWrap) qrWrap.innerHTML='<div style="width:120px;height:120px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto"><div style="width:32px;height:32px;border:3px solid rgba(0,200,100,.2);border-top-color:#00cc55;border-radius:50%;animation:pvpSpin 0.7s linear infinite"></div></div>';
+  try{
+    if(!userSession) throw new Error('Não autenticado');
+    /* Monta item com valor da sala */
+    var valorNum=parseFloat(pvpSalaAtual.entrada.replace('R$','').replace(',','.'));
+    var itens=[{
+      nome:'Arena PvP — '+pvpSalaAtual.name,
+      preco:valorNum,
+      imagem:''
+    }];
+    var response=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+userSession.access_token
+      },
+      body:JSON.stringify({itens:itens,tipo:'pvp',sala:pvpSalaAtual._tier})
+    });
+    var data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
+    pvpPixPaymentId=data.payment_id||'';
+    pvpPixReference=data.reference||data.pedido_id||'';
+    /* Renderiza QR Code real */
+    if(qrWrap){
+      var qrHtml='';
+      if(data.qr_code_base64){
+        qrHtml='<img src="data:image/png;base64,'+data.qr_code_base64+'" style="width:140px;height:140px;border-radius:10px;display:block;margin:0 auto" alt="QR Code Pix">';
+      } else {
+        qrHtml='<div style="width:140px;height:140px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:11px;color:#555;font-weight:700;text-align:center;padding:10px">QR disponível<br>use chave Pix</div>';
+      }
+      qrWrap.innerHTML=qrHtml;
+    }
+    /* Preenche código copia-cola */
+    if(data.qr_code){
+      var chaveEl=document.getElementById('pvpPixChave');
+      if(chaveEl) chaveEl.textContent=data.qr_code;
+      /* Atualiza label do botão copiar */
+      var copyBtn=document.querySelector('.pvp-pix-copy-btn');
+      if(copyBtn) copyBtn.setAttribute('onclick','pvpCopiarChave()');
+    }
+    btn.disabled=false; btn.textContent='✅ Já paguei — Entrar na sala';
+    /* Inicia polling automático */
+    pvpPixPollAtivo=true;
+    pvpPollPixPagamento(pvpPixPaymentId, pvpPixReference, 0);
+  }catch(e){
+    console.error('[pvp pix real]',e);
+    if(qrWrap) qrWrap.innerHTML='<div style="font-size:11px;color:#ff8888;text-align:center;padding:12px">Erro ao gerar QR Code.<br>Use a chave Pix abaixo.</div>';
+    /* Fallback: mostra chave estática */
+    var chaveEl=document.getElementById('pvpPixChave');
+    if(chaveEl) chaveEl.textContent=PVP_PIX_CHAVE;
+    btn.disabled=false; btn.textContent='✅ Já paguei — Entrar na sala';
+    showToast('Use a chave Pix para pagar.',false);
+  }
+}
+
+async function pvpPollPixPagamento(paymentId, ref, tentativas){
+  if(!pvpPixPollAtivo) return;
+  if(tentativas>60){pvpPixPollAtivo=false;return;}
+  try{
+    var res=await fetch(SUPABASE_URL+'/functions/v1/mp-confirmar-pagamento',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({payment_id:paymentId,reference:ref})
+    });
+    if(res.ok){
+      var d=await res.json();
+      if(d.aprovado){
+        pvpPixPollAtivo=false;
+        showToast('✅ Pix confirmado! Entrando na sala...');
+        /* Registra pagamento aprovado no Supabase */
+        try{
+          await sb.from('pvp_pagamentos').insert({
+            user_id:userSession.user.id,
+            user_email:userSession.user.email,
+            sala:pvpSalaAtual._tier,
+            sala_nome:pvpSalaAtual.name,
+            valor:pvpSalaAtual.entrada,
+            status:'aprovado',
+            reference:ref,
+            payment_id:paymentId,
+            created_at:new Date().toISOString()
+          });
+        }catch(e2){}
+        document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
+        pvpMostrarTela('wait');
+        return;
+      }
+    }
+  }catch(e){}
+  /* Continua polling a cada 3s */
+  setTimeout(function(){pvpPollPixPagamento(paymentId,ref,tentativas+1);},3000);
+}
+
 function pvpFecharModal(){
   document.getElementById('pvpModalBg').classList.remove('open');
   clearInterval(pvpTimer);
+  pvpPixPollAtivo=false;
   if(pvpConfirmacaoInterval){clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;}
 }
 function pvpMostrarTela(id){
@@ -3022,55 +3080,77 @@ function pvpMostrarTela(id){
 function pvpCopiarChave(){
   var chave=document.getElementById('pvpPixChave').textContent;
   navigator.clipboard.writeText(chave).then(function(){
-    showToast('✅ Chave PIX copiada!');
+    showToast('✅ Código Pix copiado!');
   }).catch(function(){
     showToast('Chave: '+chave);
   });
 }
 async function pvpConfirmarPagamento(){
+  /* Fallback manual — se o polling automático não detectou */
   if(!userSession){showToast('Faça login para continuar',true);return;}
-  var btn=document.getElementById('pvpPixPagoBtn');
-  btn.disabled=true; btn.textContent='Registrando...';
-  try{
-    /* Registra pagamento pendente no Supabase */
-    var pedido={
-      user_id:userSession.user.id,
-      user_email:userSession.user.email,
-      sala:pvpSalaAtual._tier,
-      sala_nome:pvpSalaAtual.name,
-      valor:pvpSalaAtual.entrada,
-      status:'pendente',
-      chave_pix:PVP_PIX_CHAVE,
-      created_at:new Date().toISOString()
-    };
-    var{data,error}=await sb.from('pvp_pagamentos').insert(pedido).select().single();
-    if(error) throw error;
-    pvpPagamentoPendente=data;
-    /* Atualiza tela de aguardo */
-    document.getElementById('pvpAguardSala').textContent=pvpSalaAtual.name;
-    document.getElementById('pvpAguardValor').textContent=pvpSalaAtual.entrada;
-    document.getElementById('pvpModalTitle').textContent='⏳ AGUARDANDO';
-    pvpMostrarTela('aguardando');
-    /* Polling: verifica a cada 5s se admin aprovou */
-    pvpConfirmacaoInterval=setInterval(async function(){
-      try{
-        var{data:pg}=await sb.from('pvp_pagamentos').select('status').eq('id',pvpPagamentoPendente.id).maybeSingle();
-        if(pg&&pg.status==='aprovado'){
-          clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;
-          showToast('✅ Pagamento confirmado! Boa sorte!');
-          document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
-          pvpMostrarTela('wait');
-        } else if(pg&&pg.status==='rejeitado'){
-          clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;
-          showToast('❌ Pagamento não aprovado. Entre em contato com o suporte.',true);
-          pvpFecharModal();
-        }
-      }catch(e){}
-    },5000);
-  }catch(e){
+  if(pvpPixPaymentId){
+    /* Força uma checagem imediata */
+    var btn=document.getElementById('pvpPixPagoBtn');
+    btn.disabled=true; btn.textContent='Verificando pagamento...';
+    try{
+      var res=await fetch(SUPABASE_URL+'/functions/v1/mp-confirmar-pagamento',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({payment_id:pvpPixPaymentId,reference:pvpPixReference})
+      });
+      var d=await res.json();
+      if(d.aprovado){
+        pvpPixPollAtivo=false;
+        showToast('✅ Pagamento confirmado! Boa sorte!');
+        document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
+        pvpMostrarTela('wait');
+        return;
+      } else {
+        showToast('⏳ Pagamento ainda não confirmado. Aguarde...',false);
+      }
+    }catch(e){}
     btn.disabled=false; btn.textContent='✅ Já paguei — Entrar na sala';
-    showToast('Erro ao registrar pagamento. Tente novamente.',true);
-    console.error('[pvp pix]',e);
+  } else {
+    /* Sem payment_id: registra manualmente e aguarda admin */
+    var btn=document.getElementById('pvpPixPagoBtn');
+    btn.disabled=true; btn.textContent='Registrando...';
+    try{
+      var pedido={
+        user_id:userSession.user.id,
+        user_email:userSession.user.email,
+        sala:pvpSalaAtual._tier,
+        sala_nome:pvpSalaAtual.name,
+        valor:pvpSalaAtual.entrada,
+        status:'pendente',
+        chave_pix:PVP_PIX_CHAVE,
+        created_at:new Date().toISOString()
+      };
+      var{data,error}=await sb.from('pvp_pagamentos').insert(pedido).select().single();
+      if(error) throw error;
+      pvpPagamentoPendente=data;
+      document.getElementById('pvpAguardSala').textContent=pvpSalaAtual.name;
+      document.getElementById('pvpAguardValor').textContent=pvpSalaAtual.entrada;
+      document.getElementById('pvpModalTitle').textContent='⏳ AGUARDANDO';
+      pvpMostrarTela('aguardando');
+      pvpConfirmacaoInterval=setInterval(async function(){
+        try{
+          var{data:pg}=await sb.from('pvp_pagamentos').select('status').eq('id',pvpPagamentoPendente.id).maybeSingle();
+          if(pg&&pg.status==='aprovado'){
+            clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;
+            showToast('✅ Pagamento confirmado! Boa sorte!');
+            document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
+            pvpMostrarTela('wait');
+          } else if(pg&&pg.status==='rejeitado'){
+            clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;
+            showToast('❌ Pagamento não aprovado. Entre em contato com o suporte.',true);
+            pvpFecharModal();
+          }
+        }catch(e){}
+      },5000);
+    }catch(e){
+      btn.disabled=false; btn.textContent='✅ Já paguei — Entrar na sala';
+      showToast('Erro ao registrar pagamento. Tente novamente.',true);
+    }
   }
 }
 function pvpIniciarDuelo(){
@@ -3184,16 +3264,20 @@ async function pvpCarregarLeaderboard(){
 document.getElementById('pvpModalBg').addEventListener('click',function(e){if(e.target===this)pvpFecharModal();});
 document.getElementById('rdOverlay').addEventListener('click',function(e){if(e.target===this)rdCloseModal();});
 
-/* Auth hook — atualiza PvP e Roda quando faz login */
+/* Auth hook — atualiza PvP, Roda e anel da navbar quando faz login */
 sb.auth.onAuthStateChange(function(event,session){
   if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
-    if(spaAtual==='arena') pvpRenderArena();
-    if(spaAtual==='roda') rdAtualizarMpDisplay();
-    spaAtualizarNavMp();
+    userSession=session;
+    if(session){
+      pvpRenderArena();
+      rdAtualizarMpDisplay();
+      spaAtualizarNavMp();
+      atualizarNavbar(session);
+    }
+  }
+  if(event==='SIGNED_OUT'){
+    userSession=null;
+    pvpRenderArena();
+    atualizarNavbar(null);
   }
 });
-setTimeout(spaAtualizarNavMp, 800);
-/* Inicializa SPA */
-spaGo('sorteios');
-</script>
-</body></html>
