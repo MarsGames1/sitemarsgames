@@ -512,16 +512,18 @@ async function executarCambioPosPagemento() {
     }
 
     // 4. Histórico câmbio (silencioso — tabela pode não existir)
-    await sb.from('cambio_historico').insert({
-      user_email: email,
-      item_nome: cambio.item_nome,
-      tipo: recompensaTipo,
-      mp_gasto: custoMP,
-      recompensa: cambio.recompensa,
-      taxa: (cambio.taxa_pct || 0) + '%',
-      taxa_reais: cambio.taxa_reais || 0,
-      created_at: new Date().toISOString()
-    }).catch(() => {});
+    try {
+      await sb.from('cambio_historico').insert({
+        user_email: email,
+        item_nome: cambio.item_nome,
+        tipo: recompensaTipo,
+        mp_gasto: custoMP,
+        recompensa: cambio.recompensa,
+        taxa: (cambio.taxa_pct || 0) + '%',
+        taxa_reais: cambio.taxa_reais || 0,
+        created_at: new Date().toISOString()
+      });
+    } catch(_) {}
 
     sessionStorage.removeItem('mg_cambio_pendente');
     console.log('[cambio pós-pix] ✅ concluído');
