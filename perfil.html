@@ -2567,14 +2567,17 @@ body.tema-claro .section-loader{color:var(--muted)}
 
       <!-- Painel de dados técnicos -->
       <div id="planetaTechPanel" style="position:absolute;top:36px;left:8px;z-index:10;pointer-events:none">
-        <div style="background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 10px;min-width:130px">
-          <div style="font-family:monospace;font-size:8px;color:rgba(0,255,150,.6);letter-spacing:.5px;margin-bottom:5px">◉ SCAN ATIVO</div>
-          <div style="font-size:8px;color:rgba(255,255,255,.3);font-weight:600;line-height:1.8">
-            <span style="color:rgba(0,200,255,.6)">SISTEMA:</span> <span id="pTechSistema">Sol-9</span><br>
-            <span style="color:rgba(0,200,255,.6)">GALÁXIA:</span> <span id="pTechGalaxia">Via Láctea</span><br>
-            <span style="color:rgba(0,200,255,.6)">CLIMA:</span> <span id="pTechClima">—</span><br>
-            <span style="color:rgba(0,200,255,.6)">TEMP:</span> <span id="pTechTemp">—</span><br>
-            <span style="color:rgba(0,200,255,.6)">GRAV:</span> <span id="pTechGrav">—</span>
+        <div style="background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;min-width:160px;backdrop-filter:blur(6px)">
+          <div style="font-family:monospace;font-size:8px;color:rgba(0,255,150,.7);letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            <span style="width:5px;height:5px;border-radius:50%;background:#00ff96;display:inline-block;box-shadow:0 0 6px #00ff96;animation:pulse 1.5s ease-in-out infinite"></span>
+            SCAN ATIVO
+          </div>
+          <div style="font-size:9px;color:rgba(255,255,255,.55);font-weight:600;line-height:2">
+            <div><span style="color:rgba(0,200,255,.7);font-size:8px">SISTEMA </span><span id="pTechSistema">Sol-9</span></div>
+            <div><span style="color:rgba(0,200,255,.7);font-size:8px">GALÁXIA </span><span id="pTechGalaxia">Via Láctea</span></div>
+            <div><span style="color:rgba(0,200,255,.7);font-size:8px">CLIMA &nbsp;&nbsp;</span><span id="pTechClima">—</span></div>
+            <div><span style="color:rgba(0,200,255,.7);font-size:8px">TEMP &nbsp;&nbsp;&nbsp;</span><span id="pTechTemp">—</span></div>
+            <div><span style="color:rgba(0,200,255,.7);font-size:8px">GRAV &nbsp;&nbsp;&nbsp;</span><span id="pTechGrav">—</span></div>
           </div>
         </div>
       </div>
@@ -5773,21 +5776,26 @@ var CLIMA_INFO={
 function planetaAtualizarTech(){
   var e=PLANETA_ERAS[planetaEraIdx];
   var t=e.tech;
-  /* Painel flutuante */
+  var ci=CLIMA_INFO[planetaWeatherMode]||CLIMA_INFO.CLEAR;
+
+  /* Longitude: ciclo completo em ~130s (noiseT cresce 0.008/frame × 60fps → ~0.48/s → 360/0.48 ≈ 750s sem mult)
+     Multiplicador 0.5 → ciclo em ~750s ≈ 12min. Razoável para simulação planetária. */
+  var lon=((planetaNoiseT*0.5)%360).toFixed(1);
+  var lat=(14.2+Math.sin(planetaNoiseT*.05)*8).toFixed(1);
+
+  /* ── Painel flutuante ── */
   var sSistema=document.getElementById('pTechSistema');
   var sGalaxia=document.getElementById('pTechGalaxia');
   var sClima=document.getElementById('pTechClima');
   var sTemp=document.getElementById('pTechTemp');
   var sGrav=document.getElementById('pTechGrav');
   if(sSistema) sSistema.textContent=t.sistema.split(' · ')[0];
-  if(sGalaxia) sGalaxia.textContent=t.galaxia.split(' ')[0]+'...';
-  if(sClima) sClima.textContent=(CLIMA_INFO[planetaWeatherMode]||CLIMA_INFO.CLEAR).nome;
+  if(sGalaxia) sGalaxia.textContent=t.galaxia;
+  if(sClima){sClima.textContent=ci.icon+' '+ci.nome;sClima.style.color=e.color;}
   if(sTemp) sTemp.textContent=t.temp.split('/')[0].trim();
   if(sGrav) sGrav.textContent=t.grav;
 
-  /* Ficha técnica completa */
-  var lon=((planetaNoiseT*20)%360).toFixed(1);
-  var lat=(14.2+Math.sin(planetaNoiseT*.1)*5).toFixed(1);
+  /* ── Ficha técnica completa ── */
   var pLat=document.getElementById('pTechLat');
   var pLon=document.getElementById('pTechLon');
   var pSis=document.getElementById('pTechSistema2');
@@ -5801,13 +5809,13 @@ function planetaAtualizarTech(){
   if(pLon) pLon.textContent=lon+'° E';
   if(pSis) pSis.textContent=t.sistema;
   if(pGal) pGal.textContent=t.galaxia;
-  var ci=CLIMA_INFO[planetaWeatherMode]||CLIMA_INFO.CLEAR;
   if(pCli){pCli.textContent=ci.icon+' '+ci.nome;pCli.style.color=e.color;}
   if(pTmp){pTmp.textContent=t.temp;pTmp.style.color=e.color;}
   if(pGrv) pGrv.textContent=t.grav;
   if(pAtm) pAtm.textContent=t.atm;
   if(pCrd) pCrd.textContent='RA '+t.ra+' · DEC '+t.dec;
-  /* Coords no stage */
+
+  /* ── Coords no stage ── */
   var coordEl=document.getElementById('planetaCoords');
   if(coordEl) coordEl.innerHTML='LAT '+lat+'°<br>LON '+lon+'°';
 }
@@ -5826,6 +5834,10 @@ window.planetaInit=function(){
   while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
   setupPlanetaCanvases();
   planeta3dInit();
+  /* Clima inicial aleatório conforme era */
+  var _modesInit=PLANETA_ERAS[planetaEraIdx].weather;
+  planetaWeatherMode=_modesInit[Math.floor(Math.random()*_modesInit.length)];
+  planetaWeatherTimer=480;
   planetaUpdateUI();
   planetaRenderLog();
   if(!planetaRafRunning){planetaRafRunning=true;planetaLoop();}
@@ -6007,7 +6019,8 @@ function planetaUpdateWeather(){
   ctx.clearRect(0,0,w,h);
   planetaWeatherTimer--;
   if(planetaWeatherTimer<=0){
-    planetaWeatherTimer=180+Math.floor(Math.random()*240);
+    /* Troca clima a cada 8-15s (480-900 frames a 60fps) — visível mas não frenético */
+    planetaWeatherTimer=480+Math.floor(Math.random()*420);
     var modes=PLANETA_ERAS[planetaEraIdx].weather;
     planetaWeatherMode=modes[Math.floor(Math.random()*modes.length)];
     if(planetaWeatherMode==='RAIN'&&!planetaRainDrops.length) for(var i=0;i<60;i++) planetaRainDrops.push(mkRainDrop(w,h));
