@@ -17,6 +17,7 @@
   --bronze:#cd9f6a;--prata:#e8e8e8;--ouro:#FFD700;--esm:#50c878;--dia:#b9f2ff;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
@@ -3061,17 +3062,17 @@ async function carregarPerfil(user){
         {onConflict:'id'}
       ).select().single(),
       sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle(),
-      /* Conta pedidos pagos/entregues deste usuário — tenta por user_id e user_email */
-      sb.from('pedidos').select('id, itens, valor_total, status', {count:'exact'})
-        .or('user_id.eq.'+user.id+',user_email.eq.'+user.email)
+      /* Conta pedidos pagos/entregues — filtra por email (mais confiável) */
+      sb.from('pedidos').select('id,valor,status')
+        .eq('user_email',user.email)
         .in('status',['pago','entregue']),
-      /* Conta avaliações aprovadas deste usuário */
-      sb.from('avaliacoes').select('id', {count:'exact'})
-        .eq('user_email', user.email),
+      /* Conta avaliações deste usuário */
+      sb.from('avaliacoes').select('id',{count:'exact'})
+        .eq('user_email',user.email),
       /* Conta indicações convertidas */
-      sb.from('indicacoes').select('id', {count:'exact'})
-        .eq('indicador_email', user.email)
-        .eq('convertida', true)
+      sb.from('indicacoes').select('id',{count:'exact'})
+        .eq('indicador_email',user.email)
+        .eq('convertida',true)
     ]);
 
     var perfil=perfilRes.data||fallback;
@@ -3084,8 +3085,8 @@ async function carregarPerfil(user){
 
     /* Injeta contagens reais das tabelas */
     var pedidos=pedsRes.data||[];
-    perfil.total_pedidos=pedsRes.count||pedidos.length||0;
-    perfil.total_gasto=pedidos.reduce(function(s,p){return s+Number(p.valor_total||0)},0);
+    perfil.total_pedidos=pedidos.length||0;
+    perfil.total_gasto=pedidos.reduce(function(s,p){return s+Number(p.valor||0);},0);
 
     /* Conta jogos RPG comprados analisando os itens dos pedidos */
     var rpgCount=0;
@@ -3119,7 +3120,7 @@ async function carregarPerfil(user){
       var [mp, avals, peds] = await Promise.all([
         sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle(),
         sb.from('avaliacoes').select('id',{count:'exact'}).eq('user_email',user.email),
-        sb.from('pedidos').select('id',{count:'exact'}).or('user_id.eq.'+user.id+',user_email.eq.'+user.email).in('status',['pago','entregue'])
+        sb.from('pedidos').select('id',{count:'exact'}).eq('user_email',user.email).in('status',['pago','entregue'])
       ]);
       if(mp.data) fallback.pontos=mp.data.pontos||0;
       fallback.total_avaliacoes=avals.count||0;
@@ -5474,22 +5475,42 @@ function renderCambioGrid(){
   var grid=document.getElementById('cambioGrid');
   if(!grid) return;
   var ativos=_cambioItems.filter(function(i){return i.ativo!==false;});
-  if(!ativos.length){grid.innerHTML='<div style="padding:20px;text-align:center;color:#3d4560;font-size:12px">Nenhum câmbio disponível no momento.</div>';return;}
+  if(!ativos.length){
+    grid.innerHTML='<div style="padding:24px;text-align:center;color:#3d4560;font-size:12px">'+
+      'Nenhum câmbio disponível no momento.<br>'+
+      '<span style="font-size:10px;color:#2a3050">Configure as opções no painel Admin.</span></div>';
+    return;
+  }
   grid.innerHTML='';
   ativos.forEach(function(item){
     var canAfford=_cambioMPAtual>=item.custo;
-    var card=document.createElement('div');card.className='cambio-card '+item.tipo;
+    var falta=item.custo-_cambioMPAtual;
+    var card=document.createElement('div');
+    card.className='cambio-card '+item.tipo+(canAfford?'':' sem-saldo');
+    card.style.opacity=canAfford?'1':'0.75';
     card.innerHTML=
       '<div class="cambio-card-top"><div class="cambio-icon">'+item.icon+'</div>'+
       '<div><div class="cambio-name">'+item.nome+'</div><div class="cambio-cat">'+item.cat+'</div></div></div>'+
       (item.badge?'<div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)">'+item.badge+'</div>':'')+
       '<div class="cambio-rate">'+
-        '<div class="cambio-rate-side from"><div class="cambio-rate-val">'+item.custo.toLocaleString('pt-BR')+' MP</div><div class="cambio-rate-lbl">VOCÊ PAGA</div></div>'+
+        '<div class="cambio-rate-side from">'+
+          '<div class="cambio-rate-val" style="color:'+(canAfford?'#ffc200':'#ff6b6b')+'">'+item.custo.toLocaleString('pt-BR')+' MP</div>'+
+          '<div class="cambio-rate-lbl">VOCÊ PAGA</div>'+
+        '</div>'+
         '<div style="padding:0 6px;font-size:12px;color:#3d4560;display:flex;align-items:center">→</div>'+
-        '<div class="cambio-rate-side to"><div class="cambio-rate-val">'+item.recompensa+'</div><div class="cambio-rate-lbl">VOCÊ RECEBE</div></div>'+
+        '<div class="cambio-rate-side to">'+
+          '<div class="cambio-rate-val">'+item.recompensa+'</div>'+
+          '<div class="cambio-rate-lbl">VOCÊ RECEBE</div>'+
+        '</div>'+
       '</div>'+
-      '<button class="cambio-btn" '+(canAfford?'onclick="cambioExecutar('+item.id+')"':'disabled')+'>'+
-      (canAfford?'FAZER CÂMBIO':'SEM MP SUFICIENTE')+'</button>';
+      (_cambioTaxa>0?'<div style="font-size:9px;color:#555;text-align:center;margin-bottom:8px">+ taxa de '+Math.round(_cambioTaxa*100)+'% em R$ via Pix</div>':'')+
+      (canAfford
+        ? '<button class="cambio-btn" onclick="cambioExecutar('+item.id+')">FAZER CÂMBIO</button>'
+        : '<div style="display:flex;flex-direction:column;gap:6px">'+
+            '<div style="font-size:10px;color:#ff6b6b;text-align:center;font-weight:700">⚠️ Faltam '+falta.toLocaleString('pt-BR')+' MP</div>'+
+            '<button class="cambio-btn" style="background:rgba(255,194,0,.12);border-color:rgba(255,194,0,.3);color:#ffc200" onclick="showTab(\'loja-mp\',document.querySelector(\'.tab-loja-mp\'))">💰 Comprar MarsPoints</button>'+
+          '</div>'
+      );
     grid.appendChild(card);
   });
 }
@@ -5498,30 +5519,30 @@ window.cambioExecutar=async function(id){
   var item=_cambioItems.find(function(i){return i.id===id;});
   if(!item) return;
   if(!userSession){showToast('⚠️ Faça login para fazer câmbio!');return;}
-  if(_cambioMPAtual<item.custo){showToast('⚠️ Marspoints insuficientes!');return;}
+  if(_cambioMPAtual<item.custo){showToast('⚠️ Marspoints insuficientes! Precisa de '+item.custo.toLocaleString('pt-BR')+' MP');return;}
 
-  var custoFinal=Math.round(item.custo*(1+_cambioTaxa));
-  if(_cambioMPAtual<custoFinal){
-    showToast('⚠️ Saldo insuficiente (inclui taxa '+Math.round(_cambioTaxa*100)+'%)');return;
-  }
+  /* custo_mp = exatamente o custo do item (sem taxa extra em MP)
+     a taxa é cobrada SOMENTE em R$ via Pix */
+  var custoMP=item.custo;
+  var recompensaVal=item.toVal||parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1;
 
-  // Câmbio de XP: debita direto (sem PIX), é gratuito em dinheiro
+  /* Câmbio de XP: sem taxa em R$, executa direto */
   if(item.tipo==='ct-xp'){
-    await _cambioExecutarDireto(item,custoFinal);
+    await _cambioExecutarDireto(item,custoMP,recompensaVal);
     return;
   }
 
-  // Câmbio com taxa em R$: calcula valor em reais (0.01 por MP como referência mínima)
-  // Taxa: converte MP em R$ — R$0,01 por MP de taxa (mínimo R$0,50)
-  var taxaReais=Math.max(0.50, Math.round(item.custo*_cambioTaxa*0.01*100)/100);
+  /* Calcula taxa em R$ */
+  var taxaReais=Math.round(custoMP*_cambioTaxa*0.01*100)/100;
+  taxaReais=Math.max(0.50,taxaReais); /* mínimo R$0,50 */
 
-  // Se a taxa for zero ou o tipo não paga em dinheiro, executa direto
-  if(_cambioTaxa===0 || taxaReais<0.50){
-    await _cambioExecutarDireto(item,custoFinal);
+  /* Se taxa zero, executa direto sem PIX */
+  if(_cambioTaxa===0){
+    await _cambioExecutarDireto(item,custoMP,recompensaVal);
     return;
   }
 
-  // Gera PIX para cobrar a taxa da transação
+  /* Gera PIX para cobrar a taxa em R$ */
   var sessRes=await sb.auth.getSession();
   var session=sessRes&&sessRes.data&&sessRes.data.session;
   if(!session){showToast('⚠️ Sessão expirada');return;}
@@ -5531,24 +5552,22 @@ window.cambioExecutar=async function(id){
     nome:'Taxa de câmbio: '+item.nome+' ('+Math.round(_cambioTaxa*100)+'%)',
     preco:taxaReais,
     imagem:'',
-    tipo:'cambio',
-    cambio_id:item.id,
-    mp_custo:custoFinal,
-    recompensa:item.recompensa,
-    recompensa_tipo:item.tipo,
-    recompensa_val:parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1
+    tipo:'cambio'
   }];
   sessionStorage.setItem('mg_itens_pendentes',JSON.stringify(itensPix));
-  var _camValNum=parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1;
   sessionStorage.setItem('mg_cambio_pendente',JSON.stringify({
-    item_id:item.id,item_nome:item.nome,item_tipo:item.tipo,
-    custo_mp:custoFinal,recompensa:item.recompensa,
-    recompensa_tipo:item.tipo,   /* campo exigido pelo pix-checkout.html */
-    recompensa_val:_camValNum,
-    taxa_pct:Math.round(_cambioTaxa*100)
+    item_id:item.id,
+    item_nome:item.nome,
+    item_tipo:item.tipo,
+    custo_mp:custoMP,            /* MP a debitar (sem taxa extra) */
+    recompensa:item.recompensa,
+    recompensa_tipo:item.tipo,   /* ct-ticket, ct-xp, ct-game */
+    recompensa_val:recompensaVal, /* quantidade exata a creditar */
+    taxa_pct:Math.round(_cambioTaxa*100),
+    taxa_reais:taxaReais
   }));
 
-  showToast('⚡ Gerando Pix para taxa...');
+  showToast('⚡ Gerando Pix para taxa de R$'+taxaReais.toFixed(2).replace('.',',')+'...');
 
   try{
     var response=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
@@ -5575,58 +5594,148 @@ window.cambioExecutar=async function(id){
 };
 
 // Câmbio direto sem PIX (XP, ou taxa=0)
-async function _cambioExecutarDireto(item,custoFinal){
+async function _cambioExecutarDireto(item, custoMP, recompensaVal){
   var email=userSession.user.email;
-  var novoMP=_cambioMPAtual-custoFinal;
+  /* Verifica saldo fresco do banco antes de debitar */
   try{
+    var mpCheck=await sb.from('marspoints').select('pontos,historico').eq('user_email',email).maybeSingle();
+    var mpBanco=(mpCheck.data&&mpCheck.data.pontos)||0;
+    if(mpBanco<custoMP){
+      _cambioMPAtual=mpBanco; /* atualiza memória */
+      renderCambioGrid();
+      _cambioMostrarSaldoInsuficiente(item,custoMP,mpBanco);
+      return;
+    }
+    var novoMP=mpBanco-custoMP;
+    var hist=(mpCheck.data&&mpCheck.data.historico)||[];
+    hist.unshift({pontos:-custoMP,descricao:'Câmbio: '+item.nome,data:new Date().toISOString(),tipo:'cambio'});
+
     // 1. Debita MP
-    var mpAtual=await sb.from('marspoints').select('pontos,historico').eq('user_email',email).maybeSingle();
-    var hist=(mpAtual.data&&mpAtual.data.historico)||[];
-    hist.unshift({pontos:-custoFinal,descricao:'Câmbio: '+item.nome,data:new Date().toISOString(),tipo:'cambio'});
-    await sb.from('marspoints').upsert({user_email:email,pontos:novoMP,historico:hist.slice(0,50)},{onConflict:'user_email'});
+    await sb.from('marspoints').upsert({
+      user_email:email,pontos:novoMP,historico:hist.slice(0,50)
+    },{onConflict:'user_email'});
     _cambioMPAtual=novoMP;
 
-    // 2. Credita recompensa
-    var toValNum=parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1;
+    // 2. Credita recompensa conforme tipo
     if(item.tipo==='ct-ticket'){
-      var tktAtual=await sb.from('tickets').select('quantidade,total_acumulado').eq('user_email',email).maybeSingle();
-      var novoTkt=(_cambioTktAtual||0)+toValNum;
-      var novoTotal=((tktAtual.data&&tktAtual.data.total_acumulado)||0)+toValNum;
-      await sb.from('tickets').upsert({user_email:email,user_id:userSession.user.id,quantidade:novoTkt,total_acumulado:novoTotal,ultima_renovacao:(tktAtual.data&&tktAtual.data.ultima_renovacao)||new Date().toISOString()},{onConflict:'user_email'});
+      var tktRes=await sb.from('tickets').select('quantidade,total_acumulado').eq('user_email',email).maybeSingle();
+      var tktAtualBanco=(tktRes.data&&tktRes.data.quantidade)||0;
+      var tktTotalBanco=(tktRes.data&&tktRes.data.total_acumulado)||0;
+      var novoTkt=tktAtualBanco+recompensaVal;
+      var novoTotal=tktTotalBanco+recompensaVal;
+      await sb.from('tickets').upsert({
+        user_email:email,user_id:userSession.user.id,
+        quantidade:novoTkt,total_acumulado:novoTotal,
+        ultima_renovacao:new Date().toISOString()
+      },{onConflict:'user_email'});
       _cambioTktAtual=novoTkt;
+      /* Atualiza stat da navbar */
       var stEl=document.getElementById('statTickets');if(stEl)stEl.textContent=novoTkt;
+      var cambTkt=document.getElementById('cambioSaldoTickets');if(cambTkt)cambTkt.textContent=novoTkt;
+
     }else if(item.tipo==='ct-xp'){
-      var plAtual=await sb.from('planetas').select('xp,atividades,log').eq('user_email',email).maybeSingle();
-      var xpAtual=(plAtual.data&&plAtual.data.xp)||0;
-      var atv=(plAtual.data&&plAtual.data.atividades)||0;
-      var pLog=(plAtual.data&&plAtual.data.log)||[];
-      var novoXP=xpAtual+toValNum;
-      pLog.unshift({label:'Câmbio de XP: '+item.nome,xp:toValNum,icon:'⚡',t:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
-      await sb.from('planetas').upsert({user_email:email,xp:novoXP,atividades:atv+1,log:pLog.slice(0,20),updated_at:new Date().toISOString()},{onConflict:'user_email'});
+      var xpAtual=parseInt(localStorage.getItem('mg_planeta_xp')||'0');
+      var novoXP=xpAtual+recompensaVal;
+      localStorage.setItem('mg_planeta_xp',String(novoXP));
       _cambioXPAtual=novoXP;
-      if(typeof planetaAddXPSilent==='function') planetaAddXPSilent(toValNum,'Câmbio de XP: '+item.nome,'⚡','rgba(0,255,231,.12)','#00ffe7');
+      /* Tenta persistir no Supabase (tabela planetas pode não existir) */
+      try{
+        await sb.from('planetas').upsert({
+          user_email:email,xp:novoXP,updated_at:new Date().toISOString()
+        },{onConflict:'user_email'});
+      }catch(_){}
+      if(typeof planetaAddXPSilent==='function')
+        planetaAddXPSilent(recompensaVal,'Câmbio: '+item.nome,'⚡','rgba(0,255,231,.12)','#00ffe7');
+      var xpEl=document.getElementById('cambioSaldoXP');if(xpEl)xpEl.textContent=novoXP.toLocaleString('pt-BR');
     }
 
-    // 3. Histórico
+    // 3. Registra no histórico de câmbio
     try{
       await sb.from('cambio_historico').insert({
         user_email:email,item_nome:item.nome,tipo:item.tipo,
-        mp_gasto:custoFinal,recompensa:item.recompensa,
-        taxa:Math.round(_cambioTaxa*100)+'%',created_at:new Date().toISOString()
+        mp_gasto:custoMP,recompensa:item.recompensa,
+        taxa:'0%',created_at:new Date().toISOString()
       });
-    }catch(e2){}
+    }catch(_){}
 
-    // 4. Atualiza UI
+    // 4. Atualiza também marspoints no histórico de perfil
+    try{
+      var mpHist=await sb.from('marspoints').select('historico').eq('user_email',email).maybeSingle();
+      // já foi atualizado acima
+    }catch(_){}
+
+    // 5. Atualiza UI completa
     var mpEl=document.getElementById('cambioSaldoMP');if(mpEl)mpEl.textContent=novoMP.toLocaleString('pt-BR');
-    var tktEl=document.getElementById('cambioSaldoTickets');if(tktEl&&item.tipo==='ct-ticket')tktEl.textContent=_cambioTktAtual;
-    var xpEl=document.getElementById('cambioSaldoXP');if(xpEl&&item.tipo==='ct-xp')xpEl.textContent=_cambioXPAtual.toLocaleString('pt-BR');
+    var statMP=document.getElementById('statMarsPoints');if(statMP)statMP.textContent=novoMP.toLocaleString('pt-BR');
     renderCambioGrid();
     cambioRenderHistFromDB();
-    showToast('✅ Câmbio realizado! '+item.recompensa+' creditados.');
+    _cambioMostrarSucesso(item,recompensaVal,novoMP);
+
   }catch(e){
     console.error('[cambio direto]',e);
-    showToast('❌ Erro: '+(e.message||'tente novamente'));
+    showToast('❌ Erro no câmbio: '+(e.message||'tente novamente'));
   }
+}
+
+/* Modal de sucesso do câmbio */
+function _cambioMostrarSucesso(item,recompensaVal,novoMP){
+  var tipo=item.tipo;
+  var icone=tipo==='ct-ticket'?'🎟️':tipo==='ct-xp'?'⚡':'🎮';
+  var label=tipo==='ct-ticket'?recompensaVal+' Tickets':tipo==='ct-xp'?recompensaVal+' XP':item.recompensa;
+  _cambioModal(
+    icone+' Câmbio realizado!',
+    '<div style="font-size:28px;margin-bottom:10px">'+icone+'</div>'+
+    '<div style="font-family:\'Orbitron\',sans-serif;font-size:20px;font-weight:900;color:#00ff55;margin-bottom:4px">+'+label+'</div>'+
+    '<div style="font-size:12px;color:#888;margin-bottom:16px">creditado na sua conta agora</div>'+
+    '<div style="font-size:11px;color:#555">Saldo restante: <strong style="color:#ffc200">'+novoMP.toLocaleString('pt-BR')+' MP</strong></div>',
+    [{txt:'✅ Fechar',cor:'var(--green)',acao:'fechar'}]
+  );
+}
+
+/* Modal de saldo insuficiente com link para Loja MP */
+function _cambioMostrarSaldoInsuficiente(item,custoMP,saldoAtual){
+  var falta=custoMP-saldoAtual;
+  _cambioModal(
+    '⚠️ MarsPoints insuficientes',
+    '<div style="font-size:32px;margin-bottom:12px">😔</div>'+
+    '<div style="font-size:13px;color:#ccc;margin-bottom:16px;line-height:1.6">'+
+      'Você precisa de <strong style="color:#ffc200">'+custoMP.toLocaleString('pt-BR')+' MP</strong> para este câmbio.<br>'+
+      'Seu saldo: <strong style="color:#ff6b6b">'+saldoAtual.toLocaleString('pt-BR')+' MP</strong><br>'+
+      'Faltam: <strong style="color:#ff6b6b">'+falta.toLocaleString('pt-BR')+' MP</strong>'+
+    '</div>'+
+    '<div style="font-size:11px;color:#555;background:rgba(255,194,0,.06);border:1px solid rgba(255,194,0,.15);border-radius:8px;padding:10px;margin-bottom:4px">'+
+      '💡 Compre MarsPoints na Loja MP e volte para trocar!'+
+    '</div>',
+    [
+      {txt:'💰 Ir para Loja MP',cor:'#ffc200',acao:'loja'},
+      {txt:'Fechar',cor:'rgba(255,255,255,.1)',acao:'fechar'}
+    ]
+  );
+}
+
+/* Modal genérico do câmbio */
+function _cambioModal(titulo,conteudo,botoes){
+  /* Remove modal anterior se existir */
+  var old=document.getElementById('cambioModalOverlay');if(old)old.remove();
+  var ov=document.createElement('div');
+  ov.id='cambioModalOverlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease';
+  var box=document.createElement('div');
+  box.style.cssText='background:#131318;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px 28px;max-width:360px;width:100%;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,.8)';
+  var btnsHtml=botoes.map(function(b){
+    return '<button onclick="'+
+      (b.acao==='loja'?"document.getElementById('cambioModalOverlay').remove();showTab('loja-mp',document.querySelector('.tab-loja-mp'))":
+       "document.getElementById('cambioModalOverlay').remove()")+
+      '" style="padding:11px 20px;border-radius:10px;border:none;background:'+b.cor+';color:'+(b.cor==='var(--green)'||b.cor==='#ffc200'?'#000':'#fff')
+      +';font-family:Montserrat,sans-serif;font-weight:900;font-size:11px;letter-spacing:1px;cursor:pointer;flex:1">'+b.txt+'</button>';
+  }).join('');
+  box.innerHTML=
+    '<div style="font-family:\'Orbitron\',sans-serif;font-size:13px;font-weight:900;color:#fff;margin-bottom:16px">'+titulo+'</div>'+
+    conteudo+
+    '<div style="display:flex;gap:8px;margin-top:16px">'+btnsHtml+'</div>';
+  ov.appendChild(box);
+  ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
 }
 
 async function cambioRenderHistFromDB(){

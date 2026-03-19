@@ -389,7 +389,7 @@ async function creditarPacoteMP() {
   sessionStorage.removeItem('mg_loja_pkg_bonus');
 }
 
-// Executa o câmbio após pagamento da taxa
+// Executa o câmbio após pagamento da taxa via Pix
 async function executarCambioPosPagemento() {
   if (!userEmail) return;
   const cambioRaw = sessionStorage.getItem('mg_cambio_pendente');
@@ -397,45 +397,92 @@ async function executarCambioPosPagemento() {
   const cambio = JSON.parse(cambioRaw);
   const token = accessToken || SUPA_KEY;
 
-  // 1. Debita MP
-  const mpRes = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
-    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-  });
-  const mpRows = await mpRes.json();
-  const mpAtual = (mpRows && mpRows[0] && mpRows[0].pontos) || 0;
-  const novoMP = Math.max(0, mpAtual - cambio.custo_mp);
-  const hist = (mpRows && mpRows[0] && mpRows[0].historico) || [];
-  hist.unshift({ pontos: -cambio.custo_mp, descricao: 'Câmbio: ' + cambio.item_nome, data: new Date().toISOString(), tipo: 'cambio' });
-  await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
-    method: 'POST',
-    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify({ user_email: userEmail, pontos: novoMP, historico: hist.slice(0, 50) })
-  });
+  console.log('[cambio pós-pix] executando:', cambio);
 
-  // 2. Credita recompensa
-  if (cambio.recompensa_tipo === 'ct-ticket') {
-    const tktRes = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+  try {
+    // 1. Busca saldo atual do banco (fonte da verdade)
+    const mpRes = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
       headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
     });
-    const tktRows = await tktRes.json();
-    const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade) || 0;
-    const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
-    await fetch(`${SUPA_URL}/rest/v1/tickets`, {
+    const mpRows = await mpRes.json();
+    const mpAtual = (mpRows && mpRows[0] && mpRows[0].pontos) || 0;
+    const custoMP = cambio.custo_mp || 0;
+    const novoMP = Math.max(0, mpAtual - custoMP);
+    const hist = (mpRows && mpRows[0] && mpRows[0].historico) || [];
+    hist.unshift({
+      pontos: -custoMP,
+      descricao: 'Câmbio (pós-pix): ' + cambio.item_nome,
+      data: new Date().toISOString(),
+      tipo: 'cambio'
+    });
+
+    // 2. Debita MP
+    await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
       method: 'POST',
       headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ user_email: userEmail, quantidade: tktAtual + cambio.recompensa_val, total_acumulado: tktTotal + cambio.recompensa_val, ultima_renovacao: new Date().toISOString() })
+      body: JSON.stringify({ user_email: userEmail, pontos: novoMP, historico: hist.slice(0, 50) })
     });
-    document.getElementById('pollMsg').textContent = `✅ +${cambio.recompensa_val} Tickets creditados!`;
+    console.log('[cambio pós-pix] MP debitado:', custoMP, '→ saldo:', novoMP);
+
+    // 3. Credita recompensa conforme tipo
+    const recompensaVal = cambio.recompensa_val || 1;
+    const recompensaTipo = cambio.recompensa_tipo || cambio.item_tipo || '';
+
+    if (recompensaTipo === 'ct-ticket') {
+      const tktRes = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      });
+      const tktRows = await tktRes.json();
+      const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade) || 0;
+      const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
+      const novoTkt = tktAtual + recompensaVal;
+      await fetch(`${SUPA_URL}/rest/v1/tickets`, {
+        method: 'POST',
+        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({ user_email: userEmail, quantidade: novoTkt, total_acumulado: tktTotal + recompensaVal, ultima_renovacao: new Date().toISOString() })
+      });
+      console.log('[cambio pós-pix] Tickets creditados:', recompensaVal, '→ novo saldo:', novoTkt);
+      document.getElementById('pollMsg').textContent = `✅ +${recompensaVal} Tickets creditados! -${custoMP} MP`;
+
+    } else if (recompensaTipo === 'ct-xp') {
+      // XP via localStorage + tentativa no banco
+      const xpAtual = parseInt(localStorage.getItem('mg_planeta_xp') || '0');
+      const novoXP = xpAtual + recompensaVal;
+      localStorage.setItem('mg_planeta_xp', String(novoXP));
+      try {
+        await fetch(`${SUPA_URL}/rest/v1/planetas`, {
+          method: 'POST',
+          headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify({ user_email: userEmail, xp: novoXP, updated_at: new Date().toISOString() })
+        });
+      } catch(_) {}
+      console.log('[cambio pós-pix] XP creditado:', recompensaVal);
+      document.getElementById('pollMsg').textContent = `✅ +${recompensaVal} XP creditados! -${custoMP} MP`;
+    }
+
+    // 4. Registra histórico câmbio
+    await fetch(`${SUPA_URL}/rest/v1/cambio_historico`, {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_email: userEmail,
+        item_nome: cambio.item_nome,
+        tipo: recompensaTipo,
+        mp_gasto: custoMP,
+        recompensa: cambio.recompensa,
+        taxa: (cambio.taxa_pct || 0) + '%',
+        taxa_reais: cambio.taxa_reais || 0,
+        created_at: new Date().toISOString()
+      })
+    }).catch(() => {});
+
+    sessionStorage.removeItem('mg_cambio_pendente');
+    console.log('[cambio pós-pix] concluído com sucesso');
+
+  } catch(e) {
+    console.error('[cambio pós-pix] erro:', e);
+    document.getElementById('pollMsg').textContent = '⚠️ Pix pago mas erro ao creditar — entre em contato.';
   }
-
-  // 3. Histórico câmbio
-  await fetch(`${SUPA_URL}/rest/v1/cambio_historico`, {
-    method: 'POST',
-    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_email: userEmail, item_nome: cambio.item_nome, tipo: cambio.recompensa_tipo, mp_gasto: cambio.custo_mp, recompensa: cambio.recompensa, taxa: cambio.taxa_pct + '%', created_at: new Date().toISOString() })
-  }).catch(() => {});
-
-  sessionStorage.removeItem('mg_cambio_pendente');
 }
 
 // ── POLLING: edge function + consulta direta ao banco ──
