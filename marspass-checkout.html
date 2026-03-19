@@ -549,7 +549,7 @@ body{
   </div>
 
   <!-- STEP: Expirado -->
-  <div id="step-expirado">
+  <div id="step-expirado" style="display:none">
     <span class="expirado-icon">⏰</span>
     <div class="expirado-title">QR Code expirado</div>
     <p class="expirado-sub">O tempo para pagamento expirou. Gere um novo QR Code para continuar.</p>
@@ -751,102 +751,28 @@ function iniciarTimer(minutos){
   },1000);
 }
 
-/* ── POLLING — 3 camadas de fallback ── */
-/*
-  Camada 1 (a cada 5s) : SDK → marspass_assinaturas por referencia_pagamento + email
-  Camada 2 (a cada 15s): POST → mp-confirmar-pagamento (força recheck no MP e ativa)
-  Camada 3 (a cada 15s): SDK → marspass_assinaturas mais recente do usuário (últimos 60min)
-                          cobre casos onde o webhook gravou com reference diferente
-*/
-var _pollTentativas=0;
-var _POLL_MAX=72; /* ~6 minutos */
-
+/* ── POLLING ── */
 function iniciarPolling(reference){
   clearInterval(pollInterval);
-  _pollTentativas=0;
-
   pollInterval=setInterval(async function(){
-    if(_pollTentativas>=_POLL_MAX){
-      clearInterval(pollInterval);
-      _atualizarAguardando('⚠️ Verifique seu banco e recarregue a página.','#ff8888');
-      return;
-    }
-    _pollTentativas++;
-
     try{
       var r=await sb.auth.getSession();
       if(!r.data||!r.data.session) return;
-      var session=r.data.session;
-      var email=session.user.email;
+      var email=r.data.session.user.email;
 
-      /* ── Camada 1: referência exata na tabela ── */
       var{data:assinatura}=await sb.from('marspass_assinaturas')
         .select('status,plano')
         .eq('referencia_pagamento',reference)
-        .eq('user_email',email)
+        .eq('user_email',email)   /* garante que só o dono vê */
         .maybeSingle();
 
       if(assinatura&&assinatura.status==='ativo'){
-        _confirmarPagamento(); return;
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        mostrarSucesso();
       }
-
-      if(_pollTentativas%3===0){
-
-        /* ── Camada 2: chama mp-confirmar-pagamento para forçar verificação no MP ── */
-        try{
-          var res=await fetch(SUPABASE_URL+'/functions/v1/mp-confirmar-pagamento',{
-            method:'POST',
-            headers:{
-              'Content-Type':'application/json',
-              'Authorization':'Bearer '+session.access_token
-            },
-            body:JSON.stringify({
-              reference:reference,
-              payment_id:(pixData&&pixData.payment_id)||''
-            })
-          });
-          if(res.ok){
-            var d=await res.json();
-            if(d.aprovado||d.status==='ativo'||d.ativado){
-              _confirmarPagamento(); return;
-            }
-          }
-        }catch(e2){console.warn('[poll camada2]',e2);}
-
-        /* ── Camada 3: busca assinatura ativa mais recente do usuário ── */
-        try{
-          var{data:recente}=await sb.from('marspass_assinaturas')
-            .select('status,plano,created_at')
-            .eq('user_email',email)
-            .eq('status','ativo')
-            .order('created_at',{ascending:false})
-            .limit(1)
-            .maybeSingle();
-
-          if(recente){
-            var criado=new Date(recente.created_at).getTime();
-            if(Date.now()-criado < 60*60*1000){ /* criada há menos de 60min */
-              _confirmarPagamento(); return;
-            }
-          }
-        }catch(e3){console.warn('[poll camada3]',e3);}
-      }
-
-    }catch(e){console.warn('[poll erro geral]',e);}
+    }catch(e){console.error('Polling erro:',e);}
   },5000);
-}
-
-function _confirmarPagamento(){
-  clearInterval(pollInterval);
-  clearInterval(timerInterval);
-  mostrarSucesso();
-}
-
-function _atualizarAguardando(msg,cor){
-  var box=document.querySelector('.aguardando-txt strong');
-  if(box){box.textContent=msg;if(cor)box.style.color=cor;}
-  var spin=document.querySelector('.aguardando-spin');
-  if(spin){spin.style.borderTopColor=cor||'#888';}
 }
 
 /* ── COPIAR CÓDIGO ── */
