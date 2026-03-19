@@ -4002,5 +4002,136 @@ async function creditarTicketsBV(assinatura){
     </div><!-- /mp-benef-body -->
   </div><!-- /mp-benef-modal -->
 </div><!-- /mp-benef-overlay -->
+
+<script>
+/* ══════════════════════════════════════════════════════
+   PERFIL — ATUALIZAÇÃO EM TEMPO REAL
+   Escuta mudanças nas tabelas marspoints e tickets
+   e atualiza os elementos do perfil sem recarregar
+══════════════════════════════════════════════════════ */
+var _realtimeChannel=null;
+
+function perfilAtualizarMarspoints(novoPts){
+  if(novoPts===undefined||novoPts===null)return;
+  var pts=Number(novoPts)||0;
+
+  /* 1. Stat hero */
+  var mpEl=document.getElementById('statMarsPoints');
+  if(mpEl)mpEl.textContent=pts.toLocaleString('pt-BR');
+
+  /* 2. Pontos acima do avatar */
+  var perfilPtsEl=document.getElementById('perfilPts');
+  if(perfilPtsEl)perfilPtsEl.textContent=pts.toLocaleString('pt-BR');
+
+  /* 3. Nível, barra de progresso, desconto */
+  var nivel=getNivel(pts);
+  var prox=NIVEIS[NIVEIS.indexOf(nivel)+1];
+
+  var tagEl=document.getElementById('nivelTag');
+  if(tagEl){tagEl.textContent=nivel.nome;tagEl.className='nivel-tag '+nivel.cls;}
+
+  var nivelBadge=document.getElementById('nivelBadge');
+  if(nivelBadge){nivelBadge.textContent=nivel.emoji;}
+
+  var proxNivel=prox||nivel;
+  var progAtual=pts-nivel.min;
+  var progTotal=proxNivel.min-nivel.min;
+  var pct=prox?Math.min(100,Math.round((progAtual/progTotal)*100)):100;
+  var fill=document.getElementById('progFill');
+  if(fill){fill.style.width=pct+'%';fill.style.background=nivel.cor;}
+  var lblAtual=document.getElementById('progLabelAtual');
+  if(lblAtual)lblAtual.textContent=nivel.nome+' ('+pts+' pts)';
+  var lblProx=document.getElementById('progLabelProx');
+  if(lblProx)lblProx.textContent=prox?(proxNivel.nome+' ('+proxNivel.min+' pts)'):'Nível máximo!';
+
+  /* 4. Desconto */
+  var discEl=document.getElementById('statDesconto');
+  if(discEl)discEl.textContent=nivel.pct+'%';
+
+  /* 5. Avatar border ring */
+  var avatarWrap=document.getElementById('avatarWrap');
+  if(avatarWrap&&perfilData){
+    var nivelSlug=nivel.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    var anelEscolhido=perfilData.anel_escolhido||nivelSlug;
+    avatarWrap.className='perfil-avatar-wrap avatar-'+anelEscolhido;
+  }
+
+  /* 6. Atualiza perfilData em memória */
+  if(perfilData) perfilData.pontos=pts;
+
+  /* 7. Cupom de desconto */
+  if(perfilData) carregarBeneficiosCupom(perfilData);
+
+  /* 8. Tema desbloqueado */
+  checkTema(nivel);
+}
+
+function perfilAtualizarTickets(novaQtd){
+  if(novaQtd===undefined||novaQtd===null)return;
+  var qtd=Number(novaQtd)||0;
+  var el=document.getElementById('statTickets');
+  if(el)el.textContent=qtd;
+}
+
+function iniciarRealtimePerfil(userEmail){
+  /* Desinscreve canal anterior se existir */
+  if(_realtimeChannel){
+    try{sb.removeChannel(_realtimeChannel);}catch(e){}
+    _realtimeChannel=null;
+  }
+
+  _realtimeChannel=sb.channel('perfil-realtime-'+userEmail)
+    /* Mudanças em marspoints */
+    .on('postgres_changes',{
+      event:'*',
+      schema:'public',
+      table:'marspoints',
+      filter:'user_email=eq.'+userEmail
+    },function(payload){
+      var nova=payload.new;
+      if(nova&&nova.pontos!==undefined){
+        perfilAtualizarMarspoints(nova.pontos);
+        showToast('⭐ Marspoints atualizados! '+nova.pontos.toLocaleString('pt-BR')+' pts');
+      }
+    })
+    /* Mudanças em tickets */
+    .on('postgres_changes',{
+      event:'*',
+      schema:'public',
+      table:'tickets',
+      filter:'user_email=eq.'+userEmail
+    },function(payload){
+      var nova=payload.new;
+      if(nova&&nova.quantidade!==undefined){
+        perfilAtualizarTickets(nova.quantidade);
+        showToast('🎟️ Tickets atualizados! '+nova.quantidade+' tickets');
+      }
+    })
+    .subscribe(function(status){
+      if(status==='SUBSCRIBED'){
+        console.log('[Realtime] Perfil inscrito para',userEmail);
+      } else if(status==='CHANNEL_ERROR'){
+        console.warn('[Realtime] Erro no canal — tentando reconectar em 10s');
+        setTimeout(function(){iniciarRealtimePerfil(userEmail);},10000);
+      }
+    });
+}
+
+/* Injeta o Realtime assim que o usuário estiver autenticado */
+(function(){
+  var _realtimeIniciado=false;
+  var _origOnAuth=sb.auth.onAuthStateChange.bind(sb.auth);
+  /* Hook leve no onAuthStateChange já existente — aguarda userSession estar definido */
+  var _checkInterval=setInterval(function(){
+    if(userSession&&userSession.user&&!_realtimeIniciado){
+      _realtimeIniciado=true;
+      clearInterval(_checkInterval);
+      iniciarRealtimePerfil(userSession.user.email);
+    }
+  },500);
+  /* Fallback máximo de 30s */
+  setTimeout(function(){clearInterval(_checkInterval);},30000);
+})();
+</script>
 </body>
 </html>
