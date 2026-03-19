@@ -341,7 +341,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .spa-mp-chip-sub{font-size:10px;color:#444;margin-top:2px;}
 
 /* Conteúdo principal */
-.spa-content{flex:1;min-width:0;padding:0 0 80px;}
+.spa-content{flex:1;min-width:0;padding:0 0 80px;overflow-x:hidden;}
 
 /* Páginas */
 .spa-page{display:none;}
@@ -430,7 +430,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   box-shadow:0 6px 24px rgba(124,106,247,.35);
 }
 .lock-btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 10px 32px rgba(124,106,247,.45)}
-.main{max-width:900px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1}
+.main{max-width:860px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
 
 /* Card do sorteio ativo */
 .sorteio-card{
@@ -774,6 +774,7 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 @media(min-width:600px){
   .hero{padding:80px 32px 50px}
   .main{padding:0 32px 80px}
+  .sorteio-inner-tabs{padding:20px 32px 0;}
   .sorteio-card-header{padding:32px 32px 0}
   .participar-section,.participantes-section{padding-left:32px;padding-right:32px}
   .contador-wrap{padding:24px 32px}
@@ -790,7 +791,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 ══════════════════════════════════════════ */
 .sorteio-inner-tabs{
   display:flex;gap:8px;flex-wrap:wrap;
-  padding:20px 20px 0;
+  padding:20px 24px 0;
+  max-width:860px;margin:0 auto;
 }
 .sit{
   display:flex;align-items:center;gap:8px;
