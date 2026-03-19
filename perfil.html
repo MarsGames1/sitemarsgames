@@ -3719,7 +3719,7 @@ function showTab(id, el){
   if(!userSession) return;
   var u = userSession.user;
 
-  /* Lazy load por aba — só carrega na primeira vez que abre */
+  /* Lazy load por aba — só carrega na primeira vez */
   if(id === 'tickets' && !_tabsCarregadas.tickets){
     _tabsCarregadas.tickets = true;
     carregarTicketsPerfil(u);
@@ -3744,20 +3744,11 @@ function showTab(id, el){
     _tabsCarregadas.historico = true;
     carregarHistoricoPontosEmail(u.email);
   }
-  if(id === 'cambio'){
-    /* Câmbio sempre recarrega saldos ao abrir (leve) */
-    if(!_tabsCarregadas.cambio){
-      _tabsCarregadas.cambio = true;
-      cambioCarregarTudo();
-    } else {
-      /* Só atualiza saldos, sem recarregar itens */
-      if(Date.now() - (_cambioUltimaRecarga||0) > 30000) cambioRecarregarSaldos();
-    }
-  }
-  /* MarsPass — força reload para refletir mudanças */
+  /* MarsPass — sempre recarrega para refletir mudanças */
   if(id === 'marspass-perfil'){
     carregarMarsPassPerfil(u, true);
   }
+  /* câmbio, loja-mp, planeta, dna, aniversario — delegados ao wrapper abaixo */
 }
 
 /* ── ABA MARSPASS — GALÁXIA COM ESTRELAS ANIMADAS ── */
@@ -5478,10 +5469,26 @@ var CAMBIO_DEFAULTS=[
 var _cambioItems=[];
 
 window.cambioInit=function(){
+  /* Pré-preenche saldos com o que já está em memória (instantâneo) */
+  if(perfilData && perfilData.pontos){
+    _cambioMPAtual = perfilData.pontos;
+    var mpEl=document.getElementById('cambioSaldoMP');
+    if(mpEl) mpEl.textContent=_cambioMPAtual.toLocaleString('pt-BR');
+  }
+  if(meusTickets){
+    _cambioTktAtual = meusTickets;
+    var tktEl=document.getElementById('cambioSaldoTickets');
+    if(tktEl) tktEl.textContent=_cambioTktAtual;
+  }
+  /* Mostra defaults imediatamente enquanto carrega do banco */
+  if(!_cambioItems.length){
+    _cambioItems = CAMBIO_DEFAULTS.slice();
+    renderCambioGrid();
+  }
+
   if(cambioInitDone){
-    /* Só refaz query de saldos se passou mais de 30s */
     if(Date.now()-_cambioUltimaRecarga>30000) cambioRecarregarSaldos();
-    else renderCambioGrid(); /* só re-renderiza com dados já em memória */
+    else renderCambioGrid();
     return;
   }
   cambioInitDone=true;
