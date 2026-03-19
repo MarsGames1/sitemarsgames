@@ -1200,35 +1200,15 @@ body.tema-claro .section-loader{color:var(--muted)}
 .cambio-hist-mp{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:#ff1f30;white-space:nowrap;}
 
 /* ════════════════════════════════════════════
-   ABA LOJA MP — versão premium
+   ABA LOJA MP
 ════════════════════════════════════════════ */
 @keyframes lojaShim{0%{background-position:200%}100%{background-position:-200%}}
-@keyframes lojaBannerIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes lojaSuccessRing{0%,100%{box-shadow:0 0 40px rgba(0,232,122,.25)}50%{box-shadow:0 0 70px rgba(0,232,122,.55)}}
-@keyframes lojaConfPop{0%{transform:scale(.7) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-@keyframes lojaModalIn{from{transform:scale(.72) translateY(24px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-
-/* hero balance */
-.loja-balance-hero{display:flex;align-items:center;gap:14px;background:rgba(255,194,0,.06);border:1px solid rgba(255,194,0,.18);border-radius:14px;padding:16px 20px;margin-bottom:24px;}
-.loja-bal-dot{width:8px;height:8px;border-radius:50%;background:#ffc200;box-shadow:0 0 8px #ffc200;animation:dp2 1.8s ease-in-out infinite;flex-shrink:0;}
-@keyframes dp2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
-.loja-bal-num{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:#ffc200;line-height:1;}
-.loja-bal-lbl{font-size:10px;color:#3d4560;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
-.loja-bal-tickets{margin-left:auto;display:flex;align-items:center;gap:7px;background:rgba(0,232,122,.06);border:1px solid rgba(0,232,122,.15);border-radius:30px;padding:6px 14px;}
-.loja-tkt-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:#00e87a;}
-.loja-tkt-lbl{font-size:10px;color:#3d4560;letter-spacing:1px;}
-
-/* low balance banner */
-.loja-low-banner{display:none;margin-bottom:20px;background:linear-gradient(135deg,rgba(255,31,48,.08),rgba(255,106,0,.05));border:1px solid rgba(255,31,48,.25);border-radius:12px;padding:14px 18px;position:relative;overflow:hidden;}
-.loja-low-banner.show{display:flex;align-items:center;gap:12px;animation:lojaBannerIn .4s ease;}
-.loja-low-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#ff1f30,#ff6a00);animation:lojaShim 2s linear infinite;background-size:200%;}
-
-.loja-mp-head{text-align:center;margin-bottom:24px;}
+.loja-mp-head{text-align:center;margin-bottom:28px;}
 .loja-mp-head .eyebrow{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:5px;color:#ffc200;opacity:.55;margin-bottom:8px;text-transform:uppercase;}
 .loja-mp-head h2{font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,32px);font-weight:900;letter-spacing:2px;line-height:1.08;}
 .loja-mp-head .mp-grad{background:linear-gradient(135deg,#ffc200,#ff6a00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .loja-mp-head p{margin-top:8px;color:#3d4560;font-size:13px;line-height:1.6;}
-.loja-pkg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+.loja-pkg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px;}
 @media(min-width:600px){.loja-pkg-grid{grid-template-columns:repeat(4,1fr);}}
 .loja-pkg{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;
   padding:18px 12px;text-align:center;position:relative;overflow:hidden;cursor:pointer;
@@ -1264,14 +1244,9 @@ body.tema-claro .section-loader{color:var(--muted)}
 .loja-pkg-price{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--text);margin-bottom:2px;}
 .loja-pkg-pricesub{font-size:9px;color:#3d4560;letter-spacing:1px;margin-bottom:10px;}
 .loja-pkg-btn{width:100%;padding:10px;border:none;border-radius:8px;font-family:'Orbitron',sans-serif;
-  font-size:9px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
-.loja-pkg-btn::before{content:'';position:absolute;top:-50%;left:-60%;width:50%;height:200%;background:rgba(255,255,255,.2);transform:skewX(-15deg);transition:left .5s;}
-.loja-pkg-btn:hover::before{left:130%;}
-.loja-pkg.starter .loja-pkg-btn{background:linear-gradient(135deg,#4a90d0,#2a60a0);color:#fff;}
-.loja-pkg.explorer .loja-pkg-btn{background:linear-gradient(135deg,#ffc200,#c87800);color:#000;}
-.loja-pkg.commander .loja-pkg-btn{background:linear-gradient(135deg,#9f3fff,#6020c0);color:#fff;}
-.loja-pkg.legend .loja-pkg-btn{background:linear-gradient(135deg,#ff6a00,#c03000);color:#fff;}
-.loja-pkg-btn:hover{transform:scale(1.02);box-shadow:0 4px 14px rgba(255,194,0,.25);}
+  font-size:9px;font-weight:700;letter-spacing:1.5px;cursor:pointer;color:#000;transition:all .18s;
+  background:linear-gradient(135deg,#ffc200,#ff6a00);}
+.loja-pkg-btn:hover{transform:scale(1.02);box-shadow:0 4px 14px rgba(255,194,0,.3);}
 .loja-hist-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.03);}
 .loja-hist-row:last-child{border-bottom:none;}
 .loja-hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
@@ -1285,11 +1260,10 @@ body.tema-claro .section-loader{color:var(--muted)}
 @keyframes apulse{0%,100%{box-shadow:0 0 16px rgba(255,194,0,.3)}50%{box-shadow:0 0 30px rgba(255,194,0,.7)}}
 @keyframes lushow{0%{opacity:0}8%{opacity:1}80%{opacity:1}100%{opacity:0}}
 @keyframes lubox{0%{transform:scale(0) rotate(-8deg)}12%{transform:scale(1.05) rotate(1deg)}20%{transform:scale(1)}85%{transform:scale(1);opacity:1}100%{transform:scale(.85);opacity:0}}
-@keyframes phint{0%,100%{opacity:.3}50%{opacity:.7}}
 .planeta-stage{position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px;background:#000;border:1px solid rgba(255,255,255,.06);}
-#planetaBg{position:absolute;inset:0;z-index:0;width:100%;height:100%;}
-#planetaWeather{position:absolute;inset:0;z-index:3;pointer-events:none;width:100%;height:100%;}
-#planetaCanvas{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;cursor:grab;touch-action:none;}
+#planetaBg{position:absolute;inset:0;z-index:0;}
+#planetaWeather{position:absolute;inset:0;z-index:3;pointer-events:none;}
+#planetaCanvas{position:relative;z-index:2;display:block;margin:0 auto;}
 .planeta-stage-top{position:absolute;top:12px;left:12px;right:12px;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;}
 .planeta-era-badge{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;padding:4px 10px;border-radius:16px;backdrop-filter:blur(10px);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);}
 .planeta-coords{font-family:monospace;font-size:8px;color:rgba(255,255,255,.2);text-align:right;line-height:1.7;}
@@ -2523,6 +2497,21 @@ body.tema-claro .section-loader{color:var(--muted)}
 
   <!-- ══ ABA CÂMBIO ══ -->
   <div class="tab-content" id="tab-cambio">
+    <!-- Saldos em tempo real -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <div style="background:rgba(255,194,0,.07);border:1px solid rgba(255,194,0,.18);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:#ffc200" id="cambioSaldoMP">—</div>
+        <div style="font-size:9px;color:#3d4560;letter-spacing:1px;text-transform:uppercase;margin-top:3px">⭐ Marspoints</div>
+      </div>
+      <div style="background:rgba(0,232,122,.06);border:1px solid rgba(0,232,122,.15);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:#00e87a" id="cambioSaldoTickets">—</div>
+        <div style="font-size:9px;color:#3d4560;letter-spacing:1px;text-transform:uppercase;margin-top:3px">🎟️ Tickets</div>
+      </div>
+      <div style="background:rgba(0,184,230,.06);border:1px solid rgba(0,184,230,.15);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:#00b8e6" id="cambioSaldoXP">—</div>
+        <div style="font-size:9px;color:#3d4560;letter-spacing:1px;text-transform:uppercase;margin-top:3px">🪐 XP Planeta</div>
+      </div>
+    </div>
     <div class="cambio-banner">
       <div class="cambio-stamp">🏛️</div>
       <div style="flex:1">
@@ -2539,81 +2528,14 @@ body.tema-claro .section-loader{color:var(--muted)}
 
   <!-- ══ ABA LOJA MP ══ -->
   <div class="tab-content" id="tab-loja-mp">
-    <!-- Saldo atual hero -->
-    <div class="loja-balance-hero">
-      <div class="loja-bal-dot"></div>
-      <div>
-        <div class="loja-bal-num" id="lojaBalNum">0</div>
-        <div class="loja-bal-lbl">Marspoints</div>
-      </div>
-      <div class="loja-bal-tickets">
-        <span class="loja-tkt-val" id="lojaTktNum">0</span>
-        <span class="loja-tkt-lbl">🎟️ Tickets</span>
-      </div>
-    </div>
-
-    <!-- Banner MP baixo -->
-    <div class="loja-low-banner" id="lojaLowBanner">
-      <span style="font-size:28px;flex-shrink:0">⚠️</span>
-      <div>
-        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#ff1f30;margin-bottom:2px">Saldo baixo!</div>
-        <div style="font-size:12px;color:#3d4560;line-height:1.5">Recarregue seus Marspoints para participar de mais sorteios, duelos e giros.</div>
-      </div>
-      <button onclick="document.getElementById('lojaLowBanner').classList.remove('show')" style="background:none;border:none;color:#3d4560;cursor:pointer;font-size:18px;margin-left:auto;flex-shrink:0">✕</button>
-    </div>
-
     <div class="loja-mp-head">
-      <div class="eyebrow">✦ RECARREGUE AGORA ✦</div>
+      <div class="eyebrow">✦ COMPRE AGORA ✦</div>
       <h2>Loja de <span class="mp-grad">Marspoints</span></h2>
-      <p>Escolha seu pacote e continue dominando a galáxia.<br>Entrega instantânea · Pix em segundos · Sem expiração.</p>
+      <p>Amplie seu saldo e desbloqueie mais câmbios, sorteios e benefícios.</p>
     </div>
-
-    <!-- Grid pacotes -->
     <div class="loja-pkg-grid" id="lojaPkgGrid"></div>
-
-    <!-- Por que comprar -->
-    <div style="background:linear-gradient(135deg,var(--card),rgba(8,11,26,.8));border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:20px;margin-bottom:24px;">
-      <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#3d4560;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px">Por que comprar Marspoints <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
-        <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:9px;background:rgba(255,194,0,.1);border:1px solid rgba(255,194,0,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎡</div><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">Roda da Fortuna</div><div style="font-size:11px;color:#3d4560;line-height:1.4">Cada giro custa 25 MP. Mais MP, mais chances.</div></div></div>
-        <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:9px;background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎟️</div><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">Sorteios</div><div style="font-size:11px;color:#3d4560;line-height:1.4">Troque MP por tickets para os sorteios da semana.</div></div></div>
-        <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:9px;background:rgba(255,31,48,.1);border:1px solid rgba(255,31,48,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">⚔️</div><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">Arena PvP</div><div style="font-size:11px;color:#3d4560;line-height:1.4">Salas de duelo exclusivas com saldo mínimo de MP.</div></div></div>
-        <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:9px;background:rgba(0,184,230,.1);border:1px solid rgba(0,184,230,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🪐</div><div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">Seu Planeta</div><div style="font-size:11px;color:#3d4560;line-height:1.4">Compras geram XP para evoluir seu mundo galáctico.</div></div></div>
-      </div>
-    </div>
-
-    <!-- Histórico -->
     <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Histórico de compras <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span><span id="lojaHistCount" style="color:#3d4560;text-transform:none;font-family:'Montserrat',sans-serif;letter-spacing:0;font-size:10px">0 compras</span></div>
-    <div style="background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:10px;overflow:hidden" id="lojaHistList"><div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhuma compra ainda. Escolha um pacote acima!</div></div>
-  </div>
-
-  <!-- CHECKOUT MODAL LOJA MP -->
-  <div class="modal-overlay" id="lojaCheckoutOverlay" style="display:none;position:fixed;inset:0;background:rgba(2,3,11,.92);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(14px);padding:16px" onclick="if(event.target===this)lojaFecharCheckout()">
-    <div style="background:linear-gradient(160deg,#09101f,#060a14);border:1px solid rgba(255,194,0,.15);border-radius:20px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:lojaModalIn .4s cubic-bezier(.34,1.56,.64,1)">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ffc200,#ff6a00,#ffc200,transparent);background-size:200%;animation:lojaShim 2.5s linear infinite"></div>
-      <div style="padding:20px 22px 0;display:flex;align-items:center;justify-content:space-between">
-        <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;letter-spacing:2px;color:#fff">FINALIZAR COMPRA</div>
-        <button onclick="lojaFecharCheckout()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#888;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.borderColor='rgba(255,31,48,.5)';this.style.color='#ff5555'" onmouseout="this.style.borderColor='rgba(255,255,255,.08)';this.style.color='#888'">✕</button>
-      </div>
-      <div style="padding:20px 22px 24px">
-        <!-- Preview do pacote -->
-        <div id="lojaModalPreview" style="border-radius:12px;padding:16px;text-align:center;margin-bottom:18px;position:relative;overflow:hidden"></div>
-        <!-- Resumo -->
-        <div id="lojaOrderSummary" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;margin-bottom:16px"></div>
-        <!-- Pagamento -->
-        <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#444;text-transform:uppercase;margin-bottom:10px">Forma de pagamento</div>
-        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid rgba(255,194,0,.3);border-radius:12px;background:rgba(255,194,0,.04);margin-bottom:16px">
-          <div style="width:40px;height:40px;border-radius:10px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.15);display:flex;align-items:center;justify-content:center;font-size:20px">⚡</div>
-          <div style="flex:1"><div style="font-size:13px;font-weight:900;color:#eee">Pix</div><div style="font-size:11px;color:#555;font-weight:600">QR Code gerado na hora — aprovação instantânea</div></div>
-          <span style="font-size:9px;font-weight:900;padding:3px 8px;border-radius:99px;background:rgba(0,255,85,.1);color:#00ff55;border:1px solid rgba(0,255,85,.2)">Instantâneo</span>
-        </div>
-        <button id="lojaConfirmBtn" onclick="lojaConfirmarCompra()" style="width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#ffc200,#ff6a00);color:#000;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:2px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 24px rgba(255,194,0,.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 36px rgba(255,194,0,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(255,194,0,.3)'">
-          <span id="lojaConfirmSpinner" style="width:15px;height:15px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;display:none"></span>
-          <span id="lojaConfirmTxt">⚡ PAGAR COM PIX</span>
-        </button>
-        <div style="margin-top:10px;font-size:10px;color:#333;text-align:center;font-weight:600">🔒 Pagamento 100% seguro via Mercado Pago</div>
-      </div>
-    </div>
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:10px;overflow:hidden" id="lojaHistList"><div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhuma compra ainda.</div></div>
   </div>
 
   <!-- ══ ABA PLANETA ══ -->
@@ -2625,66 +2547,62 @@ body.tema-claro .section-loader{color:var(--muted)}
         <div class="planeta-lu-sub" id="planetaLuSub">Seu planeta ganhou atmosfera!</div>
       </div>
     </div>
-
-    <!-- Title -->
-    <div style="margin-bottom:16px">
-      <div style="font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:5px;color:rgba(255,194,0,.5);text-transform:uppercase;margin-bottom:6px">✦ SEU TERRITÓRIO GALÁCTICO ✦</div>
-      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
-        <h2 style="font-family:'Orbitron',sans-serif;font-size:clamp(22px,5vw,36px);font-weight:900;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#ffc200,#ff5e00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 16px rgba(255,194,0,.25))">MY<span style="background:linear-gradient(135deg,#fff,#aab0d0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">PLANETE</span></h2>
-        <div style="font-size:12px;color:#3a4060;letter-spacing:1px">Seu planeta evolui com cada ação</div>
-      </div>
-    </div>
-
-    <!-- Planet Stage com 3D -->
-    <div class="planeta-stage" id="planetaStage">
+    <div class="planeta-stage">
       <canvas id="planetaBg"></canvas>
       <canvas id="planetaWeather" style="position:absolute;inset:0;z-index:3;pointer-events:none"></canvas>
-      <canvas id="planetaCanvas" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;cursor:grab;touch-action:none"></canvas>
-      <!-- weather pill -->
-      <div id="planetaWeatherPill" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:6;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;backdrop-filter:blur(8px);color:rgba(255,255,255,.5);opacity:0;transition:opacity .5s;white-space:nowrap">☀️ CÉU LIMPO</div>
-      <!-- drag hint -->
-      <div id="planetaDragHint" style="position:absolute;bottom:86px;right:14px;z-index:6;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px;pointer-events:none;animation:phint 2.5s ease-in-out infinite">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-        ARRASTE PARA GIRAR
-      </div>
+      <canvas id="planetaCanvas" style="position:relative;z-index:2;display:block;margin:0 auto"></canvas>
       <div class="planeta-stage-top">
-        <div class="planeta-era-badge" id="planetaEraBadge">ERA I · ÁRIDO</div>
+        <div class="planeta-era-badge" id="planetaEraBadge">ERA I · PROTO</div>
         <div class="planeta-coords" id="planetaCoords">LAT 0°<br>LON 0°</div>
       </div>
       <div class="planeta-overlay">
         <div class="planeta-name" id="planetaName">Marte-Alfa</div>
         <div class="planeta-desc" id="planetaDesc" style="color:#ffc200">MUNDO PRIMORDIAL</div>
-        <div class="planeta-xp-lbl"><span>Progresso da era</span><span id="planetaXpLbl">0 / 500 XP</span></div>
+        <div class="planeta-xp-lbl"><span>XP do planeta</span><span id="planetaXpLbl">0 / 200 XP</span></div>
         <div class="planeta-xp-bg"><div class="planeta-xp-fill" id="planetaXpFill" style="width:0%;background:#ffc200"></div></div>
       </div>
     </div>
-
-    <!-- Sim buttons -->
-    <div class="planeta-sim-grid">
-      <button class="planeta-sim-btn y" onclick="planetaAddXP(80,'Comprou um jogo','🎮','rgba(159,63,255,.15)','#9f3fff')">🎮 COMPRAR JOGO<br>+80 XP</button>
-      <button class="planeta-sim-btn y" onclick="planetaAddXP(25,'Girou a roda','🎡','rgba(255,194,0,.15)','#ffc200')">🎡 GIRAR RODA<br>+25 XP</button>
-      <button class="planeta-sim-btn g" onclick="planetaAddXP(150,'Vitória no PvP','⚔️','rgba(255,31,48,.15)','#ff1f30')">⚔️ VENCER PVP<br>+150 XP</button>
-      <button class="planeta-sim-btn g" onclick="planetaAddXP(40,'Avaliou um jogo','⭐','rgba(0,232,122,.15)','#00e87a')">⭐ AVALIAR JOGO<br>+40 XP</button>
+    <!-- Como ganhar XP - missões informativas, não clicáveis -->
+    <div style="background:rgba(255,194,0,.04);border:1px solid rgba(255,194,0,.12);border-radius:12px;padding:14px 16px;margin-bottom:14px">
+      <div style="font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:3px;color:#ffc200;opacity:.7;text-transform:uppercase;margin-bottom:10px">⚡ Como ganhar XP para seu planeta</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px" id="planetaMissoesGrid">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(159,63,255,.08);border:1px solid rgba(159,63,255,.18);border-radius:8px;padding:8px 10px">
+          <span style="font-size:16px">🎮</span>
+          <div><div style="font-size:10px;font-weight:700;color:#c060ff">Comprar jogo</div><div style="font-size:9px;color:#3a4060">+80 XP automático</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(0,232,122,.06);border:1px solid rgba(0,232,122,.15);border-radius:8px;padding:8px 10px">
+          <span style="font-size:16px">⭐</span>
+          <div><div style="font-size:10px;font-weight:700;color:#00e87a">Avaliar jogo</div><div style="font-size:9px;color:#3a4060">+40 XP automático</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,194,0,.06);border:1px solid rgba(255,194,0,.15);border-radius:8px;padding:8px 10px">
+          <span style="font-size:16px">🏆</span>
+          <div><div style="font-size:10px;font-weight:700;color:#ffc200">Ganhar sorteio</div><div style="font-size:9px;color:#3a4060">+100 XP automático</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(0,255,231,.05);border:1px solid rgba(0,255,231,.12);border-radius:8px;padding:8px 10px">
+          <span style="font-size:16px">🔄</span>
+          <div><div style="font-size:10px;font-weight:700;color:#00ffe7">Fazer câmbio de XP</div><div style="font-size:9px;color:#3a4060">Conforme item trocado</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,31,48,.06);border:1px solid rgba(255,31,48,.15);border-radius:8px;padding:8px 10px">
+          <span style="font-size:16px">⚔️</span>
+          <div><div style="font-size:10px;font-weight:700;color:#ff1f30">Vencer PvP</div><div style="font-size:9px;color:#3a4060">+150 XP automático</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(185,242,255,.04);border:1px solid rgba(185,242,255,.12);border-radius:8px;padding:8px 10px">
+          <span style="font-size:16px">🌟</span>
+          <div><div style="font-size:10px;font-weight:700;color:#b9f2ff">Subir de nível MP</div><div style="font-size:9px;color:#3a4060">+200 XP bônus</div></div>
+        </div>
+      </div>
     </div>
-
-    <!-- Evo timeline -->
-    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Linha de evolução <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Evolução do planeta <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
     <div class="planeta-evo-row" id="planetaEvoRow"></div>
-
-    <!-- Stats -->
     <div class="planeta-stats-row">
       <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSXP">0</div><div class="planeta-stat-lbl">XP Total</div></div>
       <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSEra">I</div><div class="planeta-stat-lbl">Era</div></div>
       <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSJogos">0</div><div class="planeta-stat-lbl">Jogos</div></div>
       <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSAtv">0</div><div class="planeta-stat-lbl">Atividades</div></div>
     </div>
-
-    <!-- Activity -->
     <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Atividade recente <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
-    <div id="planetaActList" style="margin-bottom:16px"><div style="padding:14px;text-align:center;font-size:12px;color:#3a4060">Nenhuma atividade ainda. Use os botões acima!</div></div>
-
-    <!-- Milestones -->
-    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Marcos de evolução <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div id="planetaActList" style="margin-bottom:16px"></div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Marcos <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
     <div class="planeta-ms-grid" id="planetaMsGrid"></div>
   </div>
 
@@ -2918,11 +2836,11 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
 
 // ── NÍVEIS ──
 var NIVEIS=[
-  {nome:'Bronze',  min:0,    max:99,   cor:'var(--bronze)',emoji:'🥉',cls:'nivel-bronze',   desc:'Sem desconto',pct:0,  titulo:'Recruta Marciano'},
-  {nome:'Prata',   min:100,  max:499,  cor:'var(--prata)', emoji:'🥈',cls:'nivel-prata',    desc:'5% OFF',      pct:5,  titulo:'Explorador'},
-  {nome:'Ouro',    min:500,  max:999,  cor:'var(--ouro)',  emoji:'🥇',cls:'nivel-ouro',     desc:'10% OFF',     pct:10, titulo:'Comandante'},
-  {nome:'Esmeralda',min:1000,max:4999, cor:'var(--esm)',   emoji:'💚',cls:'nivel-esmeralda',desc:'15% OFF',     pct:15, titulo:'Elite Mars'},
-  {nome:'Diamante',min:5000, max:99999,cor:'var(--dia)',   emoji:'💎',cls:'nivel-diamante', desc:'20% OFF',     pct:20, titulo:'Lendário'},
+  {nome:'Bronze',   min:0,     max:199,   cor:'var(--bronze)',emoji:'🥉',cls:'nivel-bronze',   desc:'Sem desconto',pct:0,  titulo:'Recruta Marciano'},
+  {nome:'Prata',    min:200,   max:999,   cor:'var(--prata)', emoji:'🥈',cls:'nivel-prata',    desc:'5% OFF',      pct:5,  titulo:'Explorador'},
+  {nome:'Ouro',     min:1000,  max:1999,  cor:'var(--ouro)',  emoji:'🥇',cls:'nivel-ouro',     desc:'10% OFF',     pct:10, titulo:'Comandante'},
+  {nome:'Esmeralda',min:2000,  max:9999,  cor:'var(--esm)',   emoji:'💚',cls:'nivel-esmeralda',desc:'15% OFF',     pct:15, titulo:'Elite Mars'},
+  {nome:'Diamante', min:10000, max:999999,cor:'var(--dia)',   emoji:'💎',cls:'nivel-diamante', desc:'20% OFF',     pct:20, titulo:'Lendário'},
 ];
 
 function getNivel(pts){
@@ -3138,6 +3056,29 @@ async function carregarPerfil(user){
   carregarTicketsHero(user);
   /* Carrega MarsPass automaticamente pois é a aba ativa por padrão */
   carregarMarsPassPerfil(user);
+  /* Checa se subiu de nível e dá XP bônus ao planeta */
+  verificarLevelUpXP(user);
+}
+
+/* Verifica subida de nível e concede XP bônus ao planeta */
+async function verificarLevelUpXP(user){
+  try{
+    var mpRes=await sb.from('marspoints').select('pontos,nivel_anterior').eq('user_email',user.email).maybeSingle();
+    if(!mpRes.data) return;
+    var pts=mpRes.data.pontos||0;
+    var nivelAtual=getNivel(pts);
+    var nivelAnterior=mpRes.data.nivel_anterior||'Bronze';
+    if(nivelAtual.nome!==nivelAnterior && nivelAnterior!==nivelAtual.nome){
+      // Nível subiu! Dá XP bônus ao planeta
+      var xpBonus=200;
+      if(typeof planetaAddXPSilent==='function'){
+        planetaAddXPSilent(xpBonus,'Subiu para '+nivelAtual.nome+' MP','🌟','rgba(185,242,255,.1)','#b9f2ff');
+      }
+      // Atualiza nivel_anterior
+      await sb.from('marspoints').upsert({user_email:user.email,nivel_anterior:nivelAtual.nome},{onConflict:'user_email'});
+      showToast('🌟 Nível '+nivelAtual.emoji+' '+nivelAtual.nome+'! +'+xpBonus+' XP no planeta!');
+    }
+  }catch(e){}
 }
 
 function renderPerfil(p){
@@ -5177,7 +5118,7 @@ window.showTab=function(id,el){
   _origShowTab(id,el);
   if(id==='dna') dnaCarregarBiblioteca();
   if(id==='aniversario') bdayInit();
-  if(id==='cambio') cambioInit();
+  if(id==='cambio'){cambioInit();}
   if(id==='loja-mp') lojaInit();
   if(id==='planeta') planetaInit();
 };
@@ -5305,98 +5246,208 @@ function bdayConfetti(){
 })();
 
 /* ══════════════════════════════════════════════════
-   ABA CÂMBIO
+   ABA CÂMBIO — sincronizado com Supabase
 ══════════════════════════════════════════════════ */
 (function(){
-var cambioInitDone=false, cambioHist=[];
-var TAXA=0.05;
-var CAMBIO_ITEMS=[
-  {id:1,type:'ct-ticket',icon:'🎟️',name:'Pacote de Tickets',cat:'MARSTICKETS',from:'200 MP',fromVal:200,to:'+5 Tickets',toVal:5,color:'#00e87a',badge:null},
-  {id:2,type:'ct-ticket',icon:'🎟️',name:'Tickets em Dobro',cat:'MARSTICKETS',from:'350 MP',fromVal:350,to:'+10 Tickets',toVal:10,color:'#00e87a',badge:'🔥 HOT'},
-  {id:3,type:'ct-xp',icon:'🧠',name:'Boost de XP Planeta',cat:'XP DO PLANETA',from:'100 MP',fromVal:100,to:'+120 XP',toVal:120,color:'#00b8e6',badge:'⚡ DIÁRIO'},
-  {id:4,type:'ct-game',icon:'🎮',name:'Giro Grátis na Roda',cat:'BÔNUS ESPECIAL',from:'500 MP',fromVal:500,to:'1 Giro Grátis',toVal:1,color:'#9f3fff',badge:null},
-  {id:5,type:'ct-ticket',icon:'🎫',name:'Mega Pacote',cat:'MARSTICKETS',from:'800 MP',fromVal:800,to:'+25 Tickets',toVal:25,color:'#00e87a',badge:null},
-  {id:6,type:'ct-xp',icon:'⚡',name:'Turbo XP',cat:'XP DO PLANETA',from:'250 MP',fromVal:250,to:'+350 XP',toVal:350,color:'#00b8e6',badge:null}
+var cambioInitDone=false;
+var _cambioMPAtual=0, _cambioTktAtual=0, _cambioXPAtual=0;
+var _cambioTaxa=0.05;
+
+// Items padrão — serão sobreescritos pelo Supabase se houver
+var CAMBIO_DEFAULTS=[
+  {id:1,tipo:'ct-ticket',icon:'🎟️',nome:'Pacote de Tickets',cat:'MARSTICKETS',custo:200,recompensa:'+5 Tickets',toVal:5,color:'#00e87a',badge:null,ativo:true},
+  {id:2,tipo:'ct-ticket',icon:'🎟️',nome:'Tickets em Dobro',cat:'MARSTICKETS',custo:350,recompensa:'+10 Tickets',toVal:10,color:'#00e87a',badge:'🔥 HOT',ativo:true},
+  {id:3,tipo:'ct-xp',icon:'🧠',nome:'Boost de XP Planeta',cat:'XP DO PLANETA',custo:100,recompensa:'+120 XP',toVal:120,color:'#00b8e6',badge:'⚡ DIÁRIO',ativo:true},
+  {id:4,tipo:'ct-game',icon:'🎮',nome:'Giro Grátis na Roda',cat:'BÔNUS ESPECIAL',custo:500,recompensa:'1 Giro Grátis',toVal:1,color:'#9f3fff',badge:null,ativo:true},
+  {id:5,tipo:'ct-ticket',icon:'🎫',nome:'Mega Pacote',cat:'MARSTICKETS',custo:800,recompensa:'+25 Tickets',toVal:25,color:'#00e87a',badge:null,ativo:true},
+  {id:6,tipo:'ct-xp',icon:'⚡',nome:'Turbo XP',cat:'XP DO PLANETA',custo:250,recompensa:'+350 XP',toVal:350,color:'#00b8e6',badge:null,ativo:true}
 ];
+var _cambioItems=[];
 
 window.cambioInit=function(){
-  if(cambioInitDone) return;
+  if(cambioInitDone){cambioRecarregarSaldos();return;}
   cambioInitDone=true;
-  cambioHist=JSON.parse(localStorage.getItem('mg_cambio_hist')||'[]');
-  renderCambio();
-  renderCambioHist();
+  cambioCarregarTudo();
 };
 
-function renderCambio(){
-  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
+async function cambioCarregarTudo(){
+  // Carrega taxa e itens do Supabase
+  try{
+    var[cfgRes,itensRes]=await Promise.all([
+      sb.from('config').select('value').eq('key','cambio_taxa').maybeSingle(),
+      sb.from('cambio_itens').select('*').eq('ativo',true).order('id',{ascending:true})
+    ]);
+    if(cfgRes.data && cfgRes.data.value){
+      var t=parseFloat(cfgRes.data.value);
+      if(!isNaN(t)) _cambioTaxa=t/100;
+      var dispEl=document.getElementById('cambioTaxaDisp');
+      if(dispEl) dispEl.textContent=cfgRes.data.value;
+    }
+    if(itensRes.data && itensRes.data.length){
+      _cambioItems=itensRes.data.map(function(it){
+        return{id:it.id,tipo:it.tipo||'ct-ticket',icon:it.icon||'⭐',
+          nome:it.nome,cat:it.cat||(it.tipo==='ct-ticket'?'MARSTICKETS':it.tipo==='ct-xp'?'XP DO PLANETA':'BÔNUS'),
+          custo:it.custo||100,recompensa:it.recompensa||'+1',
+          toVal:it.toVal||it.recompensa_valor||1,color:it.tipo==='ct-ticket'?'#00e87a':it.tipo==='ct-xp'?'#00b8e6':'#9f3fff',
+          badge:it.badge||null,ativo:it.ativo!==false};
+      });
+    }else{_cambioItems=CAMBIO_DEFAULTS.slice();}
+  }catch(e){_cambioItems=CAMBIO_DEFAULTS.slice();}
+  await cambioRecarregarSaldos();
+  cambioRenderHist();
+}
+
+async function cambioRecarregarSaldos(){
+  if(!userSession){renderCambioGrid();return;}
+  var email=userSession.user.email;
+  try{
+    var[mpRes,tktRes,plRes]=await Promise.all([
+      sb.from('marspoints').select('pontos').eq('user_email',email).maybeSingle(),
+      sb.from('tickets').select('quantidade').eq('user_email',email).maybeSingle(),
+      sb.from('planetas').select('xp').eq('user_email',email).maybeSingle()
+    ]);
+    _cambioMPAtual=(mpRes.data&&mpRes.data.pontos)||0;
+    _cambioTktAtual=(tktRes.data&&tktRes.data.quantidade)||0;
+    _cambioXPAtual=(plRes.data&&plRes.data.xp)||0;
+  }catch(e){}
+  // Atualiza displays
+  var mpEl=document.getElementById('cambioSaldoMP');
+  if(mpEl) mpEl.textContent=_cambioMPAtual.toLocaleString('pt-BR');
+  var tktEl=document.getElementById('cambioSaldoTickets');
+  if(tktEl) tktEl.textContent=_cambioTktAtual;
+  var xpEl=document.getElementById('cambioSaldoXP');
+  if(xpEl) xpEl.textContent=_cambioXPAtual.toLocaleString('pt-BR');
+  renderCambioGrid();
+}
+
+function renderCambioGrid(){
   var grid=document.getElementById('cambioGrid');
   if(!grid) return;
+  var ativos=_cambioItems.filter(function(i){return i.ativo!==false;});
+  if(!ativos.length){grid.innerHTML='<div style="padding:20px;text-align:center;color:#3d4560;font-size:12px">Nenhum câmbio disponível no momento.</div>';return;}
   grid.innerHTML='';
-  CAMBIO_ITEMS.forEach(function(item){
-    var canAfford=mpAtual>=item.fromVal;
-    var card=document.createElement('div');card.className='cambio-card '+item.type;
-    card.innerHTML='<div class="cambio-card-top"><div class="cambio-icon">'+item.icon+'</div><div><div class="cambio-name">'+item.name+'</div><div class="cambio-cat">'+item.cat+'</div></div></div>'+
+  ativos.forEach(function(item){
+    var canAfford=_cambioMPAtual>=item.custo;
+    var card=document.createElement('div');card.className='cambio-card '+item.tipo;
+    card.innerHTML=
+      '<div class="cambio-card-top"><div class="cambio-icon">'+item.icon+'</div>'+
+      '<div><div class="cambio-name">'+item.nome+'</div><div class="cambio-cat">'+item.cat+'</div></div></div>'+
       (item.badge?'<div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)">'+item.badge+'</div>':'')+
-      '<div class="cambio-rate"><div class="cambio-rate-side from"><div class="cambio-rate-val">'+item.from+'</div><div class="cambio-rate-lbl">VOCÊ PAGA</div></div><div style="padding:0 6px;font-size:12px;color:#3d4560;display:flex;align-items:center">→</div><div class="cambio-rate-side to"><div class="cambio-rate-val">'+item.to+'</div><div class="cambio-rate-lbl">VOCÊ RECEBE</div></div></div>'+
+      '<div class="cambio-rate">'+
+        '<div class="cambio-rate-side from"><div class="cambio-rate-val">'+item.custo.toLocaleString('pt-BR')+' MP</div><div class="cambio-rate-lbl">VOCÊ PAGA</div></div>'+
+        '<div style="padding:0 6px;font-size:12px;color:#3d4560;display:flex;align-items:center">→</div>'+
+        '<div class="cambio-rate-side to"><div class="cambio-rate-val">'+item.recompensa+'</div><div class="cambio-rate-lbl">VOCÊ RECEBE</div></div>'+
+      '</div>'+
       '<button class="cambio-btn" '+(canAfford?'onclick="cambioExecutar('+item.id+')"':'disabled')+'>'+
       (canAfford?'FAZER CÂMBIO':'SEM MP SUFICIENTE')+'</button>';
     grid.appendChild(card);
   });
 }
 
-window.cambioExecutar=function(id){
-  var item=CAMBIO_ITEMS.find(function(i){return i.id===id;});
-  if(!item) return;
-  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
-  if(mpAtual<item.fromVal){showToast('⚠️ Marspoints insuficientes!');return;}
-  var novoMp=mpAtual-item.fromVal;
-  localStorage.setItem('mg_mp_local',String(novoMp));
-  var now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-  cambioHist.unshift({name:item.icon+' '+item.name,meta:now+' · Taxa: 5%',mp:'-'+item.from,color:item.color});
-  localStorage.setItem('mg_cambio_hist',JSON.stringify(cambioHist.slice(0,20)));
-  renderCambio(); renderCambioHist();
-  showToast('✅ Câmbio realizado! '+item.to+' creditados.');
+window.cambioExecutar=async function(id){
+  var item=_cambioItems.find(function(i){return i.id===id;});
+  if(!item || !userSession) return;
+  if(_cambioMPAtual<item.custo){showToast('⚠️ Marspoints insuficientes!');return;}
+  var email=userSession.user.email;
+  var custoFinal=Math.round(item.custo*(1+_cambioTaxa));
+  if(_cambioMPAtual<custoFinal){showToast('⚠️ Saldo insuficiente (inclui taxa '+Math.round(_cambioTaxa*100)+'%)');return;}
+  var novoMP=_cambioMPAtual-custoFinal;
+  try{
+    // 1. Debita MP
+    var mpAtual=await sb.from('marspoints').select('pontos,historico').eq('user_email',email).maybeSingle();
+    var hist=(mpAtual.data&&mpAtual.data.historico)||[];
+    hist.unshift({pontos:-custoFinal,descricao:'Câmbio: '+item.nome,data:new Date().toISOString(),tipo:'cambio'});
+    await sb.from('marspoints').upsert({user_email:email,pontos:novoMP,historico:hist.slice(0,50)},{onConflict:'user_email'});
+    _cambioMPAtual=novoMP;
+
+    // 2. Credita recompensa conforme tipo
+    var toValNum=parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1;
+    if(item.tipo==='ct-ticket'){
+      var tktAtual=await sb.from('tickets').select('quantidade,total_acumulado').eq('user_email',email).maybeSingle();
+      var novoTkt=(_cambioTktAtual||0)+toValNum;
+      var novoTotal=((tktAtual.data&&tktAtual.data.total_acumulado)||0)+toValNum;
+      await sb.from('tickets').upsert({user_email:email,user_id:userSession.user.id,quantidade:novoTkt,total_acumulado:novoTotal,ultima_renovacao:(tktAtual.data&&tktAtual.data.ultima_renovacao)||new Date().toISOString()},{onConflict:'user_email'});
+      _cambioTktAtual=novoTkt;
+      document.getElementById('statTickets').textContent=novoTkt;
+    }else if(item.tipo==='ct-xp'){
+      // XP vai pro planeta
+      var plAtual=await sb.from('planetas').select('xp,atividades,log').eq('user_email',email).maybeSingle();
+      var xpAtual=(plAtual.data&&plAtual.data.xp)||0;
+      var atv=(plAtual.data&&plAtual.data.atividades)||0;
+      var pLog=(plAtual.data&&plAtual.data.log)||[];
+      var novoXP=xpAtual+toValNum;
+      pLog.unshift({label:'Câmbio de XP: '+item.nome,xp:toValNum,icon:'⚡',t:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+      await sb.from('planetas').upsert({user_email:email,xp:novoXP,atividades:atv+1,log:pLog.slice(0,20),updated_at:new Date().toISOString()},{onConflict:'user_email'});
+      _cambioXPAtual=novoXP;
+      // Atualiza planeta na aba se estiver carregada
+      if(typeof planetaAddXPSilent==='function') planetaAddXPSilent(toValNum,'Câmbio de XP: '+item.nome,'⚡','rgba(0,255,231,.12)','#00ffe7');
+    }
+
+    // 3. Salva no histórico de câmbios
+    try{
+      await sb.from('cambio_historico').insert({
+        user_email:email,item_nome:item.nome,tipo:item.tipo,
+        mp_gasto:custoFinal,recompensa:item.recompensa,
+        taxa:Math.round(_cambioTaxa*100)+'%',created_at:new Date().toISOString()
+      });
+    }catch(e2){}
+
+    // 4. Recarrega UI
+    var now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    var mpEl=document.getElementById('cambioSaldoMP');if(mpEl)mpEl.textContent=novoMP.toLocaleString('pt-BR');
+    var tktEl=document.getElementById('cambioSaldoTickets');if(tktEl&&item.tipo==='ct-ticket')tktEl.textContent=_cambioTktAtual;
+    var xpEl=document.getElementById('cambioSaldoXP');if(xpEl&&item.tipo==='ct-xp')xpEl.textContent=_cambioXPAtual.toLocaleString('pt-BR');
+    renderCambioGrid();
+    cambioRenderHistFromDB();
+    showToast('✅ Câmbio realizado! '+item.recompensa+' creditados.');
+  }catch(e){
+    console.error('[Câmbio]',e);
+    showToast('❌ Erro ao realizar câmbio: '+(e.message||'tente novamente'),true);
+  }
 };
 
-function renderCambioHist(){
+async function cambioRenderHistFromDB(){
+  if(!userSession) return;
+  try{
+    var{data}=await sb.from('cambio_historico').select('*').eq('user_email',userSession.user.email).order('created_at',{ascending:false}).limit(20);
+    renderCambioHistData(data||[]);
+  }catch(e){cambioRenderHist();}
+}
+
+function cambioRenderHist(){
   var card=document.getElementById('cambioHistCard');
-  if(!card) return;
-  if(!cambioHist.length){card.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum câmbio realizado ainda.</div>';return;}
+  if(!card)return;
+  card.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum câmbio realizado ainda.</div>';
+  if(userSession) cambioRenderHistFromDB();
+}
+
+function renderCambioHistData(lista){
+  var card=document.getElementById('cambioHistCard');
+  if(!card)return;
+  if(!lista.length){card.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum câmbio realizado ainda.</div>';return;}
   card.innerHTML='';
-  cambioHist.slice(0,8).forEach(function(h){
+  lista.forEach(function(h){
     var row=document.createElement('div');row.className='cambio-hist-row';
-    row.innerHTML='<div class="cambio-hist-dot" style="background:'+h.color+';box-shadow:0 0 5px '+h.color+'40"></div><div style="flex:1"><div class="cambio-hist-name">'+h.name+'</div><div class="cambio-hist-meta">'+h.meta+'</div></div><div class="cambio-hist-mp">'+h.mp+'</div>';
+    var col=h.tipo==='ct-ticket'?'#00e87a':h.tipo==='ct-xp'?'#00b8e6':'#9f3fff';
+    row.innerHTML='<div class="cambio-hist-dot" style="background:'+col+';box-shadow:0 0 5px '+col+'40"></div>'+
+      '<div style="flex:1"><div class="cambio-hist-name">'+esc(h.item_nome||'—')+'</div>'+
+      '<div class="cambio-hist-meta">'+(h.created_at?new Date(h.created_at).toLocaleString('pt-BR'):'—')+' · Taxa: '+(h.taxa||'5%')+'</div></div>'+
+      '<div class="cambio-hist-mp">-'+((h.mp_gasto||0).toLocaleString('pt-BR'))+' MP</div>';
     card.appendChild(row);
   });
 }
 })();
 
 /* ══════════════════════════════════════════════════
-   ABA LOJA MP — com checkout PIX real
+   ABA LOJA MP
 ══════════════════════════════════════════════════ */
 (function(){
-var lojaInitDone=false, lojaPurchHist=[], lojaSelectedPkg=null;
-
+var lojaInitDone=false, lojaPurchHist=[];
 var LOJA_PKGS=[
-  {id:'starter',cls:'starter',badge:null,icon:'🌑',name:'INICIANTE',
-   mp:300,mpColor:'#4a90d0',mpColor2:'#6ab0f0',
-   bonus:[],price:'R$ 4,90',priceNum:4.90,
-   bgGrad:'linear-gradient(135deg,rgba(74,144,208,.12),rgba(42,80,160,.08))'},
-  {id:'explorer',cls:'explorer',badge:null,icon:'🪐',name:'EXPLORADOR',
-   mp:900,mpColor:'#ffc200',mpColor2:'#ff6a00',
-   bonus:[{type:'tkt',icon:'🎟️',label:'+3 Marstickets BÔNUS'}],
-   price:'R$ 9,90',priceNum:9.90,
-   bgGrad:'linear-gradient(135deg,rgba(255,194,0,.12),rgba(255,106,0,.08))'},
-  {id:'commander',cls:'commander',badge:'pop',icon:'⭐',name:'COMMANDER',
-   mp:2000,mpColor:'#9f3fff',mpColor2:'#c060ff',
-   bonus:[{type:'tkt',icon:'🎟️',label:'+8 Marstickets BÔNUS'},{type:'xp',icon:'🪐',label:'+200 XP no Planeta'}],
-   price:'R$ 19,90',priceNum:19.90,
-   bgGrad:'linear-gradient(135deg,rgba(159,63,255,.14),rgba(96,32,192,.08))'},
-  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LENDA',
-   mp:5500,mpColor:'#ff6a00',mpColor2:'#ff2d7a',
-   bonus:[{type:'tkt',icon:'🎟️',label:'+20 Marstickets BÔNUS'},{type:'xp',icon:'🪐',label:'+500 XP no Planeta'},{type:'spin',icon:'🎡',label:'+100 MP extra = 4 giros'}],
-   price:'R$ 44,90',priceNum:44.90,
-   bgGrad:'linear-gradient(135deg,rgba(255,106,0,.14),rgba(192,48,0,.08))'}
+  {id:'starter',cls:'starter',badge:null,icon:'🌱',name:'STARTER',mp:100,mpColor:'#4a90d0',mpColor2:'#6ab0f0',bonus:[],price:'R$ 4,90'},
+  {id:'explorer',cls:'explorer',badge:null,icon:'🚀',name:'EXPLORER',mp:500,mpColor:'#ffc200',mpColor2:'#ff6a00',bonus:[{type:'tkt',icon:'🎟️',label:'+3 Tickets'}],price:'R$ 14,90'},
+  {id:'commander',cls:'commander',badge:'pop',icon:'⚡',name:'COMMANDER',mp:1500,mpColor:'#9f3fff',mpColor2:'#c060ff',bonus:[{type:'tkt',icon:'🎟️',label:'+10 Tickets'},{type:'xp',icon:'🧠',label:'+200 XP'}],price:'R$ 34,90'},
+  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LEGEND',mp:5000,mpColor:'#ff6a00',mpColor2:'#ff2d7a',bonus:[{type:'tkt',icon:'🎟️',label:'+30 Tickets'},{type:'xp',icon:'🧠',label:'+500 XP'},{type:'spin',icon:'🎰',label:'1 Giro Grátis'}],price:'R$ 89,90'}
 ];
 
 window.lojaInit=function(){
@@ -5405,162 +5456,46 @@ window.lojaInit=function(){
   lojaPurchHist=JSON.parse(localStorage.getItem('mg_loja_hist')||'[]');
   renderLojaPkgs();
   renderLojaHist();
-  // Atualiza saldo exibido
-  atualizarLojaBalance();
 };
-
-function atualizarLojaBalance(){
-  var mp=parseInt(localStorage.getItem('mg_mp_local')||'0');
-  var tkt=parseInt(localStorage.getItem('mg_tickets_local')||'0');
-  var elMp=document.getElementById('lojaBalNum');
-  var elTkt=document.getElementById('lojaTktNum');
-  if(elMp) elMp.textContent=mp.toLocaleString('pt-BR');
-  if(elTkt) elTkt.textContent=tkt;
-  var banner=document.getElementById('lojaLowBanner');
-  if(banner) banner.classList.toggle('show', mp<100 && lojaInitDone);
-}
 
 function renderLojaPkgs(){
   var grid=document.getElementById('lojaPkgGrid');
   if(!grid) return;
   grid.innerHTML='';
-  LOJA_PKGS.forEach(function(pkg,i){
-    var bonusHTML=pkg.bonus.map(function(b){
-      return '<div class="loja-pkg-bi '+b.type+'">'+b.icon+' '+b.label+'</div>';
-    }).join('');
-    var card=document.createElement('div');
-    card.className='loja-pkg '+pkg.cls;
-    card.style.animationDelay=(i*.08)+'s';
-    card.innerHTML=
-      (pkg.badge?'<div class="loja-pkg-badge '+(pkg.badge==='pop'?'pop':'hot')+'">'+(pkg.badge==='pop'?'⭐ MELHOR':'🔥 POPULAR')+'</div>':'')+
+  LOJA_PKGS.forEach(function(pkg){
+    var bonusHTML=pkg.bonus.map(function(b){return'<div class="loja-pkg-bi '+b.type+'">'+b.icon+' '+b.label+'</div>';}).join('');
+    var card=document.createElement('div');card.className='loja-pkg '+pkg.cls;
+    card.innerHTML=(pkg.badge?'<div class="loja-pkg-badge '+(pkg.badge==='pop'?'pop':'hot')+'">'+(pkg.badge==='pop'?'✦ POPULAR':'🔥 HOT')+'</div>':'')+
       '<div class="loja-pkg-icon">'+pkg.icon+'</div>'+
       '<div class="loja-pkg-name">'+pkg.name+'</div>'+
-      '<div class="loja-pkg-mp" style="background:linear-gradient(135deg,'+pkg.mpColor+','+pkg.mpColor2+');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+pkg.mp.toLocaleString('pt-BR')+'</div>'+
+      '<div class="loja-pkg-mp" style="background:linear-gradient(135deg,'+pkg.mpColor+','+pkg.mpColor2+');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+pkg.mp.toLocaleString()+'</div>'+
       '<div class="loja-pkg-mplbl">MARSPOINTS</div>'+
-      (pkg.bonus.length?'<div class="loja-pkg-bonus">'+bonusHTML+'</div>':'<div style="height:10px"></div>')+
+      (pkg.bonus.length?'<div class="loja-pkg-bonus">'+bonusHTML+'</div>':'<div style="height:8px"></div>')+
       '<div class="loja-pkg-divider"></div>'+
       '<div class="loja-pkg-price">'+pkg.price+'</div>'+
       '<div class="loja-pkg-pricesub">PAGAMENTO ÚNICO</div>'+
-      '<button class="loja-pkg-btn" onclick="lojaAbrirCheckout(\''+pkg.id+'\')">COMPRAR AGORA</button>';
+      '<button class="loja-pkg-btn" onclick="lojaComprar(\''+pkg.id+'\')">COMPRAR AGORA</button>';
     grid.appendChild(card);
   });
 }
 
-window.lojaAbrirCheckout=function(pkgId){
-  lojaSelectedPkg=LOJA_PKGS.find(function(p){return p.id===pkgId;});
-  if(!lojaSelectedPkg) return;
-  var p=lojaSelectedPkg;
-  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0');
-
-  // Preview do pacote
-  var extraMp=0;
-  var spinBonus=p.bonus.find(function(b){return b.type==='spin';});
-  if(spinBonus){var m=spinBonus.label.match(/\+(\d+) MP/);if(m)extraMp=parseInt(m[1]);}
-
-  document.getElementById('lojaModalPreview').innerHTML=
-    '<div style="background:'+p.bgGrad+';border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px">'+
-      '<div style="font-family:\'Orbitron\',sans-serif;font-size:10px;letter-spacing:2px;opacity:.7;color:'+p.mpColor+';margin-bottom:5px">'+p.icon+' PACOTE '+p.name+'</div>'+
-      '<div style="font-family:\'Orbitron\',sans-serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,'+p.mpColor+','+p.mpColor2+');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">'+p.mp.toLocaleString('pt-BR')+' MP</div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">'+
-        p.bonus.map(function(b){return'<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">'+b.icon+' '+b.label+'</span>';}).join('')+
-      '</div>'+
-    '</div>';
-
-  var ticketsGain=0;
-  var tktB=p.bonus.find(function(b){return b.type==='tkt';});
-  if(tktB){var tm=tktB.label.match(/\d+/);if(tm)ticketsGain=parseInt(tm[0]);}
-
-  document.getElementById('lojaOrderSummary').innerHTML=
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:#3d4560">Saldo atual</span><span style="font-weight:700">'+(mpAtual.toLocaleString('pt-BR'))+' MP</span></div>'+
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:#3d4560">Pacote '+p.name+'</span><span style="font-weight:700;color:'+p.mpColor+'">+'+p.mp.toLocaleString('pt-BR')+' MP</span></div>'+
-    (ticketsGain?'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:#3d4560">Marstickets bônus</span><span style="font-weight:700;color:#00e87a">+'+ticketsGain+' 🎟️</span></div>':'')+
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:14px"><span style="font-family:\'Orbitron\',sans-serif;font-size:11px;letter-spacing:1px">TOTAL A PAGAR</span><span style="font-family:\'Orbitron\',sans-serif;font-size:18px;font-weight:900;color:#ffc200">'+p.price+'</span></div>';
-
-  document.getElementById('lojaCheckoutOverlay').style.display='flex';
-};
-
-window.lojaFecharCheckout=function(){
-  document.getElementById('lojaCheckoutOverlay').style.display='none';
-};
-
-window.lojaConfirmarCompra=function(){
-  if(!lojaSelectedPkg) return;
-  var p=lojaSelectedPkg;
-  var btn=document.getElementById('lojaConfirmBtn');
-  var spinner=document.getElementById('lojaConfirmSpinner');
-  var txt=document.getElementById('lojaConfirmTxt');
-  btn.disabled=true; spinner.style.display='block'; txt.style.display='none';
-
-  // Verifica sessão Supabase
-  sb.auth.getSession().then(function(result){
-    var session=result.data&&result.data.session;
-    if(!session){
-      showToast('Faça login para comprar!');
-      btn.disabled=false; spinner.style.display='none'; txt.style.display='';
-      lojaFecharCheckout();
-      setTimeout(function(){window.location.href='perfil.html';},1000);
-      return;
-    }
-
-    // Monta item para checkout
-    var itens=[{
-      id: 'mp_'+p.id,
-      nome: 'Pacote '+p.name+' — '+p.mp.toLocaleString('pt-BR')+' Marspoints',
-      preco: p.priceNum,
-      imagem: '',
-      tipo: 'marspoints',
-      mp: p.mp,
-      pkg_id: p.id,
-      bonus: p.bonus
-    }];
-
-    sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
-
-    // Chama edge function mp-criar-pix
-    fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({itens:itens})
-    })
-    .then(function(r){return r.json().then(function(d){return{ok:r.ok,data:d};});})
-    .then(function(res){
-      if(!res.ok) throw new Error(res.data.error||'Erro ao gerar Pix');
-      var data=res.data;
-      sessionStorage.setItem('mg_pix_data',    JSON.stringify(data));
-      sessionStorage.setItem('mg_external_ref', data.reference||'');
-      sessionStorage.setItem('mg_pedido_id',    data.pedido_id||'');
-      sessionStorage.setItem('mg_user_email',   session.user.email||'');
-      sessionStorage.setItem('mg_user_id',      session.user.id||'');
-      sessionStorage.setItem('mg_access_token',  session.access_token||'');
-      sessionStorage.setItem('mg_refresh_token', session.refresh_token||'');
-      window.location.href='pix-checkout.html';
-    })
-    .catch(function(err){
-      console.error('[LojaMP]',err);
-      showToast('Erro: '+(err.message||'Tente novamente'));
-      btn.disabled=false; spinner.style.display='none'; txt.style.display='';
-    });
-  });
-};
-
-// Chamado externamente quando pagamento confirmado (ex: callback do pix-checkout)
-window.lojaRegistrarCompra=function(pkgId, mpGanho, ticketsGanhos){
-  var pkg=LOJA_PKGS.find(function(p){return p.id===pkgId;})||{icon:'⭐',name:pkgId,mpColor:'#ffc200'};
-  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0');
-  localStorage.setItem('mg_mp_local',String(mpAtual+mpGanho));
-  var tktAtual=parseInt(localStorage.getItem('mg_tickets_local')||'0');
-  if(ticketsGanhos>0) localStorage.setItem('mg_tickets_local',String(tktAtual+ticketsGanhos));
+window.lojaComprar=function(pkgId){
+  var pkg=LOJA_PKGS.find(function(p){return p.id===pkgId;});
+  if(!pkg) return;
+  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
+  localStorage.setItem('mg_mp_local',String(mpAtual+pkg.mp));
   var now=new Date();
-  lojaPurchHist.unshift({
-    icon:pkg.icon,name:'Pacote '+pkg.name,
-    date:now.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),
-    mp:mpGanho,color:pkg.mpColor
-  });
+  lojaPurchHist.unshift({icon:pkg.icon,name:'Pacote '+pkg.name,date:now.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),mp:pkg.mp,color:pkg.mpColor});
   localStorage.setItem('mg_loja_hist',JSON.stringify(lojaPurchHist.slice(0,20)));
   renderLojaHist();
-  atualizarLojaBalance();
   lojaConfetti(pkg.mpColor);
-  showToast('🎉 +'+mpGanho.toLocaleString('pt-BR')+' Marspoints adicionados!');
+  showToast('🎉 +'+pkg.mp.toLocaleString()+' Marspoints adicionados!');
+  // Concede XP bônus do pacote ao planeta
+  var xpBonus=pkg.bonus.filter(function(b){return b.type==='xp';}).reduce(function(s,b){
+    var m=(b.label||'').match(/\d+/);return s+(m?parseInt(m[0]):0);},0);
+  if(xpBonus>0 && typeof planetaAddXPSilent==='function'){
+    planetaAddXPSilent(xpBonus,'Bônus XP pacote '+pkg.name,'🌟','rgba(185,242,255,.1)','#b9f2ff');
+  }
 };
 
 function renderLojaHist(){
@@ -5568,423 +5503,252 @@ function renderLojaHist(){
   var cnt=document.getElementById('lojaHistCount');
   if(!list) return;
   if(cnt) cnt.textContent=lojaPurchHist.length+' compra'+(lojaPurchHist.length!==1?'s':'');
-  if(!lojaPurchHist.length){
-    list.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhuma compra ainda. Escolha um pacote acima!</div>';
-    return;
-  }
+  if(!lojaPurchHist.length){list.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhuma compra ainda.</div>';return;}
   list.innerHTML='';
-  lojaPurchHist.slice(0,10).forEach(function(h){
+  lojaPurchHist.slice(0,8).forEach(function(h){
     var row=document.createElement('div');row.className='loja-hist-row';
-    row.innerHTML='<div class="loja-hist-dot" style="background:'+h.color+';box-shadow:0 0 5px '+h.color+'"></div>'+
-      '<div style="flex:1"><div class="loja-hist-pkg">'+h.icon+' '+h.name+'</div><div class="loja-hist-date">'+h.date+'</div></div>'+
-      '<div class="loja-hist-amt">+'+h.mp.toLocaleString('pt-BR')+' MP</div>';
+    row.innerHTML='<div class="loja-hist-dot" style="background:'+h.color+';box-shadow:0 0 5px '+h.color+'"></div><div style="flex:1"><div class="loja-hist-pkg">'+h.icon+' '+h.name+'</div><div class="loja-hist-date">'+h.date+'</div></div><div class="loja-hist-amt">+'+h.mp.toLocaleString()+' MP</div>';
     list.appendChild(row);
   });
 }
 
 function lojaConfetti(col){
   var c=document.createElement('canvas');
-  c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9999;';
+  c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999;';
   c.width=window.innerWidth;c.height=window.innerHeight;
   document.body.appendChild(c);
   var cx=c.getContext('2d');
   var cols=[col,'#ffc200','#ff6a00','#00e87a','#9f3fff','#00ffe7','#fff'];
-  var ps=Array.from({length:140},function(){
-    return{x:Math.random()*c.width,y:-12,w:4+Math.random()*9,h:4+Math.random()*9,
-      col:cols[Math.floor(Math.random()*cols.length)],
-      vx:(Math.random()-.5)*8,vy:2+Math.random()*6,
-      r:Math.random()*360,vr:(Math.random()-.5)*14,a:1,circle:Math.random()>.5};
-  });
+  var ps=Array.from({length:120},function(){return{x:Math.random()*c.width,y:-12,w:4+Math.random()*8,h:4+Math.random()*8,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*8,vy:2+Math.random()*5,r:Math.random()*360,vr:(Math.random()-.5)*14,a:1};});
   var f=0;(function draw(){
     cx.clearRect(0,0,c.width,c.height);var alive=false;
-    ps.forEach(function(p){
-      p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=.06;if(f>55)p.a-=.018;if(p.a>0)alive=true;
-      cx.save();cx.globalAlpha=Math.max(0,p.a);cx.translate(p.x,p.y);cx.rotate(p.r*Math.PI/180);
-      cx.fillStyle=p.col;
-      if(p.circle){cx.beginPath();cx.arc(0,0,p.w/2,0,Math.PI*2);cx.fill();}
-      else cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      cx.restore();
-    });
+    ps.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=.05;if(f>50)p.a-=.018;if(p.a>0)alive=true;
+      cx.save();cx.globalAlpha=Math.max(0,p.a);cx.translate(p.x,p.y);cx.rotate(p.r*Math.PI/180);cx.fillStyle=p.col;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();});
     f++;if(alive)requestAnimationFrame(draw);else c.remove();
   })();
 }
 })();
 
 /* ══════════════════════════════════════════════════
-   ABA PLANETA — 3D drag, weather, eras completas
+   ABA PLANETA
 ══════════════════════════════════════════════════ */
 (function(){
 var planetaInitDone=false;
 var planetaTotalXP=0, planetaEraIdx=0, planetaJogos=0, planetaAtv=0;
-var planetaLog=[];
-// 3D rotation state
-var pRotY=0, pRotX=0, pVelY=0.004, pVelX=0;
-var pDragging=false, pLastX=0, pLastY=0, pDragVX=0, pDragVY=0;
-var INERTIA=0.96, MAX_TILT=0.55;
-// Canvas refs
-var pPC=null, pPX=null, pWC=null, pWX=null, pBC=null, pBX=null;
-var pPW=0, pPH=0, pStageW=0, pStageH=0;
-var pNoiseT=0, pAuroraT=0;
-var pWeatherMode=0, pWeatherTimer=0;
-var pRainDrops=[], pLightningT=-999, pLightningFlash=0;
-var pSand=[], pSnow=[], pMeteors=[];
-var pRafRunning=false;
+var planetaLog=[], planetaRotX=0, planetaRotY=0, planetaNoiseT=0;
+var planetaCtx=null, planetaWCtx=null, planetaStageW=0, planetaStageH=0;
+var planetaRafRunning=false;
+var planetaWeatherTimer=0, planetaWeatherMode='CLEAR';
+var planetaRainDrops=[], planetaSnow=[], planetaSand=[], planetaMeteors=[];
 
-var ERAS=[
-  {n:1,label:'ÁRIDO',icon:'🪨',xp:0,next:500,color:'#c0832a',
-   surf:'#9B6B1A',core:'#5C3A08',atmoCol:null,hasCloud:false,hasLife:false,hasCity:false,hasRing:false,
-   desc:'Planeta Árido · Sem Atmosfera',
-   weather:['☀️ CÉU LIMPO','🌪️ TEMPESTADE DE AREIA','☀️ CÉU LIMPO','🌡️ CALOR EXTREMO']},
-  {n:2,label:'ATMOSFERA',icon:'🌫️',xp:500,next:1500,color:'#4a8a6a',
-   surf:'#3A7A50',core:'#1E4A2A',atmoCol:'rgba(120,200,255,.2)',hasCloud:true,hasLife:false,hasCity:false,hasRing:false,
-   desc:'Atmosfera Formada · Primeiros Gases',
-   weather:['⛅ NUBLADO','🌧️ CHUVA ÁCIDA','💨 VENTOS FORTES','⛅ NUBLADO']},
-  {n:3,label:'VIDA',icon:'🌿',xp:1500,next:3500,color:'#2a8a3a',
-   surf:'#1A6A28',core:'#0E3A16',atmoCol:'rgba(80,220,120,.22)',hasCloud:true,hasLife:true,hasCity:false,hasRing:false,
-   desc:'Biosfera Ativa · Vida Emergindo',
-   weather:['🌦️ CHUVA LEVE','🌈 ARCO-ÍRIS','⛈️ TEMPESTADE','🌤️ PARCIALMENTE NUBLADO']},
-  {n:4,label:'CIVILIZ.',icon:'🏙️',xp:3500,next:7000,color:'#1a5aba',
-   surf:'#1040A0',core:'#081C50',atmoCol:'rgba(80,140,255,.22)',hasCloud:true,hasLife:true,hasCity:true,hasRing:false,
-   desc:'Civilização Galáctica · Metrópole',
-   weather:['🌩️ TROVOADA','❄️ NEVASCA','🌧️ CHUVA PESADA','🌤️ BELO DIA']},
-  {n:5,label:'GALÁCTICA',icon:'⭐',xp:7000,next:99999,color:'#8a30c0',
-   surf:'#5A1080',core:'#280840',atmoCol:'rgba(180,80,255,.28)',hasCloud:true,hasLife:true,hasCity:true,hasRing:true,
-   desc:'Potência Galáctica · Lenda do Cosmos',
-   weather:['✨ AURORAS BOREAIS','💫 CHUVA DE METEOROS','🌌 NEBULOSA LOCAL','⚡ TEMPESTADE ESTELAR']}
+var PLANETA_ERAS=[
+  {n:'I',label:'PROTO',icon:'🌑',xp:0,color:'#ffc200',desc:'MUNDO PRIMORDIAL',
+   weather:['CLEAR','METEORS']},
+  {n:'II',label:'VULCÂNICO',icon:'🌋',xp:200,color:'#ff6a00',desc:'ERA VULCÂNICA',
+   weather:['CLEAR','STORM']},
+  {n:'III',label:'OCEÂNICO',icon:'🌊',xp:600,color:'#00b8e6',desc:'OCEANOS SURGEM',
+   weather:['CLEAR','RAIN','STORM']},
+  {n:'IV',label:'BIÓTICO',icon:'🌿',xp:1400,color:'#00e87a',desc:'VIDA FLORESCE',
+   weather:['CLEAR','RAIN','SNOW']},
+  {n:'V',label:'GALÁCTICO',icon:'🌟',xp:3000,color:'#9f3fff',desc:'CIVILIZAÇÃO ESTELAR',
+   weather:['CLEAR','AURORA','METEORS']}
 ];
 
-var MILESTONES=[
-  {nm:'Primeiro Passo',ds:'Planeta criado',ic:'🌑',xp:0},
-  {nm:'Explorador',ds:'80 XP acumulados',ic:'🔭',xp:80},
-  {nm:'Primeiro Sopro',ds:'Atmosfera formada',ic:'💨',xp:500},
-  {nm:'Gladiador',ds:'Primeira vitória PvP',ic:'⚔️',xp:150},
-  {nm:'Faísca da Vida',ds:'Vida detectada',ic:'🌱',xp:1500},
-  {nm:'Colecionador',ds:'300 XP em compras',ic:'🎮',xp:300},
-  {nm:'Civilização',ds:'Cidades construídas',ic:'🏙️',xp:3500},
-  {nm:'Lenda',ds:'Era Galáctica',ic:'⭐',xp:7000}
+var PLANETA_MS=[
+  {ic:'🌱',nm:'GÊNESE',ds:'Planeta criado',xp:0},
+  {ic:'🔥',nm:'VULCÃO',ds:'Primeira erupção',xp:200},
+  {ic:'💧',nm:'OCEANO',ds:'Águas surgem',xp:600},
+  {ic:'🌿',nm:'VIDA',ds:'Flora detectada',xp:1400},
+  {ic:'🏙️',nm:'CIDADE',ds:'Civilização I',xp:2200},
+  {ic:'🌌',nm:'GALÁXIA',ds:'Era Galáctica',xp:3000}
 ];
 
 window.planetaInit=function(){
-  if(planetaInitDone) return;
+  if(planetaInitDone){
+    // Already init — just reload from Supabase in case data changed
+    planetaCarregarSupabase();
+    return;
+  }
   planetaInitDone=true;
   planetaTotalXP=parseInt(localStorage.getItem('mg_planeta_xp')||'0');
   planetaLog=JSON.parse(localStorage.getItem('mg_planeta_log')||'[]');
   planetaJogos=parseInt(localStorage.getItem('mg_planeta_jogos')||'0');
   planetaAtv=parseInt(localStorage.getItem('mg_planeta_atv')||'0');
+  // recalculate era
   planetaEraIdx=0;
-  while(planetaEraIdx<ERAS.length-1 && planetaTotalXP>=ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
-  pSetupCanvases();
-  pSetupDrag();
-  pUpdateUI();
-  pRenderLog();
-  pWeatherTimer=1;
-  if(!pRafRunning){pRafRunning=true;pLoop();}
+  while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
+  setupPlanetaCanvases();
+  planetaUpdateUI();
+  planetaRenderLog();
+  if(!planetaRafRunning){planetaRafRunning=true;planetaLoop();}
+  // Load fresh from Supabase (async, will update UI if higher)
+  planetaCarregarSupabase();
 };
 
-/* ── CANVAS SETUP ── */
-function pSetupCanvases(){
-  var stage=document.getElementById('planetaStage');
+function setupPlanetaCanvases(){
+  var stage=document.querySelector('.planeta-stage');
   if(!stage) return;
-  pStageW=stage.clientWidth||360;
-  pStageH=Math.round(pStageW*.72);
-  stage.style.height=pStageH+'px';
-
-  pBC=document.getElementById('planetaBg');
-  if(pBC){pBC.width=pStageW;pBC.height=pStageH;pBX=pBC.getContext('2d');pDrawSpaceBg();}
-
-  pPW=Math.round(Math.min(pStageW,pStageH)*.7); pPH=pPW;
-  pPC=document.getElementById('planetaCanvas');
-  if(pPC){pPC.width=pPW;pPC.height=pPH;pPX=pPC.getContext('2d');}
-
-  pWC=document.getElementById('planetaWeather');
-  if(pWC){pWC.width=pStageW;pWC.height=pStageH;pWX=pWC.getContext('2d');}
+  var w=Math.min(stage.offsetWidth||360,520);
+  var h=Math.round(w*0.48);
+  planetaStageW=w; planetaStageH=h;
+  var bg=document.getElementById('planetaBg');
+  if(bg){bg.width=w;bg.height=h;bg.style.position='absolute';bg.style.inset='0';bg.style.width='100%';bg.style.height='100%';
+    var bx=bg.getContext('2d');drawSpaceBg(bx,w,h,bg);}
+  var wc=document.getElementById('planetaWeather');
+  if(wc){wc.width=w;wc.height=h;planetaWCtx=wc.getContext('2d');}
+  var pc=document.getElementById('planetaCanvas');
+  if(pc){pc.width=w;pc.height=h;planetaCtx=pc.getContext('2d');}
 }
 
-function pDrawSpaceBg(){
-  if(!pBX) return;
-  var bgStars=Array.from({length:90},function(){return{x:Math.random()*pStageW,y:Math.random()*pStageH,r:Math.random()*.7+.15,a:Math.random(),s:Math.random()*.004+.001};});
-  (function bgl(){
-    pBX.clearRect(0,0,pStageW,pStageH);
-    bgStars.forEach(function(s){s.a+=s.s;if(s.a>1||s.a<0)s.s*=-1;
-      pBX.beginPath();pBX.arc(s.x,s.y,s.r,0,Math.PI*2);
-      pBX.fillStyle='rgba(255,255,255,'+s.a*.35+')';pBX.fill();});
-    requestAnimationFrame(bgl);
+/* Estrelas animadas no fundo do planeta */
+function drawSpaceBg(ctx,w,h,canvas){
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+  // glow de nebulosa sutil
+  var ng=ctx.createRadialGradient(w*.3,h*.4,0,w*.3,h*.4,w*.6);
+  ng.addColorStop(0,'rgba(20,0,50,.6)');ng.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=ng;ctx.fillRect(0,0,w,h);
+  var ng2=ctx.createRadialGradient(w*.75,h*.6,0,w*.75,h*.6,w*.4);
+  ng2.addColorStop(0,'rgba(0,10,40,.5)');ng2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=ng2;ctx.fillRect(0,0,w,h);
+  // Gerar estrelas com twinkle
+  var stars=[];
+  for(var i=0;i<180;i++){
+    var gold=Math.random()>.9;
+    stars.push({x:Math.random()*w,y:Math.random()*h,
+      r:Math.random()*(gold?.9:.65)+.15,
+      a:Math.random(),s:Math.random()*.006+.001,
+      col:gold?'rgba(255,210,100,':'rgba(255,255,255,'});
+  }
+  // draw once immediately
+  ctx.clearRect(0,0,w,h);
+  var ng3=ctx.createRadialGradient(w*.3,h*.4,0,w*.3,h*.4,w*.6);
+  ng3.addColorStop(0,'rgba(20,0,50,.6)');ng3.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle=ng3;ctx.fillRect(0,0,w,h);
+  // animated stars loop
+  (function starLoop(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=ng3;ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=ng2;ctx.fillRect(0,0,w,h);
+    stars.forEach(function(s){
+      s.a+=s.s;if(s.a>1||s.a<0)s.s*=-1;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.col+s.a*.55+')';ctx.fill();
+    });
+    requestAnimationFrame(starLoop);
   })();
 }
 
-/* ── DRAG ── */
-function pSetupDrag(){
-  var c=document.getElementById('planetaCanvas');
-  if(!c) return;
-  c.addEventListener('mousedown',function(e){
-    pDragging=true;pLastX=e.clientX;pLastY=e.clientY;pDragVX=0;pDragVY=0;
-    c.style.cursor='grabbing';
-    var h=document.getElementById('planetaDragHint');if(h)h.style.display='none';
-  });
-  window.addEventListener('mousemove',function(e){
-    if(!pDragging)return;
-    var dx=e.clientX-pLastX,dy=e.clientY-pLastY;
-    pDragVX=dx*.012;pDragVY=dy*.008;
-    pRotY+=pDragVX;pRotX=Math.max(-MAX_TILT,Math.min(MAX_TILT,pRotX+pDragVY));
-    pLastX=e.clientX;pLastY=e.clientY;
-  });
-  window.addEventListener('mouseup',function(){
-    if(!pDragging)return;pDragging=false;c.style.cursor='grab';
-    pVelY=pDragVX;pVelX=pDragVY;
-  });
-  c.addEventListener('touchstart',function(e){
-    pDragging=true;pLastX=e.touches[0].clientX;pLastY=e.touches[0].clientY;pDragVX=0;pDragVY=0;
-    var h=document.getElementById('planetaDragHint');if(h)h.style.display='none';
-    e.preventDefault();
-  },{passive:false});
-  c.addEventListener('touchmove',function(e){
-    if(!pDragging)return;
-    var dx=e.touches[0].clientX-pLastX,dy=e.touches[0].clientY-pLastY;
-    pDragVX=dx*.014;pDragVY=dy*.009;
-    pRotY+=pDragVX;pRotX=Math.max(-MAX_TILT,Math.min(MAX_TILT,pRotX+pDragVY));
-    pLastX=e.touches[0].clientX;pLastY=e.touches[0].clientY;e.preventDefault();
-  },{passive:false});
-  c.addEventListener('touchend',function(){pDragging=false;pVelY=pDragVX;pVelX=pDragVY;});
+function planetaDrawPlanet(){
+  if(!planetaCtx) return;
+  var ctx=planetaCtx,CX=planetaStageW/2,CY=planetaStageH/2,R=Math.min(planetaStageW,planetaStageH)*0.26;
+  ctx.clearRect(0,0,planetaStageW,planetaStageH);
+  var e=PLANETA_ERAS[planetaEraIdx];
+  var cols={
+    'I':['#3a1800','#8B4513','#cd6820'],
+    'II':['#1a0000','#8B0000','#e8421a'],
+    'III':['#001020','#003080','#0066cc'],
+    'IV':['#001808','#004020','#00a050'],
+    'V':['#080020','#3010a0','#9f3fff']
+  };
+  var ec=cols[e.n]||cols['I'];
+  var grd=ctx.createRadialGradient(CX-R*.3,CY-R*.3,R*.05,CX,CY,R);
+  grd.addColorStop(0,ec[2]);grd.addColorStop(0.4,ec[1]);grd.addColorStop(1,ec[0]);
+  ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+  // surface texture
+  ctx.save();ctx.clip();
+  for(var i=0;i<6;i++){
+    var bx=CX+(Math.cos(planetaNoiseT+i*1.1)*R*.5),by=CY+(Math.sin(planetaNoiseT*.7+i*.9)*R*.4);
+    var bg2=ctx.createRadialGradient(bx,by,0,bx,by,R*.35);
+    bg2.addColorStop(0,'rgba(0,0,0,.18)');bg2.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();ctx.arc(bx,by,R*.35,0,Math.PI*2);ctx.fillStyle=bg2;ctx.fill();
+  }
+  ctx.restore();
+  // shadow
+  var sh=ctx.createRadialGradient(CX+R*.3,CY+R*.3,R*.1,CX,CY,R);
+  sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(0.7,'rgba(0,0,0,.4)');sh.addColorStop(1,'rgba(0,0,0,.8)');
+  ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=sh;ctx.fill();
+  // glow
+  var glw=ctx.createRadialGradient(CX,CY,R*.9,CX,CY,R*1.3);
+  glw.addColorStop(0,e.color+'55');glw.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();ctx.arc(CX,CY,R*1.3,0,Math.PI*2);ctx.fillStyle=glw;ctx.fill();
 }
 
-/* ── DRAW PLANET ── */
-function pDrawPlanet(){
-  if(!pPX||pPW===0) return;
-  var C=pPX,W=pPW,H=pPH,cx=W/2,cy=H/2,R=W*.43;
-  var e=ERAS[planetaEraIdx];
-  C.clearRect(0,0,W,H);
-  pNoiseT+=.0025;
-  var tilt=Math.sin(pRotX);
-  var specOX=-R*.28+tilt*R*.05, specOY=-R*.32-tilt*R*.2;
-  var shadOX=R*.55-tilt*R*.05, shadOY=R*.35+tilt*R*.18;
+function planetaUpdateWeather(){
+  if(!planetaWCtx) return;
+  var ctx=planetaWCtx,w=planetaStageW,h=planetaStageH;
+  ctx.clearRect(0,0,w,h);
+  planetaWeatherTimer--;
+  if(planetaWeatherTimer<=0){
+    planetaWeatherTimer=180+Math.floor(Math.random()*240);
+    var modes=PLANETA_ERAS[planetaEraIdx].weather;
+    planetaWeatherMode=modes[Math.floor(Math.random()*modes.length)];
+    if(planetaWeatherMode==='RAIN'&&!planetaRainDrops.length) for(var i=0;i<60;i++) planetaRainDrops.push(mkRainDrop(w,h));
+    if(planetaWeatherMode==='SNOW'&&!planetaSnow.length) for(var j=0;j<40;j++) planetaSnow.push(mkSnow(w,h));
+    if(planetaWeatherMode==='METEORS'&&!planetaMeteors.length) for(var k=0;k<8;k++) planetaMeteors.push(mkMeteor(w,h));
+  }
+  if(planetaWeatherMode==='RAIN'){
+    ctx.strokeStyle='rgba(100,160,255,.4)';ctx.lineWidth=1;
+    planetaRainDrops.forEach(function(d){d.x+=d.vx;d.y+=d.vy;if(d.y>h)Object.assign(d,mkRainDrop(w,h));
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x+d.vx*2,d.y+d.vy*2);ctx.stroke();});
+  }
+  if(planetaWeatherMode==='SNOW'){
+    ctx.fillStyle='rgba(220,235,255,.55)';
+    planetaSnow.forEach(function(s){s.y+=s.vy;s.x+=Math.sin(planetaNoiseT*2+s.x)*.3;if(s.y>h)Object.assign(s,mkSnow(w,h));
+      ctx.beginPath();ctx.arc(s.x,s.y,1.2,0,Math.PI*2);ctx.fill();});
+  }
+  if(planetaWeatherMode==='METEORS'){
+    planetaMeteors.forEach(function(m){m.x+=m.vx;m.y+=m.vy;if(m.x>w||m.y>h)Object.assign(m,mkMeteor(w,h));
+      ctx.save();ctx.strokeStyle='rgba(255,200,100,'+m.a+')';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*8,m.y-m.vy*8);ctx.stroke();
+      ctx.beginPath();ctx.arc(m.x,m.y,1.5,0,Math.PI*2);ctx.fillStyle='rgba(255,240,200,'+m.a+')';ctx.fill();ctx.restore();});
+  }
+  if(planetaWeatherMode==='AURORA'){
+    var ag=ctx.createLinearGradient(0,0,0,h*.5);
+    ag.addColorStop(0,'rgba(0,255,150,.07)');ag.addColorStop(.4,'rgba(0,200,255,.05)');ag.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=ag;ctx.fillRect(0,0,w,h);
+  }
+}
+function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1,vy:6+Math.random()*4};}
+function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.6+Math.random()*.5};}
+function mkMeteor(w,h){return{x:-20+Math.random()*w*.4,y:Math.random()*h*.3,vx:4+Math.random()*7,vy:2+Math.random()*4,a:.5+Math.random()*.5};}
 
-  // Atmo glow
-  if(e.atmoCol){
-    var og=C.createRadialGradient(cx,cy,R*.75,cx,cy,R*1.35);
-    og.addColorStop(0,e.atmoCol);og.addColorStop(1,'rgba(0,0,0,0)');
-    C.beginPath();C.arc(cx,cy,R*1.35,0,Math.PI*2);C.fillStyle=og;C.fill();
-  }
-  // Clip + tilt scale
-  C.save();
-  C.translate(cx,cy);C.scale(1,1-Math.abs(tilt)*.08);C.translate(-cx,-cy);
-  C.beginPath();C.arc(cx,cy,R,0,Math.PI*2);C.clip();
-  // Base
-  var bg=C.createRadialGradient(cx-R*.3,cy-R*.3,R*.05,cx,cy,R*1.05);
-  bg.addColorStop(0,pLighten(e.surf,.28));bg.addColorStop(.55,e.surf);bg.addColorStop(1,e.core);
-  C.fillStyle=bg;C.fillRect(0,0,W,H);
-  // Bands
-  for(var i=0;i<14;i++){
-    var yy=((i/14+pNoiseT*.12+pRotY*.06)%1)*H*2.2-H*.4;
-    var bh=R*.06+Math.sin(i*2.1+pNoiseT)*.03*R;
-    C.fillStyle='rgba(0,0,0,'+(.04+Math.sin(i*1.9+pNoiseT*.6)*.025)+')';
-    C.fillRect(0,yy,W,bh);
-  }
-  // Era 1: craters
-  if(planetaEraIdx===0){
-    [[.28,.38,.13],[.62,.52,.09],[.44,.72,.07],[.18,.62,.05],[.75,.3,.06]].forEach(function(cr){
-      var wx=((cr[0]+pRotY*.16)%1+1)%1, crr=cr[2]*R;
-      C.beginPath();C.arc(wx*W,cr[1]*H,crr,0,Math.PI*2);C.fillStyle='rgba(0,0,0,.28)';C.fill();
-      C.beginPath();C.arc(wx*W-crr*.25,cr[1]*H-crr*.25,crr*.55,0,Math.PI*2);C.fillStyle='rgba(255,255,255,.06)';C.fill();
-    });
-  }
-  // Continents
-  if(planetaEraIdx>=1){
-    var cX=pRotY*.18%(Math.PI*2);
-    C.fillStyle=planetaEraIdx>=2?'rgba(20,100,30,.5)':'rgba(90,60,15,.35)';
-    pBlob(C,cx*.72+Math.cos(cX)*R*.3,cy*.6,R*.36,pNoiseT);
-    pBlob(C,cx*1.32+Math.cos(cX+2)*R*.25,cy*1.18,R*.26,pNoiseT+1.8);
-    C.fillStyle=planetaEraIdx>=2?'rgba(15,80,25,.4)':'rgba(70,45,10,.3)';
-    pBlob(C,cx*.48+Math.cos(cX+4)*R*.2,cy*1.32,R*.2,pNoiseT+3.5);
-  }
-  // Life
-  if(e.hasLife){
-    var lx=pRotY*.18%(Math.PI*2);
-    C.fillStyle='rgba(0,180,60,.28)';pBlob(C,cx*.78+Math.cos(lx)*R*.25,cy*.66,R*.3,pNoiseT*.65);
-    C.fillStyle='rgba(0,140,50,.2)';pBlob(C,cx*1.28+Math.cos(lx+1.5)*R*.22,cy*1.08,R*.22,pNoiseT*.65+2.2);
-  }
-  // Cities
-  if(e.hasCity){
-    for(var ci=0;ci<28;ci++){
-      var ca=ci*2.45+pRotY*2, cd=R*(.18+Math.sin(ci*1.7)*.28);
-      var clx=cx+Math.cos(ca)*cd, cly=cy+Math.sin(ca)*cd*.65;
-      var cg=.3+Math.abs(Math.sin(pNoiseT*3+ci))*.6;
-      C.beginPath();C.arc(clx,cly,1.4,0,Math.PI*2);C.fillStyle='rgba(255,230,120,'+cg*.7+')';C.fill();
-    }
-  }
-  // Specular + Shadow
-  var sp=C.createRadialGradient(cx+specOX,cy+specOY,0,cx+specOX*.3,cy+specOY*.3,R*.65);
-  sp.addColorStop(0,'rgba(255,255,255,.24)');sp.addColorStop(1,'rgba(255,255,255,0)');
-  C.fillStyle=sp;C.fillRect(0,0,W,H);
-  var sh=C.createRadialGradient(cx+shadOX,cy+shadOY,R*.05,cx+shadOX*.45,cy+shadOY*.4,R*1.15);
-  sh.addColorStop(0,'rgba(0,0,0,.65)');sh.addColorStop(1,'rgba(0,0,0,0)');
-  C.fillStyle=sh;C.fillRect(0,0,W,H);
-  C.restore();
-  // Clouds
-  if(e.hasCloud){
-    C.save();C.beginPath();C.arc(cx,cy,R,0,Math.PI*2);C.clip();
-    var cs=Math.cos(pRotY*.22)*R*.15;
-    C.fillStyle='rgba(255,255,255,.1)';pBlob(C,cx*.82+cs,cy*.72,R*.3,pNoiseT*.28);
-    C.fillStyle='rgba(255,255,255,.07)';pBlob(C,cx*1.18-cs*.5,cy*1.12,R*.23,pNoiseT*.28+2.8);
-    C.restore();
-  }
-  // Ring
-  if(e.hasRing){
-    C.save();C.translate(cx,cy);C.scale(1,Math.max(.12,.28-Math.abs(tilt)*.1));
-    C.beginPath();C.arc(0,0,R*1.48,0,Math.PI*2);C.strokeStyle='rgba(200,120,255,.35)';C.lineWidth=9;C.stroke();
-    C.beginPath();C.arc(0,0,R*1.62,0,Math.PI*2);C.strokeStyle='rgba(180,100,255,.15)';C.lineWidth=5;C.stroke();
-    C.restore();
-  }
-  // Satellite
-  if(planetaEraIdx>=2){
-    var sa=pRotY*2.2, sr=R*1.52, sx=cx+Math.cos(sa)*sr, sy=cy+Math.sin(sa)*sr*.32;
-    C.beginPath();C.arc(sx,sy,3.5,0,Math.PI*2);C.fillStyle='rgba(180,210,255,.75)';C.fill();
-    C.strokeStyle='rgba(180,210,255,.18)';C.lineWidth=1;C.beginPath();C.arc(sx,sy,7,0,Math.PI*2);C.stroke();
-  }
-  // Aurora
-  if(planetaEraIdx===4){
-    pAuroraT+=.018;C.save();C.globalAlpha=.35;
-    for(var ai=0;ai<5;ai++){
-      var aw=R*(.6+ai*.18),ah=R*.12,ay=cy-R*.88+Math.sin(pAuroraT+ai)*.06*R;
-      C.strokeStyle='hsl('+(150+ai*30+Math.sin(pAuroraT*2)*30)+',100%,60%)';
-      C.lineWidth=2;C.beginPath();C.ellipse(cx,ay,aw,ah,0,0,Math.PI*2);C.stroke();
-    }
-    C.restore();
-  }
-  // Border
-  C.beginPath();C.arc(cx,cy,R,0,Math.PI*2);C.strokeStyle='rgba(255,255,255,.07)';C.lineWidth=1.5;C.stroke();
-}
-
-function pBlob(C,cx,cy,r,t){
-  C.beginPath();
-  for(var a=0;a<=Math.PI*2+.01;a+=.18){
-    var nr=r*(1+.22*Math.sin(a*3+t)+.12*Math.cos(a*5+t*1.4));
-    var x=cx+Math.cos(a)*nr, y=cy+Math.sin(a)*nr;
-    if(a<.01)C.moveTo(x,y);else C.lineTo(x,y);
-  }
-  C.closePath();C.fill();
-}
-function pLighten(hex,a){
-  try{var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    return'rgb('+(Math.min(255,r+a*255))+','+(Math.min(255,g+a*255))+','+(Math.min(255,b+a*255))+')';
-  }catch(e){return hex;}
-}
-
-/* ── WEATHER ── */
-function pUpdateWeather(){
-  if(!pWX) return;
-  pWX.clearRect(0,0,pStageW,pStageH);
-  var e=ERAS[planetaEraIdx];
-  pWeatherTimer--;
-  if(pWeatherTimer<=0){
-    pWeatherTimer=280+Math.floor(Math.random()*200);
-    pWeatherMode=Math.floor(Math.random()*e.weather.length);
-    var pill=document.getElementById('planetaWeatherPill');
-    if(pill){
-      pill.textContent=e.weather[pWeatherMode];
-      pill.style.opacity='1';
-      setTimeout(function(){if(pill)pill.style.opacity='0';},3000);
-    }
-    pRainDrops=[];pSand=[];pSnow=[];pMeteors=[];pLightningT=-999;
-    var wt=e.weather[pWeatherMode];
-    if(wt.includes('CHUVA')||wt.includes('TROVOADA')||wt.includes('NEVASCA')){
-      for(var i=0;i<120;i++) pRainDrops.push(pMkRain());
-    }
-    if(wt.includes('NEVASCA')){
-      pSnow=pRainDrops.map(function(r){return{x:r.x,y:r.y,vx:(Math.random()-.5)*1.5,vy:.8+Math.random()*.6};});
-      pRainDrops=[];
-    }
-    if(wt.includes('AREIA')){for(var j=0;j<200;j++)pSand.push(pMkSand());}
-    if(wt.includes('METEOROS')){for(var k=0;k<18;k++)pMeteors.push(pMkMeteor());}
-  }
-  if(pRainDrops.length){
-    pWX.strokeStyle='rgba(160,200,255,.35)';pWX.lineWidth=1;
-    pRainDrops.forEach(function(d){d.y+=d.vy;d.x+=d.vx;if(d.y>pStageH)Object.assign(d,pMkRain());
-      pWX.beginPath();pWX.moveTo(d.x,d.y);pWX.lineTo(d.x+d.vx*3,d.y+d.vy*3);pWX.stroke();});
-    pLightningT++;
-    var wt2=ERAS[planetaEraIdx].weather[pWeatherMode];
-    if(wt2.includes('TROVOADA')&&pLightningT>Math.random()*120+60){
-      pLightningFlash=6;pLightningT=0;pDrawLightning(pWX);
-    }
-    if(pLightningFlash>0){
-      pWX.fillStyle='rgba(255,255,200,'+(pLightningFlash*.04)+')';
-      pWX.fillRect(0,0,pStageW,pStageH);pLightningFlash--;
-    }
-  }
-  if(pSnow.length){
-    pWX.fillStyle='rgba(220,235,255,.55)';
-    pSnow.forEach(function(s){s.y+=s.vy;s.x+=Math.sin(pNoiseT*2+s.x)*.4;
-      if(s.y>pStageH)Object.assign(s,{x:Math.random()*pStageW,y:-10,vx:(Math.random()-.5)*1.5,vy:.8+Math.random()*.6});
-      pWX.beginPath();pWX.arc(s.x,s.y,1.2,0,Math.PI*2);pWX.fill();});
-  }
-  if(pSand.length){
-    pSand.forEach(function(p){p.x+=p.vx;p.y+=Math.sin(pNoiseT*3+p.x*.02)*1.2;if(p.x>pStageW)p.x=-4;
-      pWX.beginPath();pWX.arc(p.x,p.y,p.r,0,Math.PI*2);pWX.fillStyle='rgba(200,150,60,'+p.a+')';pWX.fill();});
-  }
-  if(pMeteors.length){
-    pMeteors.forEach(function(m){m.x+=m.vx;m.y+=m.vy;if(m.x>pStageW||m.y>pStageH)Object.assign(m,pMkMeteor());
-      pWX.save();pWX.strokeStyle='rgba(255,200,100,'+m.a+')';pWX.lineWidth=1.5;
-      pWX.beginPath();pWX.moveTo(m.x,m.y);pWX.lineTo(m.x-m.vx*10,m.y-m.vy*10);pWX.stroke();
-      pWX.beginPath();pWX.arc(m.x,m.y,1.5,0,Math.PI*2);pWX.fillStyle='rgba(255,240,200,'+m.a+')';pWX.fill();pWX.restore();});
-  }
-  var wt3=ERAS[planetaEraIdx].weather[pWeatherMode];
-  if(wt3&&wt3.includes('AURORA')){
-    var ag=pWX.createLinearGradient(0,0,0,pStageH*.6);
-    ag.addColorStop(0,'rgba(0,255,150,.08)');ag.addColorStop(.3,'rgba(0,200,255,.06)');ag.addColorStop(1,'rgba(0,0,0,0)');
-    pWX.fillStyle=ag;pWX.fillRect(0,0,pStageW,pStageH);
-  }
-}
-function pMkRain(){return{x:Math.random()*pStageW,y:Math.random()*-pStageH*.5,vx:-1.5+Math.random()*.5,vy:7+Math.random()*5};}
-function pMkSand(){return{x:Math.random()*pStageW,y:pStageH*.3+Math.random()*pStageH*.6,vx:3+Math.random()*5,r:.5+Math.random()*1.5,a:.15+Math.random()*.35};}
-function pMkMeteor(){return{x:-20+Math.random()*pStageW*.5,y:Math.random()*pStageH*.4,vx:5+Math.random()*8,vy:3+Math.random()*5,a:.6+Math.random()*.4};}
-function pDrawLightning(C){
-  var x=pStageW*.3+Math.random()*pStageW*.4,y=0;
-  C.strokeStyle='rgba(255,255,200,.9)';C.lineWidth=1.5;C.beginPath();C.moveTo(x,y);
-  while(y<pStageH*.7){x+=Math.random()*40-20;y+=20+Math.random()*30;C.lineTo(x,y);}
-  C.stroke();
-}
-
-/* ── MAIN LOOP ── */
-function pTickRot(){
-  if(!pDragging){
-    pVelY+=(0.004-pVelY)*.02;pVelX*=INERTIA;
-    pRotX=Math.max(-MAX_TILT,Math.min(MAX_TILT,pRotX+pVelX));
-    pRotY+=pVelY;
-  }
-}
-function pLoop(){
-  pTickRot();
-  pDrawPlanet();
-  pUpdateWeather();
-  var lon=((pRotY*180/Math.PI)%360).toFixed(1);
-  var lat=(pRotX*180/Math.PI).toFixed(1);
+function planetaLoop(){
+  planetaNoiseT+=0.008;
+  planetaDrawPlanet();
+  planetaUpdateWeather();
+  var lon=((planetaNoiseT*20)%360).toFixed(1);
   var el=document.getElementById('planetaCoords');
-  if(el) el.innerHTML='LAT '+lat+'°\nLON '+lon+'°';
-  requestAnimationFrame(pLoop);
+  if(el) el.innerHTML='LAT 14.2°\nLON '+lon+'°';
+  requestAnimationFrame(planetaLoop);
 }
 
-/* ── UI ── */
-function pUpdateUI(){
-  var e=ERAS[planetaEraIdx], ne=ERAS[planetaEraIdx+1];
+function planetaUpdateUI(){
+  var e=PLANETA_ERAS[planetaEraIdx],ne=PLANETA_ERAS[planetaEraIdx+1];
   var eXP=planetaTotalXP-e.xp;
-  var eRange=(ne?ne.xp:e.xp+1000)-e.xp;
+  var eRange=(ne?ne.xp:e.xp+500)-e.xp;
   var pct=Math.min(100,(eXP/eRange)*100);
   var fill=document.getElementById('planetaXpFill');
-  if(fill){fill.style.width=pct+'%';fill.style.background='linear-gradient(90deg,'+e.color+','+e.color+'cc)';}
-  var xpLbl=document.getElementById('planetaXpLbl');if(xpLbl)xpLbl.textContent=eXP+' / '+eRange+' XP';
-  var desc=document.getElementById('planetaDesc');if(desc){desc.textContent=e.desc;desc.style.color=e.color;}
-  var badge=document.getElementById('planetaEraBadge');if(badge){badge.textContent='ERA '+e.n+' · '+e.label;badge.style.color=e.color;}
-  var sxp=document.getElementById('planetaSXP');if(sxp)sxp.textContent=planetaTotalXP.toLocaleString('pt-BR');
-  var sera=document.getElementById('planetaSEra');if(sera)sera.textContent=String(e.n);
-  var sj=document.getElementById('planetaSJogos');if(sj)sj.textContent=planetaJogos;
-  var sa=document.getElementById('planetaSAtv');if(sa)sa.textContent=planetaAtv;
-  pBuildEvo();pBuildMS();
+  if(fill){fill.style.width=pct+'%';fill.style.background=e.color;}
+  var xpLbl=document.getElementById('planetaXpLbl');
+  if(xpLbl) xpLbl.textContent=eXP+' / '+eRange+' XP';
+  var desc=document.getElementById('planetaDesc');
+  if(desc){desc.textContent=e.desc;desc.style.color=e.color;}
+  var badge=document.getElementById('planetaEraBadge');
+  if(badge){badge.textContent='ERA '+e.n+' · '+e.label;badge.style.color=e.color;}
+  var sxp=document.getElementById('planetaSXP');if(sxp) sxp.textContent=planetaTotalXP.toLocaleString();
+  var sera=document.getElementById('planetaSEra');if(sera) sera.textContent='I II III IV V'.split(' ')[planetaEraIdx];
+  var sj=document.getElementById('planetaSJogos');if(sj) sj.textContent=planetaJogos;
+  var sa=document.getElementById('planetaSAtv');if(sa) sa.textContent=planetaAtv;
+  planetaBuildEvo(); planetaBuildMS();
 }
 
-function pBuildEvo(){
-  var row=document.getElementById('planetaEvoRow');if(!row)return;
+function planetaBuildEvo(){
+  var row=document.getElementById('planetaEvoRow');if(!row) return;
   row.innerHTML='';
-  ERAS.forEach(function(e,i){
-    var done=i<planetaEraIdx, active=i===planetaEraIdx;
+  PLANETA_ERAS.forEach(function(e,i){
+    var done=i<planetaEraIdx,active=i===planetaEraIdx,locked=i>planetaEraIdx;
     var node=document.createElement('div');node.className='planeta-evo-node';
     node.innerHTML='<div class="planeta-evo-circle '+(done?'done':active?'active':'locked')+'">'+e.icon+'</div>'+
       '<div class="planeta-evo-lbl '+(active?'active':'')+'">'+e.label+'</div>';
@@ -5992,10 +5756,10 @@ function pBuildEvo(){
   });
 }
 
-function pBuildMS(){
-  var g=document.getElementById('planetaMsGrid');if(!g)return;
+function planetaBuildMS(){
+  var g=document.getElementById('planetaMsGrid');if(!g) return;
   g.innerHTML='';
-  MILESTONES.forEach(function(m){
+  PLANETA_MS.forEach(function(m){
     var u=planetaTotalXP>=m.xp;
     var d=document.createElement('div');d.className='planeta-ms-card '+(u?'unlocked':'locked');
     d.innerHTML='<div class="planeta-ms-ic">'+m.ic+'</div><div class="planeta-ms-nm">'+m.nm+'</div><div class="planeta-ms-ds">'+m.ds+'</div>'+(!u?'<div class="planeta-ms-lk">🔒</div>':'');
@@ -6003,13 +5767,10 @@ function pBuildMS(){
   });
 }
 
-function pRenderLog(){
-  var list=document.getElementById('planetaActList');if(!list)return;
+function planetaRenderLog(){
+  var list=document.getElementById('planetaActList');if(!list) return;
   list.innerHTML='';
-  if(!planetaLog.length){
-    list.innerHTML='<div style="padding:14px;text-align:center;font-size:12px;color:#3a4060">Nenhuma atividade ainda. Use os botões acima!</div>';
-    return;
-  }
+  if(!planetaLog.length){list.innerHTML='<div style="padding:14px;text-align:center;font-size:12px;color:#3a4060">Nenhuma atividade ainda. Use os botões acima!</div>';return;}
   planetaLog.slice(0,6).forEach(function(l){
     var d=document.createElement('div');d.className='planeta-act-item';
     d.innerHTML='<div class="planeta-act-ic" style="background:'+l.bg+'">'+l.icon+'</div>'+
@@ -6019,31 +5780,82 @@ function pRenderLog(){
   });
 }
 
-window.planetaAddXP=function(xp,label,icon,bg,color){
-  planetaTotalXP+=xp; planetaAtv++;
-  if(label.toLowerCase().includes('jogo')) planetaJogos++;
+/* Adiciona XP ao planeta localmente e sincroniza com Supabase */
+function _planetaApplyXP(xp,label,icon,bg,color,silent){
+  planetaTotalXP+=xp;planetaAtv++;
+  if(label.toLowerCase().indexOf('jogo')!==-1) planetaJogos++;
   localStorage.setItem('mg_planeta_xp',String(planetaTotalXP));
   localStorage.setItem('mg_planeta_jogos',String(planetaJogos));
   localStorage.setItem('mg_planeta_atv',String(planetaAtv));
   var prevEra=planetaEraIdx;
-  while(planetaEraIdx<ERAS.length-1 && planetaTotalXP>=ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
+  while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
   if(planetaEraIdx!==prevEra){
-    var e=ERAS[planetaEraIdx];
-    var lm=document.getElementById('planetaLuMain');if(lm)lm.textContent='ERA '+e.n+' · '+e.label;
-    var ls=document.getElementById('planetaLuSub');if(ls)ls.textContent=e.desc;
+    var e=PLANETA_ERAS[planetaEraIdx];
+    var el=document.getElementById('planetaLuMain');if(el) el.textContent='ERA '+e.n+' · '+e.label;
+    var sl=document.getElementById('planetaLuSub');if(sl) sl.textContent=e.desc;
     var ov=document.getElementById('planetaLuOverlay');
     if(ov){ov.classList.remove('show');void ov.offsetWidth;ov.classList.add('show');setTimeout(function(){ov.classList.remove('show');},3100);}
-    pWeatherTimer=0; // força novo clima para nova era
   }
   var t=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   planetaLog.unshift({label:label,xp:xp,icon:icon,bg:bg,color:color,t:t});
-  if(planetaLog.length>12) planetaLog.pop();
+  if(planetaLog.length>20) planetaLog.pop();
   localStorage.setItem('mg_planeta_log',JSON.stringify(planetaLog));
-  pUpdateUI();pRenderLog();
-  showToast('🪐 +'+xp+' XP para o seu planeta!');
-};
-})()
+  planetaUpdateUI();planetaRenderLog();
+  if(!silent) showToast('🪐 +'+xp+' XP para o seu planeta!');
+  // Sync to Supabase in background
+  if(userSession) planetaSyncSupabase();
+}
 
+async function planetaSyncSupabase(){
+  if(!userSession) return;
+  var email=userSession.user.email;
+  try{
+    await sb.from('planetas').upsert({
+      user_email:email,xp:planetaTotalXP,
+      jogos:planetaJogos,atividades:planetaAtv,
+      log:planetaLog.slice(0,20),
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_email'});
+  }catch(e){console.log('[Planeta sync]',e.message);}
+}
+
+/* Carrega XP do Supabase quando aba planeta abre */
+async function planetaCarregarSupabase(){
+  if(!userSession) return;
+  var email=userSession.user.email;
+  try{
+    var{data}=await sb.from('planetas').select('xp,jogos,atividades,log').eq('user_email',email).maybeSingle();
+    if(data){
+      var sbXP=data.xp||0;
+      // Usa o maior entre localStorage e Supabase
+      if(sbXP>planetaTotalXP){
+        planetaTotalXP=sbXP;
+        planetaJogos=Math.max(planetaJogos,data.jogos||0);
+        planetaAtv=Math.max(planetaAtv,data.atividades||0);
+        var sbLog=data.log||[];
+        if(sbLog.length>planetaLog.length) planetaLog=sbLog;
+        localStorage.setItem('mg_planeta_xp',String(planetaTotalXP));
+        localStorage.setItem('mg_planeta_jogos',String(planetaJogos));
+        localStorage.setItem('mg_planeta_atv',String(planetaAtv));
+        localStorage.setItem('mg_planeta_log',JSON.stringify(planetaLog));
+        // Recalc era
+        planetaEraIdx=0;
+        while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
+        planetaUpdateUI();planetaRenderLog();
+      }
+    }
+  }catch(e){console.log('[Planeta load]',e.message);}
+}
+
+window.planetaAddXP=function(xp,label,icon,bg,color){
+  _planetaApplyXP(xp,label,icon,bg,color,false);
+};
+
+/* Silent version — usado por câmbio/compra sem toast duplicado */
+window.planetaAddXPSilent=function(xp,label,icon,bg,color){
+  _planetaApplyXP(xp,label,icon,bg,color,true);
+};
+})();
 
 </script>
 </body>
