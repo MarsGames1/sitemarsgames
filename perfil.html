@@ -1049,12 +1049,272 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 4px 18px rgba(0,255,231,.12);
 }
 
-/* Tema claro */
-body.tema-claro .tabs-wrap{background:#f8f8fc;border-color:var(--border)}
-body.tema-claro .tab{background:rgba(0,0,0,.03);border-color:var(--border);color:#888}
-body.tema-claro .tab:hover{background:rgba(0,0,0,.06);color:#333}
+/* ── Aniversário ── */
+.tab-aniversario{border-color:rgba(255,45,122,.15)!important;color:#8a3060}
+.tab-aniversario:hover{border-color:rgba(255,45,122,.35)!important;color:#ff2d7a!important;background:rgba(255,45,122,.06)!important}
+.tab-aniversario.active{color:#ff2d7a!important;background:rgba(255,45,122,.1)!important;border-color:rgba(255,45,122,.5)!important;box-shadow:0 4px 18px rgba(255,45,122,.15)!important}
+.tab-aniversario.active::after{background:#ff2d7a!important}
+/* ── Câmbio ── */
+.tab-cambio{border-color:rgba(0,255,231,.12)!important;color:#1a6a60}
+.tab-cambio:hover{border-color:rgba(0,255,231,.3)!important;color:#00ffe7!important;background:rgba(0,255,231,.05)!important}
+.tab-cambio.active{color:#00ffe7!important;background:rgba(0,255,231,.08)!important;border-color:rgba(0,255,231,.4)!important;box-shadow:0 4px 18px rgba(0,255,231,.12)!important}
+.tab-cambio.active::after{background:#00ffe7!important}
+/* ── Loja MP ── */
+.tab-loja-mp{border-color:rgba(255,194,0,.15)!important;color:#6a5800}
+.tab-loja-mp:hover{border-color:rgba(255,194,0,.35)!important;color:#ffc200!important;background:rgba(255,194,0,.05)!important}
+.tab-loja-mp.active{color:#ffc200!important;background:rgba(255,194,0,.1)!important;border-color:rgba(255,194,0,.45)!important;box-shadow:0 4px 18px rgba(255,194,0,.14)!important}
+.tab-loja-mp.active::after{background:#ffc200!important}
+/* ── Planeta ── */
+.tab-planeta{border-color:rgba(0,184,230,.12)!important;color:#1a5060}
+.tab-planeta:hover{border-color:rgba(0,184,230,.35)!important;color:#00b8e6!important;background:rgba(0,184,230,.05)!important}
+.tab-planeta.active{color:#00b8e6!important;background:rgba(0,184,230,.1)!important;border-color:rgba(0,184,230,.45)!important;box-shadow:0 4px 18px rgba(0,184,230,.14)!important}
+.tab-planeta.active::after{background:#00b8e6!important}
 
-/* ══ DNA ALIENÍGENA ══ */
+/* ════════════════════════════════════════════
+   ABA ANIVERSÁRIO
+════════════════════════════════════════════ */
+@keyframes bdayShim{0%{background-position:200%}100%{background-position:-200%}}
+@keyframes blobBreathe{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+@keyframes giftPop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes btnShimmer{0%{background-position:0%}100%{background-position:100%}}
+@keyframes sepBlink{0%,100%{opacity:1}50%{opacity:0}}
+.bday-hero{
+  position:relative;overflow:hidden;border-radius:18px;
+  background:linear-gradient(160deg,#100518,#08020f);
+  border:1px solid rgba(255,45,122,.2);
+  padding:36px 24px 28px;text-align:center;margin-bottom:20px;
+}
+.bday-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#ff2d7a,#9f3fff,#ffc200,#9f3fff,#ff2d7a);
+  background-size:200%;animation:bdayShim 3s linear infinite;}
+.bday-hero::after{content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,45,122,.1),transparent 70%);
+  pointer-events:none;animation:blobBreathe 4s ease-in-out infinite;}
+.bday-eyebrow{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:4px;
+  color:#ff2d7a;opacity:.75;margin-bottom:8px;position:relative;z-index:2;}
+.bday-title{font-family:'Orbitron',sans-serif;font-size:clamp(20px,5vw,36px);
+  font-weight:900;letter-spacing:2px;line-height:1.05;margin-bottom:6px;position:relative;z-index:2;}
+.bday-title .bday-name{background:linear-gradient(135deg,#ff2d7a,#ffc200);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.bday-sub{font-size:13px;color:#3d4560;line-height:1.6;margin:0 auto 22px;position:relative;z-index:2;}
+.bday-gifts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;position:relative;z-index:2;}
+.bday-gift{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:14px 18px;text-align:center;min-width:120px;
+  animation:giftPop .5s cubic-bezier(.34,1.56,.64,1) backwards;}
+.bday-gift:nth-child(1){animation-delay:.1s;border-color:rgba(255,194,0,.25);background:rgba(255,194,0,.06);}
+.bday-gift:nth-child(2){animation-delay:.2s;border-color:rgba(0,232,122,.25);background:rgba(0,232,122,.06);}
+.bday-gift-icon{font-size:26px;margin-bottom:6px;}
+.bday-gift-val{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;margin-bottom:2px;}
+.bday-gift:nth-child(1) .bday-gift-val{color:#ffc200;}
+.bday-gift:nth-child(2) .bday-gift-val{color:#00e87a;}
+.bday-gift-lbl{font-size:10px;color:#3d4560;letter-spacing:1px;text-transform:uppercase;}
+.bday-claim-btn{position:relative;z-index:2;padding:14px 36px;border:none;border-radius:12px;
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:2px;
+  cursor:pointer;color:#000;overflow:hidden;transition:all .2s;
+  background:linear-gradient(135deg,#ff2d7a,#ffc200,#ff6a00);
+  background-size:200%;animation:btnShimmer 3s ease-in-out infinite alternate;
+  box-shadow:0 6px 28px rgba(255,45,122,.35);}
+.bday-claim-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 10px 36px rgba(255,45,122,.5);}
+.bday-claim-btn:disabled{background:rgba(255,255,255,.08);color:#3d4560;cursor:not-allowed;box-shadow:none;animation:none;}
+.bday-countdown{background:rgba(8,11,26,.9);border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;padding:18px;text-align:center;margin-bottom:18px;}
+.bday-cd-title{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:3px;
+  color:#3d4560;text-transform:uppercase;margin-bottom:12px;}
+.bday-cd-row{display:flex;justify-content:center;gap:8px;align-items:center;}
+.bday-cd-unit{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:9px 12px;text-align:center;min-width:56px;}
+.bday-cd-num{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;line-height:1;}
+.bday-cd-lbl{font-size:8px;color:#3d4560;letter-spacing:1px;margin-top:2px;}
+.bday-cd-sep{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#3d4560;animation:sepBlink 1s steps(1) infinite;}
+.bday-hist-card{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:12px;overflow:hidden;}
+.bday-hist-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.03);}
+.bday-hist-row:last-child{border-bottom:none;}
+.bday-hist-year{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:#ff2d7a;width:44px;flex-shrink:0;}
+.bday-hist-gifts{flex:1;font-size:12px;}
+.bday-hist-date{font-size:10px;color:#3d4560;}
+/* Formulário de data */
+.bday-form{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;text-align:center;}
+.bday-form label{display:block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3d4560;margin-bottom:8px;}
+.bday-date-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,45,122,.2);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-size:14px;padding:10px 16px;width:100%;max-width:240px;text-align:center;outline:none;transition:border-color .2s;}
+.bday-date-input:focus{border-color:rgba(255,45,122,.5);}
+.bday-save-btn{margin-top:12px;padding:10px 24px;border:none;border-radius:8px;background:linear-gradient(135deg,#ff2d7a,#9f3fff);color:#fff;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.bday-save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(255,45,122,.3);}
+
+/* ════════════════════════════════════════════
+   ABA CÂMBIO
+════════════════════════════════════════════ */
+.cambio-banner{
+  position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,255,231,.05),rgba(0,184,230,.03));
+  border:1px solid rgba(0,255,231,.15);border-radius:12px;
+  padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;
+}
+.cambio-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#00ffe7,transparent);}
+.cambio-stamp{width:46px;height:46px;border-radius:50%;flex-shrink:0;border:2px dashed rgba(0,255,231,.4);
+  display:flex;align-items:center;justify-content:center;font-size:20px;animation:cambioSpin 12s linear infinite;}
+@keyframes cambioSpin{to{transform:rotate(360deg)}}
+.cambio-taxa-badge{margin-left:auto;flex-shrink:0;text-align:center;
+  background:rgba(0,255,231,.07);border:1px solid rgba(0,255,231,.18);border-radius:8px;padding:8px 12px;}
+.cambio-taxa-badge .tv{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#00ffe7;}
+.cambio-taxa-badge .tl{font-size:8px;color:#3d4560;letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+.cambio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:20px;}
+.cambio-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s;}
+.cambio-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.cambio-card.ct-ticket::before{background:linear-gradient(90deg,#00e87a,#009a50);}
+.cambio-card.ct-xp::before{background:linear-gradient(90deg,#00b8e6,#0070a0);}
+.cambio-card.ct-game::before{background:linear-gradient(90deg,#9f3fff,#5010b0);}
+.cambio-card:hover{transform:translateY(-2px);}
+.cambio-card.ct-ticket:hover{border-color:rgba(0,232,122,.3);box-shadow:0 8px 24px rgba(0,232,122,.1);}
+.cambio-card.ct-xp:hover{border-color:rgba(0,184,230,.3);box-shadow:0 8px 24px rgba(0,184,230,.1);}
+.cambio-card.ct-game:hover{border-color:rgba(159,63,255,.3);box-shadow:0 8px 24px rgba(159,63,255,.1);}
+.cambio-card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.cambio-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ct-ticket .cambio-icon{background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.18);}
+.ct-xp .cambio-icon{background:rgba(0,184,230,.1);border:1px solid rgba(0,184,230,.18);}
+.ct-game .cambio-icon{background:rgba(159,63,255,.1);border:1px solid rgba(159,63,255,.18);}
+.cambio-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:2px;}
+.ct-ticket .cambio-cat{font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;color:#00e87a;}
+.ct-xp .cambio-cat{font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;color:#00b8e6;}
+.ct-game .cambio-cat{font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;color:#9f3fff;}
+.cambio-rate{display:flex;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:7px;overflow:hidden;margin-bottom:10px;}
+.cambio-rate-side{flex:1;padding:9px;text-align:center;}
+.cambio-rate-side.from{border-right:1px solid rgba(255,255,255,.05);}
+.cambio-rate-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;line-height:1;}
+.cambio-rate-side.from .cambio-rate-val{color:#ffc200;}
+.ct-ticket .cambio-rate-side.to .cambio-rate-val{color:#00e87a;}
+.ct-xp .cambio-rate-side.to .cambio-rate-val{color:#00b8e6;}
+.ct-game .cambio-rate-side.to .cambio-rate-val{color:#9f3fff;}
+.cambio-rate-lbl{font-size:9px;color:#3d4560;letter-spacing:1px;margin-top:2px;}
+.cambio-btn{width:100%;padding:10px;border:none;border-radius:8px;font-family:'Orbitron',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .18s;}
+.cambio-btn:hover{transform:scale(1.02);}
+.ct-ticket .cambio-btn{background:linear-gradient(135deg,#00e87a,#007840);color:#000;}
+.ct-xp .cambio-btn{background:linear-gradient(135deg,#00b8e6,#005070);color:#fff;}
+.ct-game .cambio-btn{background:linear-gradient(135deg,#9f3fff,#5010b0);color:#fff;}
+.cambio-btn:disabled{background:rgba(255,255,255,.07);color:#3d4560;cursor:not-allowed;transform:none;}
+.cambio-hist-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.03);}
+.cambio-hist-row:last-child{border-bottom:none;}
+.cambio-hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.cambio-hist-name{font-size:12px;font-weight:700;}
+.cambio-hist-meta{font-size:10px;color:#3d4560;}
+.cambio-hist-mp{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:#ff1f30;white-space:nowrap;}
+
+/* ════════════════════════════════════════════
+   ABA LOJA MP
+════════════════════════════════════════════ */
+@keyframes lojaShim{0%{background-position:200%}100%{background-position:-200%}}
+.loja-mp-head{text-align:center;margin-bottom:28px;}
+.loja-mp-head .eyebrow{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:5px;color:#ffc200;opacity:.55;margin-bottom:8px;text-transform:uppercase;}
+.loja-mp-head h2{font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,32px);font-weight:900;letter-spacing:2px;line-height:1.08;}
+.loja-mp-head .mp-grad{background:linear-gradient(135deg,#ffc200,#ff6a00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.loja-mp-head p{margin-top:8px;color:#3d4560;font-size:13px;line-height:1.6;}
+.loja-pkg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px;}
+@media(min-width:600px){.loja-pkg-grid{grid-template-columns:repeat(4,1fr);}}
+.loja-pkg{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;
+  padding:18px 12px;text-align:center;position:relative;overflow:hidden;cursor:pointer;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,border-color .2s;
+  display:flex;flex-direction:column;align-items:center;}
+.loja-pkg:hover{transform:translateY(-4px) scale(1.02);}
+.loja-pkg::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;}
+.loja-pkg.starter::before{background:linear-gradient(90deg,#4a90d0,#6ab0f0);}
+.loja-pkg.starter:hover{border-color:rgba(74,144,208,.45);box-shadow:0 10px 32px rgba(74,144,208,.18);}
+.loja-pkg.explorer::before{background:linear-gradient(90deg,#ffc200,#ff6a00);}
+.loja-pkg.explorer:hover{border-color:rgba(255,194,0,.4);box-shadow:0 10px 32px rgba(255,194,0,.16);}
+.loja-pkg.commander{border-color:rgba(159,63,255,.2);}
+.loja-pkg.commander::before{background:linear-gradient(90deg,#9f3fff,#c060ff,#9f3fff);background-size:200%;animation:lojaShim 3s linear infinite;}
+.loja-pkg.commander:hover{border-color:rgba(159,63,255,.55);box-shadow:0 12px 40px rgba(159,63,255,.25);}
+.loja-pkg.legend{border-color:rgba(255,106,0,.18);}
+.loja-pkg.legend::before{background:linear-gradient(90deg,#ff6a00,#ff1f30,#ff2d7a,#ff6a00);background-size:300%;animation:lojaShim 2.5s linear infinite;}
+.loja-pkg.legend:hover{border-color:rgba(255,106,0,.55);box-shadow:0 14px 48px rgba(255,106,0,.22);}
+.loja-pkg-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  font-family:'Orbitron',sans-serif;font-size:7px;font-weight:700;letter-spacing:1.5px;
+  padding:3px 10px;border-radius:0 0 7px 7px;text-transform:uppercase;}
+.loja-pkg-badge.pop{background:linear-gradient(135deg,#9f3fff,#c060ff);color:#fff;box-shadow:0 3px 10px rgba(159,63,255,.4);}
+.loja-pkg-badge.hot{background:linear-gradient(135deg,#ff6a00,#ff1f30);color:#fff;box-shadow:0 3px 10px rgba(255,106,0,.4);}
+.loja-pkg-icon{font-size:30px;margin:14px 0 8px;line-height:1;}
+.loja-pkg-name{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#3d4560;text-transform:uppercase;margin-bottom:8px;}
+.loja-pkg-mp{font-family:'Orbitron',sans-serif;font-size:clamp(18px,3vw,26px);font-weight:900;line-height:1;margin-bottom:2px;}
+.loja-pkg-mplbl{font-size:10px;color:#3d4560;letter-spacing:1px;margin-bottom:10px;}
+.loja-pkg-bonus{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;width:100%;}
+.loja-pkg-bi{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:600;padding:3px 6px;border-radius:5px;}
+.loja-pkg-bi.tkt{background:rgba(0,232,122,.08);border:1px solid rgba(0,232,122,.15);color:#00e87a;}
+.loja-pkg-bi.xp{background:rgba(0,184,230,.08);border:1px solid rgba(0,184,230,.15);color:#00b8e6;}
+.loja-pkg-bi.spin{background:rgba(255,194,0,.08);border:1px solid rgba(255,194,0,.15);color:#ffc200;}
+.loja-pkg-divider{width:100%;height:1px;background:rgba(255,255,255,.05);margin-bottom:10px;}
+.loja-pkg-price{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--text);margin-bottom:2px;}
+.loja-pkg-pricesub{font-size:9px;color:#3d4560;letter-spacing:1px;margin-bottom:10px;}
+.loja-pkg-btn{width:100%;padding:10px;border:none;border-radius:8px;font-family:'Orbitron',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;cursor:pointer;color:#000;transition:all .18s;
+  background:linear-gradient(135deg,#ffc200,#ff6a00);}
+.loja-pkg-btn:hover{transform:scale(1.02);box-shadow:0 4px 14px rgba(255,194,0,.3);}
+.loja-hist-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.03);}
+.loja-hist-row:last-child{border-bottom:none;}
+.loja-hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.loja-hist-pkg{font-size:12px;font-weight:700;}
+.loja-hist-date{font-size:10px;color:#3d4560;}
+.loja-hist-amt{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:#ffc200;white-space:nowrap;}
+
+/* ════════════════════════════════════════════
+   ABA PLANETA
+════════════════════════════════════════════ */
+@keyframes apulse{0%,100%{box-shadow:0 0 16px rgba(255,194,0,.3)}50%{box-shadow:0 0 30px rgba(255,194,0,.7)}}
+@keyframes lushow{0%{opacity:0}8%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes lubox{0%{transform:scale(0) rotate(-8deg)}12%{transform:scale(1.05) rotate(1deg)}20%{transform:scale(1)}85%{transform:scale(1);opacity:1}100%{transform:scale(.85);opacity:0}}
+.planeta-stage{position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px;background:#000;border:1px solid rgba(255,255,255,.06);}
+#planetaBg{position:absolute;inset:0;z-index:0;}
+#planetaWeather{position:absolute;inset:0;z-index:3;pointer-events:none;}
+#planetaCanvas{position:relative;z-index:2;display:block;margin:0 auto;}
+.planeta-stage-top{position:absolute;top:12px;left:12px;right:12px;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;}
+.planeta-era-badge{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;padding:4px 10px;border-radius:16px;backdrop-filter:blur(10px);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);}
+.planeta-coords{font-family:monospace;font-size:8px;color:rgba(255,255,255,.2);text-align:right;line-height:1.7;}
+.planeta-overlay{position:absolute;bottom:0;left:0;right:0;z-index:5;background:linear-gradient(transparent,rgba(1,2,8,.95) 60%);padding:16px 14px 12px;}
+.planeta-name{font-family:'Orbitron',sans-serif;font-size:clamp(16px,4vw,26px);font-weight:900;color:#fff;margin-bottom:2px;}
+.planeta-desc{font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.planeta-xp-lbl{display:flex;justify-content:space-between;font-size:10px;color:#3a4060;margin-bottom:4px;}
+.planeta-xp-bg{height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.planeta-xp-fill{height:100%;border-radius:3px;transition:width 1.3s cubic-bezier(.34,1.56,.64,1);}
+.planeta-sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+@media(min-width:480px){.planeta-sim-grid{grid-template-columns:repeat(4,1fr);}}
+.planeta-sim-btn{padding:11px 8px;border-radius:9px;border:1px solid;font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.4;}
+.planeta-sim-btn.y{background:rgba(255,194,0,.07);border-color:rgba(255,194,0,.2);color:#ffc200;}
+.planeta-sim-btn.y:hover{background:rgba(255,194,0,.14);transform:translateY(-2px);}
+.planeta-sim-btn.g{background:rgba(0,232,122,.07);border-color:rgba(0,232,122,.2);color:#00e87a;}
+.planeta-sim-btn.g:hover{background:rgba(0,232,122,.14);transform:translateY(-2px);}
+.planeta-evo-row{display:flex;position:relative;margin-bottom:16px;}
+.planeta-evo-row::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:1px;background:rgba(255,255,255,.05);}
+.planeta-evo-node{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1;}
+.planeta-evo-circle{width:36px;height:36px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .4s;}
+.planeta-evo-circle.done{border-color:#00e87a;background:rgba(0,232,122,.1);}
+.planeta-evo-circle.active{border-color:#ffc200;background:rgba(255,194,0,.1);box-shadow:0 0 16px rgba(255,194,0,.4);animation:apulse 2s ease-in-out infinite;}
+.planeta-evo-circle.locked{border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.03);opacity:.4;}
+.planeta-evo-lbl{font-family:'Orbitron',sans-serif;font-size:6.5px;font-weight:700;letter-spacing:1px;color:#3a4060;text-align:center;line-height:1.4;}
+.planeta-evo-lbl.active{color:#ffc200;}
+.planeta-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+@media(max-width:380px){.planeta-stats-row{grid-template-columns:1fr 1fr;}}
+.planeta-stat-box{background:var(--card);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:10px;text-align:center;}
+.planeta-stat-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--text);}
+.planeta-stat-lbl{font-size:9px;color:#3a4060;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.planeta-act-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:8px;padding:9px 12px;margin-bottom:6px;}
+.planeta-act-ic{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.planeta-act-t{font-size:12px;font-weight:700;color:var(--text);}
+.planeta-act-s{font-size:10px;color:#3a4060;}
+.planeta-act-xp{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:#00e87a;white-space:nowrap;}
+.planeta-ms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:16px;}
+.planeta-ms-card{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:9px;padding:11px;text-align:center;position:relative;overflow:hidden;transition:all .2s;}
+.planeta-ms-card.unlocked{border-color:rgba(255,194,0,.22);background:rgba(255,194,0,.04);}
+.planeta-ms-card.unlocked::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,#ffc200,transparent);}
+.planeta-ms-card.locked{opacity:.38;filter:grayscale(.5);}
+.planeta-ms-ic{font-size:20px;margin-bottom:4px;}
+.planeta-ms-nm{font-family:'Orbitron',sans-serif;font-size:7px;font-weight:700;letter-spacing:1px;color:#3a4060;margin-bottom:2px;}
+.planeta-ms-ds{font-size:10px;color:var(--text);line-height:1.3;}
+.planeta-ms-lk{position:absolute;top:5px;right:6px;font-size:9px;opacity:.28;}
+.planeta-lu-overlay{position:fixed;inset:0;z-index:999;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;}
+.planeta-lu-overlay.show{animation:lushow 3s ease forwards;}
+.planeta-lu-box{background:rgba(1,2,8,.96);border:2px solid #ffc200;border-radius:18px;padding:28px 40px;text-align:center;box-shadow:0 0 70px rgba(255,194,0,.5);animation:lubox 3s cubic-bezier(.34,1.56,.64,1) forwards;}
+.planeta-lu-pre{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:4px;color:#ffc200;opacity:.7;margin-bottom:5px;}
+.planeta-lu-main{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:#ffc200;text-shadow:0 0 28px rgba(255,194,0,.8);margin-bottom:3px;}
+.planeta-lu-sub{font-size:13px;color:#3a4060;}
+</style>
 @keyframes dnaBarGrow_dummy{}
 @keyframes dnaBarGrow{to{transform:scaleX(1)}}
 @keyframes dnaReveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
@@ -1887,6 +2147,10 @@ body.tema-claro .tab:hover{background:rgba(0,0,0,.06);color:#333}
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
     <div class="tab tab-dna" onclick="showTab('dna',this)">🧬 DNA Alien</div>
+    <div class="tab tab-aniversario" onclick="showTab('aniversario',this)">🎂 Aniversário</div>
+    <div class="tab tab-cambio" onclick="showTab('cambio',this)">🔄 Câmbio</div>
+    <div class="tab tab-loja-mp" onclick="showTab('loja-mp',this)">💰 Loja MP</div>
+    <div class="tab tab-planeta" onclick="showTab('planeta',this)">🪐 Meu Planeta</div>
     <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
   </div>
 
@@ -2191,6 +2455,116 @@ body.tema-claro .tab:hover{background:rgba(0,0,0,.06);color:#333}
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ══ ABA ANIVERSÁRIO ══ -->
+  <div class="tab-content" id="tab-aniversario">
+    <div id="bdayNoBirthday" style="display:none">
+      <div class="bday-form" style="margin-bottom:20px">
+        <label>📅 Informe sua data de aniversário</label>
+        <input type="date" class="bday-date-input" id="bdayInput">
+        <br><button class="bday-save-btn" onclick="bdaySaveDate()">SALVAR DATA</button>
+      </div>
+    </div>
+    <div id="bdayHero" style="display:none">
+      <div class="bday-hero">
+        <div class="bday-eyebrow">✦ PRESENTE ANUAL ✦</div>
+        <div class="bday-title">Feliz <span class="bday-name" id="bdayTitleName">Aniversário!</span></div>
+        <div class="bday-sub" id="bdaySub">A galáxia MarsGames te presenteia neste dia especial.</div>
+        <div class="bday-gifts">
+          <div class="bday-gift">
+            <div class="bday-gift-icon">⭐</div>
+            <div class="bday-gift-val">+<span id="bdayMpVal">50</span></div>
+            <div class="bday-gift-lbl">Marspoints</div>
+          </div>
+          <div class="bday-gift">
+            <div class="bday-gift-icon">🎟️</div>
+            <div class="bday-gift-val">+<span id="bdayTkVal">3</span></div>
+            <div class="bday-gift-lbl">MarsTickets</div>
+          </div>
+        </div>
+        <button class="bday-claim-btn" id="bdayClaimBtn" onclick="bdayClaim()">🎂 RESGATAR PRESENTE</button>
+        <div id="bdayClaimedNote" style="margin-top:10px;font-size:11px;color:#3d4560;display:none;position:relative;z-index:2">✓ Presente já resgatado este ano — volte no próximo aniversário!</div>
+      </div>
+      <div class="bday-countdown" id="bdayCountdown">
+        <div class="bday-cd-title">Próximo Aniversário em</div>
+        <div class="bday-cd-row" id="bdayCdRow"></div>
+      </div>
+    </div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Histórico <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div class="bday-hist-card" id="bdayHistCard"><div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum presente resgatado ainda.</div></div>
+  </div>
+
+  <!-- ══ ABA CÂMBIO ══ -->
+  <div class="tab-content" id="tab-cambio">
+    <div class="cambio-banner">
+      <div class="cambio-stamp">🏛️</div>
+      <div style="flex:1">
+        <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:#00ffe7;margin-bottom:4px">Câmbio Intergaláctico</div>
+        <p style="font-size:12px;color:#3d4560;line-height:1.5">Troque seus <em style="font-style:italic;color:rgba(0,255,231,.7)">Marspoints</em> por Tickets, XP e outros itens.</p>
+      </div>
+      <div class="cambio-taxa-badge"><div class="tv" id="cambioTaxaDisp">5%</div><div class="tl">taxa</div></div>
+    </div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px">Câmbios disponíveis <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div class="cambio-grid" id="cambioGrid"></div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Histórico de câmbios <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:10px;overflow:hidden" id="cambioHistCard"><div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum câmbio realizado ainda.</div></div>
+  </div>
+
+  <!-- ══ ABA LOJA MP ══ -->
+  <div class="tab-content" id="tab-loja-mp">
+    <div class="loja-mp-head">
+      <div class="eyebrow">✦ COMPRE AGORA ✦</div>
+      <h2>Loja de <span class="mp-grad">Marspoints</span></h2>
+      <p>Amplie seu saldo e desbloqueie mais câmbios, sorteios e benefícios.</p>
+    </div>
+    <div class="loja-pkg-grid" id="lojaPkgGrid"></div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Histórico de compras <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span><span id="lojaHistCount" style="color:#3d4560;text-transform:none;font-family:'Montserrat',sans-serif;letter-spacing:0;font-size:10px">0 compras</span></div>
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:10px;overflow:hidden" id="lojaHistList"><div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhuma compra ainda.</div></div>
+  </div>
+
+  <!-- ══ ABA PLANETA ══ -->
+  <div class="tab-content" id="tab-planeta">
+    <div class="planeta-lu-overlay" id="planetaLuOverlay">
+      <div class="planeta-lu-box">
+        <div class="planeta-lu-pre">EVOLUÇÃO DESBLOQUEADA</div>
+        <div class="planeta-lu-main" id="planetaLuMain">ERA II</div>
+        <div class="planeta-lu-sub" id="planetaLuSub">Seu planeta ganhou atmosfera!</div>
+      </div>
+    </div>
+    <div class="planeta-stage">
+      <canvas id="planetaBg"></canvas>
+      <canvas id="planetaWeather" style="position:absolute;inset:0;z-index:3;pointer-events:none"></canvas>
+      <canvas id="planetaCanvas" style="position:relative;z-index:2;display:block;margin:0 auto"></canvas>
+      <div class="planeta-stage-top">
+        <div class="planeta-era-badge" id="planetaEraBadge">ERA I · PROTO</div>
+        <div class="planeta-coords" id="planetaCoords">LAT 0°<br>LON 0°</div>
+      </div>
+      <div class="planeta-overlay">
+        <div class="planeta-name" id="planetaName">Marte-Alfa</div>
+        <div class="planeta-desc" id="planetaDesc" style="color:#ffc200">MUNDO PRIMORDIAL</div>
+        <div class="planeta-xp-lbl"><span>XP do planeta</span><span id="planetaXpLbl">0 / 200 XP</span></div>
+        <div class="planeta-xp-bg"><div class="planeta-xp-fill" id="planetaXpFill" style="width:0%;background:#ffc200"></div></div>
+      </div>
+    </div>
+    <div class="planeta-sim-grid">
+      <button class="planeta-sim-btn y" onclick="planetaAddXP(80,'Comprou um jogo','🎮','rgba(159,63,255,.15)','#9f3fff')">🎮 COMPRAR JOGO<br>+80 XP</button>
+      <button class="planeta-sim-btn y" onclick="planetaAddXP(40,'Avaliou um jogo','⭐','rgba(0,232,122,.15)','#00e87a')">⭐ AVALIAR JOGO<br>+40 XP</button>
+      <button class="planeta-sim-btn g" onclick="planetaAddXP(60,'Ganhou sorteio','🏆','rgba(255,194,0,.15)','#ffc200')">🏆 GANHAR SORTEIO<br>+60 XP</button>
+      <button class="planeta-sim-btn g" onclick="planetaAddXP(25,'Fez câmbio','🔄','rgba(0,255,231,.12)','#00ffe7')">🔄 CÂMBIO<br>+25 XP</button>
+    </div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Evolução do planeta <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div class="planeta-evo-row" id="planetaEvoRow"></div>
+    <div class="planeta-stats-row">
+      <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSXP">0</div><div class="planeta-stat-lbl">XP Total</div></div>
+      <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSEra">I</div><div class="planeta-stat-lbl">Era</div></div>
+      <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSJogos">0</div><div class="planeta-stat-lbl">Jogos</div></div>
+      <div class="planeta-stat-box"><div class="planeta-stat-val" id="planetaSAtv">0</div><div class="planeta-stat-lbl">Atividades</div></div>
+    </div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Atividade recente <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div id="planetaActList" style="margin-bottom:16px"></div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px">Marcos <span style="flex:1;height:1px;background:rgba(255,255,255,.04);display:block"></span></div>
+    <div class="planeta-ms-grid" id="planetaMsGrid"></div>
   </div>
 
   <!-- EDITAR PERFIL -->
@@ -4681,8 +5055,521 @@ var _origShowTab=window.showTab;
 window.showTab=function(id,el){
   _origShowTab(id,el);
   if(id==='dna') dnaCarregarBiblioteca();
+  if(id==='aniversario') bdayInit();
+  if(id==='cambio') cambioInit();
+  if(id==='loja-mp') lojaInit();
+  if(id==='planeta') planetaInit();
 };
 
+})();
+
+/* ══════════════════════════════════════════════════
+   ABA ANIVERSÁRIO
+══════════════════════════════════════════════════ */
+(function(){
+var BDAY_MP=50, BDAY_TK=3;
+var bdayDate=null, bdayInitDone=false, bdayHist=[], bdayClaimed=false;
+
+window.bdayInit=function(){
+  if(bdayInitDone) return;
+  bdayInitDone=true;
+  var saved=localStorage.getItem('mg_bday_date');
+  var claimed=localStorage.getItem('mg_bday_claimed_year');
+  var hist=JSON.parse(localStorage.getItem('mg_bday_hist')||'[]');
+  bdayHist=hist;
+  bdayClaimed=(claimed===String(new Date().getFullYear()));
+  if(saved){
+    bdayDate=new Date(saved+'T12:00:00');
+    renderBdayPage();
+  } else {
+    document.getElementById('bdayNoBirthday').style.display='block';
+    document.getElementById('bdayHero').style.display='none';
+  }
+  renderBdayHist();
+};
+
+window.bdaySaveDate=function(){
+  var v=document.getElementById('bdayInput').value;
+  if(!v){showToast('⚠️ Selecione uma data!');return;}
+  localStorage.setItem('mg_bday_date',v);
+  bdayDate=new Date(v+'T12:00:00');
+  document.getElementById('bdayNoBirthday').style.display='none';
+  renderBdayPage();
+  showToast('🎂 Data de aniversário salva!');
+};
+
+function renderBdayPage(){
+  document.getElementById('bdayHero').style.display='block';
+  var now=new Date();
+  var isToday=(now.getMonth()===bdayDate.getMonth()&&now.getDate()===bdayDate.getDate());
+  document.getElementById('bdayMpVal').textContent=BDAY_MP;
+  document.getElementById('bdayTkVal').textContent=BDAY_TK;
+  if(isToday){
+    document.getElementById('bdayTitleName').textContent='Aniversário, Explorador! 🎉';
+    document.getElementById('bdaySub').textContent='A galáxia MarsGames te presenteia neste dia especial!';
+    document.getElementById('bdayCountdown').style.display='none';
+    if(bdayClaimed){
+      document.getElementById('bdayClaimBtn').disabled=true;
+      document.getElementById('bdayClaimedNote').style.display='block';
+    }
+  } else {
+    document.getElementById('bdayTitleName').textContent='Presente Aguardando!';
+    document.getElementById('bdaySub').textContent='Volte no dia '+bdayDate.getDate()+'/'+(bdayDate.getMonth()+1)+' para resgatar seu presente anual.';
+    document.getElementById('bdayClaimBtn').disabled=true;
+    document.getElementById('bdayCountdown').style.display='block';
+    bdayCountdown();
+  }
+}
+
+function bdayCountdown(){
+  var row=document.getElementById('bdayCdRow');
+  function update(){
+    var now=new Date();
+    var next=new Date(now.getFullYear(),bdayDate.getMonth(),bdayDate.getDate());
+    if(next<=now) next.setFullYear(next.getFullYear()+1);
+    var diff=next-now;
+    var d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+    var m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    row.innerHTML='<div class="bday-cd-unit"><div class="bday-cd-num">'+pad(d)+'</div><div class="bday-cd-lbl">DIAS</div></div>'+
+      '<div class="bday-cd-sep">:</div><div class="bday-cd-unit"><div class="bday-cd-num">'+pad(h)+'</div><div class="bday-cd-lbl">HORAS</div></div>'+
+      '<div class="bday-cd-sep">:</div><div class="bday-cd-unit"><div class="bday-cd-num">'+pad(m)+'</div><div class="bday-cd-lbl">MIN</div></div>'+
+      '<div class="bday-cd-sep">:</div><div class="bday-cd-unit"><div class="bday-cd-num">'+pad(s)+'</div><div class="bday-cd-lbl">SEG</div></div>';
+  }
+  function pad(n){return String(n).padStart(2,'0');}
+  update(); setInterval(update,1000);
+}
+
+function renderBdayHist(){
+  var card=document.getElementById('bdayHistCard');
+  if(!bdayHist.length){card.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum presente resgatado ainda.</div>';return;}
+  card.innerHTML='';
+  bdayHist.forEach(function(h){
+    var d=document.createElement('div');d.className='bday-hist-row';
+    d.innerHTML='<div class="bday-hist-year">'+h.year+'</div><div class="bday-hist-gifts">⭐ +'+h.mp+' MP · 🎟️ +'+h.tk+' Tickets</div><div class="bday-hist-date">'+h.date+'</div>';
+    card.appendChild(d);
+  });
+}
+
+window.bdayClaim=function(){
+  if(bdayClaimed) return;
+  document.getElementById('bdayClaimBtn').disabled=true;
+  document.getElementById('bdayClaimedNote').style.display='block';
+  bdayClaimed=true;
+  var year=new Date().getFullYear();
+  localStorage.setItem('mg_bday_claimed_year',String(year));
+  var dt=new Date().toLocaleDateString('pt-BR');
+  bdayHist.unshift({year:year,mp:BDAY_MP,tk:BDAY_TK,date:dt});
+  localStorage.setItem('mg_bday_hist',JSON.stringify(bdayHist));
+  renderBdayHist();
+  bdayConfetti();
+  showToast('🎂 Presente resgatado! +'+BDAY_MP+' MP e +'+BDAY_TK+' Tickets!');
+};
+
+function bdayConfetti(){
+  var c=document.createElement('canvas');
+  c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999;';
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  document.body.appendChild(c);
+  var cx=c.getContext('2d');
+  var cols=['#ff2d7a','#ffc200','#9f3fff','#00e87a','#00b8e6','#ff6a00','#fff'];
+  var ps=Array.from({length:140},function(){return{x:Math.random()*c.width,y:-12,w:4+Math.random()*8,h:4+Math.random()*8,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*8,vy:1.5+Math.random()*5,r:Math.random()*360,vr:(Math.random()-.5)*14,a:1};});
+  var f=0;
+  (function draw(){
+    cx.clearRect(0,0,c.width,c.height);var alive=false;
+    ps.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=.05;if(f>55)p.a-=.015;if(p.a>0)alive=true;
+      cx.save();cx.globalAlpha=Math.max(0,p.a);cx.translate(p.x,p.y);cx.rotate(p.r*Math.PI/180);cx.fillStyle=p.col;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();});
+    f++;if(alive)requestAnimationFrame(draw);else c.remove();
+  })();
+}
+})();
+
+/* ══════════════════════════════════════════════════
+   ABA CÂMBIO
+══════════════════════════════════════════════════ */
+(function(){
+var cambioInitDone=false, cambioHist=[];
+var TAXA=0.05;
+var CAMBIO_ITEMS=[
+  {id:1,type:'ct-ticket',icon:'🎟️',name:'Pacote de Tickets',cat:'MARSTICKETS',from:'200 MP',fromVal:200,to:'+5 Tickets',toVal:5,color:'#00e87a',badge:null},
+  {id:2,type:'ct-ticket',icon:'🎟️',name:'Tickets em Dobro',cat:'MARSTICKETS',from:'350 MP',fromVal:350,to:'+10 Tickets',toVal:10,color:'#00e87a',badge:'🔥 HOT'},
+  {id:3,type:'ct-xp',icon:'🧠',name:'Boost de XP Planeta',cat:'XP DO PLANETA',from:'100 MP',fromVal:100,to:'+120 XP',toVal:120,color:'#00b8e6',badge:'⚡ DIÁRIO'},
+  {id:4,type:'ct-game',icon:'🎮',name:'Giro Grátis na Roda',cat:'BÔNUS ESPECIAL',from:'500 MP',fromVal:500,to:'1 Giro Grátis',toVal:1,color:'#9f3fff',badge:null},
+  {id:5,type:'ct-ticket',icon:'🎫',name:'Mega Pacote',cat:'MARSTICKETS',from:'800 MP',fromVal:800,to:'+25 Tickets',toVal:25,color:'#00e87a',badge:null},
+  {id:6,type:'ct-xp',icon:'⚡',name:'Turbo XP',cat:'XP DO PLANETA',from:'250 MP',fromVal:250,to:'+350 XP',toVal:350,color:'#00b8e6',badge:null}
+];
+
+window.cambioInit=function(){
+  if(cambioInitDone) return;
+  cambioInitDone=true;
+  cambioHist=JSON.parse(localStorage.getItem('mg_cambio_hist')||'[]');
+  renderCambio();
+  renderCambioHist();
+};
+
+function renderCambio(){
+  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
+  var grid=document.getElementById('cambioGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  CAMBIO_ITEMS.forEach(function(item){
+    var canAfford=mpAtual>=item.fromVal;
+    var card=document.createElement('div');card.className='cambio-card '+item.type;
+    card.innerHTML='<div class="cambio-card-top"><div class="cambio-icon">'+item.icon+'</div><div><div class="cambio-name">'+item.name+'</div><div class="cambio-cat">'+item.cat+'</div></div></div>'+
+      (item.badge?'<div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)">'+item.badge+'</div>':'')+
+      '<div class="cambio-rate"><div class="cambio-rate-side from"><div class="cambio-rate-val">'+item.from+'</div><div class="cambio-rate-lbl">VOCÊ PAGA</div></div><div style="padding:0 6px;font-size:12px;color:#3d4560;display:flex;align-items:center">→</div><div class="cambio-rate-side to"><div class="cambio-rate-val">'+item.to+'</div><div class="cambio-rate-lbl">VOCÊ RECEBE</div></div></div>'+
+      '<button class="cambio-btn" '+(canAfford?'onclick="cambioExecutar('+item.id+')"':'disabled')+'>'+
+      (canAfford?'FAZER CÂMBIO':'SEM MP SUFICIENTE')+'</button>';
+    grid.appendChild(card);
+  });
+}
+
+window.cambioExecutar=function(id){
+  var item=CAMBIO_ITEMS.find(function(i){return i.id===id;});
+  if(!item) return;
+  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
+  if(mpAtual<item.fromVal){showToast('⚠️ Marspoints insuficientes!');return;}
+  var novoMp=mpAtual-item.fromVal;
+  localStorage.setItem('mg_mp_local',String(novoMp));
+  var now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  cambioHist.unshift({name:item.icon+' '+item.name,meta:now+' · Taxa: 5%',mp:'-'+item.from,color:item.color});
+  localStorage.setItem('mg_cambio_hist',JSON.stringify(cambioHist.slice(0,20)));
+  renderCambio(); renderCambioHist();
+  showToast('✅ Câmbio realizado! '+item.to+' creditados.');
+};
+
+function renderCambioHist(){
+  var card=document.getElementById('cambioHistCard');
+  if(!card) return;
+  if(!cambioHist.length){card.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhum câmbio realizado ainda.</div>';return;}
+  card.innerHTML='';
+  cambioHist.slice(0,8).forEach(function(h){
+    var row=document.createElement('div');row.className='cambio-hist-row';
+    row.innerHTML='<div class="cambio-hist-dot" style="background:'+h.color+';box-shadow:0 0 5px '+h.color+'40"></div><div style="flex:1"><div class="cambio-hist-name">'+h.name+'</div><div class="cambio-hist-meta">'+h.meta+'</div></div><div class="cambio-hist-mp">'+h.mp+'</div>';
+    card.appendChild(row);
+  });
+}
+})();
+
+/* ══════════════════════════════════════════════════
+   ABA LOJA MP
+══════════════════════════════════════════════════ */
+(function(){
+var lojaInitDone=false, lojaPurchHist=[];
+var LOJA_PKGS=[
+  {id:'starter',cls:'starter',badge:null,icon:'🌱',name:'STARTER',mp:100,mpColor:'#4a90d0',mpColor2:'#6ab0f0',bonus:[],price:'R$ 4,90'},
+  {id:'explorer',cls:'explorer',badge:null,icon:'🚀',name:'EXPLORER',mp:500,mpColor:'#ffc200',mpColor2:'#ff6a00',bonus:[{type:'tkt',icon:'🎟️',label:'+3 Tickets'}],price:'R$ 14,90'},
+  {id:'commander',cls:'commander',badge:'pop',icon:'⚡',name:'COMMANDER',mp:1500,mpColor:'#9f3fff',mpColor2:'#c060ff',bonus:[{type:'tkt',icon:'🎟️',label:'+10 Tickets'},{type:'xp',icon:'🧠',label:'+200 XP'}],price:'R$ 34,90'},
+  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LEGEND',mp:5000,mpColor:'#ff6a00',mpColor2:'#ff2d7a',bonus:[{type:'tkt',icon:'🎟️',label:'+30 Tickets'},{type:'xp',icon:'🧠',label:'+500 XP'},{type:'spin',icon:'🎰',label:'1 Giro Grátis'}],price:'R$ 89,90'}
+];
+
+window.lojaInit=function(){
+  if(lojaInitDone) return;
+  lojaInitDone=true;
+  lojaPurchHist=JSON.parse(localStorage.getItem('mg_loja_hist')||'[]');
+  renderLojaPkgs();
+  renderLojaHist();
+};
+
+function renderLojaPkgs(){
+  var grid=document.getElementById('lojaPkgGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  LOJA_PKGS.forEach(function(pkg){
+    var bonusHTML=pkg.bonus.map(function(b){return'<div class="loja-pkg-bi '+b.type+'">'+b.icon+' '+b.label+'</div>';}).join('');
+    var card=document.createElement('div');card.className='loja-pkg '+pkg.cls;
+    card.innerHTML=(pkg.badge?'<div class="loja-pkg-badge '+(pkg.badge==='pop'?'pop':'hot')+'">'+(pkg.badge==='pop'?'✦ POPULAR':'🔥 HOT')+'</div>':'')+
+      '<div class="loja-pkg-icon">'+pkg.icon+'</div>'+
+      '<div class="loja-pkg-name">'+pkg.name+'</div>'+
+      '<div class="loja-pkg-mp" style="background:linear-gradient(135deg,'+pkg.mpColor+','+pkg.mpColor2+');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+pkg.mp.toLocaleString()+'</div>'+
+      '<div class="loja-pkg-mplbl">MARSPOINTS</div>'+
+      (pkg.bonus.length?'<div class="loja-pkg-bonus">'+bonusHTML+'</div>':'<div style="height:8px"></div>')+
+      '<div class="loja-pkg-divider"></div>'+
+      '<div class="loja-pkg-price">'+pkg.price+'</div>'+
+      '<div class="loja-pkg-pricesub">PAGAMENTO ÚNICO</div>'+
+      '<button class="loja-pkg-btn" onclick="lojaComprar(\''+pkg.id+'\')">COMPRAR AGORA</button>';
+    grid.appendChild(card);
+  });
+}
+
+window.lojaComprar=function(pkgId){
+  var pkg=LOJA_PKGS.find(function(p){return p.id===pkgId;});
+  if(!pkg) return;
+  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
+  localStorage.setItem('mg_mp_local',String(mpAtual+pkg.mp));
+  var now=new Date();
+  lojaPurchHist.unshift({icon:pkg.icon,name:'Pacote '+pkg.name,date:now.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),mp:pkg.mp,color:pkg.mpColor});
+  localStorage.setItem('mg_loja_hist',JSON.stringify(lojaPurchHist.slice(0,20)));
+  renderLojaHist();
+  lojaConfetti(pkg.mpColor);
+  showToast('🎉 +'+pkg.mp.toLocaleString()+' Marspoints adicionados!');
+};
+
+function renderLojaHist(){
+  var list=document.getElementById('lojaHistList');
+  var cnt=document.getElementById('lojaHistCount');
+  if(!list) return;
+  if(cnt) cnt.textContent=lojaPurchHist.length+' compra'+(lojaPurchHist.length!==1?'s':'');
+  if(!lojaPurchHist.length){list.innerHTML='<div style="padding:18px;text-align:center;font-size:12px;color:#3d4560">Nenhuma compra ainda.</div>';return;}
+  list.innerHTML='';
+  lojaPurchHist.slice(0,8).forEach(function(h){
+    var row=document.createElement('div');row.className='loja-hist-row';
+    row.innerHTML='<div class="loja-hist-dot" style="background:'+h.color+';box-shadow:0 0 5px '+h.color+'"></div><div style="flex:1"><div class="loja-hist-pkg">'+h.icon+' '+h.name+'</div><div class="loja-hist-date">'+h.date+'</div></div><div class="loja-hist-amt">+'+h.mp.toLocaleString()+' MP</div>';
+    list.appendChild(row);
+  });
+}
+
+function lojaConfetti(col){
+  var c=document.createElement('canvas');
+  c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999;';
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  document.body.appendChild(c);
+  var cx=c.getContext('2d');
+  var cols=[col,'#ffc200','#ff6a00','#00e87a','#9f3fff','#00ffe7','#fff'];
+  var ps=Array.from({length:120},function(){return{x:Math.random()*c.width,y:-12,w:4+Math.random()*8,h:4+Math.random()*8,col:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*8,vy:2+Math.random()*5,r:Math.random()*360,vr:(Math.random()-.5)*14,a:1};});
+  var f=0;(function draw(){
+    cx.clearRect(0,0,c.width,c.height);var alive=false;
+    ps.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=.05;if(f>50)p.a-=.018;if(p.a>0)alive=true;
+      cx.save();cx.globalAlpha=Math.max(0,p.a);cx.translate(p.x,p.y);cx.rotate(p.r*Math.PI/180);cx.fillStyle=p.col;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();});
+    f++;if(alive)requestAnimationFrame(draw);else c.remove();
+  })();
+}
+})();
+
+/* ══════════════════════════════════════════════════
+   ABA PLANETA
+══════════════════════════════════════════════════ */
+(function(){
+var planetaInitDone=false;
+var planetaTotalXP=0, planetaEraIdx=0, planetaJogos=0, planetaAtv=0;
+var planetaLog=[], planetaRotX=0, planetaRotY=0, planetaNoiseT=0;
+var planetaCtx=null, planetaWCtx=null, planetaStageW=0, planetaStageH=0;
+var planetaRafRunning=false;
+var planetaWeatherTimer=0, planetaWeatherMode='CLEAR';
+var planetaRainDrops=[], planetaSnow=[], planetaSand=[], planetaMeteors=[];
+
+var PLANETA_ERAS=[
+  {n:'I',label:'PROTO',icon:'🌑',xp:0,color:'#ffc200',desc:'MUNDO PRIMORDIAL',
+   weather:['CLEAR','METEORS']},
+  {n:'II',label:'VULCÂNICO',icon:'🌋',xp:200,color:'#ff6a00',desc:'ERA VULCÂNICA',
+   weather:['CLEAR','STORM']},
+  {n:'III',label:'OCEÂNICO',icon:'🌊',xp:600,color:'#00b8e6',desc:'OCEANOS SURGEM',
+   weather:['CLEAR','RAIN','STORM']},
+  {n:'IV',label:'BIÓTICO',icon:'🌿',xp:1400,color:'#00e87a',desc:'VIDA FLORESCE',
+   weather:['CLEAR','RAIN','SNOW']},
+  {n:'V',label:'GALÁCTICO',icon:'🌟',xp:3000,color:'#9f3fff',desc:'CIVILIZAÇÃO ESTELAR',
+   weather:['CLEAR','AURORA','METEORS']}
+];
+
+var PLANETA_MS=[
+  {ic:'🌱',nm:'GÊNESE',ds:'Planeta criado',xp:0},
+  {ic:'🔥',nm:'VULCÃO',ds:'Primeira erupção',xp:200},
+  {ic:'💧',nm:'OCEANO',ds:'Águas surgem',xp:600},
+  {ic:'🌿',nm:'VIDA',ds:'Flora detectada',xp:1400},
+  {ic:'🏙️',nm:'CIDADE',ds:'Civilização I',xp:2200},
+  {ic:'🌌',nm:'GALÁXIA',ds:'Era Galáctica',xp:3000}
+];
+
+window.planetaInit=function(){
+  if(planetaInitDone) return;
+  planetaInitDone=true;
+  planetaTotalXP=parseInt(localStorage.getItem('mg_planeta_xp')||'0');
+  planetaLog=JSON.parse(localStorage.getItem('mg_planeta_log')||'[]');
+  planetaJogos=parseInt(localStorage.getItem('mg_planeta_jogos')||'0');
+  planetaAtv=parseInt(localStorage.getItem('mg_planeta_atv')||'0');
+  // recalculate era
+  planetaEraIdx=0;
+  while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
+  setupPlanetaCanvases();
+  planetaUpdateUI();
+  planetaRenderLog();
+  if(!planetaRafRunning){planetaRafRunning=true;planetaLoop();}
+};
+
+function setupPlanetaCanvases(){
+  var stage=document.querySelector('.planeta-stage');
+  if(!stage) return;
+  var w=Math.min(stage.offsetWidth||360,560);
+  var h=Math.round(w*0.56);
+  planetaStageW=w; planetaStageH=h;
+  var bg=document.getElementById('planetaBg');
+  if(bg){bg.width=w;bg.height=h;drawSpaceBg(bg.getContext('2d'),w,h);}
+  var wc=document.getElementById('planetaWeather');
+  if(wc){wc.width=w;wc.height=h;planetaWCtx=wc.getContext('2d');}
+  var pc=document.getElementById('planetaCanvas');
+  if(pc){pc.width=w;pc.height=h;planetaCtx=pc.getContext('2d');}
+}
+
+function drawSpaceBg(ctx,w,h){
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+  for(var i=0;i<140;i++){
+    var x=Math.random()*w,y=Math.random()*h,r=Math.random()*1.2;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,'+(0.2+Math.random()*0.6)+')';ctx.fill();
+  }
+}
+
+function planetaDrawPlanet(){
+  if(!planetaCtx) return;
+  var ctx=planetaCtx,CX=planetaStageW/2,CY=planetaStageH/2,R=Math.min(planetaStageW,planetaStageH)*0.3;
+  ctx.clearRect(0,0,planetaStageW,planetaStageH);
+  var e=PLANETA_ERAS[planetaEraIdx];
+  var cols={
+    'I':['#3a1800','#8B4513','#cd6820'],
+    'II':['#1a0000','#8B0000','#e8421a'],
+    'III':['#001020','#003080','#0066cc'],
+    'IV':['#001808','#004020','#00a050'],
+    'V':['#080020','#3010a0','#9f3fff']
+  };
+  var ec=cols[e.n]||cols['I'];
+  var grd=ctx.createRadialGradient(CX-R*.3,CY-R*.3,R*.05,CX,CY,R);
+  grd.addColorStop(0,ec[2]);grd.addColorStop(0.4,ec[1]);grd.addColorStop(1,ec[0]);
+  ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+  // surface texture
+  ctx.save();ctx.clip();
+  for(var i=0;i<6;i++){
+    var bx=CX+(Math.cos(planetaNoiseT+i*1.1)*R*.5),by=CY+(Math.sin(planetaNoiseT*.7+i*.9)*R*.4);
+    var bg2=ctx.createRadialGradient(bx,by,0,bx,by,R*.35);
+    bg2.addColorStop(0,'rgba(0,0,0,.18)');bg2.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();ctx.arc(bx,by,R*.35,0,Math.PI*2);ctx.fillStyle=bg2;ctx.fill();
+  }
+  ctx.restore();
+  // shadow
+  var sh=ctx.createRadialGradient(CX+R*.3,CY+R*.3,R*.1,CX,CY,R);
+  sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(0.7,'rgba(0,0,0,.4)');sh.addColorStop(1,'rgba(0,0,0,.8)');
+  ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=sh;ctx.fill();
+  // glow
+  var glw=ctx.createRadialGradient(CX,CY,R*.9,CX,CY,R*1.3);
+  glw.addColorStop(0,e.color+'55');glw.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();ctx.arc(CX,CY,R*1.3,0,Math.PI*2);ctx.fillStyle=glw;ctx.fill();
+}
+
+function planetaUpdateWeather(){
+  if(!planetaWCtx) return;
+  var ctx=planetaWCtx,w=planetaStageW,h=planetaStageH;
+  ctx.clearRect(0,0,w,h);
+  planetaWeatherTimer--;
+  if(planetaWeatherTimer<=0){
+    planetaWeatherTimer=180+Math.floor(Math.random()*240);
+    var modes=PLANETA_ERAS[planetaEraIdx].weather;
+    planetaWeatherMode=modes[Math.floor(Math.random()*modes.length)];
+    if(planetaWeatherMode==='RAIN'&&!planetaRainDrops.length) for(var i=0;i<60;i++) planetaRainDrops.push(mkRainDrop(w,h));
+    if(planetaWeatherMode==='SNOW'&&!planetaSnow.length) for(var j=0;j<40;j++) planetaSnow.push(mkSnow(w,h));
+    if(planetaWeatherMode==='METEORS'&&!planetaMeteors.length) for(var k=0;k<8;k++) planetaMeteors.push(mkMeteor(w,h));
+  }
+  if(planetaWeatherMode==='RAIN'){
+    ctx.strokeStyle='rgba(100,160,255,.4)';ctx.lineWidth=1;
+    planetaRainDrops.forEach(function(d){d.x+=d.vx;d.y+=d.vy;if(d.y>h)Object.assign(d,mkRainDrop(w,h));
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x+d.vx*2,d.y+d.vy*2);ctx.stroke();});
+  }
+  if(planetaWeatherMode==='SNOW'){
+    ctx.fillStyle='rgba(220,235,255,.55)';
+    planetaSnow.forEach(function(s){s.y+=s.vy;s.x+=Math.sin(planetaNoiseT*2+s.x)*.3;if(s.y>h)Object.assign(s,mkSnow(w,h));
+      ctx.beginPath();ctx.arc(s.x,s.y,1.2,0,Math.PI*2);ctx.fill();});
+  }
+  if(planetaWeatherMode==='METEORS'){
+    planetaMeteors.forEach(function(m){m.x+=m.vx;m.y+=m.vy;if(m.x>w||m.y>h)Object.assign(m,mkMeteor(w,h));
+      ctx.save();ctx.strokeStyle='rgba(255,200,100,'+m.a+')';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*8,m.y-m.vy*8);ctx.stroke();
+      ctx.beginPath();ctx.arc(m.x,m.y,1.5,0,Math.PI*2);ctx.fillStyle='rgba(255,240,200,'+m.a+')';ctx.fill();ctx.restore();});
+  }
+  if(planetaWeatherMode==='AURORA'){
+    var ag=ctx.createLinearGradient(0,0,0,h*.5);
+    ag.addColorStop(0,'rgba(0,255,150,.07)');ag.addColorStop(.4,'rgba(0,200,255,.05)');ag.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=ag;ctx.fillRect(0,0,w,h);
+  }
+}
+function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1,vy:6+Math.random()*4};}
+function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.6+Math.random()*.5};}
+function mkMeteor(w,h){return{x:-20+Math.random()*w*.4,y:Math.random()*h*.3,vx:4+Math.random()*7,vy:2+Math.random()*4,a:.5+Math.random()*.5};}
+
+function planetaLoop(){
+  planetaNoiseT+=0.008;
+  planetaDrawPlanet();
+  planetaUpdateWeather();
+  var lon=((planetaNoiseT*20)%360).toFixed(1);
+  var el=document.getElementById('planetaCoords');
+  if(el) el.innerHTML='LAT 14.2°\nLON '+lon+'°';
+  requestAnimationFrame(planetaLoop);
+}
+
+function planetaUpdateUI(){
+  var e=PLANETA_ERAS[planetaEraIdx],ne=PLANETA_ERAS[planetaEraIdx+1];
+  var eXP=planetaTotalXP-e.xp;
+  var eRange=(ne?ne.xp:e.xp+500)-e.xp;
+  var pct=Math.min(100,(eXP/eRange)*100);
+  var fill=document.getElementById('planetaXpFill');
+  if(fill){fill.style.width=pct+'%';fill.style.background=e.color;}
+  var xpLbl=document.getElementById('planetaXpLbl');
+  if(xpLbl) xpLbl.textContent=eXP+' / '+eRange+' XP';
+  var desc=document.getElementById('planetaDesc');
+  if(desc){desc.textContent=e.desc;desc.style.color=e.color;}
+  var badge=document.getElementById('planetaEraBadge');
+  if(badge){badge.textContent='ERA '+e.n+' · '+e.label;badge.style.color=e.color;}
+  var sxp=document.getElementById('planetaSXP');if(sxp) sxp.textContent=planetaTotalXP.toLocaleString();
+  var sera=document.getElementById('planetaSEra');if(sera) sera.textContent='I II III IV V'.split(' ')[planetaEraIdx];
+  var sj=document.getElementById('planetaSJogos');if(sj) sj.textContent=planetaJogos;
+  var sa=document.getElementById('planetaSAtv');if(sa) sa.textContent=planetaAtv;
+  planetaBuildEvo(); planetaBuildMS();
+}
+
+function planetaBuildEvo(){
+  var row=document.getElementById('planetaEvoRow');if(!row) return;
+  row.innerHTML='';
+  PLANETA_ERAS.forEach(function(e,i){
+    var done=i<planetaEraIdx,active=i===planetaEraIdx,locked=i>planetaEraIdx;
+    var node=document.createElement('div');node.className='planeta-evo-node';
+    node.innerHTML='<div class="planeta-evo-circle '+(done?'done':active?'active':'locked')+'">'+e.icon+'</div>'+
+      '<div class="planeta-evo-lbl '+(active?'active':'')+'">'+e.label+'</div>';
+    row.appendChild(node);
+  });
+}
+
+function planetaBuildMS(){
+  var g=document.getElementById('planetaMsGrid');if(!g) return;
+  g.innerHTML='';
+  PLANETA_MS.forEach(function(m){
+    var u=planetaTotalXP>=m.xp;
+    var d=document.createElement('div');d.className='planeta-ms-card '+(u?'unlocked':'locked');
+    d.innerHTML='<div class="planeta-ms-ic">'+m.ic+'</div><div class="planeta-ms-nm">'+m.nm+'</div><div class="planeta-ms-ds">'+m.ds+'</div>'+(!u?'<div class="planeta-ms-lk">🔒</div>':'');
+    g.appendChild(d);
+  });
+}
+
+function planetaRenderLog(){
+  var list=document.getElementById('planetaActList');if(!list) return;
+  list.innerHTML='';
+  if(!planetaLog.length){list.innerHTML='<div style="padding:14px;text-align:center;font-size:12px;color:#3a4060">Nenhuma atividade ainda. Use os botões acima!</div>';return;}
+  planetaLog.slice(0,6).forEach(function(l){
+    var d=document.createElement('div');d.className='planeta-act-item';
+    d.innerHTML='<div class="planeta-act-ic" style="background:'+l.bg+'">'+l.icon+'</div>'+
+      '<div style="flex:1"><div class="planeta-act-t">'+l.label+'</div><div class="planeta-act-s">'+l.t+'</div></div>'+
+      '<div class="planeta-act-xp">+'+l.xp+' XP</div>';
+    list.appendChild(d);
+  });
+}
+
+window.planetaAddXP=function(xp,label,icon,bg,color){
+  planetaTotalXP+=xp;planetaAtv++;
+  if(label.includes('jogo')) planetaJogos++;
+  localStorage.setItem('mg_planeta_xp',String(planetaTotalXP));
+  localStorage.setItem('mg_planeta_jogos',String(planetaJogos));
+  localStorage.setItem('mg_planeta_atv',String(planetaAtv));
+  var prevEra=planetaEraIdx;
+  while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
+  if(planetaEraIdx!==prevEra){
+    var e=PLANETA_ERAS[planetaEraIdx];
+    var el=document.getElementById('planetaLuMain');if(el) el.textContent='ERA '+e.n+' · '+e.label;
+    var sl=document.getElementById('planetaLuSub');if(sl) sl.textContent=e.desc;
+    var ov=document.getElementById('planetaLuOverlay');
+    if(ov){ov.classList.remove('show');void ov.offsetWidth;ov.classList.add('show');setTimeout(function(){ov.classList.remove('show');},3100);}
+  }
+  var t=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  planetaLog.unshift({label:label,xp:xp,icon:icon,bg:bg,color:color,t:t});
+  if(planetaLog.length>12) planetaLog.pop();
+  localStorage.setItem('mg_planeta_log',JSON.stringify(planetaLog));
+  planetaUpdateUI();planetaRenderLog();
+  showToast('🪐 +'+xp+' XP para o seu planeta!');
+};
 })();
 
 </script>
