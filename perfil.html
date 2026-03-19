@@ -5346,11 +5346,85 @@ function renderCambioGrid(){
 
 window.cambioExecutar=async function(id){
   var item=_cambioItems.find(function(i){return i.id===id;});
-  if(!item || !userSession) return;
+  if(!item) return;
+  if(!userSession){showToast('⚠️ Faça login para fazer câmbio!');return;}
   if(_cambioMPAtual<item.custo){showToast('⚠️ Marspoints insuficientes!');return;}
-  var email=userSession.user.email;
+
   var custoFinal=Math.round(item.custo*(1+_cambioTaxa));
-  if(_cambioMPAtual<custoFinal){showToast('⚠️ Saldo insuficiente (inclui taxa '+Math.round(_cambioTaxa*100)+'%)');return;}
+  if(_cambioMPAtual<custoFinal){
+    showToast('⚠️ Saldo insuficiente (inclui taxa '+Math.round(_cambioTaxa*100)+'%)');return;
+  }
+
+  // Câmbio de XP: debita direto (sem PIX), é gratuito em dinheiro
+  if(item.tipo==='ct-xp'){
+    await _cambioExecutarDireto(item,custoFinal);
+    return;
+  }
+
+  // Câmbio com taxa em R$: calcula valor em reais (0.01 por MP como referência mínima)
+  // Taxa: converte MP em R$ — R$0,01 por MP de taxa (mínimo R$0,50)
+  var taxaReais=Math.max(0.50, Math.round(item.custo*_cambioTaxa*0.01*100)/100);
+
+  // Se a taxa for zero ou o tipo não paga em dinheiro, executa direto
+  if(_cambioTaxa===0 || taxaReais<0.50){
+    await _cambioExecutarDireto(item,custoFinal);
+    return;
+  }
+
+  // Gera PIX para cobrar a taxa da transação
+  var sessRes=await sb.auth.getSession();
+  var session=sessRes&&sessRes.data&&sessRes.data.session;
+  if(!session){showToast('⚠️ Sessão expirada');return;}
+
+  var itensPix=[{
+    id:'cambio_'+item.id,
+    nome:'Taxa de câmbio: '+item.nome+' ('+Math.round(_cambioTaxa*100)+'%)',
+    preco:taxaReais,
+    imagem:'',
+    tipo:'cambio',
+    cambio_id:item.id,
+    mp_custo:custoFinal,
+    recompensa:item.recompensa,
+    recompensa_tipo:item.tipo,
+    recompensa_val:parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1
+  }];
+  sessionStorage.setItem('mg_itens_pendentes',JSON.stringify(itensPix));
+  sessionStorage.setItem('mg_cambio_pendente',JSON.stringify({
+    item_id:item.id,item_nome:item.nome,item_tipo:item.tipo,
+    custo_mp:custoFinal,recompensa:item.recompensa,
+    recompensa_val:parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1,
+    taxa_pct:Math.round(_cambioTaxa*100)
+  }));
+
+  showToast('⚡ Gerando Pix para taxa...');
+
+  try{
+    var response=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({itens:itensPix})
+    });
+    var data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
+
+    sessionStorage.setItem('mg_pix_data',JSON.stringify(data));
+    sessionStorage.setItem('mg_external_ref',data.reference||'');
+    sessionStorage.setItem('mg_pedido_id',data.pedido_id||'');
+    sessionStorage.setItem('mg_user_email',session.user.email||'');
+    sessionStorage.setItem('mg_user_id',session.user.id||'');
+    sessionStorage.setItem('mg_access_token',session.access_token||'');
+    sessionStorage.setItem('mg_refresh_token',session.refresh_token||'');
+
+    window.location.href='pix-checkout.html';
+  }catch(error){
+    console.error('[cambioExecutar]',error);
+    showToast('❌ '+(error.message||'Erro ao gerar Pix'));
+  }
+};
+
+// Câmbio direto sem PIX (XP, ou taxa=0)
+async function _cambioExecutarDireto(item,custoFinal){
+  var email=userSession.user.email;
   var novoMP=_cambioMPAtual-custoFinal;
   try{
     // 1. Debita MP
@@ -5360,7 +5434,7 @@ window.cambioExecutar=async function(id){
     await sb.from('marspoints').upsert({user_email:email,pontos:novoMP,historico:hist.slice(0,50)},{onConflict:'user_email'});
     _cambioMPAtual=novoMP;
 
-    // 2. Credita recompensa conforme tipo
+    // 2. Credita recompensa
     var toValNum=parseInt((item.recompensa.match(/\d+/)||['1'])[0])||1;
     if(item.tipo==='ct-ticket'){
       var tktAtual=await sb.from('tickets').select('quantidade,total_acumulado').eq('user_email',email).maybeSingle();
@@ -5368,9 +5442,8 @@ window.cambioExecutar=async function(id){
       var novoTotal=((tktAtual.data&&tktAtual.data.total_acumulado)||0)+toValNum;
       await sb.from('tickets').upsert({user_email:email,user_id:userSession.user.id,quantidade:novoTkt,total_acumulado:novoTotal,ultima_renovacao:(tktAtual.data&&tktAtual.data.ultima_renovacao)||new Date().toISOString()},{onConflict:'user_email'});
       _cambioTktAtual=novoTkt;
-      document.getElementById('statTickets').textContent=novoTkt;
+      var stEl=document.getElementById('statTickets');if(stEl)stEl.textContent=novoTkt;
     }else if(item.tipo==='ct-xp'){
-      // XP vai pro planeta
       var plAtual=await sb.from('planetas').select('xp,atividades,log').eq('user_email',email).maybeSingle();
       var xpAtual=(plAtual.data&&plAtual.data.xp)||0;
       var atv=(plAtual.data&&plAtual.data.atividades)||0;
@@ -5379,11 +5452,10 @@ window.cambioExecutar=async function(id){
       pLog.unshift({label:'Câmbio de XP: '+item.nome,xp:toValNum,icon:'⚡',t:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
       await sb.from('planetas').upsert({user_email:email,xp:novoXP,atividades:atv+1,log:pLog.slice(0,20),updated_at:new Date().toISOString()},{onConflict:'user_email'});
       _cambioXPAtual=novoXP;
-      // Atualiza planeta na aba se estiver carregada
       if(typeof planetaAddXPSilent==='function') planetaAddXPSilent(toValNum,'Câmbio de XP: '+item.nome,'⚡','rgba(0,255,231,.12)','#00ffe7');
     }
 
-    // 3. Salva no histórico de câmbios
+    // 3. Histórico
     try{
       await sb.from('cambio_historico').insert({
         user_email:email,item_nome:item.nome,tipo:item.tipo,
@@ -5392,8 +5464,7 @@ window.cambioExecutar=async function(id){
       });
     }catch(e2){}
 
-    // 4. Recarrega UI
-    var now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    // 4. Atualiza UI
     var mpEl=document.getElementById('cambioSaldoMP');if(mpEl)mpEl.textContent=novoMP.toLocaleString('pt-BR');
     var tktEl=document.getElementById('cambioSaldoTickets');if(tktEl&&item.tipo==='ct-ticket')tktEl.textContent=_cambioTktAtual;
     var xpEl=document.getElementById('cambioSaldoXP');if(xpEl&&item.tipo==='ct-xp')xpEl.textContent=_cambioXPAtual.toLocaleString('pt-BR');
@@ -5401,10 +5472,10 @@ window.cambioExecutar=async function(id){
     cambioRenderHistFromDB();
     showToast('✅ Câmbio realizado! '+item.recompensa+' creditados.');
   }catch(e){
-    console.error('[Câmbio]',e);
-    showToast('❌ Erro ao realizar câmbio: '+(e.message||'tente novamente'),true);
+    console.error('[cambio direto]',e);
+    showToast('❌ Erro: '+(e.message||'tente novamente'));
   }
-};
+}
 
 async function cambioRenderHistFromDB(){
   if(!userSession) return;
@@ -5444,10 +5515,10 @@ function renderCambioHistData(lista){
 (function(){
 var lojaInitDone=false, lojaPurchHist=[];
 var LOJA_PKGS=[
-  {id:'starter',cls:'starter',badge:null,icon:'🌱',name:'STARTER',mp:100,mpColor:'#4a90d0',mpColor2:'#6ab0f0',bonus:[],price:'R$ 4,90'},
-  {id:'explorer',cls:'explorer',badge:null,icon:'🚀',name:'EXPLORER',mp:500,mpColor:'#ffc200',mpColor2:'#ff6a00',bonus:[{type:'tkt',icon:'🎟️',label:'+3 Tickets'}],price:'R$ 14,90'},
-  {id:'commander',cls:'commander',badge:'pop',icon:'⚡',name:'COMMANDER',mp:1500,mpColor:'#9f3fff',mpColor2:'#c060ff',bonus:[{type:'tkt',icon:'🎟️',label:'+10 Tickets'},{type:'xp',icon:'🧠',label:'+200 XP'}],price:'R$ 34,90'},
-  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LEGEND',mp:5000,mpColor:'#ff6a00',mpColor2:'#ff2d7a',bonus:[{type:'tkt',icon:'🎟️',label:'+30 Tickets'},{type:'xp',icon:'🧠',label:'+500 XP'},{type:'spin',icon:'🎰',label:'1 Giro Grátis'}],price:'R$ 89,90'}
+  {id:'starter',cls:'starter',badge:null,icon:'🌱',name:'STARTER',mp:100,priceNum:4.90,mpColor:'#4a90d0',mpColor2:'#6ab0f0',bonus:[],price:'R$ 4,90'},
+  {id:'explorer',cls:'explorer',badge:null,icon:'🚀',name:'EXPLORER',mp:500,priceNum:14.90,mpColor:'#ffc200',mpColor2:'#ff6a00',bonus:[{type:'tkt',icon:'🎟️',label:'+3 Tickets'}],price:'R$ 14,90'},
+  {id:'commander',cls:'commander',badge:'pop',icon:'⚡',name:'COMMANDER',mp:1500,priceNum:34.90,mpColor:'#9f3fff',mpColor2:'#c060ff',bonus:[{type:'tkt',icon:'🎟️',label:'+10 Tickets'},{type:'xp',icon:'🧠',label:'+200 XP'}],price:'R$ 34,90'},
+  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LEGEND',mp:5000,priceNum:89.90,mpColor:'#ff6a00',mpColor2:'#ff2d7a',bonus:[{type:'tkt',icon:'🎟️',label:'+30 Tickets'},{type:'xp',icon:'🧠',label:'+500 XP'},{type:'spin',icon:'🎰',label:'1 Giro Grátis'}],price:'R$ 89,90'}
 ];
 
 window.lojaInit=function(){
@@ -5479,22 +5550,60 @@ function renderLojaPkgs(){
   });
 }
 
-window.lojaComprar=function(pkgId){
+window.lojaComprar=async function(pkgId){
   var pkg=LOJA_PKGS.find(function(p){return p.id===pkgId;});
   if(!pkg) return;
-  var mpAtual=parseInt(localStorage.getItem('mg_mp_local')||'0')||0;
-  localStorage.setItem('mg_mp_local',String(mpAtual+pkg.mp));
-  var now=new Date();
-  lojaPurchHist.unshift({icon:pkg.icon,name:'Pacote '+pkg.name,date:now.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),mp:pkg.mp,color:pkg.mpColor});
-  localStorage.setItem('mg_loja_hist',JSON.stringify(lojaPurchHist.slice(0,20)));
-  renderLojaHist();
-  lojaConfetti(pkg.mpColor);
-  showToast('🎉 +'+pkg.mp.toLocaleString()+' Marspoints adicionados!');
-  // Concede XP bônus do pacote ao planeta
-  var xpBonus=pkg.bonus.filter(function(b){return b.type==='xp';}).reduce(function(s,b){
-    var m=(b.label||'').match(/\d+/);return s+(m?parseInt(m[0]):0);},0);
-  if(xpBonus>0 && typeof planetaAddXPSilent==='function'){
-    planetaAddXPSilent(xpBonus,'Bônus XP pacote '+pkg.name,'🌟','rgba(185,242,255,.1)','#b9f2ff');
+
+  // Verifica sessão
+  var sessRes=await sb.auth.getSession();
+  var session=sessRes&&sessRes.data&&sessRes.data.session;
+  if(!session){showToast('⚠️ Faça login para comprar!');setTimeout(function(){window.location.href='perfil.html';},1000);return;}
+
+  // Monta item para o fluxo PIX (mesmo formato do checkout.html)
+  var itens=[{
+    id:'mp_'+pkg.id,
+    nome:'Pacote '+pkg.name+' — '+pkg.mp.toLocaleString('pt-BR')+' Marspoints',
+    preco:pkg.priceNum||pkg.mp/100,
+    imagem:'',
+    tipo:'marspoints',
+    mp:pkg.mp,
+    pkg_id:pkg.id,
+    bonus:pkg.bonus||[]
+  }];
+  sessionStorage.setItem('mg_itens_pendentes',JSON.stringify(itens));
+
+  // Mostra loading no botão
+  var btns=document.querySelectorAll('.loja-pkg-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  showToast('⚡ Gerando Pix...');
+
+  try{
+    var response=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({itens:itens})
+    });
+    var data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
+
+    // Salva dados para pix-checkout.html
+    sessionStorage.setItem('mg_pix_data',JSON.stringify(data));
+    sessionStorage.setItem('mg_external_ref',data.reference||'');
+    sessionStorage.setItem('mg_pedido_id',data.pedido_id||'');
+    sessionStorage.setItem('mg_user_email',session.user.email||'');
+    sessionStorage.setItem('mg_user_id',session.user.id||'');
+    sessionStorage.setItem('mg_access_token',session.access_token||'');
+    sessionStorage.setItem('mg_refresh_token',session.refresh_token||'');
+    // Marca que é compra de MP para pix-checkout saber o que creditar após confirmação
+    sessionStorage.setItem('mg_loja_pkg_id',pkg.id);
+    sessionStorage.setItem('mg_loja_pkg_mp',String(pkg.mp));
+    sessionStorage.setItem('mg_loja_pkg_bonus',JSON.stringify(pkg.bonus||[]));
+
+    window.location.href='pix-checkout.html';
+  }catch(error){
+    console.error('[lojaComprar]',error);
+    showToast('❌ '+(error.message||'Erro ao gerar Pix'));
+    btns.forEach(function(b){b.disabled=false;});
   }
 };
 

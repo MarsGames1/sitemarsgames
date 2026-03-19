@@ -280,24 +280,162 @@ function copiarPix() {
 }
 
 // ── REDIRECIONA PARA SUCESSO ──
-// Toda lógica de exibição de chave fica em sucesso.html
-// pix-checkout só detecta o pagamento e redireciona
-function irParaSucesso(ref) {
+// Após confirmação do PIX, credita benefícios (MP, tickets, XP) conforme o tipo
+async function irParaSucesso(ref) {
   clearInterval(timerInterval);
   confetti();
   localStorage.removeItem('mg_cart');
   localStorage.removeItem('mg_cart_saved');
   const refFinal = ref || reference || pedidoId || '';
 
-  // Pequena animação de sucesso antes de redirecionar
-  document.getElementById('pollMsg').textContent = 'Pagamento confirmado! Redirecionando...';
+  document.getElementById('pollMsg').textContent = 'Pagamento confirmado! Processando...';
   document.getElementById('pollMsg').style.color = '#00ff55';
   document.querySelector('.poll-dot').style.background = '#00ff55';
   document.querySelector('.poll-dot').style.animation = 'none';
 
+  // Detecta tipo da compra e credita benefícios
+  const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+  const tipo = itens[0]?.tipo || '';
+
+  try {
+    if (tipo === 'marspoints') {
+      // Compra de pacote MP — credita marspoints + bonus
+      await creditarPacoteMP();
+    } else if (tipo === 'cambio') {
+      // Taxa de câmbio paga — executa o câmbio
+      await executarCambioPosPagemento();
+    }
+  } catch(e) {
+    console.error('[irParaSucesso crédito]', e);
+  }
+
   setTimeout(() => {
-    window.location.href = 'sucesso.html?ref=' + encodeURIComponent(refFinal);
-  }, 1200);
+    // Se for loja/câmbio, volta para perfil ao invés de sucesso.html
+    if (tipo === 'marspoints' || tipo === 'cambio') {
+      window.location.href = 'perfil.html#loja-mp';
+    } else {
+      window.location.href = 'sucesso.html?ref=' + encodeURIComponent(refFinal);
+    }
+  }, 1800);
+}
+
+// Credita Marspoints após pagamento confirmado
+async function creditarPacoteMP() {
+  if (!userEmail) return;
+  const pkgId   = sessionStorage.getItem('mg_loja_pkg_id') || '';
+  const pkgMP   = parseInt(sessionStorage.getItem('mg_loja_pkg_mp') || '0');
+  const bonusRaw = sessionStorage.getItem('mg_loja_pkg_bonus') || '[]';
+  const bonus   = JSON.parse(bonusRaw);
+
+  const token = accessToken || SUPA_KEY;
+
+  // 1. Credita MP
+  const mpRes = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+  });
+  const mpRows = await mpRes.json();
+  const mpAtual = (mpRows && mpRows[0] && mpRows[0].pontos) || 0;
+  const hist = (mpRows && mpRows[0] && mpRows[0].historico) || [];
+  hist.unshift({ pontos: pkgMP, descricao: 'Compra pacote MP: ' + pkgId, data: new Date().toISOString(), tipo: 'compra_mp' });
+  await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
+    method: 'POST',
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify({ user_email: userEmail, pontos: mpAtual + pkgMP, historico: hist.slice(0, 50) })
+  });
+
+  // 2. Credita tickets bônus
+  const tktBonus = bonus.filter(b => b.type === 'tkt').reduce((s, b) => {
+    const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0);
+  }, 0);
+  if (tktBonus > 0) {
+    const tktRes = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    const tktRows = await tktRes.json();
+    const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade) || 0;
+    const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
+    await fetch(`${SUPA_URL}/rest/v1/tickets`, {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ user_email: userEmail, quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus, ultima_renovacao: new Date().toISOString() })
+    });
+    document.getElementById('pollMsg').textContent = `✅ +${pkgMP.toLocaleString('pt-BR')} MP + ${tktBonus} Tickets creditados!`;
+  } else {
+    document.getElementById('pollMsg').textContent = `✅ +${pkgMP.toLocaleString('pt-BR')} Marspoints creditados!`;
+  }
+
+  // 3. XP bônus ao planeta
+  const xpBonus = bonus.filter(b => b.type === 'xp').reduce((s, b) => {
+    const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0);
+  }, 0);
+  if (xpBonus > 0) {
+    const plRes = await fetch(`${SUPA_URL}/rest/v1/planetas?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    const plRows = await plRes.json();
+    const xpAtual = (plRows && plRows[0] && plRows[0].xp) || 0;
+    const pLog = (plRows && plRows[0] && plRows[0].log) || [];
+    pLog.unshift({ label: 'Bônus XP pacote '+pkgId, xp: xpBonus, icon: '🌟', t: new Date().toLocaleTimeString('pt-BR') });
+    await fetch(`${SUPA_URL}/rest/v1/planetas`, {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ user_email: userEmail, xp: xpAtual + xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() })
+    });
+  }
+
+  // Limpa sessão
+  sessionStorage.removeItem('mg_loja_pkg_id');
+  sessionStorage.removeItem('mg_loja_pkg_mp');
+  sessionStorage.removeItem('mg_loja_pkg_bonus');
+}
+
+// Executa o câmbio após pagamento da taxa
+async function executarCambioPosPagemento() {
+  if (!userEmail) return;
+  const cambioRaw = sessionStorage.getItem('mg_cambio_pendente');
+  if (!cambioRaw) return;
+  const cambio = JSON.parse(cambioRaw);
+  const token = accessToken || SUPA_KEY;
+
+  // 1. Debita MP
+  const mpRes = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+  });
+  const mpRows = await mpRes.json();
+  const mpAtual = (mpRows && mpRows[0] && mpRows[0].pontos) || 0;
+  const novoMP = Math.max(0, mpAtual - cambio.custo_mp);
+  const hist = (mpRows && mpRows[0] && mpRows[0].historico) || [];
+  hist.unshift({ pontos: -cambio.custo_mp, descricao: 'Câmbio: ' + cambio.item_nome, data: new Date().toISOString(), tipo: 'cambio' });
+  await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
+    method: 'POST',
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify({ user_email: userEmail, pontos: novoMP, historico: hist.slice(0, 50) })
+  });
+
+  // 2. Credita recompensa
+  if (cambio.recompensa_tipo === 'ct-ticket') {
+    const tktRes = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    const tktRows = await tktRes.json();
+    const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade) || 0;
+    const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
+    await fetch(`${SUPA_URL}/rest/v1/tickets`, {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ user_email: userEmail, quantidade: tktAtual + cambio.recompensa_val, total_acumulado: tktTotal + cambio.recompensa_val, ultima_renovacao: new Date().toISOString() })
+    });
+    document.getElementById('pollMsg').textContent = `✅ +${cambio.recompensa_val} Tickets creditados!`;
+  }
+
+  // 3. Histórico câmbio
+  await fetch(`${SUPA_URL}/rest/v1/cambio_historico`, {
+    method: 'POST',
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_email: userEmail, item_nome: cambio.item_nome, tipo: cambio.recompensa_tipo, mp_gasto: cambio.custo_mp, recompensa: cambio.recompensa, taxa: cambio.taxa_pct + '%', created_at: new Date().toISOString() })
+  }).catch(() => {});
+
+  sessionStorage.removeItem('mg_cambio_pendente');
 }
 
 // ── POLLING: edge function + consulta direta ao banco ──
