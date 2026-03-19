@@ -2175,16 +2175,16 @@ body.tema-claro .section-loader{color:var(--muted)}
       </div>
     </div>
     <div class="perfil-stats">
-      <div class="pstat">
-        <div class="pstat-val" id="statPedidos">0</div>
+      <div class="pstat" style="cursor:pointer" onclick="showTab('pedidos',document.querySelector('.tab[onclick*=pedidos]'))">
+        <div class="pstat-val" id="statPedidos" style="font-size:14px">—</div>
         <div class="pstat-lbl">Pedidos</div>
       </div>
       <div class="pstat">
         <div class="pstat-val" id="statGasto">R$ 0</div>
         <div class="pstat-lbl">Total gasto</div>
       </div>
-      <div class="pstat">
-        <div class="pstat-val" id="statFavs">0</div>
+      <div class="pstat" style="cursor:pointer" onclick="showTab('favoritos',document.querySelector('.tab[onclick*=favoritos]'))">
+        <div class="pstat-val" id="statFavs" style="font-size:14px">—</div>
         <div class="pstat-lbl">Favoritos</div>
       </div>
       <div class="pstat">
@@ -3173,16 +3173,10 @@ async function carregarPerfil(user){
     carregarMarsPassPerfil(user);
   }
 
-  /* ── FASE 3: Secundário em background (não bloqueia renderização) ── */
+  /* ── FASE 3: Só verifica level up em background (sem queries de UI) ── */
   setTimeout(function(){
-    carregarPedidos(user.id);
-    carregarHistoricoPontosEmail(user.email);
-  }, 100);
-
-  setTimeout(function(){
-    carregarFavoritos(user.id);
     verificarLevelUpXP(user);
-  }, 400);
+  }, 800);
 }
 
 /* Verifica subida de nível e concede XP bônus ao planeta */
@@ -3364,8 +3358,8 @@ async function carregarPedidos(userId){
       var tkn2=(sessAtual&&sessAtual.data&&sessAtual.data.session&&sessAtual.data.session.access_token)
                ||sessionStorage.getItem('mg_access_token')
                ||SUPABASE_KEY;
-      for(var pi=0;pi<pedidosSemChave.length;pi++){
-        var ped=pedidosSemChave[pi];
+      /* FIX BUG 1: busca todas as chaves em paralelo (antes era sequencial N+1) */
+      await Promise.all(pedidosSemChave.map(async function(ped){
         try{
           var qtdPedido=ped.quantidade||1;
           var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&select=*&limit='+qtdPedido;
@@ -3373,7 +3367,6 @@ async function carregarPedidos(userId){
           if(chRes.ok){
             var chRows=await chRes.json();
             var chEntregues=(chRows||[]).filter(function(c){return c.status==='entregue'||c.conteudo;});
-            /* Garante no máximo qtdPedido chaves exibidas */
             chEntregues=chEntregues.slice(0,qtdPedido);
             if(chEntregues.length>0){
               var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
@@ -3388,7 +3381,7 @@ async function carregarPedidos(userId){
             console.warn('[chaves] HTTP erro',chRes.status);
           }
         }catch(ce){console.warn('[chaves pedido]',ped.id,ce);}
-      }
+      }));
     }
 
     /* Marca pedidos que o cliente já avaliou */
@@ -3692,14 +3685,10 @@ function checkTema(nivel){
 }
 
 /* Carrega tickets para mostrar no hero */
+/* FIX BUG 4: carregarTicketsHero removida — tickets já carregados no Promise.all inicial */
+/* Mantida por compatibilidade mas sem query extra */
 async function carregarTicketsHero(user){
   try{
-    // Pontos já foram populados pelo renderPerfil — só busca tickets
-    var tckRes=await sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle();
-    var qtd=tckRes.data?tckRes.data.quantidade||0:0;
-    var el=document.getElementById('statTickets');
-    if(el)el.textContent=qtd;
-    // Se por algum motivo marspoints ainda não foi populado, tenta novamente
     var mpEl=document.getElementById('statMarsPoints');
     if(mpEl&&mpEl.textContent==='0'&&perfilData){
       mpEl.textContent=(perfilData.pontos||0).toLocaleString('pt-BR');
@@ -3732,7 +3721,7 @@ function showTab(id, el){
     _tabsCarregadas.premios = true;
     carregarPremios(u);
   }
-  if(id === 'meus-pedidos' && !_tabsCarregadas.pedidos){
+  if((id === 'meus-pedidos' || id === 'pedidos') && !_tabsCarregadas.pedidos){
     _tabsCarregadas.pedidos = true;
     carregarPedidos(u.id);
   }
@@ -3740,8 +3729,8 @@ function showTab(id, el){
     _tabsCarregadas.favoritos = true;
     carregarFavoritos(u.id);
   }
-  if(id === 'historico' && !_tabsCarregadas.historico){
-    _tabsCarregadas.historico = true;
+  if((id === 'historico' || id === 'pontos') && !_tabsCarregadas.pontos){
+    _tabsCarregadas.pontos = true;
     carregarHistoricoPontosEmail(u.email);
   }
   /* MarsPass — sempre recarrega para refletir mudanças */
@@ -3823,8 +3812,13 @@ async function carregarMarsPassPerfil(user, forcado){
   /* Credita tickets de boas-vindas se ainda não foram creditados */
   if(a) creditarTicketsBV(a);
 
-  /* Re-renderiza conquistas para incluir títulos MarsPass na lista de seleção */
-  if(perfilData) renderConquistas(perfilData);
+  /* Re-renderiza conquistas SÓ se o plano mudou (evita writes desnecessários) */
+  var _planoAnterior = window._marspassPlanoAtivoCached;
+  var _planoNovo = a ? a.plano : null;
+  if(perfilData && _planoAnterior !== _planoNovo){
+    window._marspassPlanoAtivoCached = _planoNovo;
+    renderConquistas(perfilData);
+  }
 
   /* Renderiza seletor de anéis */
   renderAnelSelector(nivelAtual, a?a.plano:null, anelSalvo||nivelAtual);
@@ -4452,19 +4446,25 @@ async function atualizarNavbar(session){
     var cacheOk=cached&&(agora-(cached.ts||0)<120000);
     if(!cacheOk){
       try{
-        var[mpRes,perfilRes]=await Promise.all([
-          sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
-          sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
-        ]);
-        var pts=(mpRes.data&&mpRes.data.pontos)||0;
         var mapaNav={
           bronze:'bronze',prata:'prata',ouro:'ouro',esmeralda:'esmeralda',diamante:'diamante',
           andromeda:'andromeda',centaurus:'centaurus',sombrero:'sombrero'
         };
-        var anelNav=(perfilRes.data&&perfilRes.data.anel_escolhido)||getNavNivel(pts);
+        /* FIX BUG 3: usa dados em memória se disponíveis — evita 2 queries extras */
+        var anelNav, pts;
+        if(perfilData && perfilData.anel_escolhido){
+          anelNav = perfilData.anel_escolhido;
+          pts = perfilData.pontos || 0;
+        } else {
+          var[mpRes,perfilRes]=await Promise.all([
+            sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
+            sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
+          ]);
+          pts=(mpRes.data&&mpRes.data.pontos)||0;
+          anelNav=(perfilRes.data&&perfilRes.data.anel_escolhido)||getNavNivel(pts);
+        }
         var classeAnel=mapaNav[anelNav]||getNavNivel(pts);
         wrap.className='nav-avatar-wrap nav-nivel-'+classeAnel;
-        /* Salva no cache */
         try{localStorage.setItem(cacheKey,JSON.stringify({anel:classeAnel,ts:agora}));}catch(e){}
       }catch(e){/* mantém fallback bronze */}
     }
@@ -4956,15 +4956,15 @@ function iniciarRealtimePerfil(userEmail){
   var _realtimeIniciado=false;
   var _origOnAuth=sb.auth.onAuthStateChange.bind(sb.auth);
   /* Hook leve no onAuthStateChange já existente — aguarda userSession estar definido */
+  /* FIX BUG 5: intervalo 1s (era 500ms), timeout 20s (era 30s) — menos polling */
   var _checkInterval=setInterval(function(){
     if(userSession&&userSession.user&&!_realtimeIniciado){
       _realtimeIniciado=true;
       clearInterval(_checkInterval);
       iniciarRealtimePerfil(userSession.user.email);
     }
-  },500);
-  /* Fallback máximo de 30s */
-  setTimeout(function(){clearInterval(_checkInterval);},30000);
+  },1000);
+  setTimeout(function(){clearInterval(_checkInterval);},20000);
 })();
 </script>
 <script>
