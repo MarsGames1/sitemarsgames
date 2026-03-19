@@ -505,9 +505,16 @@ body.tema-claro .perfil-nome{color:var(--text)}
 body.tema-claro .perfil-email{color:var(--muted)}
 body.tema-claro .pstat{background:rgba(0,0,0,.04);border-color:var(--border)}
 body.tema-claro .pstat-val{color:var(--mars)}
+body.tema-claro .tabs-wrap{background:#f8f8fc;border-color:var(--border)}
+body.tema-claro .tab{background:rgba(0,0,0,.03);border-color:var(--border);color:#888}
+body.tema-claro .tab:hover{background:rgba(0,0,0,.06);color:#333}
+body.tema-claro .tab.active:not(.tab-marspass):not(.tab-marspoints):not(.tab-tickets):not(.tab-premios):not(.tab-dna){
+  background:rgba(214,58,20,.08);border-color:rgba(214,58,20,.3);color:var(--mars);box-shadow:0 4px 14px rgba(214,58,20,.1);
+}
+body.tema-claro .tab-editar-btn{background:rgba(0,0,0,.03);border-color:var(--border);color:#555}
 body.tema-claro .tabs{border-color:var(--border)}
 body.tema-claro .tab{color:var(--muted)}
-body.tema-claro .tab.active{color:var(--mars);border-bottom-color:var(--mars)}
+body.tema-claro .tab.active{color:var(--mars)}
 body.tema-claro .benef-card{background:#fff;border-color:var(--border)}
 body.tema-claro .benef-card.atual{border-color:var(--mars)}
 body.tema-claro .cupom-box{background:linear-gradient(135deg,rgba(0,153,51,.06),rgba(0,153,51,.02));border-color:rgba(0,153,51,.2)}
@@ -928,55 +935,127 @@ body.tema-claro .section-loader{color:var(--muted)}
 .pstat-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:var(--muted);margin-top:4px}
 
-/* TABS */
-.tabs-wrap{position:relative;margin-bottom:24px;display:flex;align-items:flex-end;gap:0}
-.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:thin;flex:1;
-  border-bottom:1px solid var(--border);padding-bottom:0;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-color:rgba(124,106,247,.4) transparent;
+/* ══ TABS — NOVO SISTEMA DE BOTÕES ══ */
+.tabs-wrap{
+  margin-bottom:28px;
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:8px;
 }
-.tabs::-webkit-scrollbar{height:3px}
-.tabs::-webkit-scrollbar-track{background:transparent}
-.tabs::-webkit-scrollbar-thumb{
-  background:linear-gradient(90deg,#7c6af7,#ff3c6e);
-  border-radius:99px;
-}
-.tabs::-webkit-scrollbar-thumb:hover{background:linear-gradient(90deg,#9d8fff,#ff88aa)}
-/* Sombra indicando scroll à direita */
-.tabs-wrap::after{
-  content:'';position:absolute;top:0;right:80px;bottom:4px;width:40px;
-  background:linear-gradient(to right,transparent,var(--bg));
-  pointer-events:none;border-radius:0 8px 0 0;
-  transition:opacity .2s;
-}
-/* Botão Editar Perfil fixo à direita */
+/* Oculta botão Editar dentro do grid junto aos outros */
 .tab-editar-btn{
-  flex-shrink:0;padding:11px 14px;
-  font-size:10px;font-weight:700;color:var(--muted);
-  cursor:pointer;white-space:nowrap;letter-spacing:.4px;
-  background:none;border:none;border-bottom:2px solid transparent;
-  font-family:'Montserrat',sans-serif;
-  transition:color .15s,border-color .15s;
-  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 14px;border-radius:10px;
+  font-size:11px;font-weight:700;letter-spacing:.4px;
+  font-family:'Montserrat',sans-serif;cursor:pointer;
+  background:rgba(0,255,85,.05);
+  border:1px solid rgba(0,255,85,.12);
+  color:#4a9060;
+  transition:all .18s;white-space:nowrap;
 }
-.tab-editar-btn:hover{color:#aaa}
-.tab-editar-btn.active{color:var(--green);border-bottom-color:var(--green);border-bottom-width:2px}
-.tab{padding:11px 16px;font-size:11px;font-weight:700;color:var(--muted);
-  cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
-  transition:color .15s,border-color .15s;letter-spacing:.4px;flex-shrink:0}
-.tab:hover{color:#aaa}
-.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.tab-editar-btn:hover{
+  background:rgba(0,255,85,.1);
+  border-color:rgba(0,255,85,.3);
+  color:var(--green);
+  transform:translateY(-1px);
+}
+.tab-editar-btn.active{
+  background:rgba(0,255,85,.14);
+  border-color:rgba(0,255,85,.45);
+  color:var(--green);
+  box-shadow:0 0 16px rgba(0,255,85,.15);
+}
+
+.tab{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 14px;border-radius:10px;
+  font-size:11px;font-weight:700;letter-spacing:.4px;
+  cursor:pointer;white-space:nowrap;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  color:#484860;
+  transition:all .18s;
+  position:relative;overflow:hidden;
+}
+.tab::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);
+  opacity:0;transition:opacity .18s;
+}
+.tab:hover{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.14);
+  color:#aaa;
+  transform:translateY(-1px);
+}
+.tab:hover::before{opacity:1}
+.tab.active{
+  transform:translateY(-1px);
+  box-shadow:0 4px 18px rgba(0,0,0,.3);
+}
+/* Estilo padrão ativo — verde */
+.tab.active:not(.tab-marspass):not(.tab-marspoints):not(.tab-tickets):not(.tab-premios):not(.tab-dna){
+  background:rgba(0,255,85,.1);
+  border-color:rgba(0,255,85,.35);
+  color:var(--green);
+  box-shadow:0 4px 18px rgba(0,255,85,.12);
+}
+
 .tab-content{display:none;animation:fadeUp .3s ease both}
 .tab-content.active{display:block}
-.tab-tickets{color:var(--amber)!important;border-bottom-color:transparent}
-.tab-tickets.active{color:var(--amber)!important;border-bottom-color:var(--amber)!important}
-.tab-marspoints{color:var(--green)!important;border-bottom-color:transparent}
-.tab-marspoints.active{color:var(--green)!important;border-bottom-color:var(--green)!important}
-.tab-premios{color:var(--ouro)!important;border-bottom-color:transparent}
-.tab-premios.active{color:var(--ouro)!important;border-bottom-color:var(--ouro)!important}
+
+/* ── Marspass ── */
+.tab-marspass{border-color:rgba(124,106,247,.15);color:#6a5ee0}
+.tab-marspass:hover{border-color:rgba(124,106,247,.35);color:#9d8fff}
+.tab-marspass.active{
+  background:linear-gradient(135deg,rgba(124,106,247,.18),rgba(255,60,110,.1));
+  border-color:rgba(124,106,247,.5);color:#c4b8ff;
+  box-shadow:0 4px 18px rgba(124,106,247,.18);
+}
+/* ── MarsPoints ── */
+.tab-marspoints{border-color:rgba(0,255,85,.1);color:#3a7a50}
+.tab-marspoints:hover{border-color:rgba(0,255,85,.3);color:var(--green)}
+.tab-marspoints.active{
+  background:rgba(0,255,85,.12);
+  border-color:rgba(0,255,85,.4);color:var(--green);
+  box-shadow:0 4px 18px rgba(0,255,85,.14);
+}
+/* ── Tickets ── */
+.tab-tickets{border-color:rgba(255,183,0,.1);color:#7a6010}
+.tab-tickets:hover{border-color:rgba(255,183,0,.35);color:var(--amber)}
+.tab-tickets.active{
+  background:rgba(255,183,0,.1);
+  border-color:rgba(255,183,0,.4);color:var(--amber);
+  box-shadow:0 4px 18px rgba(255,183,0,.14);
+}
+/* ── Prêmios ── */
+.tab-premios{border-color:rgba(255,215,0,.1);color:#7a6800}
+.tab-premios:hover{border-color:rgba(255,215,0,.35);color:var(--ouro)}
+.tab-premios.active{
+  background:rgba(255,215,0,.1);
+  border-color:rgba(255,215,0,.4);color:var(--ouro);
+  box-shadow:0 4px 18px rgba(255,215,0,.14);
+}
+/* ── DNA Alien ── */
+.tab-dna{border-color:rgba(0,255,231,.1);color:#1a6060}
+.tab-dna:hover{border-color:rgba(0,255,231,.35);color:#00ffe7}
+.tab-dna.active{
+  background:rgba(0,255,231,.08);
+  border-color:rgba(0,255,231,.4);color:#00ffe7;
+  box-shadow:0 4px 18px rgba(0,255,231,.12);
+}
+
+/* Tema claro */
+body.tema-claro .tabs-wrap{background:#f8f8fc;border-color:var(--border)}
+body.tema-claro .tab{background:rgba(0,0,0,.03);border-color:var(--border);color:#888}
+body.tema-claro .tab:hover{background:rgba(0,0,0,.06);color:#333}
+
 /* ══ DNA ALIENÍGENA ══ */
-.tab-dna{color:#00ffe7!important;border-bottom-color:transparent}
-.tab-dna.active{color:#00ffe7!important;border-bottom-color:#00ffe7!important}
+@keyframes dnaBarGrow_dummy{}
 @keyframes dnaBarGrow{to{transform:scaleX(1)}}
 @keyframes dnaReveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @keyframes dnaShim{0%{background-position:200%}100%{background-position:-200%}}
@@ -1798,20 +1877,17 @@ body.tema-claro .section-loader{color:var(--muted)}
 
   <!-- TABS -->
   <div class="tabs-wrap">
-  <div class="tabs">
     <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)">🌌 MarsPass</div>
-    <div class="tab" onclick="showTab('beneficios',this)">Benefícios</div>
-    <div class="tab" onclick="showTab('conquistas',this)">Conquistas</div>
-    <div class="tab" onclick="showTab('pedidos',this)">Meus Pedidos</div>
-    <div class="tab" onclick="showTab('favoritos',this)">Favoritos</div>
-    <div class="tab" onclick="showTab('pontos',this)">Histórico de Pontos</div>
+    <div class="tab" onclick="showTab('beneficios',this)">🎖️ Benefícios</div>
+    <div class="tab" onclick="showTab('conquistas',this)">🏅 Conquistas</div>
+    <div class="tab" onclick="showTab('pedidos',this)">📦 Meus Pedidos</div>
+    <div class="tab" onclick="showTab('favoritos',this)">❤️ Favoritos</div>
+    <div class="tab" onclick="showTab('pontos',this)">📋 Histórico</div>
     <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
     <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
     <div class="tab tab-dna" onclick="showTab('dna',this)">🧬 DNA Alien</div>
-  </div>
-  <!-- Botão Editar separado — não some no overflow -->
-  <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
+    <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
   </div>
 
   <!-- BENEFÍCIOS -->
@@ -3072,7 +3148,7 @@ async function carregarTicketsHero(user){
 
 function showTab(id,el){
   document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active')});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.tab,.tab-editar-btn').forEach(function(t){t.classList.remove('active')});
   document.getElementById('tab-'+id).classList.add('active');
   if(el)el.classList.add('active');
   if(id==='tickets' && userSession) carregarTicketsPerfil(userSession.user);

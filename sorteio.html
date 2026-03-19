@@ -1656,7 +1656,7 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
@@ -2552,8 +2552,8 @@ function spaGo(page){
   } else if(page === 'arena'){
     document.getElementById('pageArena').classList.add('visible');
     document.getElementById('spaBtnArena').classList.add('active');
-    pvpRenderArena();
-    pvpCarregarLeaderboard();
+    if(typeof pvpRenderArena === 'function') pvpRenderArena();
+    if(typeof pvpCarregarLeaderboard === 'function') pvpCarregarLeaderboard();
   } else if(page === 'roda'){
     document.getElementById('pageRoda').classList.add('visible');
     document.getElementById('spaBtnRoda').classList.add('active');
@@ -3269,15 +3269,15 @@ sb.auth.onAuthStateChange(function(event,session){
   if(event==='SIGNED_IN'||event==='INITIAL_SESSION'){
     userSession=session;
     if(session){
-      pvpRenderArena();
-      rdAtualizarMpDisplay();
-      spaAtualizarNavMp();
-      atualizarNavbar(session);
+      if(typeof pvpRenderArena==='function') pvpRenderArena();
+      if(typeof rdAtualizarMpDisplay==='function') rdAtualizarMpDisplay();
+      if(typeof spaAtualizarNavMp==='function') spaAtualizarNavMp();
+      if(typeof atualizarNavbar==='function') atualizarNavbar(session);
     }
   }
   if(event==='SIGNED_OUT'){
     userSession=null;
-    pvpRenderArena();
-    atualizarNavbar(null);
+    if(typeof pvpRenderArena==='function') pvpRenderArena();
+    if(typeof atualizarNavbar==='function') atualizarNavbar(null);
   }
 });
