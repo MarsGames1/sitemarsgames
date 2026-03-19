@@ -2771,6 +2771,9 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('pt-BR')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
+/* Variável global compartilhada entre showTab, logout e o IIFE do planeta */
+var _planetaTabAtiva=false;
+
 /* ── AVALIAÇÃO ── */
 document.addEventListener('click',function(e){
   var estrela=e.target.closest('.aval-estrela');
@@ -6081,7 +6084,7 @@ function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1,vy
 function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.6+Math.random()*.5};}
 function mkMeteor(w,h){return{x:-20+Math.random()*w*.4,y:Math.random()*h*.3,vx:4+Math.random()*7,vy:2+Math.random()*4,a:.5+Math.random()*.5};}
 
-var _planetaTabAtiva=false;
+/* _planetaTabAtiva declarada no escopo global acima — não redeclarar aqui */
 function planetaLoop(){
   /* Pausa quando tab do navegador está em segundo plano OU aba planeta não aberta */
   if(document.hidden||!_planetaTabAtiva){
