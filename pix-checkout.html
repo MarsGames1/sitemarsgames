@@ -500,11 +500,19 @@ async function pollPagamento(paymentId, ref) {
   if (!pollAtivo) return;
   pollTentativas++;
 
-  // 1. Tenta edge function (aciona entrega automática no servidor)
+  // Detecta tipo da compra (câmbio/marspoints não têm pedido na tabela pedidos)
+  const itensPend = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+  const tipoPend = itensPend[0]?.tipo || '';
+  const ehCambioOuMP = tipoPend === 'cambio' || tipoPend === 'marspoints';
+
+  // 1. Edge function — com Authorization (sem ela retorna 404)
   try {
     const res = await fetch(SUPA_URL + '/functions/v1/mp-confirmar-pagamento', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken || SUPA_KEY}`
+      },
       body: JSON.stringify({ payment_id: paymentId, reference: ref })
     });
     if (res.ok) {
@@ -516,34 +524,62 @@ async function pollPagamento(paymentId, ref) {
         return;
       }
     } else {
-      // Edge function com erro (ex: 500) — vai direto para fallback do banco
       console.warn('[poll edge] status:', res.status, '— usando fallback DB');
     }
   } catch(e) { console.warn('[poll edge]', e); }
 
-  // 2. Fallback direto no banco — funciona mesmo se o webhook do MP falhar
-  try {
-    const pedido = await buscarPedidoPago();
-    if (pedido) {
-      console.log('[poll db] pedido encontrado:', pedido.id, pedido.status);
-      pollAtivo = false;
-      irParaSucesso(pedido.reference || ref || pedido.id);
-      return;
-    }
-  } catch(e) { console.warn('[poll db]', e); }
+  // 2. Fallback: busca pedido na tabela (para compras normais)
+  if (!ehCambioOuMP) {
+    try {
+      const pedido = await buscarPedidoPago();
+      if (pedido) {
+        console.log('[poll db] pedido encontrado:', pedido.id, pedido.status);
+        pollAtivo = false;
+        irParaSucesso(pedido.reference || ref || pedido.id);
+        return;
+      }
+    } catch(e) { console.warn('[poll db]', e); }
+  }
 
-  // Continua tentando — não redireciona sem confirmação real do pagamento
+  // 3. Fallback para câmbio/MP: consulta payment_id direto no MP via edge function de status
+  if (ehCambioOuMP && pollTentativas % 3 === 0) {
+    try {
+      const res2 = await fetch(SUPA_URL + '/functions/v1/mp-confirmar-pagamento', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken || SUPA_KEY}`
+        },
+        body: JSON.stringify({ payment_id: paymentId, reference: ref, force_check: true })
+      });
+      if (res2.ok) {
+        const d2 = await res2.json();
+        console.log('[poll cambio edge]', d2);
+        // Aceita qualquer status de aprovado
+        if (d2.aprovado || d2.status === 'approved' || d2.pago) {
+          pollAtivo = false;
+          irParaSucesso(ref);
+          return;
+        }
+      }
+    } catch(e2) { console.warn('[poll cambio]', e2); }
+  }
 
   if (pollTentativas < POLL_MAX) {
     setTimeout(() => pollPagamento(paymentId, ref), 3000);
   } else {
-    // Expirou: manda para sucesso.html mesmo assim — lá ele tenta buscar o pedido
+    // Esgotou tentativas — para câmbio/MP vai direto para o perfil executar
     document.getElementById('pollMsg').textContent = 'Verificando pagamento...';
     document.getElementById('pollMsg').style.color = '#ffb800';
     document.querySelector('.poll-dot').style.background = '#ffb800';
     document.querySelector('.poll-dot').style.animation = 'none';
     setTimeout(() => {
-      window.location.href = 'sucesso.html?ref=' + encodeURIComponent(reference || pedidoId || '');
+      if (ehCambioOuMP) {
+        // Força execução do câmbio/crédito e vai pro perfil
+        irParaSucesso(ref);
+      } else {
+        window.location.href = 'sucesso.html?ref=' + encodeURIComponent(reference || pedidoId || '');
+      }
     }, 2000);
   }
 }
