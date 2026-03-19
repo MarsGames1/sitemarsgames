@@ -751,15 +751,15 @@ function iniciarTimer(minutos){
   },1000);
 }
 
-/* ── POLLING — com fallback duplo ── */
+/* ── POLLING — 3 camadas de fallback ── */
 /*
-  Fluxo normal: webhook MP → edge function → marspass_assinaturas.status='ativo'
-  Fallback 1  : chama a edge function manualmente para forçar a verificação no MP
-  Fallback 2  : consulta direto a tabela de pedidos para status pago/aprovado/entregue
-  Assim, mesmo que o webhook falhe, o usuário é redirecionado após o pagamento.
+  Camada 1 (a cada 5s) : SDK → marspass_assinaturas por referencia_pagamento + email
+  Camada 2 (a cada 15s): POST → mp-confirmar-pagamento (força recheck no MP e ativa)
+  Camada 3 (a cada 15s): SDK → marspass_assinaturas mais recente do usuário (últimos 60min)
+                          cobre casos onde o webhook gravou com reference diferente
 */
 var _pollTentativas=0;
-var _POLL_MAX=72; /* 6 minutos = 72 × 5s */
+var _POLL_MAX=72; /* ~6 minutos */
 
 function iniciarPolling(reference){
   clearInterval(pollInterval);
@@ -767,7 +767,6 @@ function iniciarPolling(reference){
 
   pollInterval=setInterval(async function(){
     if(_pollTentativas>=_POLL_MAX){
-      /* Esgotou tentativas mas o timer ainda não expirou — encerra sem redirecionar */
       clearInterval(pollInterval);
       _atualizarAguardando('⚠️ Verifique seu banco e recarregue a página.','#ff8888');
       return;
@@ -780,7 +779,7 @@ function iniciarPolling(reference){
       var session=r.data.session;
       var email=session.user.email;
 
-      /* ── Caminho 1: tabela marspass_assinaturas (webhook já atualizou) ── */
+      /* ── Camada 1: referência exata na tabela ── */
       var{data:assinatura}=await sb.from('marspass_assinaturas')
         .select('status,plano')
         .eq('referencia_pagamento',reference)
@@ -788,13 +787,12 @@ function iniciarPolling(reference){
         .maybeSingle();
 
       if(assinatura&&assinatura.status==='ativo'){
-        _confirmarPagamento();
-        return;
+        _confirmarPagamento(); return;
       }
 
-      /* ── Fallback 1: aciona edge function para verificar no MP e ativar ── */
-      /* (só a cada 3 tentativas para não sobrecarregar) */
       if(_pollTentativas%3===0){
+
+        /* ── Camada 2: chama mp-confirmar-pagamento para forçar verificação no MP ── */
         try{
           var res=await fetch(SUPABASE_URL+'/functions/v1/mp-confirmar-pagamento',{
             method:'POST',
@@ -802,43 +800,39 @@ function iniciarPolling(reference){
               'Content-Type':'application/json',
               'Authorization':'Bearer '+session.access_token
             },
-            body:JSON.stringify({reference:reference,payment_id:(pixData&&pixData.payment_id)||''})
+            body:JSON.stringify({
+              reference:reference,
+              payment_id:(pixData&&pixData.payment_id)||''
+            })
           });
           if(res.ok){
             var d=await res.json();
-            if(d.aprovado||d.status==='ativo'){
-              _confirmarPagamento();
-              return;
+            if(d.aprovado||d.status==='ativo'||d.ativado){
+              _confirmarPagamento(); return;
             }
           }
-        }catch(ef){console.warn('[polling fallback edge]',ef);}
-      }
+        }catch(e2){console.warn('[poll camada2]',e2);}
 
-      /* ── Fallback 2: consulta tabela pedidos diretamente ── */
-      if(_pollTentativas%3===0){
+        /* ── Camada 3: busca assinatura ativa mais recente do usuário ── */
         try{
-          var urlPedido=SUPABASE_URL+'/rest/v1/pedidos'
-            +'?or=(reference.eq.'+encodeURIComponent(reference)+',referencia_pagamento.eq.'+encodeURIComponent(reference)+')'
-            +'&status=in.(pago,aprovado,entregue,ativo)'
-            +'&order=created_at.desc&limit=1';
-          var resPed=await fetch(urlPedido,{
-            headers:{
-              'apikey':SUPABASE_KEY,
-              'Authorization':'Bearer '+session.access_token,
-              'Accept':'application/json'
-            }
-          });
-          if(resPed.ok){
-            var rows=await resPed.json();
-            if(rows&&rows.length>0){
-              _confirmarPagamento();
-              return;
+          var{data:recente}=await sb.from('marspass_assinaturas')
+            .select('status,plano,created_at')
+            .eq('user_email',email)
+            .eq('status','ativo')
+            .order('created_at',{ascending:false})
+            .limit(1)
+            .maybeSingle();
+
+          if(recente){
+            var criado=new Date(recente.created_at).getTime();
+            if(Date.now()-criado < 60*60*1000){ /* criada há menos de 60min */
+              _confirmarPagamento(); return;
             }
           }
-        }catch(ep){console.warn('[polling fallback pedidos]',ep);}
+        }catch(e3){console.warn('[poll camada3]',e3);}
       }
 
-    }catch(e){console.error('[polling erro geral]',e);}
+    }catch(e){console.warn('[poll erro geral]',e);}
   },5000);
 }
 
