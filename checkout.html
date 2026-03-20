@@ -331,10 +331,7 @@ async function initCardBrick(){
     initialization:{ amount: total, payer:{email:email} },
     customization:{
       visual:{style:{theme:'dark'}},
-      paymentMethods:{
-        maxInstallments:12,
-        types:{ included:['credit_card','debit_card'] }
-      }
+      paymentMethods:{ maxInstallments:12 }
     },
     callbacks:{
       onReady: function(){},
