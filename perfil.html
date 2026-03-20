@@ -3200,7 +3200,7 @@ async function carregarPerfil(user){
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
-      sb.from('marspoints').select('pontos,nivel').eq('user_email',user.email).maybeSingle(),
+      sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle(),
       sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle()
     ]);
 
@@ -5191,7 +5191,7 @@ async function dnaCarregarBiblioteca(){
   try{
     if(userSession){
       var{data:peds}=await sb.from('pedidos')
-        .select('itens,produto_nome,status')
+        .select('produto_nome,status')
         .or('user_id.eq.'+userSession.user.id+',user_email.eq.'+userSession.user.email)
         .in('status',['pago','entregue','aprovado']);
       if(peds&&peds.length){
