@@ -89,7 +89,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .desconto-lbl{font-size:10px;font-weight:700;color:var(--green);}
 .desconto-val{font-size:13px;font-weight:900;color:var(--green);}
 /* Card Brick */
-#card-brick-wrap{margin-top:12px;min-height:280px;transition:min-height .3s;}
+#card-brick-wrap{margin-top:12px;}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a28;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;font-weight:700;color:#eee;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
@@ -323,28 +323,47 @@ async function initCardBrick(){
   if(!window.MercadoPago){ showToast('SDK do cartão não carregou. Tente novamente.'); return; }
   if(!mpInstance) mpInstance = new MercadoPago(MP_PUBLIC_KEY, {locale:'pt-BR'});
   var total = getTotal();
-  if(total <= 0){ showToast('Valor inválido para pagamento com cartão.'); return; }
+  /* Mercado Pago rejeita valores abaixo de R$ 1,00 no Brick */
+  if(total < 1){
+    document.getElementById('card-brick-wrap').innerHTML=
+      '<div style="padding:20px;text-align:center;background:rgba(255,100,0,.06);border:1px solid rgba(255,100,0,.2);border-radius:12px;font-size:12px;color:#ff8844;font-weight:600">'+
+      '⚠️ Pagamento com cartão requer valor mínimo de R$ 1,00.<br><span style="color:#555;font-size:11px;margin-top:4px;display:block">Use Pix para valores menores.</span></div>';
+    return;
+  }
   var sess = await sb.auth.getSession();
   var email = (sess.data&&sess.data.session&&sess.data.session.user&&sess.data.session.user.email)||'';
   var bricks = mpInstance.bricks();
-  cardBrickCtrl = await bricks.create('cardPayment','cardBrick_container',{
-    initialization:{ amount: total, payer:{email:email} },
-    customization:{
-      visual:{style:{theme:'dark'}},
-      paymentMethods:{ maxInstallments:12 }
-    },
-    callbacks:{
-      onReady: function(){},
-      onSubmit: async function(cardData){ await pagarCartao(cardData); },
-      onError: function(err){
-        if(err&&err.cause&&err.cause[0]&&err.cause[0].code==='E301') return;
-        if(err&&(err.type==='non_critical'||err.type==='validation')) return;
-        showToast('Verifique os dados do cartão.');
-        var btn=document.getElementById('btnPagar');
-        btn.disabled=false; btn.classList.remove('loading');
+  try{
+    cardBrickCtrl = await bricks.create('cardPayment','cardBrick_container',{
+      initialization:{ amount: total, payer:{email:email} },
+      customization:{
+        visual:{style:{theme:'dark'}},
+        paymentMethods:{ maxInstallments:12 }
+      },
+      callbacks:{
+        onReady: function(){
+          /* Quando pronto, ajusta o min-height para o tamanho real do formulário */
+          var wrap=document.getElementById('card-brick-wrap');
+          if(wrap) wrap.style.minHeight='0';
+        },
+        onSubmit: async function(cardData){ await pagarCartao(cardData); },
+        onError: function(err){
+          if(err&&err.cause&&err.cause[0]&&err.cause[0].code==='E301') return;
+          if(err&&(err.type==='non_critical'||err.type==='validation')) return;
+          /* Erro crítico — mostra mensagem e reseta */
+          var wrap=document.getElementById('card-brick-wrap');
+          if(wrap) wrap.innerHTML='<div style="padding:20px;text-align:center;background:rgba(255,50,50,.06);border:1px solid rgba(255,50,50,.2);border-radius:12px;font-size:12px;color:#ff6666;font-weight:600">❌ Erro ao carregar formulário de cartão.<br><button onclick="cardBrickCtrl=null;document.getElementById(\'cardBrick_container\').innerHTML=\'\';initCardBrick()" style="margin-top:10px;padding:8px 16px;border-radius:8px;border:1px solid rgba(255,100,100,.3);background:rgba(255,50,50,.1);color:#ff8888;font-size:11px;cursor:pointer;font-family:Montserrat,sans-serif;font-weight:700">Tentar novamente</button></div>';
+          cardBrickCtrl=null;
+          var btn=document.getElementById('btnPagar');
+          if(btn){btn.disabled=false;btn.classList.remove('loading');}
+        }
       }
-    }
-  });
+    });
+  }catch(e){
+    console.warn('[cardBrick]',e.message);
+    showToast('Erro ao carregar formulário. Tente usar o Pix.');
+    cardBrickCtrl=null;
+  }
 }
 
 /* ── PAGAR ── */
