@@ -207,6 +207,8 @@ const reference   = sessionStorage.getItem('mg_external_ref') || '';
 const pedidoId    = sessionStorage.getItem('mg_pedido_id') || '';
 const accessToken  = sessionStorage.getItem('mg_access_token')  || '';
 const refreshToken = sessionStorage.getItem('mg_refresh_token') || '';
+/* Timestamp de quando esta sessão de checkout começou — pedidos anteriores são ignorados */
+const checkoutStartedAt = new Date().toISOString();
 
 // Query direta via REST com Authorization — ignora RLS completamente para leitura do próprio pedido
 async function dbGet(table, filters) {
@@ -586,57 +588,32 @@ const POLL_MAX = 60;
 let pollAtivo = true;
 
 async function buscarPedidoPago() {
-  // Só retorna pedido se pagamento estiver CONFIRMADO
-  // Status válidos: pago, aprovado, entregue
-  // OU pedido pendente mas com chave já entregue (edge crashou após entregar)
+  // SEGURANÇA: só confirma se status for pago/aprovado/entregue
+  // E SOMENTE para o pedido desta transação (reference ou pedidoId)
+  // NUNCA busca por email — evita confirmar pagamento com pedidos antigos
   const statusOk = ['pago','aprovado','entregue'];
   try {
-    // 1. Por reference
+    // 1. Por reference — identificador único desta transação MP
     if (reference) {
       const p = await dbGet('pedidos', { reference });
       console.log('[db] reference:', reference, '→ status:', p?.status);
       if (p && statusOk.includes(p.status)) return p;
-      if (p && p.status === 'pendente') {
-        // Só redireciona se chave já foi entregue pelo servidor (edge crashou depois)
-        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
-        console.log('[db] chave entregue?', ch ? 'SIM' : 'não');
-        if (ch) {
-          await dbUpdate('pedidos', p.id, { status: 'entregue' });
-          return Object.assign({}, p, { status: 'entregue' });
-        }
-      }
+      // NÃO aceita 'pendente' — pagamento ainda não confirmado pelo MP
     }
 
-    // 2. Por pedido_id
+    // 2. Por pedido_id — só se diferente da reference
     if (pedidoId && pedidoId !== reference) {
       const p = await dbGet('pedidos', { id: pedidoId });
       console.log('[db] pedidoId:', pedidoId, '→ status:', p?.status);
       if (p && statusOk.includes(p.status)) return p;
-      if (p && p.status === 'pendente') {
-        const ch = await dbGet('estoque_chaves', { pedido_id: p.id, status: 'entregue' });
-        if (ch) {
-          await dbUpdate('pedidos', p.id, { status: 'entregue' });
-          return Object.assign({}, p, { status: 'entregue' });
-        }
-      }
+      // NÃO aceita 'pendente'
     }
 
-    // 3. Por email — só busca com status confirmado
-    if (userEmail) {
-      const token = accessToken || SUPA_KEY;
-      const url = `${SUPA_URL}/rest/v1/pedidos?cliente_email=eq.${encodeURIComponent(userEmail)}&status=in.(pago,aprovado,entregue)&order=created_at.desc&limit=1`;
-      const res = await fetch(url, {
-        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-      });
-      if (res.ok) {
-        const rows = await res.json();
-        console.log('[db] email:', userEmail, '→', rows?.length, 'resultado(s) pagos');
-        if (rows && rows.length > 0) return rows[0];
-      }
-    }
+    // ⚠️ Busca por email REMOVIDA — causava confirmação falsa com pedidos antigos do usuário
   } catch(e) { console.warn('[buscarPedidoPago erro]', e); }
   return null;
 }
+
 
 async function pollPagamento(paymentId, ref) {
   if (!pollAtivo) return;
@@ -717,10 +694,15 @@ async function pollPagamento(paymentId, ref) {
     document.querySelector('.poll-dot').style.animation = 'none';
     setTimeout(() => {
       if (ehCambioOuMP) {
-        // Força execução do câmbio/crédito e vai pro perfil
+        // Câmbio/MP — vai pro perfil para verificar manualmente
         irParaSucesso(ref);
       } else {
-        window.location.href = 'sucesso.html?ref=' + encodeURIComponent(reference || pedidoId || '');
+        // Compra normal — expirou sem confirmação do MP
+        // NÃO redireciona para sucesso — mostra mensagem para verificar email
+        document.getElementById('pollMsg').textContent = 'Tempo esgotado. Verifique seu email para confirmação do pagamento.';
+        document.getElementById('pollMsg').style.color = '#ffb800';
+        show('stateError');
+        document.getElementById('erroMsg').textContent = 'O tempo de verificação expirou. Se você pagou, sua chave será entregue em até 5 minutos por email. Caso não receba, entre em contato.';
       }
     }, 2000);
   }
