@@ -5225,12 +5225,7 @@ async function verificarManutencao(){
   return false;
 }
 
-(async function(){
-  var emManutencao = await verificarManutencao();
-  if(!emManutencao){
-    carregarProdutos();
-  }
-})();
+/* carregarProdutos iniciado via onSupabaseReady */
 
 /* ── AUTH NAVBAR ── */
 var NAV_NIVEIS=[
@@ -5335,6 +5330,8 @@ sb.auth.getSession().then(function(r){
   });
   var mpBanner=document.getElementById('marspassBannerWrap');
   if(mpBanner) mpBanner.style.display='block';
+  /* Inicia carregamento de produtos após sb pronto */
+  verificarManutencao().then(function(em){ if(!em) carregarProdutos(); }).catch(function(){ carregarProdutos(); });
   }
 })();
 
