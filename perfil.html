@@ -2097,6 +2097,20 @@ body.tema-claro .section-loader{color:var(--muted)}
   </a>
   <div class="nav-right">
     <a class="nav-btn" href="catalogo.html">Catálogo</a>
+    <!-- Sino de notificações -->
+    <div style="position:relative" id="notifWrap">
+      <button class="notif-btn" id="notifBtn" onclick="toggleNotifDropdown()" title="Notificações">
+        🔔
+        <span class="notif-badge" id="notifBadge"></span>
+      </button>
+      <div class="notif-dropdown" id="notifDropdown">
+        <div class="notif-header">
+          <span class="notif-header-title">Notificações</span>
+          <button class="notif-marcar-btn" onclick="marcarTodasNotifLidas()">Marcar lidas</button>
+        </div>
+        <div id="notifList"><div class="notif-empty">Nenhuma notificação</div></div>
+      </div>
+    </div>
     <!-- Avatar com anel de nível -->
     <div class="nav-avatar-wrap" id="navAvatarWrap" style="display:none">
       <div class="nav-avatar-ring" id="navAvatarRing"></div>
@@ -3096,6 +3110,84 @@ async function loginDiscord() {
 }
 var _fazendoLogout=false;
 
+/* ══ NOTIFICAÇÕES DO CLIENTE ══
+   Polling leve a cada 90s — sem realtime, 1 query só quando logado
+══ */
+var _notifData=[], _notifInterval=null;
+
+async function carregarNotifCliente(){
+  if(!userSession) return;
+  try{
+    var{data}=await sb.from('notificacoes_cliente')
+      .select('id,tipo,titulo,mensagem,lida,created_at')
+      .eq('user_email',userSession.user.email)
+      .order('created_at',{ascending:false})
+      .limit(20);
+    _notifData=data||[];
+    renderNotifCliente();
+  }catch(e){}
+}
+
+function renderNotifCliente(){
+  var btn=document.getElementById('notifBtn');
+  var badge=document.getElementById('notifBadge');
+  var list=document.getElementById('notifList');
+  if(!btn) return;
+  btn.style.display='flex';
+  var naoLidas=_notifData.filter(function(n){return !n.lida;}).length;
+  if(naoLidas>0){badge.style.display='flex';badge.textContent=naoLidas>9?'9+':naoLidas;}
+  else{badge.style.display='none';}
+  if(!_notifData.length){list.innerHTML='<div class="notif-empty">Nenhuma notificação ainda 🚀</div>';return;}
+  var ICONS={marspoints:'⭐',ticket:'🎟️',jogo:'🎮',marspass:'🌌',xp:'🪐',mensagem:'💬'};
+  var CORES={marspoints:'rgba(255,183,0,.15)',ticket:'rgba(255,183,0,.12)',jogo:'rgba(0,255,85,.1)',marspass:'rgba(124,106,247,.12)',xp:'rgba(185,242,255,.1)',mensagem:'rgba(232,66,26,.1)'};
+  list.innerHTML=_notifData.map(function(n){
+    var icon=ICONS[n.tipo]||'📬';
+    var cor=CORES[n.tipo]||'rgba(255,255,255,.06)';
+    var tempo=new Date(n.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return '<div class="notif-item'+(n.lida?'':' nao-lida')+'">'+
+      '<div class="notif-icon" style="background:'+cor+'">'+icon+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="notif-titulo">'+esc(n.titulo)+'</div>'+
+        '<div class="notif-msg">'+esc(n.mensagem)+'</div>'+
+        '<div class="notif-time">'+tempo+'</div>'+
+      '</div></div>';
+  }).join('');
+}
+
+function toggleNotifDropdown(){
+  var dd=document.getElementById('notifDropdown');
+  if(!dd) return;
+  var isOpen=dd.classList.contains('open');
+  dd.classList.toggle('open');
+  if(!isOpen&&_notifData.some(function(n){return !n.lida;})) marcarTodasNotifLidas();
+}
+
+async function marcarTodasNotifLidas(){
+  if(!userSession||!_notifData.some(function(n){return !n.lida;})) return;
+  try{
+    await sb.from('notificacoes_cliente').update({lida:true})
+      .eq('user_email',userSession.user.email).eq('lida',false);
+    _notifData.forEach(function(n){n.lida=true;});
+    renderNotifCliente();
+  }catch(e){}
+}
+
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('notifWrap');
+  if(wrap&&!wrap.contains(e.target)){
+    var dd=document.getElementById('notifDropdown');
+    if(dd) dd.classList.remove('open');
+  }
+},{passive:true});
+
+function iniciarNotifCliente(){
+  carregarNotifCliente();
+  if(_notifInterval) clearInterval(_notifInterval);
+  _notifInterval=setInterval(carregarNotifCliente, 90000);
+}
+
+
+
 async function logout(){
   if(_fazendoLogout) return;
   _fazendoLogout=true;
@@ -3150,6 +3242,8 @@ async function checkAuth() {
     userSession = session;
     mostrarPerfil();
     carregarPerfil(user);
+    /* Inicia notificações — polling leve a cada 90s */
+    setTimeout(iniciarNotifCliente, 1500);
   }
 
   /* Tenta getSession imediatamente — mais rápido que esperar onAuthStateChange no mobile */
@@ -3972,26 +4066,86 @@ async function carregarMarsPassPerfil(user, forcado){
   var borderCor=a.plano==='sombrero'?'rgba(255,60,110,.3)':a.plano==='centaurus'?'rgba(255,179,0,.3)':a.plano==='triangulo'?'rgba(0,212,255,.3)':'rgba(124,106,247,.3)';
 
   var podeJogo=a.plano!=='andromeda';
-  var temJogoPendente=a.jogo_mensal_solicitacao&&!a.jogo_mensal_entregue;
+  var temJogoPendente=a.jogo_mensal_solicitacao&&!a.jogo_mensal_entregue&&!a.jogo_mensal_chave_entregue;
   var mesAtual=new Date().getMonth()+1;
-  var jogoUsadoMes=a.jogo_mensal_resgatado&&(a.jogo_mensal_mes||0)===mesAtual;
+  var jogoUsadoMes=a.jogo_mensal_resgatado&&(a.jogo_mensal_mes||0)===mesAtual&&!a.jogo_mensal_chave_entregue&&a.jogo_mensal_entregue;
 
   var jogoHtml='';
   if(podeJogo){
-    var limiteJogo=a.plano==='sombrero'?'R$15':a.plano==='centaurus'?'R$10':'editor';
+    var limiteJogo=a.plano==='sombrero'?'R$ 15,00':a.plano==='centaurus'?'R$ 10,00':'editor';
+    var corPlano=a.plano==='sombrero'?'#ff3c6e':a.plano==='centaurus'?'#ffb300':'#00d4ff';
     var jogoContent='';
+
     if(temJogoPendente){
-      jogoContent='<div style="font-size:12px;color:var(--amber);font-weight:700">⏳ Aguardando entrega: <span style="color:#fff">'+esc(a.jogo_mensal_solicitacao)+'</span></div>';
-    } else if(jogoUsadoMes){
-      jogoContent='<div style="font-size:11px;color:var(--green)">✅ Jogo do mês já solicitado!</div>';
-    } else {
+      /* Aguardando entrega — mostra jogo solicitado */
       jogoContent=
-        '<div style="font-size:11px;color:#888;margin-bottom:10px">Solicite seu jogo deste mês (limite: '+limiteJogo+')</div>'+
-        '<input id="mp-jogo-input" class="edit-input" placeholder="Qual jogo você quer?" style="margin-bottom:8px;font-size:11px">'+
-        '<button onclick="solicitarJogoMarsPass(\''+a.id+'\')" style="padding:8px 18px;border-radius:8px;border:none;background:var(--amber);color:#000;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer">Solicitar jogo</button>';
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
+          '<div style="width:36px;height:36px;border-radius:10px;background:rgba(255,179,0,.12);border:1px solid rgba(255,179,0,.25);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎮</div>'+
+          '<div>'+
+            '<div style="font-size:11px;font-weight:700;color:var(--amber)">⏳ Aguardando entrega</div>'+
+            '<div style="font-size:13px;font-weight:900;color:#fff">'+esc(a.jogo_mensal_solicitacao)+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div style="font-size:10px;color:#555;background:rgba(255,255,255,.03);border-radius:6px;padding:8px 10px">⏱ Entregamos em até 48h após a solicitação.</div>';
+
+    } else if(a.jogo_mensal_chave_entregue){
+      /* Chave/login entregue — mostra para o cliente copiar */
+      jogoContent=
+        '<div style="margin-bottom:10px">'+
+          '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--green);margin-bottom:6px">✅ JOGO ENTREGUE — '+esc(a.jogo_mensal_solicitacao)+'</div>'+
+          '<div style="background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.2);border-radius:10px;padding:12px">'+
+            '<div style="font-size:8px;font-weight:700;letter-spacing:2px;color:#555;margin-bottom:8px">🔑 SEUS DADOS DE ACESSO</div>'+
+            '<div style="font-family:monospace;font-size:13px;font-weight:700;color:#fff;background:rgba(0,0,0,.3);border-radius:6px;padding:10px;word-break:break-all;margin-bottom:8px">'+esc(a.jogo_mensal_chave_entregue)+'</div>'+
+            '<button onclick="navigator.clipboard.writeText(\''+esc(a.jogo_mensal_chave_entregue)+'\').then(function(){showToast(\'Copiado!\')})" style="width:100%;padding:8px;border-radius:7px;border:1px solid rgba(0,255,85,.3);background:rgba(0,255,85,.08);color:var(--green);font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;cursor:pointer;letter-spacing:.5px">📋 COPIAR ACESSO</button>'+
+          '</div>'+
+        '</div>'+
+        '<div style="font-size:10px;color:#555">Guarde seus dados em local seguro. A MarsGames não se responsabiliza por perda após visualização.</div>';
+
+    } else if(jogoUsadoMes){
+      jogoContent=
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<div style="width:36px;height:36px;border-radius:10px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✅</div>'+
+          '<div style="font-size:12px;color:var(--green);font-weight:700">Jogo do mês já solicitado!<br><span style="font-size:10px;color:#555;font-weight:600">Novo jogo disponível no próximo mês.</span></div>'+
+        '</div>';
+
+    } else {
+      /* Campo de solicitação — design premium */
+      jogoContent=
+        '<div style="margin-bottom:12px">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
+            '<div style="font-size:11px;font-weight:700;color:#ccc">Qual jogo você quer este mês?</div>'+
+            '<div style="font-size:10px;font-weight:900;padding:2px 8px;border-radius:99px;background:rgba('+
+              (a.plano==='sombrero'?'255,60,110':a.plano==='centaurus'?'255,179,0':'0,212,255')+
+            ',.12);color:'+corPlano+';border:1px solid '+corPlano+'44">Limite: '+limiteJogo+'</div>'+
+          '</div>'+
+          '<div style="position:relative">'+
+            '<span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🎮</span>'+
+            '<input id="mp-jogo-input" placeholder="Ex: GTA V, FIFA 25, Minecraft..." autocomplete="off"'+
+              ' style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba('+
+              (a.plano==='sombrero'?'255,60,110':a.plano==='centaurus'?'255,179,0':'0,212,255')+
+              ',.25);border-radius:10px;padding:11px 14px 11px 38px;color:#fff;font-family:Montserrat,sans-serif;font-size:12px;font-weight:600;outline:none;box-sizing:border-box">'+
+          '</div>'+
+        '</div>'+
+        '<button onclick="solicitarJogoMarsPass(\''+a.id+'\')"'+
+          ' style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,'+corPlano+','+corPlano+'99);color:#000;font-family:Montserrat,sans-serif;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;transition:opacity .2s"'+
+          ' onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">'+
+          '⚡ SOLICITAR JOGO DO MÊS'+
+        '</button>'+
+        '<div style="font-size:9px;color:#555;text-align:center;margin-top:8px">Entregamos em até 48h · Válido 1x por mês</div>';
     }
-    jogoHtml='<div style="background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.15);border-radius:10px;padding:14px;margin-bottom:16px">'+
-      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;color:#888;margin-bottom:10px">🎮 JOGO DO MÊS</div>'+jogoContent+'</div>';
+
+    jogoHtml=
+      '<div style="background:rgba('+
+        (a.plano==='sombrero'?'255,60,110':a.plano==='centaurus'?'255,179,0':'0,212,255')+
+      ',.04);border:1px solid rgba('+
+        (a.plano==='sombrero'?'255,60,110':a.plano==='centaurus'?'255,179,0':'0,212,255')+
+      ',.18);border-radius:12px;padding:16px;margin-bottom:16px">'+
+        '<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">'+
+          '<span style="font-size:14px">🎮</span>'+
+          '<span style="font-size:9px;font-weight:900;letter-spacing:2px;color:'+corPlano+'">JOGO DO MÊS</span>'+
+        '</div>'+
+        jogoContent+
+      '</div>';
   }
 
   var cupomHtml='';
@@ -6233,7 +6387,24 @@ var PLANETA_MS=[
   {ic:'✨',nm:'TRANSCENDÊNCIA',ds:'Além do universo',xp:6000}
 ];
 
-/* ── Dados técnicos ── */
+/* ── Notificações do cliente ── */
+.notif-btn{position:relative;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);display:none;align-items:center;justify-content:center;cursor:pointer;color:#888;font-size:16px;transition:all .2s;flex-shrink:0}
+.notif-btn:hover{border-color:rgba(255,255,255,.2);color:#fff;background:rgba(255,255,255,.08)}
+.notif-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--mars);color:#fff;font-size:8px;font-weight:900;display:none;align-items:center;justify-content:center;border:2px solid #0a0a0e}
+.notif-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:300px;max-height:380px;overflow-y:auto;background:#0f0f16;border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.8);z-index:9999;display:none}
+.notif-dropdown.open{display:block;animation:fadeUp .15s ease both}
+.notif-header{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.notif-header-title{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#888;text-transform:uppercase}
+.notif-marcar-btn{font-size:9px;font-weight:700;color:var(--mars);background:none;border:none;cursor:pointer;padding:2px 6px}
+.notif-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:default;transition:background .15s}
+.notif-item:last-child{border-bottom:none}
+.notif-item.nao-lida{background:rgba(232,66,26,.04)}
+.notif-item:hover{background:rgba(255,255,255,.03)}
+.notif-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.notif-titulo{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px}
+.notif-msg{font-size:10px;color:#666;line-height:1.4}
+.notif-time{font-size:9px;color:#444;margin-top:4px}
+.notif-empty{padding:28px;text-align:center;font-size:11px;color:#555}
 var CLIMA_INFO={
   CLEAR:{icon:'☀️',nome:'Limpo'},
   RAIN:{icon:'🌧️',nome:'Chuva'},
