@@ -5697,13 +5697,13 @@ window.cambioExecutar=async function(id){
 
   /* Calcula taxa em R$ */
   var taxaReais=Math.round(custoMP*_cambioTaxa*0.01*100)/100;
-  taxaReais=Math.max(0.50,taxaReais); /* mínimo R$0,50 */
 
-  /* Se taxa zero, executa direto sem PIX */
-  if(_cambioTaxa===0){
+  /* Executa direto se: taxa=0, ou taxa em R$ for irrelevante (<R$1,00) */
+  if(_cambioTaxa===0 || taxaReais<1.00){
     await _cambioExecutarDireto(item,custoMP,recompensaVal);
     return;
   }
+  taxaReais=Math.max(1.00,taxaReais); /* mínimo R$1,00 para valer a pena gerar Pix */
 
   /* Gera PIX para cobrar a taxa em R$ */
   var sessRes=await sb.auth.getSession();
