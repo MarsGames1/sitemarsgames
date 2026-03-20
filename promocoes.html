@@ -364,7 +364,10 @@ async function checkout() {
     }
     const itens = carrinho.map(p => ({ id: p.id, nome: p.nome, preco: Number(p.preco), quantidade: 1, imagem: p.imagem || '' }));
     sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
-    sessionStorage.setItem('mg_user_email', session.user.email);
+    sessionStorage.setItem('mg_user_email',   session.user.email);
+    sessionStorage.setItem('mg_user_id',      session.user.id);
+    sessionStorage.setItem('mg_access_token', session.access_token);
+    sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
     window.location.href = 'checkout.html';
   } catch (error) {
     console.error('Erro no checkout:', error);
@@ -376,6 +379,25 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
 init();
+</script>
+<script>
+/* ── Presença de visitante para o admin ── */
+(function(){
+  var _pc=null,_pi=null,_t=0;
+  function _ini(){
+    if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_ini,500);return;}
+    var pg=window.location.pathname.replace(/.*sitemarsgames\//,'').replace('.html','')||'promocoes';
+    /* Tenta pegar email da sessão autenticada, senão usa anon */
+    sb.auth.getSession().then(function(r){
+      var em=(r.data&&r.data.session&&r.data.session.user&&r.data.session.user.email)||'anon_'+Math.random().toString(36).slice(2,8);
+      _pc=sb.channel('site-visitors');
+      _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});});
+      _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});},25000);
+      window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack();});
+    }).catch(function(){});
+  }
+  setTimeout(_ini,1500);
+})();
 </script>
 </body>
 </html>
