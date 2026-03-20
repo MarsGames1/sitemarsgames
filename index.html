@@ -4636,7 +4636,7 @@ function initSupabase(){
     setTimeout(initSupabase, 100);
     return;
   }
-  var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
   auth:{
     flowType:'implicit',
     detectSessionInUrl:true,
@@ -5322,7 +5322,7 @@ async function atualizarNavbar(session){
     _navDebounce=setTimeout(function(){atualizarNavbar(session);},50);
   }
 
-  function onSupabaseReady(){
+  window.onSupabaseReady = function(){
 sb.auth.getSession().then(function(r){
     if(r.data && r.data.session){
       navComDebounce(r.data.session);
