@@ -2693,7 +2693,7 @@ footer::before{
   pointer-events:none;
   opacity:0;transition:opacity 3s ease;
 }
-#mars-canvas.ready{opacity:0.52}
+#mars-canvas.ready{opacity:0.85}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
 
@@ -3491,7 +3491,7 @@ footer::before{
     <!-- Vídeo Forza Horizon 6 -->
     <video id="heroVideo" autoplay muted loop playsinline preload="auto"
       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.2s ease;z-index:1">
-      <source src="https://raw.githubusercontent.com/MarsGames1/sitemarsgames/main/forza.webm" type="video/webm">
+      <source src="https://marsgames1.github.io/sitemarsgames/forza.webm" type="video/webm">
     </video>
     <div class="hero-video-overlay" style="z-index:2"></div>
   </div>
@@ -5678,8 +5678,8 @@ else window.addEventListener('load', dispararThree);
     sg.addColorStop(1,'rgba(255,255,255,0)');
     sx.fillStyle=sg; sx.fillRect(0,0,32,32);
     var mat=new THREE.PointsMaterial({
-      size:.09,map:new THREE.CanvasTexture(sp),
-      vertexColors:true,transparent:true,opacity:.88,
+      size:.14,map:new THREE.CanvasTexture(sp),
+      vertexColors:true,transparent:true,opacity:1.0,
       sizeAttenuation:true,depthWrite:false
     });
     var pts=new THREE.Points(geo,mat);
@@ -5700,7 +5700,20 @@ else window.addEventListener('load', dispararThree);
     canvas.classList.add('ready');
   }
 
+  /* Fade-in do vídeo Forza */
+  function initVideo(){
+    var video=document.getElementById('heroVideo');
+    if(!video) return;
+    function show(){ video.style.opacity='1'; }
+    video.addEventListener('canplay',show,{once:true});
+    video.addEventListener('playing',show,{once:true});
+    if(video.readyState>=2) show();
+    /* Força play (alguns browsers bloqueiam autoplay) */
+    video.play().catch(function(){});
+  }
+
   function start(){
+    initVideo();
     if(document.getElementById('mars-canvas')){
       loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
         if(window.requestIdleCallback) requestIdleCallback(initThree,{timeout:3000});
