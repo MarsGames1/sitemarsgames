@@ -732,8 +732,17 @@ async function initCardBrick(){
     },
     callbacks:{
       onReady:function(){},
-      onSubmit:async function(cardData){ await pagarCartao(cardData); },
-      onError:function(err){ showToast('Verifique os dados do cartão',true); }
+      onSubmit:async function(cardData){
+        await pagarCartao(cardData);
+        /* re-habilita botão se pagarCartao não redirecionou */
+        var btn=document.getElementById('btnAssinar');
+        if(btn&&btn.disabled){ btn.disabled=false;btn.classList.remove('loading'); }
+      },
+      onError:function(err){
+        showToast('Verifique os dados do cartão.',true);
+        var btn=document.getElementById('btnAssinar');
+        if(btn){ btn.disabled=false;btn.classList.remove('loading'); }
+      }
     }
   });
 }
@@ -770,9 +779,19 @@ async function iniciarPagamento(){
   var btn=document.getElementById('btnAssinar');
   btn.disabled=true;btn.classList.add('loading');
 
-  /* Se cartão, Brick submete via onSubmit */
+  /* Se cartão, Brick submete via submit() — dispara onSubmit callback */
   if(metodoAtual==='cartao'){
-    if(cardBrickCtrl){ try{ await cardBrickCtrl.getFormData(); }catch(e){} }
+    if(!cardBrickCtrl){
+      showToast('Aguarde o formulário de cartão carregar.',true);
+      btn.disabled=false;btn.classList.remove('loading');
+      return;
+    }
+    try{
+      await cardBrickCtrl.submit();
+    }catch(e){
+      showToast('Preencha todos os dados do cartão.',true);
+      btn.disabled=false;btn.classList.remove('loading');
+    }
     return;
   }
 
