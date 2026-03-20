@@ -3446,9 +3446,12 @@ footer::before{
   <button class="mob-close-btn" onclick="fecharBuscaMob()" style="flex-shrink:0">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
-  <input type="search" id="mobSearchInput" placeholder="Buscar jogo..." autocomplete="off"
-    oninput="mobBuscar(this.value)"
-    onkeydown="if(event.key==='Escape')fecharBuscaMob()">
+  <div style="flex:1;position:relative">
+    <input type="search" id="mobSearchInput" placeholder="Buscar jogo..." autocomplete="off"
+      oninput="mobBuscar(this.value);mobBuscarSugestoes(this.value)"
+      onkeydown="if(event.key==='Escape')fecharBuscaMob()">
+    <div id="mobSuggestions" style="position:absolute;top:calc(100% + 8px);left:0;right:0;background:rgba(10,10,14,.99);border:1px solid rgba(232,66,26,.3);border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.8);display:none;z-index:9999;max-height:60vh;overflow-y:auto"></div>
+  </div>
 </div>
 
 <!-- Menu Mobile -->
@@ -3760,12 +3763,18 @@ function aplicarFavs(){
 
     var mvAutoId;
     function mvSchedule(){
+      clearTimeout(mvAutoId);
+      if(document.hidden) return; /* pausa quando aba não visível */
       if('requestIdleCallback' in window){
-        requestIdleCallback(function(){mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},4500)},{timeout:5000});
+        requestIdleCallback(function(){mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},7000)},{timeout:8000});
       } else {
-        mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},4500);
+        mvAutoId=setTimeout(function(){mvSlide(1);mvSchedule()},7000);
       }
     }
+    /* Pausa/retoma com visibilidade da aba */
+    document.addEventListener('visibilitychange',function(){
+      if(document.hidden) clearTimeout(mvAutoId); else mvSchedule();
+    });
     mvSchedule();
     track.addEventListener('mouseenter',function(){clearTimeout(mvAutoId)},{passive:true});
     track.addEventListener('mouseleave',mvSchedule,{passive:true});
@@ -3779,22 +3788,7 @@ function aplicarFavs(){
       touchX=null;mvSchedule();
     },{passive:true});
 
-    /* Realtime: atualiza card se produto for editado */
-    if(typeof sb!=='undefined'){
-      sb.channel('mv-produtos')
-        .on('postgres_changes',{event:'UPDATE',schema:'public',table:'produtos'},function(payload){
-          var p=payload.new;
-          /* Atualiza todas as imagens/nomes deste produto no carrossel */
-          track.querySelectorAll('[data-mvid="'+escMv(p.id)+'"]').forEach(function(card){
-            var img=card.querySelector('.mv-img');
-            if(img&&img.tagName==='IMG'&&p.imagem) img.src=p.imagem;
-            var nm=card.querySelector('.mv-name');
-            if(nm) nm.textContent=p.nome||'';
-            var price=card.querySelector('.mv-price');
-            if(price) price.textContent='R$ '+Number(p.preco||0).toFixed(2).replace('.',',');
-          });
-        }).subscribe();
-    }
+    /* Sem realtime no carrossel — produtos atualizam no próximo acesso */
   }
 
   /* Carrega do Supabase quando disponível */
@@ -4693,7 +4687,9 @@ function fecharBuscaMob(){
   var ov=document.getElementById('mobSearchOverlay');
   if(ov) ov.classList.remove('open');
   var inp=document.getElementById('mobSearchInput');
-  if(inp){inp.value='';mobBuscar('');}
+  if(inp){inp.value='';mobBuscar('');mobBuscarSugestoes('');}
+  var sugg=document.getElementById('mobSuggestions');
+  if(sugg){sugg.style.display='none';sugg.innerHTML='';}
 }
 function mobBuscar(q){
   /* Sincroniza com a busca da loja na mesma página */
@@ -4706,6 +4702,36 @@ function mobBuscar(q){
       try{sb.from('buscas_log').insert({termo:buscaAtual,created_at:new Date().toISOString()}).then(function(){}).catch(function(){});}catch(e){}
     },1200);
   }
+}
+
+var _mobSuggTimer=null;
+function mobBuscarSugestoes(q){
+  var sugg=document.getElementById('mobSuggestions');
+  if(!sugg) return;
+  q=(q||'').trim();
+  if(q.length<2){sugg.style.display='none';sugg.innerHTML='';return;}
+  clearTimeout(_mobSuggTimer);
+  _mobSuggTimer=setTimeout(function(){
+    var local=typeof todosProdutos!=='undefined'&&Array.isArray(todosProdutos)?todosProdutos:[];
+    var res=local.filter(function(p){
+      return p.ativo!==false&&(p.nome||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
+    }).slice(0,6);
+    if(res.length===0){
+      sugg.innerHTML='<div style="padding:16px 12px;font-size:10px;color:#666;font-weight:600;text-align:center">Nenhum resultado para "'+esc(q)+'"</div>';
+    } else {
+      sugg.innerHTML=res.map(function(p){
+        return '<a class="nav-sugg-item" href="produto.html?id='+p.id+'" style="display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.05)">'+
+          (p.imagem?'<img style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" src="'+esc(p.imagem)+'" alt="" loading="lazy">':
+            '<div style="width:36px;height:36px;border-radius:6px;background:var(--dim);flex-shrink:0"></div>')+
+          '<div style="min-width:0;flex:1">'+
+            '<div style="font-size:11px;font-weight:700;color:#eee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+'</div>'+
+            '<div style="font-size:10px;font-weight:900;color:var(--green);margin-top:2px">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+          '</div>'+
+        '</a>';
+      }).join('');
+    }
+    sugg.style.display='block';
+  },200);
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')fecharBuscaMob();});
 function recolherSearch(){
@@ -4793,7 +4819,7 @@ function _renderNavSugg(sugg,resultados,q){
 
 /* ── PRODUTOS ── */
 async function carregarProdutos(){
-  var{data,error}=await sb.from('produtos').select('*').eq('ativo',true).order('created_at',{ascending:false});
+  var{data,error}=await sb.from('produtos').select('id,nome,preco,preco_original,desconto,imagem,plataforma,categoria,estoque,ativo,created_at').eq('ativo',true).order('created_at',{ascending:false});
   if(error||!data){
     document.getElementById('prodsGrid').innerHTML='<div class="loader-wrap">Erro ao carregar. Tente novamente.</div>';
     return;

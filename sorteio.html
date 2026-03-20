@@ -302,58 +302,131 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 
 /* NAV LATERAL */
 .spa-nav{
-  width:200px;flex-shrink:0;
+  width:210px;flex-shrink:0;
   padding:28px 12px;
-  border-right:1px solid rgba(232,66,26,.1);
+  border-right:1px solid rgba(232,66,26,.08);
   position:sticky;top:64px;height:calc(100vh - 64px);
   overflow-y:auto;
-  background:rgba(10,10,14,.6);
-  backdrop-filter:blur(8px);
+  background:linear-gradient(180deg,rgba(10,8,18,.95) 0%,rgba(8,8,14,.98) 100%);
+  backdrop-filter:blur(12px);
 }
 .spa-nav-section{margin-bottom:8px;}
 .spa-nav-label{
-  font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:#333;padding:0 8px;margin-bottom:8px;margin-top:16px;display:block;
+  font-size:8px;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.25);padding:0 10px;margin-bottom:10px;margin-top:16px;display:block;
 }
 .spa-nav-label:first-child{margin-top:0;}
-.spa-page-btn{
-  display:flex;align-items:center;gap:10px;width:100%;
-  padding:11px 12px;border-radius:10px;border:none;
-  background:transparent;color:#555;font-family:'Montserrat',sans-serif;
-  font-size:12px;font-weight:700;letter-spacing:.5px;
-  cursor:pointer;transition:all .2s;text-align:left;
-  position:relative;
-}
-.spa-page-btn:hover{background:rgba(255,255,255,.04);color:#aaa;}
-.spa-page-btn.active{background:rgba(232,66,26,.1);color:#fff;}
-.spa-page-btn.active::before{
-  content:'';position:absolute;left:0;top:20%;bottom:20%;
-  width:3px;border-radius:2px;background:var(--mars);
-  box-shadow:0 0 8px var(--mars);
-}
-.spa-page-btn .btn-icon{
-  width:30px;height:30px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;transition:all .2s;
-  background:rgba(255,255,255,.04);
-}
-.spa-page-btn.active .btn-icon{background:rgba(232,66,26,.15);}
-.spa-page-btn.pvp-btn.active{background:rgba(255,34,51,.1);}
-.spa-page-btn.pvp-btn.active::before{background:#ff2233;box-shadow:0 0 8px #ff2233;}
-.spa-page-btn.pvp-btn.active .btn-icon{background:rgba(255,34,51,.15);}
-.spa-page-btn.roda-btn.active{background:rgba(255,194,0,.08);}
-.spa-page-btn.roda-btn.active::before{background:#ffc200;box-shadow:0 0 8px #ffc200;}
-.spa-page-btn.roda-btn.active .btn-icon{background:rgba(255,194,0,.12);}
-.spa-nav-sep{height:1px;background:rgba(255,255,255,.04);margin:12px 8px;}
 
-/* MP chip na nav */
-.spa-mp-chip{
-  margin:12px 8px 0;padding:10px 12px;border-radius:10px;
-  background:rgba(255,183,0,.06);border:1px solid rgba(255,183,0,.15);
+/* ── Botões da nav ── */
+.spa-page-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:12px 10px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:rgba(255,255,255,.35);
+  font-family:'Montserrat',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:.3px;
+  cursor:pointer;transition:all .2s;text-align:left;
+  position:relative;overflow:hidden;
 }
-.spa-mp-chip-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px;}
-.spa-mp-chip-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#ffb300;}
-.spa-mp-chip-sub{font-size:10px;color:#444;margin-top:2px;}
+.spa-page-btn:hover{
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.75);
+  border-color:rgba(255,255,255,.07);
+}
+
+/* Sorteios — vermelho/mars */
+.spa-page-btn.active{
+  background:linear-gradient(135deg,rgba(232,66,26,.18),rgba(232,66,26,.06));
+  color:#fff;
+  border-color:rgba(232,66,26,.25);
+  box-shadow:0 4px 20px rgba(232,66,26,.12);
+}
+.spa-page-btn.active::before{
+  content:'';position:absolute;left:0;top:15%;bottom:15%;
+  width:3px;border-radius:0 3px 3px 0;
+  background:var(--mars);
+  box-shadow:0 0 10px var(--mars),0 0 20px rgba(232,66,26,.4);
+}
+/* Shimmer no active */
+.spa-page-btn.active::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.04) 50%,transparent 100%);
+  background-size:200% 100%;
+  animation:navShimmer 3s ease-in-out infinite;
+}
+@keyframes navShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* PvP — vermelho vivo */
+.spa-page-btn.pvp-btn.active{
+  background:linear-gradient(135deg,rgba(255,34,51,.15),rgba(255,34,51,.05));
+  border-color:rgba(255,34,51,.3);
+  box-shadow:0 4px 20px rgba(255,34,51,.15);
+}
+.spa-page-btn.pvp-btn.active::before{background:#ff2233;box-shadow:0 0 10px #ff2233,0 0 20px rgba(255,34,51,.5);}
+
+/* Roda — dourado */
+.spa-page-btn.roda-btn.active{
+  background:linear-gradient(135deg,rgba(255,194,0,.15),rgba(255,194,0,.04));
+  border-color:rgba(255,194,0,.3);
+  box-shadow:0 4px 20px rgba(255,194,0,.12);
+}
+.spa-page-btn.roda-btn.active::before{background:#ffc200;box-shadow:0 0 10px #ffc200,0 0 20px rgba(255,194,0,.5);}
+
+/* Ícone */
+.spa-page-btn .btn-icon{
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;transition:all .25s;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.06);
+}
+.spa-page-btn:hover .btn-icon{background:rgba(255,255,255,.08);}
+.spa-page-btn.active .btn-icon{
+  background:rgba(232,66,26,.2);
+  border-color:rgba(232,66,26,.3);
+  box-shadow:0 0 12px rgba(232,66,26,.3);
+}
+.spa-page-btn.pvp-btn.active .btn-icon{
+  background:rgba(255,34,51,.2);border-color:rgba(255,34,51,.35);
+  box-shadow:0 0 12px rgba(255,34,51,.35);
+}
+.spa-page-btn.roda-btn.active .btn-icon{
+  background:rgba(255,194,0,.15);border-color:rgba(255,194,0,.3);
+  box-shadow:0 0 12px rgba(255,194,0,.3);
+}
+
+/* Texto do botão */
+.spa-page-btn .btn-label{display:flex;flex-direction:column;gap:2px;}
+.spa-page-btn .btn-sub{font-size:9px;font-weight:600;color:rgba(255,255,255,.3);letter-spacing:.5px;}
+.spa-page-btn.active .btn-sub{color:rgba(255,255,255,.5);}
+
+.spa-nav-sep{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+  margin:14px 4px;
+}
+
+/* MP chip premium */
+.spa-mp-chip{
+  margin:4px 2px 0;padding:14px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(255,183,0,.1),rgba(255,120,0,.05));
+  border:1px solid rgba(255,183,0,.2);
+  position:relative;overflow:hidden;
+}
+.spa-mp-chip::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,183,0,.5),transparent);
+}
+.spa-mp-chip-lbl{
+  font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,183,0,.5);margin-bottom:6px;
+}
+.spa-mp-chip-val{
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
+  color:#ffb300;
+  text-shadow:0 0 20px rgba(255,183,0,.4);
+  line-height:1;
+}
+.spa-mp-chip-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:6px;font-weight:600;}
 
 /* Conteúdo principal */
 .spa-content{flex:1;min-width:0;padding:0 0 80px;overflow-x:hidden;}
@@ -367,9 +440,10 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   .spa-layout{flex-direction:column;}
   .spa-nav{
     width:100%;height:auto;position:static;
-    padding:0;border-right:none;border-bottom:1px solid rgba(232,66,26,.1);
+    padding:0;border-right:none;
+    border-bottom:1px solid rgba(255,255,255,.06);
     display:flex;align-items:center;gap:0;overflow-x:auto;overflow-y:visible;
-    background:rgba(10,10,14,.97);backdrop-filter:blur(8px);
+    background:rgba(8,8,14,.98);backdrop-filter:blur(12px);
     scrollbar-width:none;
   }
   .spa-nav::-webkit-scrollbar{display:none;}
@@ -377,11 +451,15 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   .spa-nav-label{display:none;}
   .spa-nav-sep,.spa-mp-chip{display:none;}
   .spa-page-btn{
-    flex-direction:column;gap:3px;padding:10px 14px;white-space:nowrap;
-    border-radius:0;font-size:10px;min-width:80px;justify-content:center;
+    flex-direction:column;gap:4px;padding:10px 16px;
+    white-space:nowrap;border-radius:0;
+    font-size:10px;min-width:85px;justify-content:center;
+    border:none;
   }
-  .spa-page-btn.active::before{top:auto;bottom:0;left:10%;right:10%;width:auto;height:2px;border-radius:2px;}
-  .spa-page-btn .btn-icon{width:24px;height:24px;font-size:12px;}
+  .spa-page-btn .btn-label{align-items:center;text-align:center;}
+  .spa-page-btn .btn-sub{display:none;}
+  .spa-page-btn.active::before{top:auto;bottom:0;left:15%;right:15%;width:auto;height:2px;border-radius:2px;}
+  .spa-page-btn .btn-icon{width:26px;height:26px;font-size:13px;}
 }
 
 /* Card bloqueado MarsPass — visual galáxico premium */
@@ -888,8 +966,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .pvp-rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;}
 .pvp-rule{display:flex;gap:11px;align-items:flex-start;}
 .pvp-rule-icon{width:32px;height:32px;background:rgba(255,34,51,.07);border:1px solid rgba(255,34,51,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.pvp-rule strong{display:block;font-size:12px;font-weight:700;color:#eee;margin-bottom:2px;}
-.pvp-rule p{font-size:11px;color:#888;line-height:1.45;}
+.pvp-rule strong{display:block;font-size:12px;font-weight:700;color:#ccc;margin-bottom:2px;}
+.pvp-rule p{font-size:11px;color:#444;line-height:1.45;}
 .pvp-lb{background:linear-gradient(160deg,#0d1226,#080d1a);border:1px solid rgba(255,34,51,.12);border-radius:14px;overflow:hidden;margin:0 20px 24px;}
 .pvp-lb-top{padding:16px 20px;border-bottom:1px solid rgba(255,34,51,.08);display:flex;align-items:center;justify-content:space-between;}
 .pvp-lb-top h3{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#fff;text-transform:uppercase;}
@@ -1206,20 +1284,20 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
       <span class="spa-nav-label">Jogos & Prêmios</span>
       <button class="spa-page-btn active" id="spaBtnSorteios" onclick="spaGo('sorteios')">
         <span class="btn-icon">🎰</span>
-        Sorteios
+        <span class="btn-label">Sorteios<span class="btn-sub">Diário · Semanal · VIP</span></span>
       </button>
       <button class="spa-page-btn pvp-btn" id="spaBtnArena" onclick="spaGo('arena')">
         <span class="btn-icon">⚔️</span>
-        Arena PvP
+        <span class="btn-label">Arena PvP<span class="btn-sub">Duelos · Prêmios</span></span>
       </button>
       <button class="spa-page-btn roda-btn" id="spaBtnRoda" onclick="spaGo('roda')">
         <span class="btn-icon">🎡</span>
-        Roda da Fortuna
+        <span class="btn-label">Roda da Fortuna<span class="btn-sub">25 MP por giro</span></span>
       </button>
     </div>
     <div class="spa-nav-sep"></div>
     <div class="spa-mp-chip" id="spaNavMpChip" style="display:none">
-      <div class="spa-mp-chip-lbl">Marspoints</div>
+      <div class="spa-mp-chip-lbl">✦ Marspoints</div>
       <div class="spa-mp-chip-val" id="spaNavMpVal">0</div>
       <div class="spa-mp-chip-sub">Custo roda: 25 MP/giro</div>
     </div>
@@ -1438,7 +1516,7 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
               <div class="pvp-fila-badge" id="pvpFila-bronze"></div>
               <div class="pvp-room-tier">⚡ Recruta</div><div class="pvp-room-name">Sala Bronze</div>
               <div class="pvp-room-price">R$2 <span>/ entrada</span></div>
-              <div class="pvp-room-prize"><strong>🏆 Prêmio do Vencedor</strong><span>150 Marspoints + 3 Marstickets</span></div>
+              <div class="pvp-room-prize"><strong>🏆 Prêmio do Vencedor</strong><span>100 Marspoints + 3 Marstickets</span></div>
               <div class="pvp-room-stats"><div class="pvp-room-stat"><strong>5</strong><span>Perguntas</span></div><div class="pvp-room-stat"><strong>10s</strong><span>Por questão</span></div><div class="pvp-room-stat"><strong>Fácil</strong><span>Nível</span></div></div>
               <button class="pvp-enter-btn">ENTRAR NA SALA →</button>
             </div>
@@ -1466,7 +1544,7 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
               <div class="pvp-rule"><div class="pvp-rule-icon">❓</div><div><strong>5 perguntas de games</strong><p>Múltipla escolha. 10 segundos por questão.</p></div></div>
               <div class="pvp-rule"><div class="pvp-rule-icon">⏱️</div><div><strong>Velocidade importa</strong><p>Cada um responde separado. Pontuações comparadas no final.</p></div></div>
               <div class="pvp-rule"><div class="pvp-rule-icon">🏆</div><div><strong>Vencedor leva tudo</strong><p>Prêmio creditado automaticamente no perfil.</p></div></div>
-              <div class="pvp-rule"><div class="pvp-rule-icon">🤝</div><div><strong>Empate</strong><p>Ambos recebem 100 Marspoints bônus.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">🤝</div><div><strong>Empate</strong><p>Ambos recebem o valor de volta + 10 Marspoints bônus.</p></div></div>
               <div class="pvp-rule"><div class="pvp-rule-icon">⏳</div><div><strong>Fila permanente</strong><p>Duelo inicia automaticamente assim que um oponente entrar.</p></div></div>
             </div>
           </div>
@@ -1583,8 +1661,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
           <div class="pvp-confirm-row"><span>Entrada</span><strong id="pvpConfirmEntrada">R$2,00</strong></div>
           <div class="pvp-confirm-row"><span>Dificuldade</span><strong id="pvpConfirmDiff">Fácil</strong></div>
           <div class="pvp-confirm-row"><span>Perguntas</span><strong>5 questões · 10s cada</strong></div>
-          <div class="pvp-confirm-row prize"><span>🏆 Prêmio se vencer</span><strong id="pvpConfirmPremio">150 MP + 3 Tickets</strong></div>
-          <div class="pvp-confirm-row draw"><span>🤝 Se empatar</span><strong>100 Marspoints bônus</strong></div>
+          <div class="pvp-confirm-row prize"><span>🏆 Prêmio se vencer</span><strong id="pvpConfirmPremio">100 MP + 3 Tickets</strong></div>
+          <div class="pvp-confirm-row draw"><span>🤝 Se empatar</span><strong>10 Marspoints bônus</strong></div>
         </div>
         <div class="pvp-confirm-aviso">⚠️ Ao confirmar, você será redirecionado ao Pix. <strong>Entradas não são estornadas.</strong> Após o pagamento você entra na fila e pode minimizar.</div>
         <div style="display:flex;gap:8px;margin-top:12px">
@@ -3138,7 +3216,7 @@ document.head.appendChild(s);})();
    ARENA PVP
 ══════════════════════════════════════════════════ */
 var PVP_SALAS={
-  bronze:{name:'Sala Bronze',entrada:'R$2', premio:'150 MP + 3 Tickets',prizeDisplay:'150 Marspoints + 3 Marstickets',mp:150,tickets:3},
+  bronze:{name:'Sala Bronze',entrada:'R$2', premio:'100 MP + 3 Tickets',prizeDisplay:'100 Marspoints + 3 Marstickets',mp:100,tickets:3},
   silver:{name:'Sala Prata', entrada:'R$5', premio:'250 MP + 7 Tickets',prizeDisplay:'250 Marspoints + 7 Marstickets',mp:250,tickets:7},
   gold:  {name:'Sala Ouro',  entrada:'R$10',premio:'500 MP + 15 Tickets',prizeDisplay:'500 Marspoints + 15 Marstickets',mp:500,tickets:15}
 };
@@ -3232,12 +3310,11 @@ var pvpRodadaAtual=null; /* rodada salva no banco */
 var PVP_TEMPO=10;
 var PVP_TEMPO_ESPERA_OPONENTE=15; /* segundos esperando oponente real antes do bot */
 
-/* Nomes realistas dos bots */
+/* Nomes galácticos dos bots */
 var PVP_BOT_NAMES=[
-  'Junior_Gamer','Joãozinho','Julio_Play','Kaike07','Matheus_XP',
-  'Thiagão','Bruninho','Rafinha','Diegão','Felipinho',
-  'Gui_Games','Lucas_Pro','Pedro_FPS','Viniplay','Anderson_GG',
-  'Marquinhos','Leandro99','Caio_Arena','Rodolfinho','Nando_Games'
+  'NovaMars_X7','AstroKid_99','StarDrifter','VoidHunter','NebulaCrusher',
+  'GalaxBlade','CosmicRaider','OrionStrike','PulsarPhantom','CometSlayer',
+  'ZeroGravity','SolarWarden','DarkMatter','QuantumKnight','WarpSeeker'
 ];
 
 /* Precisão do bot por sala (% de acertos) */
@@ -3524,23 +3601,6 @@ async function pvpConfirmarPagamento(){
   }
 }
 function pvpIniciarDuelo(){
-  /* Mostra tela "Buscando oponente" ANTES das perguntas */
-  var waitEl=document.getElementById('pvpTela-wait');
-  if(waitEl){
-    /* Esconde botão demo na tela de espera */
-    var demoBtn=waitEl.querySelector('.pvp-btn-demo');
-    if(demoBtn) demoBtn.style.display='none';
-  }
-  document.getElementById('pvpModalTitle').textContent='⏳ BUSCANDO OPONENTE';
-  pvpMostrarTela('wait');
-  /* Suspense de 4-8s antes de entrar no combate */
-  var delay=4000+Math.random()*4000;
-  setTimeout(function(){
-    pvpIniciarCombate();
-  }, delay);
-}
-
-function pvpIniciarCombate(){
   var tier=pvpSalaAtual?pvpSalaAtual._tier:'bronze';
   var pool=(PVP_QS[tier]||PVP_QS.bronze).slice().sort(function(){return Math.random()-.5;});
   pvpQuestoes=pool.slice(0,5); pvpQAtual=0;pvpPts1=0;pvpPts2=0;pvpMisses2=0;pvpResultados=[];
@@ -3552,7 +3612,6 @@ function pvpIniciarCombate(){
   else{av.textContent=nome[0]||'🚀';}
   document.getElementById('pvpPtsP1').textContent='0';document.getElementById('pvpPtsP2').textContent='?';
   document.getElementById('pvpHpP1').style.width='100%';document.getElementById('pvpHpP2').style.width='100%';
-  document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
   pvpMostrarTela('combat');
   var dots=document.getElementById('pvpDots'); dots.innerHTML='';
   for(var d=0;d<5;d++){var dot=document.createElement('div');dot.className='pvp-dot'+(d===0?' cur':'');dots.appendChild(dot);}
@@ -3612,7 +3671,7 @@ function pvpMostrarResultado(){
   var crown=document.getElementById('pvpCrown'),title=document.getElementById('pvpResultTitle'),sub=document.getElementById('pvpResultSub'),prize=document.getElementById('pvpPrizeBox');
   if(pvpPts1>pvpPts2){crown.textContent='🏆';title.className='pvp-result-title win';title.textContent='VITÓRIA!';sub.textContent='Você dominou o duelo galáctico! Prêmio no perfil.';document.getElementById('pvpPrizeTxt').textContent=pvpSalaAtual.prizeDisplay;prize.style.display='block';pvpSalvarResultado('vitoria');}
   else if(pvpPts1<pvpPts2){crown.textContent='💀';title.className='pvp-result-title lose';title.textContent='DERROTA!';sub.textContent='O oponente foi mais rápido. Tente novamente!';prize.style.display='none';pvpSalvarResultado('derrota');}
-  else{crown.textContent='🤝';title.className='pvp-result-title draw';title.textContent='EMPATE!';sub.textContent='Empate! Ambos ganham 100 Marspoints bônus.';document.getElementById('pvpPrizeTxt').textContent='100 Marspoints bônus para ambos';prize.style.display='block';pvpSalvarResultado('empate');}
+  else{crown.textContent='🤝';title.className='pvp-result-title draw';title.textContent='EMPATE!';sub.textContent='Empate! Ambos ganham 10 Marspoints bônus.';document.getElementById('pvpPrizeTxt').textContent='10 Marspoints bônus para ambos';prize.style.display='block';pvpSalvarResultado('empate');}
 }
 function pvpJogarNovamente(){pvpMostrarTela('wait');}
 /* ── Salva rodada no banco e faz matchmaking ── */
@@ -3692,30 +3751,23 @@ async function pvpSalvarRodada(){
   }
 }
 
-/* Após as perguntas: delay silencioso simulando matchmaking antes de revelar o bot */
+/* Tela de suspense "procurando oponente" antes de entrar o bot */
 function pvpMostrarAguardandoOponente(callback){
-  /* Mantém a tela de resultado bloqueada com overlay de busca enquanto "procura" */
-  var resultTela=document.getElementById('pvpTela-result');
-  var overlay=document.getElementById('pvpBuscandoOverlay');
-  if(!overlay&&resultTela){
-    overlay=document.createElement('div');
-    overlay.id='pvpBuscandoOverlay';
-    overlay.style.cssText='position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(7,7,14,.92);border-radius:inherit;gap:12px;';
-    overlay.innerHTML='<div style="width:48px;height:48px;border-radius:50%;border:3px solid #333;border-top-color:var(--mars);animation:spin .9s linear infinite"></div>'+
-      '<div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#aaa">BUSCANDO OPONENTE...</div>'+
-      '<div style="font-size:10px;color:#555">Aguardando resultado do matchmaking</div>';
-    var modal=document.querySelector('.pvp-modal');
-    if(modal) modal.style.position='relative';
-    resultTela.style.position='relative';
-    resultTela.appendChild(overlay);
-    pvpMostrarTela('result');
+  var tela=document.getElementById('pvpTela-result');
+  if(tela){
+    /* Mostra tela de busca temporária dentro do modal */
+    var waitEl=document.getElementById('pvpTela-wait');
+    if(waitEl){
+      waitEl.style.display='block';
+      /* Esconde o botão demo */
+      var demoBtn=waitEl.querySelector('.pvp-btn-demo');
+      if(demoBtn) demoBtn.style.display='none';
+    }
+    pvpMostrarTela('wait');
   }
-  /* Delay 3-6s antes do bot entrar */
-  var delay=3000+Math.random()*3000;
-  setTimeout(function(){
-    if(overlay&&overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    callback();
-  }, delay);
+  /* Aguarda entre 8 e 15s — dá sensação de busca real */
+  var delay=8000+Math.random()*7000;
+  setTimeout(callback, delay);
 }
 
 /* Credita prêmio e mostra resultado */
@@ -3727,15 +3779,13 @@ async function pvpCreditarPremio(resultado, isBot, oponenteNome){
       var ptA=(mpR&&mpR.pontos)||0;
       await sb.from('marspoints').upsert({user_email:userSession.user.email,pontos:ptA+pvpSalaAtual.mp,updated_at:new Date().toISOString()},{onConflict:'user_email'});
       var{data:tkR}=await sb.from('tickets').select('quantidade').eq('user_email',userSession.user.email).maybeSingle();
-      var nQ=(tkR&&tkR.quantidade||0)+pvpSalaAtual.tickets;
-      await sb.from('tickets').upsert({user_email:userSession.user.email,quantidade:nQ},{onConflict:'user_email'});
-      meusTickets=nQ;var hc=document.getElementById('heroTicketCount');if(hc)hc.textContent=meusTickets;
+      if(tkR){var nQ=(tkR.quantidade||0)+pvpSalaAtual.tickets;await sb.from('tickets').update({quantidade:nQ}).eq('user_email',userSession.user.email);meusTickets=nQ;var hc=document.getElementById('heroTicketCount');if(hc)hc.textContent=meusTickets;}
       showToast('🏆 Vitória! +'+pvpSalaAtual.mp+' MP e +'+pvpSalaAtual.tickets+' tickets!');
     }else if(resultado==='empate'){
       var{data:mpE}=await sb.from('marspoints').select('pontos').eq('user_email',userSession.user.email).maybeSingle();
       var ptE=(mpE&&mpE.pontos)||0;
-      await sb.from('marspoints').upsert({user_email:userSession.user.email,pontos:ptE+100,updated_at:new Date().toISOString()},{onConflict:'user_email'});
-      showToast('🤝 Empate! +100 Marspoints bônus!');
+      await sb.from('marspoints').upsert({user_email:userSession.user.email,pontos:ptE+10,updated_at:new Date().toISOString()},{onConflict:'user_email'});
+      showToast('🤝 Empate! +10 Marspoints bônus!');
     }
     /* Mostra resultado com nome do oponente */
     pvpMostrarResultadoFinal(resultado, oponenteNome, isBot);
@@ -3777,8 +3827,8 @@ function pvpMostrarResultadoFinal(resultado, oponenteNome, isBot){
     crown.textContent='🤝';
     title.className='pvp-result-title draw';
     title.textContent='EMPATE!';
-    sub.textContent='Empate com '+nomeOp+'! +100 Marspoints para ambos.';
-    document.getElementById('pvpPrizeTxt').textContent='100 Marspoints bônus';
+    sub.textContent='Empate com '+nomeOp+'! +10 Marspoints para ambos.';
+    document.getElementById('pvpPrizeTxt').textContent='10 Marspoints bônus';
     prize.style.display='block';
   }
 }
@@ -3788,7 +3838,7 @@ async function pvpCarregarLeaderboard(){
     var{data}=await sb.from('pvp_duelos').select('user_email,resultado').gte('created_at',ini.toISOString());
     if(!data||!data.length) return;
     var agg={};
-    data.forEach(function(d){if(!agg[d.user_email])agg[d.user_email]={w:0,l:0,mp:0};if(d.resultado==='vitoria'){agg[d.user_email].w++;agg[d.user_email].mp+=150;}else if(d.resultado==='derrota')agg[d.user_email].l++;});
+    data.forEach(function(d){if(!agg[d.user_email])agg[d.user_email]={w:0,l:0,mp:0};if(d.resultado==='vitoria'){agg[d.user_email].w++;agg[d.user_email].mp+=100;}else if(d.resultado==='derrota')agg[d.user_email].l++;});
     var ranks=['r1','r2','r3','rn','rn'];
     var lista=Object.keys(agg).map(function(e){return{email:e.replace(/(.{3}).*(@.*)/,'$1***$2'),w:agg[e].w,l:agg[e].l,mp:agg[e].mp};}).sort(function(a,b){return b.w-a.w;}).slice(0,5);
     var html=lista.map(function(p,i){var n=String(i+1).padStart(2,'0');return '<div class="pvp-lb-row"><div class="pvp-lb-rank '+ranks[i]+'">'+n+'</div><div class="pvp-lb-player"><div class="pvp-lb-av">🎮</div><div><div class="pvp-lb-name">'+p.email+'</div><div class="pvp-lb-tag">DUELISTA</div></div></div><div class="pvp-lb-val w">'+p.w+'</div><div class="pvp-lb-val l">'+p.l+'</div><div class="pvp-lb-val m">'+p.mp+' MP</div></div>';}).join('');
