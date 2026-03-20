@@ -2684,10 +2684,7 @@ footer::before{
 
 
 /* ══ STARS ══ */
-.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(1px 1px at 15% 20%,rgba(255,255,255,.2) 0%,transparent 100%),
-    radial-gradient(1px 1px at 55% 45%,rgba(255,255,255,.15) 0%,transparent 100%),
-    radial-gradient(1px 1px at 80% 70%,rgba(255,255,255,.12) 0%,transparent 100%);opacity:.5}
+
 
 /* ══ ANIMATION ENGINE ══ */
 #mars-canvas{
@@ -3350,7 +3347,7 @@ footer::before{
   </div>
 </div>
 
-<div class="stars-bg"></div>
+<canvas id="mars-canvas"></canvas>
 <canvas id="mars-canvas"></canvas>
 
 
@@ -3491,7 +3488,12 @@ footer::before{
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-video-wrap" id="heroVideoWrap">
-    <div class="hero-video-overlay"></div>
+    <!-- Vídeo Forza Horizon 6 -->
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.2s ease;z-index:1">
+      <source src="https://raw.githubusercontent.com/MarsGames1/sitemarsgames/main/forza.webm" type="video/webm">
+    </video>
+    <div class="hero-video-overlay" style="z-index:2"></div>
   </div>
   <div class="hero-scan"></div>
   <div class="hero-content">
@@ -5627,5 +5629,87 @@ else window.addEventListener('load', dispararThree);
     window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack();});
   }
   setTimeout(_ini,1500);
+})();
+</script>
+
+<script>
+/* ══ FUNDO ESPACIAL THREE.JS — igual ao perfil/sorteio ══ */
+(function(){
+  function loadScript(src,cb){
+    var s=document.createElement('script');
+    s.src=src;s.async=true;
+    s.onload=function(){cb&&cb()};
+    s.onerror=function(){cb&&cb(new Error('fail'))};
+    document.head.appendChild(s);
+  }
+
+  function initThree(){
+    if(typeof THREE==='undefined') return;
+    var canvas=document.getElementById('mars-canvas');
+    if(!canvas) return;
+    var W=window.innerWidth, H=window.innerHeight;
+    var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+    renderer.setSize(W,H);
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(75,W/H,.1,1000);
+    cam.position.z=5;
+    var N=W<768?700:1400;
+    var pos=new Float32Array(N*3), col=new Float32Array(N*3);
+    for(var i=0;i<N;i++){
+      pos[i*3]  =(Math.random()-.5)*28;
+      pos[i*3+1]=(Math.random()-.5)*28;
+      pos[i*3+2]=(Math.random()-.5)*16;
+      var r=Math.random();
+      if     (r<.04){col[i*3]=.91;col[i*3+1]=.26;col[i*3+2]=.10;} /* mars */
+      else if(r<.08){col[i*3]=0;  col[i*3+1]=1;  col[i*3+2]=.33;} /* green */
+      else if(r<.11){col[i*3]=.7; col[i*3+1]=.82;col[i*3+2]=1;  } /* blue */
+      else{var v=Math.random()*.5+.5;col[i*3]=v;col[i*3+1]=v;col[i*3+2]=v;}
+    }
+    var geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',  new THREE.BufferAttribute(col,3));
+    /* Sprite circular suave */
+    var sp=document.createElement('canvas'); sp.width=sp.height=32;
+    var sx=sp.getContext('2d');
+    var sg=sx.createRadialGradient(16,16,0,16,16,16);
+    sg.addColorStop(0,'rgba(255,255,255,1)');
+    sg.addColorStop(.4,'rgba(255,255,255,.8)');
+    sg.addColorStop(1,'rgba(255,255,255,0)');
+    sx.fillStyle=sg; sx.fillRect(0,0,32,32);
+    var mat=new THREE.PointsMaterial({
+      size:.09,map:new THREE.CanvasTexture(sp),
+      vertexColors:true,transparent:true,opacity:.88,
+      sizeAttenuation:true,depthWrite:false
+    });
+    var pts=new THREE.Points(geo,mat);
+    scene.add(pts);
+    window.addEventListener('resize',function(){
+      W=window.innerWidth;H=window.innerHeight;
+      cam.aspect=W/H;cam.updateProjectionMatrix();renderer.setSize(W,H);
+    });
+    var clock=new THREE.Clock();
+    (function animate(){
+      requestAnimationFrame(animate);
+      var t=clock.getElapsedTime();
+      pts.rotation.y= t*.012;
+      pts.rotation.x= t*.004;
+      pts.rotation.z= t*.002;
+      renderer.render(scene,cam);
+    })();
+    canvas.classList.add('ready');
+  }
+
+  function start(){
+    if(document.getElementById('mars-canvas')){
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
+        if(window.requestIdleCallback) requestIdleCallback(initThree,{timeout:3000});
+        else setTimeout(initThree,800);
+      });
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
 })();
 </script>
