@@ -3769,3 +3769,20 @@ async function pvpCarregarLeaderboard(){
 }
 document.getElementById('pvpModalBg').addEventListener('click',function(e){if(e.target===this)pvpFecharModal();});
 document.getElementById('rdOverlay').addEventListener('click',function(e){if(e.target===this)rdCloseModal();});
+
+<script>
+/* ── Presença de visitante para o admin ── */
+(function(){
+  var _pc=null,_pi=null,_t=0;
+  function _ini(){
+    if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_ini,500);return;}
+    var em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||'anon_'+Math.random().toString(36).slice(2,8);
+    var pg=window.location.pathname.replace(/.*sitemarsgames\//,'').replace('.html','')||'index';
+    _pc=sb.channel('site-visitors');
+    _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});});
+    _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});},25000);
+    window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack();});
+  }
+  setTimeout(_ini,1500);
+})();
+</script>

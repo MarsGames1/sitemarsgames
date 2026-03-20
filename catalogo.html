@@ -7,7 +7,24 @@
 <meta name="description" content="Catálogo completo de jogos PC Steam com até 90% OFF. Entrega imediata 24h.">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var _tentativas = 0;
+  function _loadSDK(src, fallback){
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onerror = function(){
+      if(fallback){ var s2=document.createElement('script'); s2.src=fallback; s2.async=true; document.head.appendChild(s2); }
+    };
+    document.head.appendChild(s);
+  }
+  _loadSDK(
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+  );
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -372,15 +389,28 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 <script>
 var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
 var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
-  auth:{
-    flowType:'implicit',
-    detectSessionInUrl:true,
-    persistSession:true,
-    autoRefreshToken:true,
-    storageKey:'mg_auth'
+var sb = null;
+var _sbTentativas = 0;
+function initSupabase(){
+  var lib = window.supabase || window.Supabase;
+  if(!lib || !lib.createClient){
+    _sbTentativas++;
+    if(_sbTentativas > 80){ console.error('[MarsGames] SDK Supabase nao carregou em 8s'); return; }
+    setTimeout(initSupabase, 100);
+    return;
   }
-});
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+    auth:{
+      flowType:'implicit',
+      detectSessionInUrl:true,
+      persistSession:true,
+      autoRefreshToken:true,
+      storageKey:'mg_auth'
+    }
+  });
+  onSupabaseReady();
+}
+setTimeout(initSupabase, 50);
 var todosProdutos=[],catAtual='todos',buscaAtual='';
 var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
 
@@ -567,7 +597,11 @@ document.addEventListener('keydown',function(e){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
 
-init();
+function onSupabaseReady(){
+  init();
+  sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
+  setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});}, 100);
+}
 </script>
 <script>
 /* ══ MARSGAMES ANIMATION ENGINE ══ */
@@ -701,6 +735,23 @@ async function atualizarNavbar(session){
 }
 sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
 setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.data?r.data.session:null);});}, 100);
+</script>
+
+<script>
+/* ── Presença de visitante para o admin ── */
+(function(){
+  var _pc=null,_pi=null,_t=0;
+  function _ini(){
+    if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_ini,500);return;}
+    var em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||'anon_'+Math.random().toString(36).slice(2,8);
+    var pg=window.location.pathname.replace(/.*sitemarsgames\//,'').replace('.html','')||'index';
+    _pc=sb.channel('site-visitors');
+    _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});});
+    _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});},25000);
+    window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack();});
+  }
+  setTimeout(_ini,1500);
+})();
 </script>
 </body>
 </html>
