@@ -3213,7 +3213,31 @@ async function carregarPerfil(user){
     perfilData = perfil;
     renderPerfil(perfil);
     carregarBeneficiosCupom(perfil);
-    renderConquistas(perfil);
+
+    /* ── Busca dados para conquistas em paralelo (sem bloquear UI) ── */
+    Promise.all([
+      sb.from('pedidos').select('id,produto_nome,preco,created_at').eq('cliente_email',user.email).in('status',['pago','entregue','aprovado']).catch(function(){return{data:[]};}),
+      sb.from('avaliacoes').select('id').eq('user_email',user.email).eq('aprovado',true).catch(function(){return{data:[]};})
+    ]).then(function(results){
+      var peds  = results[0].data || [];
+      var avals = results[1].data || [];
+
+      /* Conta pedidos e categorias */
+      var rpgKeys   = ['witcher','elden','dark souls','sekiro','hades','rpg','fallout','skyrim','dragon','final fantasy'];
+      var promoKeys = ['promoção','promo','sale','desconto','off'];
+      var rpg_comprados   = peds.filter(function(p){ var n=(p.produto_nome||'').toLowerCase(); return rpgKeys.some(function(k){return n.includes(k);}); }).length;
+      var promo_comprados = peds.filter(function(p){ var n=(p.produto_nome||'').toLowerCase(); return promoKeys.some(function(k){return n.includes(k);}); }).length;
+
+      perfil.total_pedidos    = peds.length;
+      perfil.total_avaliacoes = avals.length;
+      perfil.rpg_comprados    = rpg_comprados;
+      perfil.promo_comprados  = promo_comprados;
+      /* indicacoes já pode estar no perfil.indicacoes (campo da tabela perfis) */
+      perfil.indicacoes       = perfil.indicacoes || 0;
+
+      perfilData = perfil;
+      renderConquistas(perfil);
+    }).catch(function(e){ console.warn('[conquistas data]',e); renderConquistas(perfil); });
 
     /* Tickets no hero — usa dado já carregado */
     var tktQtd = (tktRes.data && tktRes.data.quantidade) || 0;
@@ -5005,20 +5029,6 @@ function iniciarRealtimePerfil(userEmail){
         showToast('🎟️ Tickets atualizados! '+nova.quantidade+' tickets');
       }
     })
-    /* Mudanças em cambio_itens — admin editou/removeu item */
-    .on('postgres_changes',{
-      event:'*',
-      schema:'public',
-      table:'cambio_itens'
-    },function(){
-      /* Força recarga dos itens sem usar cache */
-      cambioInitDone=false;
-      _cambioItems=[];
-      if(document.getElementById('tab-cambio') &&
-         document.getElementById('tab-cambio').classList.contains('active')){
-        cambioCarregarTudo();
-      }
-    })
     .subscribe(function(status){
       if(status==='SUBSCRIBED'){
         console.log('[Realtime] Perfil inscrito para',userEmail);
@@ -5565,8 +5575,8 @@ window.cambioInit=function(){
   }
 
   if(cambioInitDone){
-    /* Sempre recarrega itens do banco (pega mudanças do admin) */
-    cambioCarregarTudo();
+    if(Date.now()-_cambioUltimaRecarga>30000) cambioRecarregarSaldos();
+    else renderCambioGrid();
     return;
   }
   cambioInitDone=true;
@@ -5697,13 +5707,13 @@ window.cambioExecutar=async function(id){
 
   /* Calcula taxa em R$ */
   var taxaReais=Math.round(custoMP*_cambioTaxa*0.01*100)/100;
+  taxaReais=Math.max(0.50,taxaReais); /* mínimo R$0,50 */
 
-  /* Executa direto se: taxa=0, ou taxa em R$ for irrelevante (<R$1,00) */
-  if(_cambioTaxa===0 || taxaReais<1.00){
+  /* Se taxa zero, executa direto sem PIX */
+  if(_cambioTaxa===0){
     await _cambioExecutarDireto(item,custoMP,recompensaVal);
     return;
   }
-  taxaReais=Math.max(1.00,taxaReais); /* mínimo R$1,00 para valer a pena gerar Pix */
 
   /* Gera PIX para cobrar a taxa em R$ */
   var sessRes=await sb.auth.getSession();
