@@ -5485,6 +5485,14 @@ window.bdaySaveDate=function(){
   document.getElementById('bdayNoBirthday').style.display='none';
   renderBdayPage();
   showToast('🎂 Data de aniversário salva!');
+  /* Salva no Supabase para o admin ver na aba de aniversariantes */
+  try{
+    if(typeof sb!=='undefined'&&userSession&&userSession.user){
+      sb.from('perfis').update({data_nascimento:v}).eq('id',userSession.user.id)
+        .then(function(r){if(r.error)console.warn('[bday save]',r.error.message);})
+        .catch(function(e){console.warn('[bday save]',e.message);});
+    }
+  }catch(e){console.warn('[bday save]',e);}
 };
 
 function renderBdayPage(){
