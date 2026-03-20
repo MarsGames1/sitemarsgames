@@ -2594,7 +2594,7 @@ setTimeout(function(){
 
   <!-- ══ ABA ANIVERSÁRIO ══ -->
   <div class="tab-content" id="tab-aniversario">
-    <div id="bdayNoBirthday" style="display:none">
+    <div id="bdayNoBirthday" style="display:block">
       <div class="bday-form" style="margin-bottom:20px">
         <label>📅 Informe sua data de aniversário</label>
         <input type="date" class="bday-date-input" id="bdayInput">
@@ -5641,10 +5641,33 @@ window.bdayInit=function(){
   bdayClaimed=(claimed===String(new Date().getFullYear()));
   if(saved){
     bdayDate=new Date(saved+'T12:00:00');
+    document.getElementById('bdayNoBirthday').style.display='none';
+    document.getElementById('bdayHero').style.display='block';
     renderBdayPage();
   } else {
-    document.getElementById('bdayNoBirthday').style.display='block';
-    document.getElementById('bdayHero').style.display='none';
+    /* Tenta buscar do Supabase */
+    if(typeof sb!=='undefined'&&userSession&&userSession.user){
+      sb.from('perfis').select('data_nascimento').eq('id',userSession.user.id).maybeSingle()
+        .then(function(r){
+          if(r.data&&r.data.data_nascimento){
+            var v=r.data.data_nascimento;
+            localStorage.setItem('mg_bday_date',v);
+            bdayDate=new Date(v+'T12:00:00');
+            document.getElementById('bdayNoBirthday').style.display='none';
+            document.getElementById('bdayHero').style.display='block';
+            renderBdayPage();
+          } else {
+            document.getElementById('bdayNoBirthday').style.display='block';
+            document.getElementById('bdayHero').style.display='none';
+          }
+        }).catch(function(){
+          document.getElementById('bdayNoBirthday').style.display='block';
+          document.getElementById('bdayHero').style.display='none';
+        });
+    } else {
+      document.getElementById('bdayNoBirthday').style.display='block';
+      document.getElementById('bdayHero').style.display='none';
+    }
   }
   renderBdayHist();
 };
