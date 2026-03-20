@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--gold:#ffb800;}
@@ -122,22 +123,27 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
     </div>
   </div>
 
-  <div class="metodo disabled" id="metodo-cartao">
+  <div class="metodo" id="metodo-cartao" onclick="selecionarMetodo('cartao')">
     <div class="metodo-icon card">💳</div>
     <div class="metodo-info">
       <div class="metodo-nome">Cartão de crédito</div>
-      <div class="metodo-desc">Em breve — até 12x sem juros</div>
+      <div class="metodo-desc">Até 12x — aprovação na hora</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-      <span class="metodo-badge soon">Em breve</span>
-      <div class="metodo-radio"></div>
+      <span class="metodo-badge instant" style="background:rgba(255,255,255,.06);color:#aaa;border-color:rgba(255,255,255,.1)">Crédito</span>
+      <div class="metodo-radio"><div class="metodo-radio-dot"></div></div>
     </div>
+  </div>
+
+  <!-- Formulário Bricks — aparece ao selecionar cartão -->
+  <div id="card-form-wrap" style="display:none;margin-top:4px;margin-bottom:8px">
+    <div id="cardPaymentBrick_container"></div>
   </div>
 
   <!-- BOTÃO -->
   <button class="btn-pagar" id="btnPagar" onclick="pagar()">
     <div class="spinner"></div>
-    <span class="btn-txt">⚡ Pagar com Pix</span>
+    <span class="btn-txt" id="btnTxt">⚡ Pagar com Pix</span>
   </button>
 
   <div class="seguranca">🔒 Pagamento 100% seguro via Mercado Pago</div>
@@ -148,14 +154,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 <script>
 const SUPABASE_URL = 'https://rzjtlghpsygxkivgwgws.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+const MP_PUBLIC_KEY = 'APP_USR-3c95def7-e1bc-4f2f-a191-b724ea84f28a';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'mg_auth' }
+  auth: { flowType:'implicit', detectSessionInUrl:true, persistSession:true, autoRefreshToken:true, storageKey:'mg_auth' }
 });
 
-// Lê itens do sessionStorage (salvos por index/produto/combos/promocoes antes de redirecionar)
 const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
 let metodoSelecionado = 'pix';
+let mpInstance = null;
+let cardBrickController = null;
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -167,13 +175,8 @@ function showToast(msg) {
   t._t = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// Renderiza itens e total
 function renderResumo() {
-  if (!itens.length) {
-    // Sem itens — volta ao início
-    window.location.href = 'index.html';
-    return;
-  }
+  if (!itens.length) { window.location.href = 'index.html'; return; }
   const total = itens.reduce((s, p) => s + Number(p.preco), 0);
   document.getElementById('itensList').innerHTML = itens.map(p =>
     `<div class="item-row">
@@ -182,62 +185,141 @@ function renderResumo() {
       <div class="item-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>
     </div>`
   ).join('');
-  document.getElementById('totalValor').textContent =
-    'R$ ' + total.toFixed(2).replace('.', ',');
+  document.getElementById('totalValor').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
 }
 
-function selecionarMetodo(metodo) {
-  // Cartão desabilitado
-  if (metodo === 'cartao') return;
+async function selecionarMetodo(metodo) {
   metodoSelecionado = metodo;
   document.querySelectorAll('.metodo').forEach(el => el.classList.remove('selected'));
   document.getElementById('metodo-' + metodo).classList.add('selected');
+  const btnTxt  = document.getElementById('btnTxt');
+  const cardWrap = document.getElementById('card-form-wrap');
+  if (metodo === 'cartao') {
+    btnTxt.textContent = '💳 Pagar com Cartão';
+    cardWrap.style.display = 'block';
+    await initCardBrick();
+  } else {
+    btnTxt.textContent = '⚡ Pagar com Pix';
+    cardWrap.style.display = 'none';
+    if (cardBrickController) { cardBrickController.unmount(); cardBrickController = null; }
+  }
+}
+
+async function initCardBrick() {
+  if (cardBrickController) return;
+  if (!mpInstance) mpInstance = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+  const total = itens.reduce((s, p) => s + Number(p.preco), 0);
+  const { data: { session } } = await sb.auth.getSession();
+  const email = session?.user?.email || '';
+  const bricksBuilder = mpInstance.bricks();
+  cardBrickController = await bricksBuilder.create('cardPayment', 'cardPaymentBrick_container', {
+    initialization: {
+      amount: Math.round(total * 100) / 100,
+      payer: { email }
+    },
+    customization: {
+      visual: {
+        style: {
+          theme: 'dark',
+          customVariables: {
+            baseColor: '#00ff55',
+            primaryColor: '#00ff55',
+            secondaryColor: '#00cc44',
+            borderRadiusFull: '10px',
+            formBackgroundColor: '#0f0f16',
+            inputBackgroundColor: '#131320',
+            inputFocusedBorderColor: '#00ff55',
+            labelFontWeight: '700'
+          }
+        }
+      },
+      paymentMethods: { maxInstallments: 12 }
+    },
+    callbacks: {
+      onReady: () => {},
+      onSubmit: async (cardData) => { await pagarCartao(cardData); },
+      onError: (error) => {
+        console.error('[Brick error]', error);
+        showToast('Verifique os dados do cartão');
+      }
+    }
+  });
+}
+
+async function pagarCartao(cardData) {
+  const btn = document.getElementById('btnPagar');
+  btn.disabled = true; btn.classList.add('loading');
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { showToast('Faça login para continuar!'); btn.disabled=false; btn.classList.remove('loading'); return; }
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/mp-criar-cartao`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session.access_token}` },
+      body: JSON.stringify({ itens, cardData })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erro ao processar cartão');
+
+    if (data.status === 'approved') {
+      sessionStorage.setItem('mg_pix_data',     JSON.stringify({ ...data, qr_code:'', valor: itens.reduce((s,p)=>s+Number(p.preco),0) }));
+      sessionStorage.setItem('mg_external_ref',  data.reference  || data.pedido_id || '');
+      sessionStorage.setItem('mg_pedido_id',     data.pedido_id  || '');
+      sessionStorage.setItem('mg_user_email',    session.user.email || '');
+      sessionStorage.setItem('mg_user_id',       session.user.id   || '');
+      sessionStorage.setItem('mg_access_token',  session.access_token  || '');
+      sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
+      window.location.href = 'sucesso.html?ref=' + encodeURIComponent(data.reference || data.pedido_id || '');
+    } else if (data.status === 'pending' || data.status === 'in_process') {
+      showToast('Pagamento em análise — você receberá confirmação por email.');
+      setTimeout(() => window.location.href = 'perfil.html', 3000);
+    } else {
+      throw new Error(data.status_detail || 'Pagamento recusado. Verifique os dados.');
+    }
+  } catch(error) {
+    showToast('Erro: ' + (error.message || 'Tente novamente'));
+    btn.disabled = false; btn.classList.remove('loading');
+  }
 }
 
 async function pagar() {
-  const btn = document.getElementById('btnPagar');
-  btn.disabled = true;
-  btn.classList.add('loading');
+  if (metodoSelecionado === 'cartao') {
+    /* Brick submete via onSubmit — só dispara a validação */
+    if (cardBrickController) {
+      try { await cardBrickController.getFormData(); } catch(e) { /* Brick mostra erros internamente */ }
+    }
+    return;
+  }
 
+  /* PIX — fluxo original intacto */
+  const btn = document.getElementById('btnPagar');
+  btn.disabled = true; btn.classList.add('loading');
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
       showToast('Faça login para finalizar a compra!');
       setTimeout(() => window.location.href = 'perfil.html', 1200);
-      btn.disabled = false;
-      btn.classList.remove('loading');
+      btn.disabled = false; btn.classList.remove('loading');
       return;
     }
-
-    // Por enquanto só Pix — chama a edge function que gera o QR Code
     const response = await fetch(`${SUPABASE_URL}/functions/v1/mp-criar-pix`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session.access_token}` },
       body: JSON.stringify({ itens })
     });
-
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Erro ao gerar Pix');
-
-    // Salva tudo no sessionStorage para o pix-checkout.html usar
-    sessionStorage.setItem('mg_pix_data',    JSON.stringify(data));
-    sessionStorage.setItem('mg_external_ref', data.reference  || '');
-    sessionStorage.setItem('mg_pedido_id',    data.pedido_id  || '');
-    sessionStorage.setItem('mg_user_email',   session.user.email || '');
-    sessionStorage.setItem('mg_user_id',      session.user.id || '');
+    sessionStorage.setItem('mg_pix_data',     JSON.stringify(data));
+    sessionStorage.setItem('mg_external_ref',  data.reference  || '');
+    sessionStorage.setItem('mg_pedido_id',     data.pedido_id  || '');
+    sessionStorage.setItem('mg_user_email',    session.user.email || '');
+    sessionStorage.setItem('mg_user_id',       session.user.id   || '');
     sessionStorage.setItem('mg_access_token',  session.access_token  || '');
     sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
-
     window.location.href = 'pix-checkout.html';
-
-  } catch (error) {
-    console.error('[checkout] Erro:', error);
+  } catch(error) {
     showToast('Erro: ' + (error.message || 'Tente novamente'));
-    btn.disabled = false;
-    btn.classList.remove('loading');
+    btn.disabled = false; btn.classList.remove('loading');
   }
 }
 
