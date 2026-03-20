@@ -2201,7 +2201,7 @@ setTimeout(function(){
       <div class="progresso-wrap">
         <div class="progresso-labels">
           <span id="progLabelAtual">Bronze</span>
-          <span id="progLabelProx">Prata (100 pts)</span>
+          <span id="progLabelProx">Prata (200 pts)</span>
         </div>
         <div class="progresso-bar">
           <div class="progresso-fill" id="progFill" style="width:0%;background:var(--bronze)"></div>
@@ -2270,28 +2270,28 @@ setTimeout(function(){
       <div class="benef-card nivel-prata" id="benef-prata">
         <span class="benef-emoji">🥈</span>
         <div class="benef-nome" style="color:var(--prata)">Prata</div>
-        <div class="benef-pts">100 pts</div>
+        <div class="benef-pts">200 pts</div>
         <div class="benef-titulo" style="color:var(--prata);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Explorador"</div>
         <div class="benef-desc" style="color:var(--prata)">5% OFF + Tema claro</div>
       </div>
       <div class="benef-card nivel-ouro" id="benef-ouro">
         <span class="benef-emoji">🥇</span>
         <div class="benef-nome" style="color:var(--ouro)">Ouro</div>
-        <div class="benef-pts">500 pts</div>
+        <div class="benef-pts">1.000 pts</div>
         <div class="benef-titulo" style="color:var(--ouro);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Comandante"</div>
         <div class="benef-desc" style="color:var(--ouro)">10% OFF + 2 tickets sorteio</div>
       </div>
       <div class="benef-card nivel-esmeralda" id="benef-esmeralda">
         <span class="benef-emoji">💚</span>
         <div class="benef-nome" style="color:var(--esm)">Esmeralda</div>
-        <div class="benef-pts">1.000 pts</div>
+        <div class="benef-pts">2.000 pts</div>
         <div class="benef-titulo" style="color:var(--esm);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Elite Mars"</div>
         <div class="benef-desc" style="color:var(--esm)">15% OFF + 2 tickets + Garimpo</div>
       </div>
       <div class="benef-card nivel-diamante" id="benef-diamante">
         <span class="benef-emoji">💎</span>
         <div class="benef-nome" style="color:var(--dia)">Diamante</div>
-        <div class="benef-pts">5.000 pts</div>
+        <div class="benef-pts">10.000 pts</div>
         <div class="benef-titulo" style="color:var(--dia);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Lendário"</div>
         <div class="benef-desc" style="color:var(--dia)">20% OFF + 3 tickets + Acesso VIP</div>
       </div>
@@ -2376,7 +2376,7 @@ setTimeout(function(){
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(80,200,120,.04)">
           <span style="font-size:11px;font-weight:700;color:var(--esm)">💚 Esmeralda</span>
-          <span style="font-size:10px;color:var(--muted)">1.000 — 4.999 pts</span>
+          <span style="font-size:10px;color:var(--muted)">2.000 — 9.999 pts</span>
           <span style="font-size:11px;font-weight:900;color:var(--esm)">15% OFF</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid rgba(185,242,255,.2);background:rgba(185,242,255,.04)">
@@ -3216,7 +3216,7 @@ async function carregarPerfil(user){
 
     /* ── Busca dados para conquistas em paralelo (sem bloquear UI) ── */
     Promise.all([
-      Promise.resolve(sb.from('pedidos').select('id,produto_nome,preco,created_at').eq('cliente_email',user.email).in('status',['pago','entregue','aprovado'])).catch(function(){return{data:[]};}),
+      Promise.resolve(sb.from('pedidos').select('id,produto_nome,preco,created_at').eq('cliente_email',user.email)).catch(function(){return{data:[]};}),
       Promise.resolve(sb.from('avaliacoes').select('id').eq('user_email',user.email).eq('aprovado',true)).catch(function(){return{data:[]};})
     ]).then(function(results){
       var peds  = results[0].data || [];
@@ -3270,19 +3270,19 @@ async function carregarPerfil(user){
 /* Verifica subida de nível e concede XP bônus ao planeta */
 async function verificarLevelUpXP(user){
   try{
-    var mpRes=await sb.from('marspoints').select('pontos,nivel_anterior').eq('user_email',user.email).maybeSingle();
+    var mpRes=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
     if(!mpRes.data) return;
     var pts=mpRes.data.pontos||0;
     var nivelAtual=getNivel(pts);
-    var nivelAnterior=mpRes.data.nivel_anterior||'Bronze';
-    if(nivelAtual.nome!==nivelAnterior && nivelAnterior!==nivelAtual.nome){
+    var lsKey='mg_nivel_anterior_'+user.email;
+    var nivelAnterior=localStorage.getItem(lsKey)||'Bronze';
+    if(nivelAtual.nome!==nivelAnterior){
       // Nível subiu! Dá XP bônus ao planeta
       var xpBonus=200;
       if(typeof planetaAddXPSilent==='function'){
         planetaAddXPSilent(xpBonus,'Subiu para '+nivelAtual.nome+' MP','🌟','rgba(185,242,255,.1)','#b9f2ff');
       }
-      // Atualiza nivel_anterior
-      await sb.from('marspoints').upsert({user_email:user.email,nivel_anterior:nivelAtual.nome},{onConflict:'user_email'});
+      localStorage.setItem(lsKey,nivelAtual.nome);
       showToast('🌟 Nível '+nivelAtual.emoji+' '+nivelAtual.nome+'! +'+xpBonus+' XP no planeta!');
     }
   }catch(e){}
@@ -3373,7 +3373,7 @@ function carregarBeneficiosCupom(p){
   var cupomSection=document.getElementById('cupomSection');
 
   if(nivel.pct===0){
-    cupomSection.innerHTML='<div class="sem-cupom"><strong>Nenhum cupom disponível ainda</strong>Alcance o nível Prata (100 pts) para ganhar seu primeiro desconto!</div>';
+    cupomSection.innerHTML='<div class="sem-cupom"><strong>Nenhum cupom disponível ainda</strong>Alcance o nível Prata (200 pts) para ganhar seu primeiro desconto!</div>';
     return;
   }
 
