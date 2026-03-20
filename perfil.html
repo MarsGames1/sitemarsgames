@@ -2084,6 +2084,24 @@ body.tema-claro .section-loader{color:var(--muted)}
   font-size:10px;font-weight:900;color:var(--green);letter-spacing:1px;
   text-transform:uppercase;margin-left:10px;
 }
+/* ── Notificações do cliente ── */
+.notif-btn{position:relative;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);display:none;align-items:center;justify-content:center;cursor:pointer;color:#888;font-size:16px;transition:all .2s;flex-shrink:0}
+.notif-btn:hover{border-color:rgba(255,255,255,.2);color:#fff;background:rgba(255,255,255,.08)}
+.notif-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--mars);color:#fff;font-size:8px;font-weight:900;display:none;align-items:center;justify-content:center;border:2px solid #0a0a0e}
+.notif-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:300px;max-height:380px;overflow-y:auto;background:#0f0f16;border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.8);z-index:9999;display:none}
+.notif-dropdown.open{display:block;animation:fadeUp .15s ease both}
+.notif-header{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.notif-header-title{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#888;text-transform:uppercase}
+.notif-marcar-btn{font-size:9px;font-weight:700;color:var(--mars);background:none;border:none;cursor:pointer;padding:2px 6px}
+.notif-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:default;transition:background .15s}
+.notif-item:last-child{border-bottom:none}
+.notif-item.nao-lida{background:rgba(232,66,26,.04)}
+.notif-item:hover{background:rgba(255,255,255,.03)}
+.notif-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.notif-titulo{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px}
+.notif-msg{font-size:10px;color:#666;line-height:1.4}
+.notif-time{font-size:9px;color:#444;margin-top:4px}
+.notif-empty{padding:28px;text-align:center;font-size:11px;color:#555}
 </style>
 </head>
 <body>
@@ -6388,23 +6406,6 @@ var PLANETA_MS=[
 ];
 
 /* ── Notificações do cliente ── */
-.notif-btn{position:relative;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);display:none;align-items:center;justify-content:center;cursor:pointer;color:#888;font-size:16px;transition:all .2s;flex-shrink:0}
-.notif-btn:hover{border-color:rgba(255,255,255,.2);color:#fff;background:rgba(255,255,255,.08)}
-.notif-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--mars);color:#fff;font-size:8px;font-weight:900;display:none;align-items:center;justify-content:center;border:2px solid #0a0a0e}
-.notif-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:300px;max-height:380px;overflow-y:auto;background:#0f0f16;border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.8);z-index:9999;display:none}
-.notif-dropdown.open{display:block;animation:fadeUp .15s ease both}
-.notif-header{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
-.notif-header-title{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#888;text-transform:uppercase}
-.notif-marcar-btn{font-size:9px;font-weight:700;color:var(--mars);background:none;border:none;cursor:pointer;padding:2px 6px}
-.notif-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:default;transition:background .15s}
-.notif-item:last-child{border-bottom:none}
-.notif-item.nao-lida{background:rgba(232,66,26,.04)}
-.notif-item:hover{background:rgba(255,255,255,.03)}
-.notif-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.notif-titulo{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px}
-.notif-msg{font-size:10px;color:#666;line-height:1.4}
-.notif-time{font-size:9px;color:#444;margin-top:4px}
-.notif-empty{padding:28px;text-align:center;font-size:11px;color:#555}
 var CLIMA_INFO={
   CLEAR:{icon:'☀️',nome:'Limpo'},
   RAIN:{icon:'🌧️',nome:'Chuva'},
