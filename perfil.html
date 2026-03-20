@@ -2719,7 +2719,7 @@ setTimeout(function(){
         </div>
         <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
           <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Temperatura</div>
-          <div style="font-family:monospace;font-size:13px;font-weight:700" id="pTechTempFull" style="color:#ff6a00">—°C</div>
+          <div style="font-family:monospace;font-size:13px;font-weight:700" id="pTechTempFull">—°C</div>
         </div>
         <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
           <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Gravidade</div>
@@ -2728,6 +2728,30 @@ setTimeout(function(){
         <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
           <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Atmosfera</div>
           <div style="font-size:12px;font-weight:700;color:#00e87a" id="pTechAtm">Inexistente</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
+          <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Pressão Atm.</div>
+          <div style="font-family:monospace;font-size:13px;font-weight:700;color:#00c8ff" id="pTechPressao">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
+          <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Raio Planetário</div>
+          <div style="font-family:monospace;font-size:13px;font-weight:700;color:#ffc200" id="pTechRaio">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
+          <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Campo Magnético</div>
+          <div style="font-size:12px;font-weight:700;color:#b9f2ff" id="pTechCampo">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
+          <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Massa</div>
+          <div style="font-family:monospace;font-size:13px;font-weight:700;color:#ff6a00" id="pTechMassa">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
+          <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Biodiversidade</div>
+          <div style="font-family:monospace;font-size:13px;font-weight:700;color:#00e87a" id="pTechBiodiv">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px">
+          <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">População</div>
+          <div style="font-size:12px;font-weight:700;color:#fff" id="pTechPopulacao">—</div>
         </div>
         <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px;grid-column:1/-1">
           <div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Coordenadas Galácticas</div>
@@ -6113,33 +6137,44 @@ var PLANETA_ERAS=[
   {n:'I',label:'PROTO',icon:'🌑',xp:0,color:'#ffc200',desc:'MUNDO PRIMORDIAL',
    weather:['CLEAR','METEORS','ASTEROID','HEATWAVE'],
    tech:{sistema:'Sol-Alfa · Cinturão Interno',galaxia:'Via Láctea',atm:'Inexistente',
-         grav:'0.3 g',temp:'-220°C / +60°C',ra:'00h 42m 44s',dec:'+41° 16\''}},
+         grav:'0.3 g',temp:'-220°C / +60°C',ra:'00h 42m 44s',dec:'+41° 16\'',
+         pressao:'0.0 atm',raio:'2.800 km',populacao:'0',biodiv:'0%',campo:'Ausente',massa:'0.04 M⊕'}},
   {n:'II',label:'VULCÂNICO',icon:'🌋',xp:200,color:'#ff6a00',desc:'ERA VULCÂNICA',
    weather:['CLEAR','STORM','HEATWAVE','ASTEROID'],
    tech:{sistema:'Sol-9 · Mars Belt',galaxia:'Via Láctea',atm:'CO₂ tóxico',
-         grav:'0.6 g',temp:'-80°C / +380°C',ra:'05h 34m 32s',dec:'+22° 00\''}},
+         grav:'0.6 g',temp:'-80°C / +380°C',ra:'05h 34m 32s',dec:'+22° 00\'',
+         pressao:'0.8 atm',raio:'4.200 km',populacao:'0',biodiv:'0%',campo:'Fraco',massa:'0.18 M⊕'}},
   {n:'III',label:'OCEÂNICO',icon:'🌊',xp:600,color:'#00b8e6',desc:'OCEANOS SURGEM',
    weather:['CLEAR','RAIN','STORM','METEORS','ASTEROID'],
    tech:{sistema:'Sol-9 · Zona Habitable',galaxia:'Via Láctea',atm:'N₂/CO₂ densa',
-         grav:'0.8 g',temp:'-10°C / +45°C',ra:'10h 08m 22s',dec:'+11° 58\''}},
+         grav:'0.8 g',temp:'-10°C / +45°C',ra:'10h 08m 22s',dec:'+11° 58\'',
+         pressao:'1.2 atm',raio:'5.800 km',populacao:'0',biodiv:'8%',campo:'Moderado',massa:'0.55 M⊕'}},
   {n:'IV',label:'BIÓTICO',icon:'🌿',xp:1400,color:'#00e87a',desc:'VIDA FLORESCE',
    weather:['CLEAR','RAIN','SNOW','AURORA','NEBULA'],
    tech:{sistema:'Sol-9 · Zona Habitable',galaxia:'Via Láctea',atm:'O₂/N₂ respirável',
-         grav:'1.0 g',temp:'+8°C / +28°C',ra:'13h 25m 27s',dec:'-43° 01\''}},
+         grav:'1.0 g',temp:'+8°C / +28°C',ra:'13h 25m 27s',dec:'-43° 01\'',
+         pressao:'1.0 atm',raio:'6.371 km',populacao:'~1 bilhão',biodiv:'74%',campo:'Forte',massa:'1.0 M⊕'}},
   {n:'V',label:'GALÁCTICO',icon:'🌟',xp:3000,color:'#9f3fff',desc:'CIVILIZAÇÃO ESTELAR',
    weather:['CLEAR','AURORA','METEORS','NEBULA','ASTEROID'],
    tech:{sistema:'Nexus Prime · Braço Externo',galaxia:'Via Láctea → Andrômeda',atm:'O₂/Xe ionizado',
-         grav:'1.2 g',temp:'-5°C / +35°C',ra:'17h 45m 40s',dec:'-29° 00\''}}
+         grav:'1.2 g',temp:'-5°C / +35°C',ra:'17h 45m 40s',dec:'-29° 00\'',
+         pressao:'1.4 atm',raio:'7.100 km',populacao:'~12 bilhões',biodiv:'91%',campo:'Muito forte',massa:'1.4 M⊕'}},
+  {n:'VI',label:'TRANSCENDENTE',icon:'✨',xp:6000,color:'#00fff7',desc:'ALÉM DO TEMPO',
+   weather:['CLEAR','AURORA','NEBULA','METEORS'],
+   tech:{sistema:'Void Nexus · Dimensão Δ-7',galaxia:'Multiverso',atm:'Energia pura / Plasma',
+         grav:'∞ controlada',temp:'0 K / +∞',ra:'∞h ∞m ∞s',dec:'∞° ∞\'',
+         pressao:'∞ estabilizada',raio:'∞ km',populacao:'Transcendido',biodiv:'100%',campo:'Dimensional',massa:'∞ M⊕'}}
 ];
 
-var PLANETA_NAMES=['Marte-Alfa','Vulkaar','Aquanis','Biora-IV','Nexus Prime'];
+var PLANETA_NAMES=['Marte-Alfa','Vulkaar','Aquanis','Biora-IV','Nexus Prime','Transcendia'];
 var PLANETA_MS=[
   {ic:'🌱',nm:'GÊNESE',ds:'Planeta criado',xp:0},
   {ic:'🔥',nm:'VULCÃO',ds:'Primeira erupção',xp:200},
   {ic:'💧',nm:'OCEANO',ds:'Águas surgem',xp:600},
   {ic:'🌿',nm:'VIDA',ds:'Flora detectada',xp:1400},
   {ic:'🏙️',nm:'CIDADE',ds:'Civilização I',xp:2200},
-  {ic:'🌌',nm:'GALÁXIA',ds:'Era Galáctica',xp:3000}
+  {ic:'🌌',nm:'GALÁXIA',ds:'Era Galáctica',xp:3000},
+  {ic:'✨',nm:'TRANSCENDÊNCIA',ds:'Além do universo',xp:6000}
 ];
 
 /* ── Dados técnicos ── */
@@ -6160,8 +6195,6 @@ function planetaAtualizarTech(){
   var t=e.tech;
   var ci=CLIMA_INFO[planetaWeatherMode]||CLIMA_INFO.CLEAR;
 
-  /* Longitude: ciclo completo em ~130s (noiseT cresce 0.008/frame × 60fps → ~0.48/s → 360/0.48 ≈ 750s sem mult)
-     Multiplicador 0.5 → ciclo em ~750s ≈ 12min. Razoável para simulação planetária. */
   var lon=((planetaNoiseT*0.5)%360).toFixed(1);
   var lat=(14.2+Math.sin(planetaNoiseT*.05)*8).toFixed(1);
 
@@ -6178,24 +6211,20 @@ function planetaAtualizarTech(){
   if(sGrav) sGrav.textContent=t.grav;
 
   /* ── Ficha técnica completa ── */
-  var pLat=document.getElementById('pTechLat');
-  var pLon=document.getElementById('pTechLon');
-  var pSis=document.getElementById('pTechSistema2');
-  var pGal=document.getElementById('pTechGalaxia2');
+  var ids={pTechLat:lat+'° N',pTechLon:lon+'° E',pTechSistema2:t.sistema,
+    pTechGalaxia2:t.galaxia,pTechGravFull:t.grav,pTechAtm:t.atm,
+    pTechCoordFull:'RA '+t.ra+' · DEC '+t.dec,
+    pTechPressao:t.pressao||'—',pTechRaio:t.raio||'—',
+    pTechPopulacao:t.populacao||'—',pTechBiodiv:t.biodiv||'—',
+    pTechCampo:t.campo||'—',pTechMassa:t.massa||'—'};
+  Object.keys(ids).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.textContent=ids[id];
+  });
   var pCli=document.getElementById('pTechClimaFull');
   var pTmp=document.getElementById('pTechTempFull');
-  var pGrv=document.getElementById('pTechGravFull');
-  var pAtm=document.getElementById('pTechAtm');
-  var pCrd=document.getElementById('pTechCoordFull');
-  if(pLat) pLat.textContent=lat+'° N';
-  if(pLon) pLon.textContent=lon+'° E';
-  if(pSis) pSis.textContent=t.sistema;
-  if(pGal) pGal.textContent=t.galaxia;
   if(pCli){pCli.textContent=ci.icon+' '+ci.nome;pCli.style.color=e.color;}
   if(pTmp){pTmp.textContent=t.temp;pTmp.style.color=e.color;}
-  if(pGrv) pGrv.textContent=t.grav;
-  if(pAtm) pAtm.textContent=t.atm;
-  if(pCrd) pCrd.textContent='RA '+t.ra+' · DEC '+t.dec;
 
   /* ── Coords no stage ── */
   var coordEl=document.getElementById('planetaCoords');
@@ -6385,7 +6414,8 @@ function planetaDrawPlanet(){
     'II':{c0:'#2a0000',c1:'#880000',c2:'#cc2000',c3:'#ff4422'},
     'III':{c0:'#001428',c1:'#003a7a',c2:'#0066cc',c3:'#33aaff'},
     'IV':{c0:'#001408',c1:'#004818',c2:'#00a040',c3:'#33dd77'},
-    'V': {c0:'#080028',c1:'#2e009a',c2:'#8020ee',c3:'#cc66ff'}
+    'V': {c0:'#080028',c1:'#2e009a',c2:'#8020ee',c3:'#cc66ff'},
+    'VI':{c0:'#001a1a',c1:'#006060',c2:'#00d4cc',c3:'#aaffff'}
   };
   var ec=cols[e.n]||cols['I'];
 
@@ -6519,19 +6549,80 @@ function planetaUpdateWeather(){
     });
   }
 
-  /* ── CHUVA DE METEOROS ── */
+  /* ── CHUVA DE METEOROS — completamente refeita ── */
   if(planetaWeatherMode==='METEORS'){
-    if(!planetaMeteors.length) for(var k=0;k<10;k++) planetaMeteors.push(mkMeteor(w,h));
+    if(!planetaMeteors.length){
+      for(var k=0;k<14;k++){
+        planetaMeteors.push(mkMeteor(w,h,k));
+      }
+    }
     planetaMeteors.forEach(function(m){
-      m.x+=m.vx;m.y+=m.vy;if(m.x>w+20||m.y>h+20)Object.assign(m,mkMeteor(w,h));
+      /* Move o meteoro */
+      m.x+=m.vx; m.y+=m.vy;
+      m.life=(m.life||0)+1;
+
+      /* Brilho pulsante */
+      m.brightness=0.6+Math.sin(m.life*0.18+m.phase)*0.4;
+
+      /* Reinicia ao sair da tela */
+      if(m.x>w+60||m.y>h+60||m.x<-60){
+        Object.assign(m,mkMeteor(w,h,-1));
+        return;
+      }
+
       ctx.save();
-      var tail=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*10,m.y-m.vy*10);
-      tail.addColorStop(0,'rgba(255,200,100,'+m.a+')');
-      tail.addColorStop(1,'rgba(255,200,100,0)');
-      ctx.strokeStyle=tail;ctx.lineWidth=1.8;
-      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*10,m.y-m.vy*10);ctx.stroke();
-      ctx.beginPath();ctx.arc(m.x,m.y,2,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,240,180,'+m.a+')';ctx.fill();
+
+      /* Cauda multi-camada com gradiente realista */
+      var tailLen=m.vx*12+m.vy*12;
+      var tx0=m.x, ty0=m.y;
+      var tx1=m.x-m.vx*16, ty1=m.y-m.vy*16;
+
+      /* Camada externa (halo) */
+      var outerTail=ctx.createLinearGradient(tx0,ty0,tx1,ty1);
+      outerTail.addColorStop(0,'rgba(255,220,120,'+(.15*m.brightness)+')');
+      outerTail.addColorStop(0.3,'rgba(255,140,40,'+(.08*m.brightness)+')');
+      outerTail.addColorStop(1,'rgba(255,60,0,0)');
+      ctx.beginPath();ctx.moveTo(tx0,ty0);ctx.lineTo(tx1,ty1);
+      ctx.strokeStyle=outerTail;ctx.lineWidth=m.r*4;ctx.lineCap='round';ctx.stroke();
+
+      /* Camada principal da cauda */
+      var mainTail=ctx.createLinearGradient(tx0,ty0,tx1,ty1);
+      mainTail.addColorStop(0,'rgba(255,240,180,'+(.85*m.brightness)+')');
+      mainTail.addColorStop(0.2,'rgba(255,160,60,'+(.6*m.brightness)+')');
+      mainTail.addColorStop(0.6,'rgba(255,80,20,'+(.3*m.brightness)+')');
+      mainTail.addColorStop(1,'rgba(255,40,0,0)');
+      ctx.beginPath();ctx.moveTo(tx0,ty0);ctx.lineTo(tx1,ty1);
+      ctx.strokeStyle=mainTail;ctx.lineWidth=m.r*1.8;ctx.lineCap='round';ctx.stroke();
+
+      /* Linha de núcleo brilhante */
+      var coreTail=ctx.createLinearGradient(tx0,ty0,m.x-m.vx*6,m.y-m.vy*6);
+      coreTail.addColorStop(0,'rgba(255,255,220,'+m.brightness+')');
+      coreTail.addColorStop(1,'rgba(255,200,100,0)');
+      ctx.beginPath();ctx.moveTo(tx0,ty0);ctx.lineTo(m.x-m.vx*6,m.y-m.vy*6);
+      ctx.strokeStyle=coreTail;ctx.lineWidth=m.r*0.6;ctx.lineCap='round';ctx.stroke();
+
+      /* Núcleo do meteoro — esfera brilhante */
+      var coreG=ctx.createRadialGradient(m.x-m.r*.2,m.y-m.r*.2,0,m.x,m.y,m.r*1.5);
+      coreG.addColorStop(0,'rgba(255,255,240,'+m.brightness+')');
+      coreG.addColorStop(0.35,'rgba(255,220,120,'+(.9*m.brightness)+')');
+      coreG.addColorStop(0.7,'rgba(255,120,30,'+(.5*m.brightness)+')');
+      coreG.addColorStop(1,'rgba(255,60,0,0)');
+      ctx.beginPath();ctx.arc(m.x,m.y,m.r*1.5,0,Math.PI*2);
+      ctx.fillStyle=coreG;ctx.fill();
+
+      /* Faíscas pequenas saindo da cauda */
+      if(m.sparks&&Math.random()<.3){
+        m.sparks.forEach(function(s,si){
+          s.x+=s.vx;s.y+=s.vy;s.a-=0.06;s.vy+=0.04;
+          if(s.a<=0){
+            m.sparks[si]={x:m.x,y:m.y,vx:(Math.random()-0.5)*2,vy:(Math.random()-1)*1.5,a:0.8+Math.random()*0.2};
+            return;
+          }
+          ctx.beginPath();ctx.arc(s.x,s.y,0.8,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,200,100,'+s.a+')';ctx.fill();
+        });
+      }
+
       ctx.restore();
     });
   }
@@ -6720,7 +6811,24 @@ function planetaUpdateWeather(){
 }
 function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1.2,vy:7+Math.random()*4};}
 function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.5+Math.random()*.6,r:.8+Math.random()*1.2};}
-function mkMeteor(w,h){return{x:-20+Math.random()*w*.3,y:Math.random()*h*.25,vx:5+Math.random()*8,vy:2.5+Math.random()*4,a:.6+Math.random()*.4};}
+function mkMeteor(w,h,idx){
+  var spd=4+Math.random()*7;
+  var ang=(0.45+Math.random()*0.25); /* ângulo ~25-40° */
+  var startX=idx>=0?(idx/14)*w*1.2-w*.1:Math.random()*w*.6-w*.1;
+  var startY=idx>=0?Math.random()*h*.3:Math.random()*-h*.2;
+  var r=1.2+Math.random()*2.5;
+  var sparks=[];
+  for(var si=0;si<5;si++) sparks.push({x:startX,y:startY,vx:(Math.random()-0.5)*2,vy:(Math.random()-1)*1.5,a:0});
+  return{
+    x:startX,y:startY,
+    vx:spd*Math.cos(ang),vy:spd*Math.sin(ang),
+    r:r,a:.7+Math.random()*.3,
+    life:Math.floor(Math.random()*60), /* offset para não começar todos juntos */
+    phase:Math.random()*Math.PI*2,
+    brightness:1,
+    sparks:sparks
+  };
+}
 
 /* _planetaTabAtiva declarada no escopo global acima — não redeclarar aqui */
 function planetaLoop(){
@@ -6757,7 +6865,7 @@ function planetaUpdateUI(){
   var nEl=document.getElementById('planetaName');
   if(nEl) nEl.textContent=PLANETA_NAMES[planetaEraIdx]||'Marte-Alfa';
   var sxp=document.getElementById('planetaSXP');if(sxp) sxp.textContent=planetaTotalXP.toLocaleString();
-  var sera=document.getElementById('planetaSEra');if(sera) sera.textContent='I II III IV V'.split(' ')[planetaEraIdx];
+  var sera=document.getElementById('planetaSEra');if(sera) sera.textContent='I II III IV V VI'.split(' ')[planetaEraIdx];
   var sj=document.getElementById('planetaSJogos');if(sj) sj.textContent=planetaJogos;
   var sa=document.getElementById('planetaSAtv');if(sa) sa.textContent=planetaAtv;
   planetaBuildEvo(); planetaBuildMS();
