@@ -3316,8 +3316,11 @@ function pvpAbrirSala(tier){
     if(el) el.textContent=nome.toUpperCase();
   }
 
-  pvpPixPaymentId=null; pvpPixReference=null; pvpPixPollAtivo=false;
-  pvpMostrarTela('confirm'); /* ← mostra confirmação antes do PIX */
+  /* Para qualquer polling anterior antes de abrir nova sala */
+  pvpPixPollAtivo=false;
+  pvpPixPaymentId=null; pvpPixReference=null;
+  if(pvpConfirmacaoInterval){clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;}
+  pvpMostrarTela('confirm');
   document.getElementById('pvpModalBg').classList.add('open');
 }
 
@@ -3405,7 +3408,7 @@ async function pvpPollPixPagamento(paymentId, ref, tentativas){
       var d=await res.json();
       if(d.aprovado){
         pvpPixPollAtivo=false;
-        showToast('✅ Pix confirmado! Entrando na sala...');
+        showToast('✅ Pix confirmado! Preparando duelo...');
         /* Registra pagamento aprovado no Supabase */
         try{
           await sb.from('pvp_pagamentos').insert({
@@ -3420,8 +3423,9 @@ async function pvpPollPixPagamento(paymentId, ref, tentativas){
             created_at:new Date().toISOString()
           });
         }catch(e2){}
+        /* Modelo assíncrono: vai direto para as perguntas */
         document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
-        pvpMostrarTela('wait');
+        pvpIniciarDuelo();
         return;
       }
     }
@@ -3466,9 +3470,9 @@ async function pvpConfirmarPagamento(){
       var d=await res.json();
       if(d.aprovado){
         pvpPixPollAtivo=false;
-        showToast('✅ Pagamento confirmado! Boa sorte!');
+        showToast('✅ Pagamento confirmado! Preparando duelo...');
         document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
-        pvpMostrarTela('wait');
+        pvpIniciarDuelo();
         return;
       } else {
         showToast('⏳ Pagamento ainda não confirmado. Aguarde...',false);
@@ -3504,7 +3508,7 @@ async function pvpConfirmarPagamento(){
             clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;
             showToast('✅ Pagamento confirmado! Boa sorte!');
             document.getElementById('pvpModalTitle').textContent='⚔️ '+pvpSalaAtual.name.toUpperCase();
-            pvpMostrarTela('wait');
+            pvpIniciarDuelo();
           } else if(pg&&pg.status==='rejeitado'){
             clearInterval(pvpConfirmacaoInterval);pvpConfirmacaoInterval=null;
             showToast('❌ Pagamento não aprovado. Entre em contato com o suporte.',true);
