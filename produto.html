@@ -1204,27 +1204,41 @@ async function carregarAvaliacoesProduto(produtoNome){
       var anel=p.anel_escolhido||null;
       if(anel&&MP_ANEIS.indexOf(anel)!==-1&&!mp) anel=getNivel(pts);
       anel=anel||getNivel(pts);
+      var BG='#0a0a0e';
       var h='<div style="position:relative;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center">';
+
+      /* ── Anéis com disco giratório externo ── */
       if(anel==='diamante'){
-        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);animation:navDiaRotate 2.5s linear infinite;box-shadow:0 0 14px rgba(185,242,255,.8)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);animation:navDiaRotate 2.5s linear infinite;box-shadow:0 0 16px rgba(185,242,255,.9),0 0 32px rgba(123,97,255,.4)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
         h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else if(anel==='esmeralda'){
-        h+='<div class="aval-card-avatar" style="border:2.5px solid #50c878;box-shadow:0 0 10px rgba(80,200,120,.9),0 0 20px rgba(80,200,120,.3)">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#001208,#00aa44,#00ff88,#80ffcc,#00ffaa,#009933,#001208);animation:centaurusRotate 1.8s linear infinite;box-shadow:0 0 14px rgba(0,255,100,.6),0 0 28px rgba(0,200,80,.25)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else if(anel==='ouro'){
-        h+='<div class="aval-card-avatar" style="border:2.5px solid #FFD700;box-shadow:0 0 10px rgba(255,215,0,.9),0 0 20px rgba(255,215,0,.3)">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#3a1c00,#c87800,#ffdd00,#fff8a0,#ffe000,#b06000,#3a1c00);animation:centaurusRotate 2.5s linear infinite;box-shadow:0 0 14px rgba(255,200,0,.6),0 0 28px rgba(255,160,0,.25)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else if(anel==='prata'){
-        h+='<div class="aval-card-avatar" style="border:2.5px solid #e8e8e8;box-shadow:0 0 8px rgba(232,232,232,.8)">'+ini+'</div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#1a1a2e,#b0b0cc,#ffffff,#d0d0e8,#f0f0ff,#a0a0bb,#1a1a2e);animation:navDiaRotate 4s linear reverse infinite;box-shadow:0 0 12px rgba(220,220,240,.5)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else if(anel==='andromeda'){
-        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8);animation:andromedaPulse 2s ease-in-out infinite"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8);animation:andromedaPulse 2s ease-in-out infinite;box-shadow:0 0 14px rgba(124,106,247,.8),0 0 28px rgba(255,60,110,.2)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
         h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else if(anel==='centaurus'){
-        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800);animation:centaurusRotate 3s linear infinite;box-shadow:0 0 14px rgba(255,179,0,.7)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800);animation:centaurusRotate 3s linear infinite;box-shadow:0 0 14px rgba(255,179,0,.8),0 0 28px rgba(255,107,0,.3)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
         h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else if(anel==='sombrero'){
-        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020);animation:sombreroPulse 1.6s ease-in-out infinite"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
+        h+='<div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020);animation:centaurusRotate 2s linear infinite;box-shadow:0 0 18px rgba(255,60,110,.9),0 0 36px rgba(255,60,110,.4)"><div style="position:absolute;inset:3px;border-radius:50%;background:'+BG+'"></div></div>';
         h+='<div class="aval-card-avatar" style="position:relative;z-index:1;border:none">'+ini+'</div>';
+
       }else{
-        h+='<div class="aval-card-avatar" style="border:2.5px solid #cd9f6a;box-shadow:0 0 7px rgba(205,159,106,.65)">'+ini+'</div>';
+        /* Bronze — anel âmbar estático com glow */
+        h+='<div class="aval-card-avatar" style="border:2.5px solid #cd9f6a;box-shadow:0 0 8px rgba(205,159,106,.7),0 0 16px rgba(205,127,50,.25)">'+ini+'</div>';
       }
       return h+'</div>';
     }
