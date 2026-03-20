@@ -74,6 +74,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 
 /* SEGURANÇA */
 .seguranca{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;font-size:10px;color:#333;font-weight:600;}
+/* Cupom */
+.cupom-wrap{margin-bottom:20px;}
+.cupom-row{display:flex;gap:8px;margin-bottom:6px;}
+.cupom-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 14px;color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;outline:none;transition:border-color .2s;}
+.cupom-input:focus{border-color:rgba(232,66,26,.4);}
+.cupom-input::placeholder{color:#333;}
+.cupom-btn{padding:10px 16px;border-radius:10px;border:1px solid rgba(232,66,26,.35);background:rgba(232,66,26,.1);color:#e8421a;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;letter-spacing:.5px;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.cupom-btn:hover{background:rgba(232,66,26,.2);}
+.cupom-status{display:none;font-size:10px;font-weight:700;padding:6px 10px;border-radius:8px;}
+.cupom-status.ok{background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);color:#00ff55;}
+.cupom-status.erro{background:rgba(232,66,26,.08);border:1px solid rgba(232,66,26,.2);color:#ff6b4a;}
+.desconto-row{display:none;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 2px;}
+.desconto-lbl{font-size:10px;font-weight:700;color:var(--green);}
+.desconto-val{font-size:13px;font-weight:900;color:var(--green);}
+/* Card Brick */
+#card-brick-wrap{margin-top:12px;min-height:320px;}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a28;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;font-weight:700;color:#eee;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
@@ -108,6 +124,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
     </div>
   </div>
 
+  <!-- CUPOM -->
+  <div class="cupom-wrap">
+    <div class="cupom-row">
+      <input class="cupom-input" id="cupomInput" type="text" placeholder="Código de cupom" maxlength="20" autocomplete="off">
+      <button class="cupom-btn" id="cupomBtn" onclick="aplicarCupom()">Aplicar</button>
+    </div>
+    <div class="cupom-status" id="cupomStatus"></div>
+  </div>
+  <!-- Desconto aplicado -->
+  <div class="desconto-row" id="descontoRow">
+    <span class="desconto-lbl">Desconto <span id="cupomTag" style="background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.2);border-radius:4px;padding:1px 6px;font-size:8px;letter-spacing:.5px;margin-left:4px"></span></span>
+    <span class="desconto-val" id="descontoVal"></span>
+  </div>
+
   <!-- MÉTODOS -->
   <div class="metodos-title">Forma de pagamento</div>
 
@@ -130,20 +160,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
       <div class="metodo-desc">Até 12x — aprovação na hora</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-      <span class="metodo-badge instant" style="background:rgba(255,255,255,.06);color:#aaa;border-color:rgba(255,255,255,.1)">Crédito</span>
+      <span class="metodo-badge instant" style="background:rgba(91,154,246,.1);color:#5b9af6;border-color:rgba(91,154,246,.2)">Crédito</span>
       <div class="metodo-radio"><div class="metodo-radio-dot"></div></div>
     </div>
   </div>
 
-  <!-- Formulário Bricks — aparece ao selecionar cartão -->
-  <div id="card-form-wrap" style="display:none;margin-top:4px;margin-bottom:8px">
-    <div id="cardPaymentBrick_container"></div>
+  <!-- Brick do cartão -->
+  <div id="card-brick-wrap" style="display:none">
+    <div id="cardBrick_container"></div>
   </div>
 
   <!-- BOTÃO -->
   <button class="btn-pagar" id="btnPagar" onclick="pagar()">
     <div class="spinner"></div>
-    <span class="btn-txt" id="btnTxt">⚡ Pagar com Pix</span>
+    <span class="btn-txt">⚡ Pagar com Pix</span>
   </button>
 
   <div class="seguranca">🔒 Pagamento 100% seguro via Mercado Pago</div>
@@ -157,13 +187,15 @@ const SUPABASE_KEY = 'sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 const MP_PUBLIC_KEY = 'APP_USR-3c95def7-e1bc-4f2f-a191-b724ea84f28a';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { flowType:'implicit', detectSessionInUrl:true, persistSession:true, autoRefreshToken:true, storageKey:'mg_auth' }
+  auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'mg_auth' }
 });
 
 const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+let cupomAtual = null;
+try{ var c=sessionStorage.getItem('mg_cupom'); if(c) cupomAtual=JSON.parse(c); }catch(_){}
 let metodoSelecionado = 'pix';
 let mpInstance = null;
-let cardBrickController = null;
+let cardBrickCtrl = null;
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -175,9 +207,25 @@ function showToast(msg) {
   t._t = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+function calcularDesconto(){
+  if(!cupomAtual||!itens.length) return 0;
+  var precos=itens.map(p=>Number(p.preco));
+  var menor=Math.min(...precos);
+  if(cupomAtual.desconto_tipo==='percentual') return Math.round(menor*(cupomAtual.desconto_valor/100)*100)/100;
+  return Math.min(cupomAtual.desconto_valor, menor);
+}
+
+function getTotal(){
+  var subtotal=itens.reduce((s,p)=>s+Number(p.preco),0);
+  return Math.max(0, subtotal - calcularDesconto());
+}
+
 function renderResumo() {
   if (!itens.length) { window.location.href = 'index.html'; return; }
-  const total = itens.reduce((s, p) => s + Number(p.preco), 0);
+  var subtotal = itens.reduce((s,p)=>s+Number(p.preco),0);
+  var desconto = calcularDesconto();
+  var total = Math.max(0, subtotal - desconto);
+
   document.getElementById('itensList').innerHTML = itens.map(p =>
     `<div class="item-row">
       <img class="item-img" src="${esc(p.imagem||'')}" onerror="this.src=''" alt="">
@@ -185,144 +233,212 @@ function renderResumo() {
       <div class="item-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>
     </div>`
   ).join('');
+
+  /* Linha de desconto */
+  var rowDesc = document.getElementById('descontoRow');
+  if(desconto > 0 && cupomAtual){
+    rowDesc.style.display = 'flex';
+    document.getElementById('cupomTag').textContent = cupomAtual.codigo;
+    document.getElementById('descontoVal').textContent = '−R$ '+desconto.toFixed(2).replace('.',',');
+    document.getElementById('cupomInput').value = cupomAtual.codigo;
+    document.getElementById('cupomBtn').textContent = 'Remover';
+  }
+
   document.getElementById('totalValor').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
 }
 
+/* ── CUPOM ── */
+async function aplicarCupom(){
+  var input = document.getElementById('cupomInput');
+  var btn   = document.getElementById('cupomBtn');
+  var status= document.getElementById('cupomStatus');
+  var codigo= (input.value||'').trim().toUpperCase();
+  if(!codigo) return;
+
+  if(cupomAtual){
+    cupomAtual=null;
+    sessionStorage.removeItem('mg_cupom');
+    input.value=''; btn.textContent='Aplicar';
+    status.className='cupom-status'; status.style.display='none';
+    document.getElementById('descontoRow').style.display='none';
+    renderResumo(); return;
+  }
+
+  btn.disabled=true; btn.textContent='...'; status.style.display='none';
+  try{
+    var res=await sb.from('cupons').select('*').eq('codigo',codigo).eq('ativo',true).maybeSingle();
+    if(res.error||!res.data){ mostrarErroCupom('Cupom inválido ou expirado.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    var c=res.data;
+    var sess=await sb.auth.getSession();
+    if(sess.data&&sess.data.session){
+      var email=sess.data.session.user.email;
+      var emails_usados=Array.isArray(c.emails_usados)?c.emails_usados:[];
+      if(emails_usados.includes(email)){ mostrarErroCupom('Este cupom já foi utilizado pela sua conta.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    }
+    if(c.usos_max&&c.usos_atuais>=c.usos_max){ mostrarErroCupom('Este cupom atingiu o limite de usos.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    cupomAtual=c;
+    sessionStorage.setItem('mg_cupom', JSON.stringify(c));
+    btn.textContent='Remover'; btn.disabled=false;
+    var desc=c.desconto_tipo==='percentual'?c.desconto_valor+'% OFF':('R$ '+Number(c.desconto_valor).toFixed(2).replace('.',',')+' OFF');
+    status.className='cupom-status ok';
+    status.innerHTML='✓ Cupom <strong>'+codigo+'</strong> aplicado! '+desc;
+    status.style.display='block';
+    renderResumo();
+    /* Reinicia brick com novo valor */
+    if(cardBrickCtrl){ cardBrickCtrl.unmount(); cardBrickCtrl=null; }
+    if(metodoSelecionado==='cartao') await initCardBrick();
+  }catch(e){ mostrarErroCupom('Erro ao verificar cupom.'); btn.disabled=false; btn.textContent='Aplicar'; }
+}
+
+function mostrarErroCupom(msg){
+  var status=document.getElementById('cupomStatus');
+  status.className='cupom-status erro';
+  status.textContent='✕ '+msg;
+  status.style.display='block';
+  setTimeout(()=>status.style.display='none',3500);
+}
+
+/* ── MÉTODO ── */
 async function selecionarMetodo(metodo) {
   metodoSelecionado = metodo;
   document.querySelectorAll('.metodo').forEach(el => el.classList.remove('selected'));
   document.getElementById('metodo-' + metodo).classList.add('selected');
-  const btnTxt  = document.getElementById('btnTxt');
-  const cardWrap = document.getElementById('card-form-wrap');
-  if (metodo === 'cartao') {
+  var brickWrap = document.getElementById('card-brick-wrap');
+  var btn = document.getElementById('btnPagar');
+  var btnTxt = btn.querySelector('.btn-txt');
+  if(metodo === 'cartao'){
+    brickWrap.style.display = 'block';
     btnTxt.textContent = '💳 Pagar com Cartão';
-    cardWrap.style.display = 'block';
     await initCardBrick();
   } else {
+    brickWrap.style.display = 'none';
     btnTxt.textContent = '⚡ Pagar com Pix';
-    cardWrap.style.display = 'none';
-    if (cardBrickController) { cardBrickController.unmount(); cardBrickController = null; }
+    if(cardBrickCtrl){ cardBrickCtrl.unmount(); cardBrickCtrl=null; }
   }
 }
 
-async function initCardBrick() {
-  if (cardBrickController) return;
-  if (!mpInstance) mpInstance = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
-  const total = itens.reduce((s, p) => s + Number(p.preco), 0);
-  const { data: { session } } = await sb.auth.getSession();
-  const email = session?.user?.email || '';
-  const bricksBuilder = mpInstance.bricks();
-  cardBrickController = await bricksBuilder.create('cardPayment', 'cardPaymentBrick_container', {
-    initialization: {
-      amount: Math.round(total * 100) / 100,
-      payer: { email }
+/* ── MP BRICK ── */
+async function initCardBrick(){
+  if(cardBrickCtrl) return;
+  if(!window.MercadoPago){ showToast('SDK do cartão não carregou. Tente novamente.'); return; }
+  if(!mpInstance) mpInstance = new MercadoPago(MP_PUBLIC_KEY, {locale:'pt-BR'});
+  var total = getTotal();
+  if(total <= 0){ showToast('Valor inválido para pagamento com cartão.'); return; }
+  var sess = await sb.auth.getSession();
+  var email = (sess.data&&sess.data.session&&sess.data.session.user&&sess.data.session.user.email)||'';
+  var bricks = mpInstance.bricks();
+  cardBrickCtrl = await bricks.create('cardPayment','cardBrick_container',{
+    initialization:{ amount: total, payer:{email:email} },
+    customization:{
+      visual:{style:{theme:'dark',customVariables:{
+        baseColor:'#00ff55', primaryColor:'#00ff55',
+        formBackgroundColor:'#0f0f16', inputBackgroundColor:'#131320',
+        inputFocusedBorderColor:'#00ff55', borderRadiusFull:'10px', labelFontWeight:'700'
+      }}},
+      paymentMethods:{maxInstallments:12}
     },
-    customization: {
-      visual: {
-        style: {
-          theme: 'dark',
-          customVariables: {
-            baseColor: '#00ff55',
-            primaryColor: '#00ff55',
-            secondaryColor: '#00cc44',
-            borderRadiusFull: '10px',
-            formBackgroundColor: '#0f0f16',
-            inputBackgroundColor: '#131320',
-            inputFocusedBorderColor: '#00ff55',
-            labelFontWeight: '700'
-          }
-        }
-      },
-      paymentMethods: { maxInstallments: 12 }
-    },
-    callbacks: {
-      onReady: () => {},
-      onSubmit: async (cardData) => { await pagarCartao(cardData); },
-      onError: (error) => {
-        console.error('[Brick error]', error);
-        showToast('Verifique os dados do cartão');
+    callbacks:{
+      onReady: function(){},
+      onSubmit: async function(cardData){ await pagarCartao(cardData); },
+      onError: function(err){
+        showToast('Verifique os dados do cartão.');
+        var btn=document.getElementById('btnPagar');
+        btn.disabled=false; btn.classList.remove('loading');
       }
     }
   });
 }
 
-async function pagarCartao(cardData) {
-  const btn = document.getElementById('btnPagar');
-  btn.disabled = true; btn.classList.add('loading');
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { showToast('Faça login para continuar!'); btn.disabled=false; btn.classList.remove('loading'); return; }
-
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/mp-criar-cartao`, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session.access_token}` },
-      body: JSON.stringify({ itens, cardData })
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Erro ao processar cartão');
-
-    if (data.status === 'approved') {
-      sessionStorage.setItem('mg_pix_data',     JSON.stringify({ ...data, qr_code:'', valor: itens.reduce((s,p)=>s+Number(p.preco),0) }));
-      sessionStorage.setItem('mg_external_ref',  data.reference  || data.pedido_id || '');
-      sessionStorage.setItem('mg_pedido_id',     data.pedido_id  || '');
-      sessionStorage.setItem('mg_user_email',    session.user.email || '');
-      sessionStorage.setItem('mg_user_id',       session.user.id   || '');
-      sessionStorage.setItem('mg_access_token',  session.access_token  || '');
-      sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
-      window.location.href = 'sucesso.html?ref=' + encodeURIComponent(data.reference || data.pedido_id || '');
-    } else if (data.status === 'pending' || data.status === 'in_process') {
-      showToast('Pagamento em análise — você receberá confirmação por email.');
-      setTimeout(() => window.location.href = 'perfil.html', 3000);
-    } else {
-      throw new Error(data.status_detail || 'Pagamento recusado. Verifique os dados.');
-    }
-  } catch(error) {
-    showToast('Erro: ' + (error.message || 'Tente novamente'));
-    btn.disabled = false; btn.classList.remove('loading');
-  }
-}
-
+/* ── PAGAR ── */
 async function pagar() {
-  if (metodoSelecionado === 'cartao') {
-    /* Brick submete via onSubmit — só dispara a validação */
-    if (cardBrickController) {
-      try { await cardBrickController.getFormData(); } catch(e) { /* Brick mostra erros internamente */ }
+  var btn = document.getElementById('btnPagar');
+  btn.disabled = true; btn.classList.add('loading');
+
+  if(metodoSelecionado === 'cartao'){
+    if(!cardBrickCtrl){
+      showToast('Aguarde o formulário de cartão carregar.');
+      btn.disabled=false; btn.classList.remove('loading'); return;
+    }
+    try{ await cardBrickCtrl.submit(); }
+    catch(e){
+      showToast('Preencha todos os dados do cartão.');
+      btn.disabled=false; btn.classList.remove('loading');
     }
     return;
   }
 
-  /* PIX — fluxo original intacto */
-  const btn = document.getElementById('btnPagar');
-  btn.disabled = true; btn.classList.add('loading');
+  /* PIX */
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) {
+    var r = await sb.auth.getSession();
+    if (!r.data||!r.data.session) {
       showToast('Faça login para finalizar a compra!');
       setTimeout(() => window.location.href = 'perfil.html', 1200);
-      btn.disabled = false; btn.classList.remove('loading');
-      return;
+      btn.disabled=false; btn.classList.remove('loading'); return;
     }
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/mp-criar-pix`, {
+    var session = r.data.session;
+    var itensComDesconto = itens.map(p=>({...p}));
+    /* Aplica desconto no item mais barato */
+    if(cupomAtual){
+      var precos = itensComDesconto.map(p=>Number(p.preco));
+      var menor = Math.min(...precos);
+      var idxMenor = precos.indexOf(menor);
+      var desc = calcularDesconto();
+      itensComDesconto[idxMenor] = {...itensComDesconto[idxMenor], preco: Math.max(0, Number(itensComDesconto[idxMenor].preco)-desc)};
+    }
+    var response = await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session.access_token}` },
-      body: JSON.stringify({ itens })
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body: JSON.stringify({ itens: itensComDesconto, cupom: cupomAtual||null })
     });
-    const data = await response.json();
+    var data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Erro ao gerar Pix');
+
     sessionStorage.setItem('mg_pix_data',     JSON.stringify(data));
     sessionStorage.setItem('mg_external_ref',  data.reference  || '');
     sessionStorage.setItem('mg_pedido_id',     data.pedido_id  || '');
     sessionStorage.setItem('mg_user_email',    session.user.email || '');
-    sessionStorage.setItem('mg_user_id',       session.user.id   || '');
+    sessionStorage.setItem('mg_user_id',       session.user.id || '');
     sessionStorage.setItem('mg_access_token',  session.access_token  || '');
     sessionStorage.setItem('mg_refresh_token', session.refresh_token || '');
     window.location.href = 'pix-checkout.html';
-  } catch(error) {
+  } catch (error) {
     showToast('Erro: ' + (error.message || 'Tente novamente'));
-    btn.disabled = false; btn.classList.remove('loading');
+    btn.disabled=false; btn.classList.remove('loading');
   }
 }
 
+/* ── PAGAR CARTÃO (callback do Brick) ── */
+async function pagarCartao(cardData){
+  var btn = document.getElementById('btnPagar');
+  btn.disabled=true; btn.classList.add('loading');
+  try{
+    var r = await sb.auth.getSession();
+    if(!r.data||!r.data.session){ showToast('Sessão expirada. Faça login novamente.'); return; }
+    var session = r.data.session;
+    var response = await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body: JSON.stringify({ itens, cardData, cupom: cupomAtual||null, total: getTotal() })
+    });
+    var data = await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro no pagamento com cartão');
+    if(data.status==='approved'){
+      sessionStorage.setItem('mg_pedido_id', data.pedido_id||'');
+      sessionStorage.setItem('mg_user_email', session.user.email||'');
+      window.location.href = 'sucesso.html';
+    } else if(data.status==='pending'||data.status==='in_process'){
+      showToast('Pagamento em análise — você receberá confirmação por email.');
+      setTimeout(()=>window.location.href='index.html',3000);
+    } else {
+      throw new Error(data.status_detail||'Pagamento recusado. Verifique os dados.');
+    }
+  }catch(err){
+    showToast('Erro: '+(err.message||'Tente novamente'));
+    btn.disabled=false; btn.classList.remove('loading');
+  }
+}
+
+/* Pré-carrega cupom do sessionStorage se veio de outra página */
 renderResumo();
 </script>
 </body>
