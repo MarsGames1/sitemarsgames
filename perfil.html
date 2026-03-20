@@ -5005,6 +5005,20 @@ function iniciarRealtimePerfil(userEmail){
         showToast('🎟️ Tickets atualizados! '+nova.quantidade+' tickets');
       }
     })
+    /* Mudanças em cambio_itens — admin editou/removeu item */
+    .on('postgres_changes',{
+      event:'*',
+      schema:'public',
+      table:'cambio_itens'
+    },function(){
+      /* Força recarga dos itens sem usar cache */
+      cambioInitDone=false;
+      _cambioItems=[];
+      if(document.getElementById('tab-cambio') &&
+         document.getElementById('tab-cambio').classList.contains('active')){
+        cambioCarregarTudo();
+      }
+    })
     .subscribe(function(status){
       if(status==='SUBSCRIBED'){
         console.log('[Realtime] Perfil inscrito para',userEmail);
@@ -5551,8 +5565,8 @@ window.cambioInit=function(){
   }
 
   if(cambioInitDone){
-    if(Date.now()-_cambioUltimaRecarga>30000) cambioRecarregarSaldos();
-    else renderCambioGrid();
+    /* Sempre recarrega itens do banco (pega mudanças do admin) */
+    cambioCarregarTudo();
     return;
   }
   cambioInitDone=true;
