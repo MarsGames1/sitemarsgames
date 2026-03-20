@@ -721,7 +721,7 @@ async function initCardBrick(){
   var email=(r.data&&r.data.session&&r.data.session.user&&r.data.session.user.email)||'';
   var bricks=mpInstance.bricks();
   cardBrickCtrl=await bricks.create('cardPayment','cardBrick_container',{
-    initialization:{amount:pl.preco, payer:{email:email}},
+    initialization:{amount:pl.valor, payer:{email:email}},
     customization:{
       visual:{style:{theme:'dark',customVariables:{
         baseColor:pl.cor||'#7c6af7',primaryColor:pl.cor||'#7c6af7',

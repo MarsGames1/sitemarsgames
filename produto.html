@@ -759,9 +759,28 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     <div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:11px;font-weight:600">🛒<br><br>Carrinho vazio</div>
   </div>
   <div style="padding:16px 20px;border-top:1px solid var(--border)">
+    <!-- Cupom -->
+    <div style="margin-bottom:12px">
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <input id="cartCupomInput" type="text" placeholder="Código de cupom" maxlength="20" autocomplete="off"
+          style="flex:1;background:var(--surface,#1a1a22);border:1px solid var(--border2,#323240);border-radius:8px;
+                 padding:9px 12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;outline:none">
+        <button id="cartCupomBtn" onclick="aplicarCupom()"
+          style="padding:9px 14px;border-radius:8px;border:1px solid rgba(232,66,26,.35);
+                 background:rgba(232,66,26,.1);color:var(--mars,#e8421a);font-family:'Montserrat',sans-serif;
+                 font-size:10px;font-weight:900;letter-spacing:.5px;cursor:pointer;white-space:nowrap">Aplicar</button>
+      </div>
+      <div id="cartCupomStatus" style="display:none;font-size:10px;font-weight:700;padding:5px 8px;border-radius:6px"></div>
+    </div>
+    <!-- Desconto -->
+    <div id="cartDescontoRow" style="display:none;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:10px;font-weight:700;color:var(--green,#00ff55)">Desconto <span id="cartCupomTag" style="background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.2);border-radius:4px;padding:1px 6px;font-size:8px;letter-spacing:.5px"></span></span>
+      <span id="cartDescontoVal" style="font-size:13px;font-weight:900;color:var(--green,#00ff55)"></span>
+    </div>
+    <!-- Total -->
     <div style="display:flex;justify-content:space-between;margin-bottom:14px">
-      <span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">Total</span>
-      <span id="cartTotal" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green)">R$ 0,00</span>
+      <span style="font-size:10px;font-weight:700;color:var(--muted,#555);letter-spacing:1.5px;text-transform:uppercase">Total</span>
+      <span id="cartTotal" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green,#00ff55)">R$ 0,00</span>
     </div>
     <button id="checkoutBtn" onclick="checkout()" disabled style="width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.3">Finalizar compra</button>
   </div>
@@ -783,6 +802,7 @@ var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
 });
 var produto=null;
 var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
+var cupomAtual=null;
 var favoritos=JSON.parse(localStorage.getItem('mg_favs')||'[]');
 
 /* ── INIT ── */
@@ -1074,9 +1094,27 @@ function toggleCart(){
   if(open){o.style.display='none';d.style.transform='translateX(100%)';document.body.style.overflow=''}
   else{o.style.display='block';d.style.transform='translateX(0)';document.body.style.overflow='hidden'}
 }
+function calcularDesconto(){
+  if(!cupomAtual||carrinho.length===0) return 0;
+  var precos=carrinho.map(function(p){return Number(p.preco)});
+  var menor=Math.min.apply(null,precos);
+  if(cupomAtual.desconto_tipo==='percentual') return Math.round(menor*(cupomAtual.desconto_valor/100)*100)/100;
+  return Math.min(cupomAtual.desconto_valor, menor);
+}
 function atualizarCarrinho(){
   document.getElementById('cartBadge').textContent=carrinho.length;
-  var total=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+  var subtotal=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+  var desconto=calcularDesconto();
+  var total=Math.max(0,subtotal-desconto);
+  /* Desconto row */
+  var rowDesc=document.getElementById('cartDescontoRow');
+  if(desconto>0&&cupomAtual){
+    rowDesc.style.display='flex';
+    document.getElementById('cartCupomTag').textContent=cupomAtual.codigo;
+    document.getElementById('cartDescontoVal').textContent='−R$ '+desconto.toFixed(2).replace('.',',');
+  } else {
+    rowDesc.style.display='none';
+  }
   document.getElementById('cartTotal').textContent='R$ '+total.toFixed(2).replace('.',',');
   var btn=document.getElementById('checkoutBtn');
   btn.disabled=carrinho.length===0;
@@ -1086,12 +1124,17 @@ function atualizarCarrinho(){
     items.innerHTML='<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:11px;font-weight:600">🛒<br><br>Carrinho vazio</div>';
     return;
   }
+  var precos=carrinho.map(function(p){return Number(p.preco)});
+  var menorPreco=cupomAtual?Math.min.apply(null,precos):null;
   items.innerHTML=carrinho.map(function(p){
+    var preco=Number(p.preco);
+    var isMenor=cupomAtual&&preco===menorPreco;
+    var tag=isMenor?'<span style="font-size:7px;font-weight:900;background:rgba(0,255,85,.12);border:1px solid rgba(0,255,85,.25);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px">DESCONTO</span>':'';
     return '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--dim);align-items:center">'+
       '<img src="'+esc(p.imagem||'')+'" style="width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--dim);flex-shrink:0">'+
       '<div style="flex:1;min-width:0">'+
-        '<div style="font-size:11px;font-weight:700;color:#eee;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+'</div>'+
-        '<div style="font-size:13px;font-weight:900;color:var(--green)">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+        '<div style="font-size:11px;font-weight:700;color:#eee;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+tag+'</div>'+
+        '<div style="font-size:13px;font-weight:900;color:var(--green)">R$ '+preco.toFixed(2).replace('.',',')+'</div>'+
       '</div>'+
       '<button onclick="removerCarrinho(\''+p.id+'\')" style="background:transparent;border:none;color:#333;cursor:pointer;font-size:16px;padding:4px;min-width:32px;min-height:32px">✕</button>'+
     '</div>';
@@ -1115,6 +1158,8 @@ async function checkout() {
     }
     const itens = carrinho.map(p => ({ id: p.id, nome: p.nome, preco: Number(p.preco), quantidade: 1, imagem: p.imagem || '' }));
     sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itens));
+    if(cupomAtual) sessionStorage.setItem('mg_cupom', JSON.stringify(cupomAtual));
+    else sessionStorage.removeItem('mg_cupom');
     sessionStorage.setItem('mg_user_email', session.user.email);
     window.location.href = 'checkout.html';
   } catch (error) {
@@ -1124,6 +1169,46 @@ async function checkout() {
   }
 }
 
+
+/* ── CUPOM ── */
+async function aplicarCupom(){
+  var input=document.getElementById('cartCupomInput');
+  var btn=document.getElementById('cartCupomBtn');
+  var status=document.getElementById('cartCupomStatus');
+  var codigo=(input.value||'').trim().toUpperCase();
+  if(!codigo) return;
+  if(cupomAtual){
+    cupomAtual=null; input.value=''; btn.textContent='Aplicar';
+    status.style.cssText='display:flex;font-size:10px;font-weight:700;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.04);color:#aaa';
+    status.textContent='✕ Cupom removido';
+    setTimeout(function(){status.style.display='none'},2500);
+    atualizarCarrinho(); return;
+  }
+  btn.disabled=true; btn.textContent='...'; status.style.display='none';
+  try{
+    var res=await sb.from('cupons').select('*').eq('codigo',codigo).eq('ativo',true).maybeSingle();
+    if(res.error||!res.data){ mostrarErroCupom('Cupom inválido ou expirado.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    var c=res.data;
+    var sess=await sb.auth.getSession();
+    if(sess.data&&sess.data.session){
+      var email=sess.data.session.user.email;
+      var emails_usados=Array.isArray(c.emails_usados)?c.emails_usados:[];
+      if(emails_usados.includes(email)){ mostrarErroCupom('Este cupom já foi utilizado pela sua conta.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    }
+    if(c.usos_max&&c.usos_atuais>=c.usos_max){ mostrarErroCupom('Este cupom atingiu o limite de usos.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    cupomAtual=c; btn.textContent='Remover'; btn.disabled=false;
+    atualizarCarrinho();
+    var desc=c.desconto_tipo==='percentual'?c.desconto_valor+'% OFF':('R$ '+Number(c.desconto_valor).toFixed(2).replace('.',',')+' OFF');
+    status.style.cssText='display:flex;font-size:10px;font-weight:700;padding:5px 8px;border-radius:6px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);color:#00ff55';
+    status.innerHTML='✓ Cupom <strong>'+codigo+'</strong> aplicado! '+desc;
+  }catch(e){ mostrarErroCupom('Erro ao verificar cupom. Tente novamente.'); btn.disabled=false; btn.textContent='Aplicar'; }
+}
+function mostrarErroCupom(msg){
+  var status=document.getElementById('cartCupomStatus');
+  status.style.cssText='display:flex;font-size:10px;font-weight:700;padding:5px 8px;border-radius:6px;background:rgba(232,66,26,.08);border:1px solid rgba(232,66,26,.2);color:#ff6b4a';
+  status.textContent='✕ '+msg;
+  setTimeout(function(){status.style.display='none'},3500);
+}
 
 /* ── HELPERS ── */
 function showError(){
