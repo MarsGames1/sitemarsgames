@@ -5985,10 +5985,10 @@ function renderCambioHistData(lista){
 (function(){
 var lojaInitDone=false, lojaPurchHist=[];
 var LOJA_PKGS=[
-  {id:'starter',cls:'starter',badge:null,icon:'🌱',name:'STARTER',mp:100,priceNum:4.90,mpColor:'#4a90d0',mpColor2:'#6ab0f0',bonus:[],price:'R$ 4,90'},
-  {id:'explorer',cls:'explorer',badge:null,icon:'🚀',name:'EXPLORER',mp:500,priceNum:14.90,mpColor:'#ffc200',mpColor2:'#ff6a00',bonus:[{type:'tkt',icon:'🎟️',label:'+3 Tickets'}],price:'R$ 14,90'},
-  {id:'commander',cls:'commander',badge:'pop',icon:'⚡',name:'COMMANDER',mp:1500,priceNum:34.90,mpColor:'#9f3fff',mpColor2:'#c060ff',bonus:[{type:'tkt',icon:'🎟️',label:'+10 Tickets'},{type:'xp',icon:'🧠',label:'+200 XP'}],price:'R$ 34,90'},
-  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LEGEND',mp:5000,priceNum:89.90,mpColor:'#ff6a00',mpColor2:'#ff2d7a',bonus:[{type:'tkt',icon:'🎟️',label:'+30 Tickets'},{type:'xp',icon:'🧠',label:'+500 XP'},{type:'spin',icon:'🎰',label:'1 Giro Grátis'}],price:'R$ 89,90'}
+  {id:'starter',cls:'starter',badge:null,icon:'🌱',name:'STARTER',mp:100,priceNum:1.90,mpColor:'#4a90d0',mpColor2:'#6ab0f0',bonus:[],price:'R$ 1,90'},
+  {id:'explorer',cls:'explorer',badge:null,icon:'🚀',name:'EXPLORER',mp:500,priceNum:8.90,mpColor:'#ffc200',mpColor2:'#ff6a00',bonus:[{type:'tkt',icon:'🎟️',label:'+3 Tickets'}],price:'R$ 8,90'},
+  {id:'commander',cls:'commander',badge:'pop',icon:'⚡',name:'COMMANDER',mp:1500,priceNum:13.90,mpColor:'#9f3fff',mpColor2:'#c060ff',bonus:[{type:'tkt',icon:'🎟️',label:'+10 Tickets'},{type:'xp',icon:'🧠',label:'+200 XP'}],price:'R$ 13,90'},
+  {id:'legend',cls:'legend',badge:'hot',icon:'🌌',name:'LEGEND',mp:5000,priceNum:23.90,mpColor:'#ff6a00',mpColor2:'#ff2d7a',bonus:[{type:'tkt',icon:'🎟️',label:'+30 Tickets'},{type:'xp',icon:'🧠',label:'+500 XP'},{type:'spin',icon:'🎰',label:'1 Giro Grátis'}],price:'R$ 23,90'}
 ];
 
 window.lojaInit=function(){
@@ -6015,12 +6015,52 @@ function renderLojaPkgs(){
       '<div class="loja-pkg-divider"></div>'+
       '<div class="loja-pkg-price">'+pkg.price+'</div>'+
       '<div class="loja-pkg-pricesub">PAGAMENTO ÚNICO</div>'+
-      '<button class="loja-pkg-btn" onclick="lojaComprar(\''+pkg.id+'\')">COMPRAR AGORA</button>';
+      '<button class="loja-pkg-btn" onclick="lojaEscolherPagamento(\''+pkg.id+'\')">COMPRAR AGORA</button>';
     grid.appendChild(card);
   });
 }
 
-window.lojaComprar=async function(pkgId){
+/* ── Modal de escolha de pagamento ── */
+window.lojaEscolherPagamento=function(pkgId){
+  var pkg=LOJA_PKGS.find(function(p){return p.id===pkgId;});
+  if(!pkg) return;
+  /* Remove modal anterior se existir */
+  var old=document.getElementById('lojaPayModal');if(old)old.remove();
+  var modal=document.createElement('div');
+  modal.id='lojaPayModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);animation:fadeIn .2s ease both';
+  modal.innerHTML=
+    '<div style="background:#0f0f16;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;width:320px;max-width:90vw;position:relative">'+
+      '<button onclick="document.getElementById(\'lojaPayModal\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#555;font-size:20px;cursor:pointer;line-height:1">×</button>'+
+      '<div style="text-align:center;margin-bottom:20px">'+
+        '<div style="font-size:28px;margin-bottom:8px">'+pkg.icon+'</div>'+
+        '<div style="font-family:Orbitron,sans-serif;font-size:11px;font-weight:700;color:#888;letter-spacing:2px;margin-bottom:4px">'+pkg.name+'</div>'+
+        '<div style="font-family:Orbitron,sans-serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,'+pkg.mpColor+','+pkg.mpColor2+');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+pkg.mp.toLocaleString()+' MP</div>'+
+        '<div style="font-size:18px;font-weight:900;color:#fff;margin-top:6px">'+pkg.price+'</div>'+
+      '</div>'+
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:10px;text-align:center">Como deseja pagar?</div>'+
+      '<button onclick="lojaComprarPix(\''+pkg.id+'\')" style="width:100%;padding:14px;border-radius:12px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.25);color:#00ff55;font-family:Montserrat,sans-serif;font-weight:900;font-size:12px;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s" onmouseover="this.style.background=\'rgba(0,255,85,.15)\'" onmouseout="this.style.background=\'rgba(0,255,85,.08)\'">'+
+        '<span style="font-size:18px">⚡</span><span>PIX — instantâneo</span>'+
+      '</button>'+
+      '<button onclick="lojaComprarCartao(\''+pkg.id+'\')" style="width:100%;padding:14px;border-radius:12px;background:rgba(91,154,246,.08);border:1px solid rgba(91,154,246,.25);color:#5b9af6;font-family:Montserrat,sans-serif;font-weight:900;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s" onmouseover="this.style.background=\'rgba(91,154,246,.15)\'" onmouseout="this.style.background=\'rgba(91,154,246,.08)\'">'+
+        '<span style="font-size:18px">💳</span><span>Cartão de crédito ou débito</span>'+
+      '</button>'+
+    '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+};
+
+window.lojaComprarPix=async function(pkgId){
+  var modal=document.getElementById('lojaPayModal');if(modal)modal.remove();
+  await window.lojaComprar(pkgId,'pix');
+};
+
+window.lojaComprarCartao=async function(pkgId){
+  var modal=document.getElementById('lojaPayModal');if(modal)modal.remove();
+  await window.lojaComprar(pkgId,'cartao');
+};
+
+window.lojaComprar=async function(pkgId,metodo){
   var pkg=LOJA_PKGS.find(function(p){return p.id===pkgId;});
   if(!pkg) return;
 
@@ -6029,7 +6069,7 @@ window.lojaComprar=async function(pkgId){
   var session=sessRes&&sessRes.data&&sessRes.data.session;
   if(!session){showToast('⚠️ Faça login para comprar!');setTimeout(function(){window.location.href='perfil.html';},1000);return;}
 
-  // Monta item para o fluxo PIX (mesmo formato do checkout.html)
+  // Monta item para o fluxo de pagamento
   var itens=[{
     id:'mp_'+pkg.id,
     nome:'Pacote '+pkg.name+' — '+pkg.mp.toLocaleString('pt-BR')+' Marspoints',
@@ -6041,8 +6081,21 @@ window.lojaComprar=async function(pkgId){
     bonus:pkg.bonus||[]
   }];
   sessionStorage.setItem('mg_itens_pendentes',JSON.stringify(itens));
+  sessionStorage.setItem('mg_loja_pkg_id',pkg.id);
+  sessionStorage.setItem('mg_loja_pkg_mp',String(pkg.mp));
+  sessionStorage.setItem('mg_loja_pkg_bonus',JSON.stringify(pkg.bonus||[]));
 
-  // Mostra loading no botão
+  /* ── CARTÃO: vai para checkout.html ── */
+  if(metodo==='cartao'){
+    sessionStorage.setItem('mg_user_email',session.user.email||'');
+    sessionStorage.setItem('mg_user_id',session.user.id||'');
+    sessionStorage.setItem('mg_access_token',session.access_token||'');
+    sessionStorage.setItem('mg_refresh_token',session.refresh_token||'');
+    window.location.href='checkout.html';
+    return;
+  }
+
+  /* ── PIX: gera QR direto ── */
   var btns=document.querySelectorAll('.loja-pkg-btn');
   btns.forEach(function(b){b.disabled=true;});
   showToast('⚡ Gerando Pix...');
@@ -6056,7 +6109,6 @@ window.lojaComprar=async function(pkgId){
     var data=await response.json();
     if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
 
-    // Salva dados para pix-checkout.html
     sessionStorage.setItem('mg_pix_data',JSON.stringify(data));
     sessionStorage.setItem('mg_external_ref',data.reference||'');
     sessionStorage.setItem('mg_pedido_id',data.pedido_id||'');
@@ -6064,10 +6116,6 @@ window.lojaComprar=async function(pkgId){
     sessionStorage.setItem('mg_user_id',session.user.id||'');
     sessionStorage.setItem('mg_access_token',session.access_token||'');
     sessionStorage.setItem('mg_refresh_token',session.refresh_token||'');
-    // Marca que é compra de MP para pix-checkout saber o que creditar após confirmação
-    sessionStorage.setItem('mg_loja_pkg_id',pkg.id);
-    sessionStorage.setItem('mg_loja_pkg_mp',String(pkg.mp));
-    sessionStorage.setItem('mg_loja_pkg_bonus',JSON.stringify(pkg.bonus||[]));
 
     window.location.href='pix-checkout.html';
   }catch(error){
