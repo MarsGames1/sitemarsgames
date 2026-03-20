@@ -3200,7 +3200,7 @@ async function carregarPerfil(user){
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
-      sb.from('marspoints').select('pontos,historico,nivel').eq('user_email',user.email).maybeSingle(),
+      sb.from('marspoints').select('pontos,nivel').eq('user_email',user.email).maybeSingle(),
       sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle()
     ]);
 
@@ -3216,8 +3216,8 @@ async function carregarPerfil(user){
 
     /* ── Busca dados para conquistas em paralelo (sem bloquear UI) ── */
     Promise.all([
-      sb.from('pedidos').select('id,produto_nome,preco,created_at').eq('cliente_email',user.email).in('status',['pago','entregue','aprovado']).catch(function(){return{data:[]};}),
-      sb.from('avaliacoes').select('id').eq('user_email',user.email).eq('aprovado',true).catch(function(){return{data:[]};})
+      Promise.resolve(sb.from('pedidos').select('id,produto_nome,preco,created_at').eq('cliente_email',user.email).in('status',['pago','entregue','aprovado'])).catch(function(){return{data:[]};}),
+      Promise.resolve(sb.from('avaliacoes').select('id').eq('user_email',user.email).eq('aprovado',true)).catch(function(){return{data:[]};})
     ]).then(function(results){
       var peds  = results[0].data || [];
       var avals = results[1].data || [];
@@ -4390,7 +4390,7 @@ initSupabase();
     /* Navbar */
     gsap.from('.nav-logo',{x:-20,opacity:0,duration:.55,delay:.15,ease:'power2.out'});
     gsap.from('.nav-right > *',{y:-12,opacity:0,duration:.4,stagger:.06,delay:.25,ease:'power2.out'});
-    gsap.from('.nav-links .nav-link',{y:-8,opacity:0,duration:.35,stagger:.05,delay:.3,ease:'power2.out'});
+    if(document.querySelectorAll('.nav-links .nav-link').length>0){gsap.from('.nav-links .nav-link',{y:-8,opacity:0,duration:.35,stagger:.05,delay:.3,ease:'power2.out'});}
 
     /* Hero */
     var heroEls=['.hero-badge','.hero-eyebrow','.hero-title','.hero-sub','.hero-btns','.countdown',
