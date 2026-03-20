@@ -89,7 +89,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .desconto-lbl{font-size:10px;font-weight:700;color:var(--green);}
 .desconto-val{font-size:13px;font-weight:900;color:var(--green);}
 /* Card Brick */
-#card-brick-wrap{margin-top:12px;}
+#card-brick-wrap{margin-top:12px;overflow:hidden;}
+#cardBrick_container{max-width:100%;overflow:hidden;}
+#cardBrick_container iframe{max-width:100%!important;}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a28;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;font-weight:700;color:#eee;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
@@ -393,7 +395,7 @@ async function pagar() {
       btn.disabled=false; btn.classList.remove('loading'); return;
     }
     var session = r.data.session;
-    var itensComDesconto = itens.map(p=>({...p}));
+    var itensComDesconto = itens.map(p=>({...p, currency_id:'BRL'}));
     /* Aplica desconto no item mais barato */
     if(cupomAtual){
       var precos = itensComDesconto.map(p=>Number(p.preco));
@@ -439,7 +441,7 @@ async function pagarCartao(cardData){
     var session = r.data.session;
 
     /* Aplica desconto nos itens igual ao fluxo do Pix */
-    var itensComDesconto = itens.map(p=>({...p}));
+    var itensComDesconto = itens.map(p=>({...p, currency_id:'BRL'}));
     if(cupomAtual){
       var precos = itensComDesconto.map(p=>Number(p.preco));
       var menor = Math.min(...precos);
