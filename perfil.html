@@ -3216,8 +3216,8 @@ async function carregarPerfil(user){
 
     /* ── Busca dados para conquistas em paralelo (sem bloquear UI) ── */
     Promise.all([
-      Promise.resolve(sb.from('pedidos').select('id,produto_nome,preco,created_at').eq('cliente_email',user.email)).catch(function(){return{data:[]};}),
-      Promise.resolve(sb.from('avaliacoes').select('id').eq('user_email',user.email).eq('aprovado',true)).catch(function(){return{data:[]};})
+      Promise.resolve(sb.from('pedidos').select('id,produto_nome,created_at').eq('cliente_email',user.email)).catch(function(){return{data:[]};}),
+      Promise.resolve(sb.from('avaliacoes').select('id').eq('user_email',user.email)).catch(function(){return{data:[]};})
     ]).then(function(results){
       var peds  = results[0].data || [];
       var avals = results[1].data || [];
@@ -3635,6 +3635,13 @@ function renderConquistas(perfil){
         /* Notifica o usuário sobre conquistas novas */
         conquistasNovas.forEach(function(c){
           showToast('🏆 Conquista desbloqueada: "'+c.titulo+'"'+(c.pts>0?' +'+c.pts+' pts':''));
+          /* XP ao planeta por conquista */
+          var xpPlaneta=Math.max(10,Math.round((c.pts||0)*0.5));
+          (function tentarXP(n){
+            if(typeof planetaAddXPSilent==='function'){
+              planetaAddXPSilent(xpPlaneta,'Conquista: '+c.nome,'🏆','rgba(255,200,0,.1)','#ffc200');
+            } else if(n<10){ setTimeout(function(){tentarXP(n+1);},600); }
+          })(0);
         });
       }catch(e){console.warn('[conquistas grant]',e);}
     })();
@@ -4572,19 +4579,19 @@ async function atualizarNavbar(session){
 window._invalidarCacheAnel=function(email){
   try{localStorage.removeItem('mg_nav_'+(email||''));}catch(e){}
 };
-sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
-/* Fallback getSession com debounce para não duplicar com onAuthStateChange */
+/* Guard: aguarda sb estar pronto antes de registrar listeners de navbar */
 (function(){
-  var _nb=null, _nk='';
-  setTimeout(function(){
-    sb.auth.getSession().then(function(r){
-      var s=r.data?r.data.session:null;
-      var k=s?s.user.email:'null';
-      if(k===_nk) return;
-      _nk=k; clearTimeout(_nb);
-      _nb=setTimeout(function(){atualizarNavbar(s);},80);
-    });
-  },120);
+  function _initNavbarAuth(){
+    if(typeof sb==='undefined'||!sb||!sb.auth){setTimeout(_initNavbarAuth,200);return;}
+    sb.auth.onAuthStateChange(function(_e,session){atualizarNavbar(session);});
+    setTimeout(function(){
+      sb.auth.getSession().then(function(r){
+        var s=r.data?r.data.session:null;
+        atualizarNavbar(s);
+      }).catch(function(){});
+    },150);
+  }
+  _initNavbarAuth();
 })();
 
 /* ══════════════════════════════════════════════════════
@@ -5049,10 +5056,8 @@ function iniciarRealtimePerfil(userEmail){
 /* Injeta o Realtime assim que o usuário estiver autenticado */
 (function(){
   var _realtimeIniciado=false;
-  var _origOnAuth=sb.auth.onAuthStateChange.bind(sb.auth);
-  /* Hook leve no onAuthStateChange já existente — aguarda userSession estar definido */
-  /* FIX BUG 5: intervalo 1s (era 500ms), timeout 20s (era 30s) — menos polling */
   var _checkInterval=setInterval(function(){
+    if(typeof sb==='undefined'||!sb||!sb.auth) return; /* aguarda SDK */
     if(userSession&&userSession.user&&!_realtimeIniciado){
       _realtimeIniciado=true;
       clearInterval(_checkInterval);
