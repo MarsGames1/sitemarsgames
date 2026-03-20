@@ -330,11 +330,7 @@ async function initCardBrick(){
   cardBrickCtrl = await bricks.create('cardPayment','cardBrick_container',{
     initialization:{ amount: total, payer:{email:email} },
     customization:{
-      visual:{style:{theme:'dark',customVariables:{
-        baseColor:'#00ff55', primaryColor:'#00ff55',
-        formBackgroundColor:'#0f0f16', inputBackgroundColor:'#131320',
-        inputFocusedBorderColor:'#00ff55', borderRadiusFull:'10px', labelFontWeight:'700'
-      }}},
+      visual:{style:{theme:'dark'}},
       paymentMethods:{
         maxInstallments:12,
         types:{ included:['credit_card','debit_card'] }
