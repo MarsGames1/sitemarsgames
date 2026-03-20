@@ -3267,24 +3267,31 @@ async function carregarPerfil(user){
   }, 800);
 }
 
-/* Verifica subida de nível e concede XP bônus ao planeta */
+/* Verifica subida de nível e concede XP bônus ao planeta — crédita uma vez por nível */
 async function verificarLevelUpXP(user){
   try{
     var mpRes=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
     if(!mpRes.data) return;
     var pts=mpRes.data.pontos||0;
     var nivelAtual=getNivel(pts);
-    var lsKey='mg_nivel_anterior_'+user.email;
-    var nivelAnterior=localStorage.getItem(lsKey)||'Bronze';
-    if(nivelAtual.nome!==nivelAnterior){
-      // Nível subiu! Dá XP bônus ao planeta
-      var xpBonus=200;
+    var nivelSlug=nivelAtual.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    /* Chave por nível — garante que o XP é creditado exatamente uma vez por nível atingido */
+    var xpKey='mg_planeta_xp_creditado_'+nivelSlug+'_'+(user.email||'');
+    if(localStorage.getItem(xpKey)) return; /* já creditou este nível */
+    if(nivelSlug==='bronze') return; /* bronze não dá bônus */
+    var xpBonus=nivelSlug==='prata'?50:nivelSlug==='ouro'?200:nivelSlug==='esmeralda'?500:1000;
+    /* Aguarda o módulo planeta estar pronto (pode não ter inicializado ainda) */
+    var tentativas=0;
+    function tentarCreditar(){
       if(typeof planetaAddXPSilent==='function'){
         planetaAddXPSilent(xpBonus,'Subiu para '+nivelAtual.nome+' MP','🌟','rgba(185,242,255,.1)','#b9f2ff');
+        localStorage.setItem(xpKey,'1');
+        showToast('🌟 Nível '+nivelAtual.emoji+' '+nivelAtual.nome+'! +'+xpBonus+' XP no planeta!');
+      } else if(tentativas++<20){
+        setTimeout(tentarCreditar,500);
       }
-      localStorage.setItem(lsKey,nivelAtual.nome);
-      showToast('🌟 Nível '+nivelAtual.emoji+' '+nivelAtual.nome+'! +'+xpBonus+' XP no planeta!');
     }
+    tentarCreditar();
   }catch(e){}
 }
 
@@ -6084,32 +6091,38 @@ var planetaRafRunning=false;
 var planetaWeatherTimer=0, planetaWeatherMode='CLEAR';
 var planetaRainDrops=[], planetaSnow=[], planetaSand=[], planetaMeteors=[];
 
+/* Asteroide de colisão */
+var planetaAsteroid=null;       /* null = sem evento ativo */
+var planetaAsteroidCraters=[];  /* cicatrizes persistentes */
+var planetaAsteroidImpactTimer=0;
+var planetaAsteroidDamage=0;    /* 0–1, decai com o tempo */
+
 /* Rotação 3D controlada por mouse/touch */
-var p3dRotX=0, p3dRotY=0;          /* ângulo atual */
-var p3dTargX=0, p3dTargY=0;        /* alvo (suavizado) */
+var p3dRotX=0, p3dRotY=0;
+var p3dTargX=0, p3dTargY=0;
 var p3dDragActive=false;
 var p3dLastX=0, p3dLastY=0;
-var p3dAutoRotY=0;                  /* auto-rotação lenta */
+var p3dAutoRotY=0;
 
 var PLANETA_ERAS=[
   {n:'I',label:'PROTO',icon:'🌑',xp:0,color:'#ffc200',desc:'MUNDO PRIMORDIAL',
-   weather:['CLEAR','METEORS'],
+   weather:['CLEAR','METEORS','ASTEROID','HEATWAVE'],
    tech:{sistema:'Sol-Alfa · Cinturão Interno',galaxia:'Via Láctea',atm:'Inexistente',
          grav:'0.3 g',temp:'-220°C / +60°C',ra:'00h 42m 44s',dec:'+41° 16\''}},
   {n:'II',label:'VULCÂNICO',icon:'🌋',xp:200,color:'#ff6a00',desc:'ERA VULCÂNICA',
-   weather:['CLEAR','STORM'],
+   weather:['CLEAR','STORM','HEATWAVE','ASTEROID'],
    tech:{sistema:'Sol-9 · Mars Belt',galaxia:'Via Láctea',atm:'CO₂ tóxico',
          grav:'0.6 g',temp:'-80°C / +380°C',ra:'05h 34m 32s',dec:'+22° 00\''}},
   {n:'III',label:'OCEÂNICO',icon:'🌊',xp:600,color:'#00b8e6',desc:'OCEANOS SURGEM',
-   weather:['CLEAR','RAIN','STORM'],
+   weather:['CLEAR','RAIN','STORM','METEORS','ASTEROID'],
    tech:{sistema:'Sol-9 · Zona Habitable',galaxia:'Via Láctea',atm:'N₂/CO₂ densa',
          grav:'0.8 g',temp:'-10°C / +45°C',ra:'10h 08m 22s',dec:'+11° 58\''}},
   {n:'IV',label:'BIÓTICO',icon:'🌿',xp:1400,color:'#00e87a',desc:'VIDA FLORESCE',
-   weather:['CLEAR','RAIN','SNOW'],
+   weather:['CLEAR','RAIN','SNOW','AURORA','NEBULA'],
    tech:{sistema:'Sol-9 · Zona Habitable',galaxia:'Via Láctea',atm:'O₂/N₂ respirável',
          grav:'1.0 g',temp:'+8°C / +28°C',ra:'13h 25m 27s',dec:'-43° 01\''}},
   {n:'V',label:'GALÁCTICO',icon:'🌟',xp:3000,color:'#9f3fff',desc:'CIVILIZAÇÃO ESTELAR',
-   weather:['CLEAR','AURORA','METEORS'],
+   weather:['CLEAR','AURORA','METEORS','NEBULA','ASTEROID'],
    tech:{sistema:'Nexus Prime · Braço Externo',galaxia:'Via Láctea → Andrômeda',atm:'O₂/Xe ionizado',
          grav:'1.2 g',temp:'-5°C / +35°C',ra:'17h 45m 40s',dec:'-29° 00\''}}
 ];
@@ -6131,7 +6144,10 @@ var CLIMA_INFO={
   SNOW:{icon:'🌨️',nome:'Neve'},
   STORM:{icon:'⛈️',nome:'Tempestade'},
   METEORS:{icon:'☄️',nome:'Chuva de Meteoros'},
-  AURORA:{icon:'🌌',nome:'Aurora Boreal'}
+  AURORA:{icon:'🌌',nome:'Aurora Boreal'},
+  ASTEROID:{icon:'💥',nome:'Impacto de Asteroide'},
+  HEATWAVE:{icon:'🔥',nome:'Onda de Calor'},
+  NEBULA:{icon:'🌠',nome:'Nuvem de Nebulosa'}
 };
 
 function planetaAtualizarTech(){
@@ -6303,74 +6319,105 @@ function planetaDrawPlanet(){
   if(!planetaCtx) return;
   var ctx=planetaCtx;
 
-  /* Suaviza rotação 3D */
-  if(!p3dDragActive){
-    p3dAutoRotY+=0.003; /* auto-gira suave */
-  }
+  if(!p3dDragActive) p3dAutoRotY+=0.003;
   p3dRotX+=(p3dTargX-p3dRotX)*0.08;
-  p3dRotY+=(p3dTargY+p3dAutoRotY-(p3dRotX*0)+p3dRotY)*0.0 || 0;
-  /* Simplificado: anima offset X/Y do gradiente para simular 3D */
-  var tiltX=p3dTargX; /* -0.45 a 0.45 */
+  var tiltX=p3dTargX;
   var spinY=p3dAutoRotY+p3dTargY;
 
-  var CX=planetaStageW/2;
-  var CY=planetaStageH/2;
+  var CX=planetaStageW/2, CY=planetaStageH/2;
   var R=Math.min(planetaStageW,planetaStageH)*0.26;
 
   ctx.clearRect(0,0,planetaStageW,planetaStageH);
   var e=PLANETA_ERAS[planetaEraIdx];
+
+  /* Paletas nítidas e saturadas por era */
   var cols={
-    'I':['#3a1800','#8B4513','#cd6820'],
-    'II':['#1a0000','#8B0000','#e8421a'],
-    'III':['#001020','#003080','#0066cc'],
-    'IV':['#001808','#004020','#00a050'],
-    'V':['#080020','#3010a0','#9f3fff']
+    'I': {c0:'#4a1800',c1:'#9a3c08',c2:'#d85a18',c3:'#ff8840'},
+    'II':{c0:'#2a0000',c1:'#880000',c2:'#cc2000',c3:'#ff4422'},
+    'III':{c0:'#001428',c1:'#003a7a',c2:'#0066cc',c3:'#33aaff'},
+    'IV':{c0:'#001408',c1:'#004818',c2:'#00a040',c3:'#33dd77'},
+    'V': {c0:'#080028',c1:'#2e009a',c2:'#8020ee',c3:'#cc66ff'}
   };
   var ec=cols[e.n]||cols['I'];
 
-  /* Efeito 3D: desloca o highlight conforme rotação */
-  var hlX=CX - R*(Math.sin(spinY)*0.5);
-  var hlY=CY - R*(tiltX*1.2+0.3);
+  var hlX=CX - R*(Math.sin(spinY)*0.55);
+  var hlY=CY - R*(tiltX*1.2+0.32);
+  var shX=CX + R*(Math.sin(spinY)*0.4);
+  var shY=CY + R*(tiltX*0.8+0.28);
 
-  /* Sombra oposta ao highlight */
-  var shX=CX + R*(Math.sin(spinY)*0.35);
-  var shY=CY + R*(tiltX*0.8+0.25);
-
-  var grd=ctx.createRadialGradient(hlX,hlY,R*.04,CX,CY,R);
-  grd.addColorStop(0,ec[2]);
-  grd.addColorStop(0.45,ec[1]);
-  grd.addColorStop(1,ec[0]);
+  /* Base nítida */
+  var grd=ctx.createRadialGradient(hlX,hlY,R*.02,CX,CY,R);
+  grd.addColorStop(0,ec.c3);
+  grd.addColorStop(0.22,ec.c2);
+  grd.addColorStop(0.58,ec.c1);
+  grd.addColorStop(1,ec.c0);
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);
   ctx.fillStyle=grd;ctx.fill();
 
-  /* Continentes/textura — acompanham spin */
+  /* Continentes/manchas — clipeados ao disco */
   ctx.save();ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
-  for(var i=0;i<6;i++){
-    var angle=spinY+i*1.05;
-    var bx=CX+(Math.cos(angle)*R*.52);
-    var by=CY+(Math.sin(angle*.7+i*.9+tiltX)*R*.38);
-    var bg2=ctx.createRadialGradient(bx,by,0,bx,by,R*.3);
-    bg2.addColorStop(0,'rgba(0,0,0,.14)');bg2.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.beginPath();ctx.arc(bx,by,R*.3,0,Math.PI*2);ctx.fillStyle=bg2;ctx.fill();
+  for(var i=0;i<7;i++){
+    var angle=spinY+i*0.92;
+    var bx=CX+(Math.cos(angle)*R*.50);
+    var by=CY+(Math.sin(angle*.68+i*.88+tiltX)*R*.36);
+    var brad=R*(.14+Math.abs(Math.sin(i*1.9))*.1);
+    var bg2=ctx.createRadialGradient(bx,by,0,bx,by,brad);
+    bg2.addColorStop(0,'rgba(0,0,0,.32)');
+    bg2.addColorStop(0.55,'rgba(0,0,0,.10)');
+    bg2.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();ctx.arc(bx,by,brad,0,Math.PI*2);ctx.fillStyle=bg2;ctx.fill();
   }
   ctx.restore();
 
-  /* Sombra direcional */
-  var sh=ctx.createRadialGradient(shX,shY,R*.05,CX,CY,R);
+  /* Dano de asteroide — apenas durante evento ASTEROID, decai suavemente */
+  if(planetaAsteroidDamage>0){
+    ctx.save();ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
+    var dmg=planetaAsteroidDamage;
+    /* Mancha de impacto central */
+    var ix=CX+R*0.1, iy=CY-R*0.05;
+    var ig=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.55*dmg);
+    ig.addColorStop(0,'rgba(255,120,30,'+(.7*dmg)+')');
+    ig.addColorStop(0.3,'rgba(180,60,0,'+(.45*dmg)+')');
+    ig.addColorStop(0.7,'rgba(80,20,0,'+(.2*dmg)+')');
+    ig.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=ig;ctx.fillRect(0,0,planetaStageW,planetaStageH);
+    /* Cratera temporária */
+    var cg=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.18*dmg);
+    cg.addColorStop(0,'rgba(0,0,0,'+(.8*dmg)+')');
+    cg.addColorStop(0.5,'rgba(60,30,0,'+(.4*dmg)+')');
+    cg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=cg;ctx.fillRect(0,0,planetaStageW,planetaStageH);
+    /* Rachaduras irradiando */
+    ctx.strokeStyle='rgba(255,100,0,'+(.5*dmg)+')';ctx.lineWidth=1;
+    for(var c=0;c<6;c++){
+      var ca=c*1.05+spinY*0.2;
+      var cl=R*(0.18+c*.04)*dmg;
+      ctx.beginPath();ctx.moveTo(ix,iy);
+      ctx.lineTo(ix+Math.cos(ca)*cl,iy+Math.sin(ca)*cl);ctx.stroke();
+    }
+    ctx.restore();
+    /* Decai gradualmente quando não está em ASTEROID */
+    if(planetaWeatherMode!=='ASTEROID') planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.002);
+  }
+
+  /* Sombra direcional nítida */
+  var sh=ctx.createRadialGradient(shX,shY,R*.04,CX,CY,R);
   sh.addColorStop(0,'rgba(0,0,0,0)');
-  sh.addColorStop(0.65,'rgba(0,0,0,.3)');
-  sh.addColorStop(1,'rgba(0,0,0,.75)');
+  sh.addColorStop(0.6,'rgba(0,0,0,.28)');
+  sh.addColorStop(1,'rgba(0,0,0,.82)');
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.fillStyle=sh;ctx.fill();
 
-  /* Atmosphere glow */
-  var glw=ctx.createRadialGradient(CX,CY,R*.9,CX,CY,R*1.28);
-  glw.addColorStop(0,e.color+'44');glw.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.beginPath();ctx.arc(CX,CY,R*1.28,0,Math.PI*2);ctx.fillStyle=glw;ctx.fill();
+  /* Atmosfera nítida */
+  var glw=ctx.createRadialGradient(CX,CY,R*.88,CX,CY,R*1.22);
+  glw.addColorStop(0,e.color+'55');
+  glw.addColorStop(0.5,e.color+'22');
+  glw.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();ctx.arc(CX,CY,R*1.22,0,Math.PI*2);ctx.fillStyle=glw;ctx.fill();
 
-  /* Brilho especular (estrela) */
-  var spec=ctx.createRadialGradient(hlX,hlY,0,hlX,hlY,R*.3);
-  spec.addColorStop(0,'rgba(255,255,255,.22)');
-  spec.addColorStop(0.5,'rgba(255,255,255,.04)');
+  /* Highlight especular */
+  var spec=ctx.createRadialGradient(hlX,hlY,0,hlX,hlY,R*.28);
+  spec.addColorStop(0,'rgba(255,255,255,.28)');
+  spec.addColorStop(0.45,'rgba(255,255,255,.06)');
   spec.addColorStop(1,'rgba(255,255,255,0)');
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);
   ctx.save();ctx.clip();ctx.fillStyle=spec;ctx.fillRect(0,0,planetaStageW,planetaStageH);ctx.restore();
@@ -6382,49 +6429,209 @@ function planetaUpdateWeather(){
   ctx.clearRect(0,0,w,h);
   planetaWeatherTimer--;
   if(planetaWeatherTimer<=0){
-    /* Troca clima a cada 8-15s (480-900 frames a 60fps) — visível mas não frenético */
-    planetaWeatherTimer=480+Math.floor(Math.random()*420);
+    planetaWeatherTimer=500+Math.floor(Math.random()*400);
     var modes=PLANETA_ERAS[planetaEraIdx].weather;
+    var prev=planetaWeatherMode;
     planetaWeatherMode=modes[Math.floor(Math.random()*modes.length)];
-    if(planetaWeatherMode==='RAIN'&&!planetaRainDrops.length) for(var i=0;i<60;i++) planetaRainDrops.push(mkRainDrop(w,h));
-    if(planetaWeatherMode==='SNOW'&&!planetaSnow.length) for(var j=0;j<40;j++) planetaSnow.push(mkSnow(w,h));
-    if(planetaWeatherMode==='METEORS'&&!planetaMeteors.length) for(var k=0;k<8;k++) planetaMeteors.push(mkMeteor(w,h));
-  }
-  if(planetaWeatherMode==='RAIN'){
-    ctx.strokeStyle='rgba(100,160,255,.4)';ctx.lineWidth=1;
-    planetaRainDrops.forEach(function(d){d.x+=d.vx;d.y+=d.vy;if(d.y>h)Object.assign(d,mkRainDrop(w,h));
-      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x+d.vx*2,d.y+d.vy*2);ctx.stroke();});
-  }
-  if(planetaWeatherMode==='SNOW'){
-    ctx.fillStyle='rgba(220,235,255,.55)';
-    planetaSnow.forEach(function(s){s.y+=s.vy;s.x+=Math.sin(planetaNoiseT*2+s.x)*.3;if(s.y>h)Object.assign(s,mkSnow(w,h));
-      ctx.beginPath();ctx.arc(s.x,s.y,1.2,0,Math.PI*2);ctx.fill();});
-  }
-  if(planetaWeatherMode==='METEORS'){
-    planetaMeteors.forEach(function(m){m.x+=m.vx;m.y+=m.vy;if(m.x>w||m.y>h)Object.assign(m,mkMeteor(w,h));
-      ctx.save();ctx.strokeStyle='rgba(255,200,100,'+m.a+')';ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*8,m.y-m.vy*8);ctx.stroke();
-      ctx.beginPath();ctx.arc(m.x,m.y,1.5,0,Math.PI*2);ctx.fillStyle='rgba(255,240,200,'+m.a+')';ctx.fill();ctx.restore();});
-  }
-  if(planetaWeatherMode==='AURORA'){
-    var ag=ctx.createLinearGradient(0,0,0,h*.5);
-    ag.addColorStop(0,'rgba(0,255,150,.07)');ag.addColorStop(.4,'rgba(0,200,255,.05)');ag.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=ag;ctx.fillRect(0,0,w,h);
-  }
-  if(planetaWeatherMode==='STORM'){
-    /* Raios ocasionais */
-    if(Math.random()<.03){
-      ctx.save();ctx.strokeStyle='rgba(255,255,200,.5)';ctx.lineWidth=1;
-      var lx=Math.random()*w;
-      ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(lx+(-20+Math.random()*40),h*.4);
-      ctx.stroke();ctx.restore();
+    /* Reinicia partículas ao trocar */
+    if(planetaWeatherMode!==prev){
+      planetaRainDrops=[];planetaSnow=[];planetaMeteors=[];
+      /* Inicia asteroide */
+      if(planetaWeatherMode==='ASTEROID'){
+        planetaAsteroid={x:-30,y:h*.2,vx:3.5+Math.random()*2,vy:1.5+Math.random()*1.5,r:7+Math.random()*5,phase:'incoming',timer:0};
+        planetaAsteroidDamage=0;
+        showToast('☄️ Asteroide detectado em rota de colisão!',true);
+      }
     }
-    ctx.fillStyle='rgba(100,120,200,.03)';ctx.fillRect(0,0,w,h);
+    if(planetaWeatherMode==='RAIN') for(var i=0;i<70;i++) planetaRainDrops.push(mkRainDrop(w,h));
+    if(planetaWeatherMode==='SNOW') for(var j=0;j<50;j++) planetaSnow.push(mkSnow(w,h));
+    if(planetaWeatherMode==='METEORS') for(var k=0;k<10;k++) planetaMeteors.push(mkMeteor(w,h));
+  }
+
+  /* ── CHUVA ── */
+  if(planetaWeatherMode==='RAIN'){
+    if(!planetaRainDrops.length) for(var i=0;i<70;i++) planetaRainDrops.push(mkRainDrop(w,h));
+    ctx.strokeStyle='rgba(120,180,255,.45)';ctx.lineWidth=1;
+    planetaRainDrops.forEach(function(d){
+      d.x+=d.vx;d.y+=d.vy;if(d.y>h)Object.assign(d,mkRainDrop(w,h));
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x+d.vx*2,d.y+d.vy*2);ctx.stroke();
+    });
+  }
+
+  /* ── NEVE ── */
+  if(planetaWeatherMode==='SNOW'){
+    if(!planetaSnow.length) for(var j=0;j<50;j++) planetaSnow.push(mkSnow(w,h));
+    planetaSnow.forEach(function(s){
+      s.y+=s.vy;s.x+=Math.sin(planetaNoiseT*2+s.x)*.4;if(s.y>h)Object.assign(s,mkSnow(w,h));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r||1.4,0,Math.PI*2);
+      ctx.fillStyle='rgba(220,240,255,'+(.5+Math.sin(planetaNoiseT+s.x)*.1)+')';ctx.fill();
+    });
+  }
+
+  /* ── CHUVA DE METEOROS ── */
+  if(planetaWeatherMode==='METEORS'){
+    if(!planetaMeteors.length) for(var k=0;k<10;k++) planetaMeteors.push(mkMeteor(w,h));
+    planetaMeteors.forEach(function(m){
+      m.x+=m.vx;m.y+=m.vy;if(m.x>w+20||m.y>h+20)Object.assign(m,mkMeteor(w,h));
+      ctx.save();
+      var tail=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*10,m.y-m.vy*10);
+      tail.addColorStop(0,'rgba(255,200,100,'+m.a+')');
+      tail.addColorStop(1,'rgba(255,200,100,0)');
+      ctx.strokeStyle=tail;ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*10,m.y-m.vy*10);ctx.stroke();
+      ctx.beginPath();ctx.arc(m.x,m.y,2,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,240,180,'+m.a+')';ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  /* ── AURORA ── */
+  if(planetaWeatherMode==='AURORA'){
+    var t=planetaNoiseT;
+    for(var ab=0;ab<3;ab++){
+      var ag=ctx.createLinearGradient(0,0,0,h*.6);
+      var hue=[150,180,270][ab];
+      ag.addColorStop(0,'hsla('+hue+',100%,60%,'+(.06+Math.sin(t+ab)*.02)+')');
+      ag.addColorStop(0.5,'hsla('+(hue+30)+',80%,50%,'+(.04+Math.sin(t*1.3+ab)*.02)+')');
+      ag.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=ag;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      for(var ax=0;ax<=w;ax+=20){
+        ctx.lineTo(ax,h*.3+Math.sin(ax*.015+t+ab*2)*h*.12);
+      }
+      ctx.lineTo(w,0);ctx.closePath();ctx.fill();
+    }
+  }
+
+  /* ── TEMPESTADE ── */
+  if(planetaWeatherMode==='STORM'){
+    if(!planetaRainDrops.length) for(var sd=0;sd<90;sd++) planetaRainDrops.push(mkRainDrop(w,h));
+    ctx.strokeStyle='rgba(140,160,220,.35)';ctx.lineWidth=1;
+    planetaRainDrops.forEach(function(d){
+      d.x+=d.vx*2;d.y+=d.vy*1.4;if(d.y>h)Object.assign(d,mkRainDrop(w,h));
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x+d.vx*4,d.y+d.vy*3);ctx.stroke();
+    });
+    if(Math.random()<.04){
+      ctx.save();ctx.strokeStyle='rgba(255,255,180,.7)';ctx.lineWidth=1.5;
+      var lx=w*.2+Math.random()*w*.6,ly=0;
+      ctx.beginPath();ctx.moveTo(lx,ly);
+      lx+=(-15+Math.random()*30);ctx.lineTo(lx,h*.25);
+      lx+=(-10+Math.random()*20);ctx.lineTo(lx,h*.5);
+      ctx.stroke();ctx.restore();
+      ctx.fillStyle='rgba(255,255,200,.04)';ctx.fillRect(0,0,w,h);
+    }
+    ctx.fillStyle='rgba(80,100,180,.025)';ctx.fillRect(0,0,w,h);
+  }
+
+  /* ── ONDA DE CALOR ── */
+  if(planetaWeatherMode==='HEATWAVE'){
+    var ht=planetaNoiseT;
+    for(var hw=0;hw<w;hw+=8){
+      var wvy=Math.sin(hw*.04+ht*2)*6;
+      var hg=ctx.createLinearGradient(hw,h*.4+wvy,hw+8,h*.4+wvy);
+      hg.addColorStop(0,'rgba(255,80,0,.0)');
+      hg.addColorStop(0.5,'rgba(255,140,0,'+(.04+Math.sin(ht+hw*.02)*.02)+')');
+      hg.addColorStop(1,'rgba(255,80,0,.0)');
+      ctx.fillStyle=hg;ctx.fillRect(hw,0,8,h);
+    }
+    ctx.fillStyle='rgba(255,60,0,.015)';ctx.fillRect(0,0,w,h);
+  }
+
+  /* ── NEBULOSA ── */
+  if(planetaWeatherMode==='NEBULA'){
+    var nt=planetaNoiseT*.3;
+    var nebCols=['rgba(120,0,255,','rgba(0,180,255,','rgba(255,0,120,'];
+    for(var nc=0;nc<3;nc++){
+      var ng2=ctx.createRadialGradient(
+        w*.3+Math.sin(nt+nc)*w*.3,h*.4+Math.cos(nt*1.1+nc)*h*.25,0,
+        w*.5,h*.5,w*.6);
+      ng2.addColorStop(0,nebCols[nc]+(.06+Math.sin(nt+nc)*.02)+')');
+      ng2.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=ng2;ctx.fillRect(0,0,w,h);
+    }
+  }
+
+  /* ── ASTEROIDE DE COLISÃO ── */
+  if(planetaWeatherMode==='ASTEROID'&&planetaAsteroid){
+    var ast=planetaAsteroid;
+    ast.timer++;
+    var CX2=w/2,CY2=h/2;
+
+    if(ast.phase==='incoming'){
+      /* Asteroide se aproxima */
+      ast.x+=ast.vx;ast.y+=ast.vy;
+      /* Cauda de fogo */
+      ctx.save();
+      var tailG=ctx.createLinearGradient(ast.x,ast.y,ast.x-ast.vx*14,ast.y-ast.vy*14);
+      tailG.addColorStop(0,'rgba(255,180,60,.9)');
+      tailG.addColorStop(0.4,'rgba(255,80,0,.5)');
+      tailG.addColorStop(1,'rgba(255,40,0,0)');
+      ctx.strokeStyle=tailG;ctx.lineWidth=ast.r*.9;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(ast.x,ast.y);ctx.lineTo(ast.x-ast.vx*14,ast.y-ast.vy*14);ctx.stroke();
+      /* Núcleo do asteroide */
+      var ag2=ctx.createRadialGradient(ast.x-ast.r*.3,ast.y-ast.r*.3,0,ast.x,ast.y,ast.r);
+      ag2.addColorStop(0,'rgba(255,240,180,1)');
+      ag2.addColorStop(0.4,'rgba(200,100,30,1)');
+      ag2.addColorStop(1,'rgba(80,40,0,1)');
+      ctx.beginPath();ctx.arc(ast.x,ast.y,ast.r,0,Math.PI*2);ctx.fillStyle=ag2;ctx.fill();
+      ctx.restore();
+      /* Chegou perto do centro → IMPACTO */
+      var dx=ast.x-CX2,dy=ast.y-CY2;
+      if(Math.sqrt(dx*dx+dy*dy)<w*.22){
+        ast.phase='impact';ast.timer=0;
+        planetaAsteroidDamage=1.0;
+        /* Flash de impacto */
+        ctx.fillStyle='rgba(255,200,100,.6)';ctx.fillRect(0,0,w,h);
+        showToast('💥 Asteroide colidiu com seu planeta!',true);
+      }
+    } else if(ast.phase==='impact'){
+      /* Onda de choque expandindo */
+      var prog=Math.min(1,ast.timer/60);
+      var shockR=prog*w*.4;
+      ctx.save();
+      var sg=ctx.createRadialGradient(CX2,CY2,shockR*.7,CX2,CY2,shockR);
+      sg.addColorStop(0,'rgba(255,200,80,0)');
+      sg.addColorStop(0.7,'rgba(255,120,20,'+(.4*(1-prog))+')');
+      sg.addColorStop(1,'rgba(255,60,0,0)');
+      ctx.beginPath();ctx.arc(CX2,CY2,shockR,0,Math.PI*2);ctx.fillStyle=sg;ctx.fill();
+      /* Flash inicial */
+      if(ast.timer<15) ctx.fillStyle='rgba(255,200,100,'+(.5*(1-ast.timer/15))+')';ctx.fillRect(0,0,w,h);
+      ctx.restore();
+      if(ast.timer>120){
+        ast.phase='debris';ast.timer=0;
+        /* Gera detritos */
+        ast.debris=[];
+        for(var db=0;db<18;db++) ast.debris.push({
+          x:CX2,y:CY2,
+          vx:(-3+Math.random()*6),vy:(-3+Math.random()*6),
+          r:1+Math.random()*2.5,a:1
+        });
+      }
+    } else if(ast.phase==='debris'){
+      /* Detritos se espalhando */
+      ctx.save();
+      ast.debris.forEach(function(d){
+        d.x+=d.vx;d.y+=d.vy;d.a-=0.012;d.vx*=0.97;d.vy*=0.97;
+        if(d.a<=0) return;
+        ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,140,40,'+d.a+')';ctx.fill();
+      });
+      ctx.restore();
+      /* Dano no planeta decai */
+      planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.003);
+      if(ast.timer>300||planetaAsteroidDamage<=0){
+        /* Evento terminou — planeta se recupera */
+        planetaAsteroid=null;
+        planetaWeatherMode='CLEAR';
+        planetaWeatherTimer=300;
+      }
+    }
   }
 }
-function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1,vy:6+Math.random()*4};}
-function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.6+Math.random()*.5};}
-function mkMeteor(w,h){return{x:-20+Math.random()*w*.4,y:Math.random()*h*.3,vx:4+Math.random()*7,vy:2+Math.random()*4,a:.5+Math.random()*.5};}
+function mkRainDrop(w,h){return{x:Math.random()*w,y:Math.random()*-h*.5,vx:-1.2,vy:7+Math.random()*4};}
+function mkSnow(w,h){return{x:Math.random()*w,y:Math.random()*-h*.3,vy:.5+Math.random()*.6,r:.8+Math.random()*1.2};}
+function mkMeteor(w,h){return{x:-20+Math.random()*w*.3,y:Math.random()*h*.25,vx:5+Math.random()*8,vy:2.5+Math.random()*4,a:.6+Math.random()*.4};}
 
 /* _planetaTabAtiva declarada no escopo global acima — não redeclarar aqui */
 function planetaLoop(){
@@ -6434,6 +6641,10 @@ function planetaLoop(){
     return;
   }
   planetaNoiseT+=0.008;
+  /* Decai dano de asteroide quando evento já acabou */
+  if(planetaAsteroidDamage>0&&planetaWeatherMode!=='ASTEROID'&&!planetaAsteroid){
+    planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.0015);
+  }
   planetaDrawPlanet();
   planetaUpdateWeather();
   planetaAtualizarTech();
