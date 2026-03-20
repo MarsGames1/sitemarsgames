@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -333,6 +334,18 @@ body{
 
 .confetti-piece{position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;border-radius:2px;animation:confetti 1.8s ease-out forwards}
 
+.metodos-wrap{margin-bottom:18px}
+.metodo{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid rgba(255,255,255,.07);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s,background .2s}
+.metodo:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.02)}
+.metodo.selected{border-color:var(--plan-color,#7c6af7);background:rgba(124,106,247,.05)}
+.metodo-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.metodo-nome{font-size:13px;font-weight:900;color:#eee;margin-bottom:2px}
+.metodo-desc{font-size:10px;color:#555;font-weight:600}
+.metodo-radio{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);margin-left:auto;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.metodo.selected .metodo-radio{border-color:var(--plan-color,#7c6af7)}
+.metodo-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--plan-color,#7c6af7);transform:scale(0);transition:transform .2s}
+.metodo.selected .metodo-radio-dot{transform:scale(1)}
+#card-form-wrap{margin-bottom:8px}
 .seguranca{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:10px;color:#333;font-weight:600}
 
 @media(max-width:500px){
@@ -382,9 +395,34 @@ body{
       <div id="benefitsList"></div>
     </div>
 
+    <!-- Seleção de método -->
+    <div class="metodos-wrap">
+      <div class="metodo selected" id="metodo-pix" onclick="selecionarMetodo('pix')">
+        <div class="metodo-icon">⚡</div>
+        <div style="flex:1">
+          <div class="metodo-nome">Pix</div>
+          <div class="metodo-desc">Aprovação instantânea</div>
+        </div>
+        <div class="metodo-radio"><div class="metodo-radio-dot"></div></div>
+      </div>
+      <div class="metodo" id="metodo-cartao" onclick="selecionarMetodo('cartao')">
+        <div class="metodo-icon">💳</div>
+        <div style="flex:1">
+          <div class="metodo-nome">Cartão de crédito</div>
+          <div class="metodo-desc">Até 12x — aprovação na hora</div>
+        </div>
+        <div class="metodo-radio"><div class="metodo-radio-dot"></div></div>
+      </div>
+    </div>
+
+    <!-- Formulário Bricks — aparece ao selecionar cartão -->
+    <div id="card-form-wrap" style="display:none;margin-bottom:12px">
+      <div id="cardBrick_container"></div>
+    </div>
+
     <button class="btn-assinar" id="btnAssinar" onclick="iniciarPagamento()">
       <div class="spinner"></div>
-      <span class="btn-txt">⚡ Assinar com Pix</span>
+      <span class="btn-txt" id="btnAssinarTxt">⚡ Assinar com Pix</span>
     </button>
     <a href="marspass.html" class="back-link">← Voltar e ver todos os planos</a>
     <div class="seguranca">🔒 Pagamento seguro via Mercado Pago</div>
@@ -605,6 +643,8 @@ var PLANOS={
 };
 
 var planoKey='andromeda', pixData=null, timerInterval=null, pollInterval=null, timerSecs=1800;
+var metodoAtual='pix', mpInstance=null, cardBrickCtrl=null;
+var MP_PUBLIC_KEY='APP_USR-3c95def7-e1bc-4f2f-a191-b724ea84f28a';
 
 /* ── INICIALIZAÇÃO ── */
 (function init(){
@@ -656,9 +696,85 @@ function showToast(msg,erro){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
 /* ── INICIA PAGAMENTO ── */
+async function selecionarMetodo(metodo){
+  metodoAtual=metodo;
+  document.querySelectorAll('.metodo').forEach(function(el){el.classList.remove('selected')});
+  document.getElementById('metodo-'+metodo).classList.add('selected');
+  var btnTxt=document.getElementById('btnAssinarTxt');
+  var wrap=document.getElementById('card-form-wrap');
+  if(metodo==='cartao'){
+    btnTxt.textContent='💳 Assinar com Cartão';
+    wrap.style.display='block';
+    await initCardBrick();
+  } else {
+    btnTxt.textContent='⚡ Assinar com Pix';
+    wrap.style.display='none';
+    if(cardBrickCtrl){cardBrickCtrl.unmount();cardBrickCtrl=null;}
+  }
+}
+
+async function initCardBrick(){
+  if(cardBrickCtrl) return;
+  if(!mpInstance) mpInstance=new MercadoPago(MP_PUBLIC_KEY,{locale:'pt-BR'});
+  var pl=PLANOS[planoKey];
+  var r=await sb.auth.getSession();
+  var email=(r.data&&r.data.session&&r.data.session.user&&r.data.session.user.email)||'';
+  var bricks=mpInstance.bricks();
+  cardBrickCtrl=await bricks.create('cardPayment','cardBrick_container',{
+    initialization:{amount:pl.preco, payer:{email:email}},
+    customization:{
+      visual:{style:{theme:'dark',customVariables:{
+        baseColor:pl.cor||'#7c6af7',primaryColor:pl.cor||'#7c6af7',
+        formBackgroundColor:'#0f0f1a',inputBackgroundColor:'#131325',
+        inputFocusedBorderColor:pl.cor||'#7c6af7',borderRadiusFull:'10px',labelFontWeight:'700'
+      }}},
+      paymentMethods:{maxInstallments:12}
+    },
+    callbacks:{
+      onReady:function(){},
+      onSubmit:async function(cardData){ await pagarCartao(cardData); },
+      onError:function(err){ showToast('Verifique os dados do cartão',true); }
+    }
+  });
+}
+
+async function pagarCartao(cardData){
+  var btn=document.getElementById('btnAssinar');
+  btn.disabled=true; btn.classList.add('loading');
+  try{
+    var r=await sb.auth.getSession();
+    if(!r.data||!r.data.session){ showToast('Faça login primeiro!',true); return; }
+    var session=r.data.session;
+    var response=await fetch(SUPABASE_URL+'/functions/v1/marspass-criar-cartao',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({plano:planoKey, cardData:cardData})
+    });
+    var data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro no cartão');
+    if(data.status==='approved'){
+      await mostrarSucesso();
+    } else if(data.status==='pending'||data.status==='in_process'){
+      showToast('Pagamento em análise — você receberá confirmação por email.');
+      setTimeout(function(){window.location.href='perfil.html';},3000);
+    } else {
+      throw new Error(data.status_detail||'Pagamento recusado. Verifique os dados.');
+    }
+  }catch(err){
+    showToast('Erro: '+(err.message||'Tente novamente'),true);
+    btn.disabled=false; btn.classList.remove('loading');
+  }
+}
+
 async function iniciarPagamento(){
   var btn=document.getElementById('btnAssinar');
   btn.disabled=true;btn.classList.add('loading');
+
+  /* Se cartão, Brick submete via onSubmit */
+  if(metodoAtual==='cartao'){
+    if(cardBrickCtrl){ try{ await cardBrickCtrl.getFormData(); }catch(e){} }
+    return;
+  }
 
   try{
     var r=await sb.auth.getSession();
