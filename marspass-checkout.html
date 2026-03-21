@@ -729,7 +729,9 @@ async function initCardBrick(){
     callbacks:{
       onReady:function(){},
       onSubmit:async function(cardData){
-        await pagarCartao(cardData);
+        /* MP Brick v2: dados reais estão em cardData.formData */
+        var payload = (cardData && cardData.formData) ? cardData.formData : cardData;
+        await pagarCartao(payload);
         /* re-habilita botão se pagarCartao não redirecionou */
         var btn=document.getElementById('btnAssinar');
         if(btn&&btn.disabled){ btn.disabled=false;btn.classList.remove('loading'); }

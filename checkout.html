@@ -348,7 +348,11 @@ async function initCardBrick(){
           var wrap=document.getElementById('card-brick-wrap');
           if(wrap) wrap.style.minHeight='0';
         },
-        onSubmit: async function(cardData){ await pagarCartao(cardData); },
+        onSubmit: async function(cardData){
+          /* MP Brick v2: dados reais estão em cardData.formData */
+          var payload = (cardData && cardData.formData) ? cardData.formData : cardData;
+          await pagarCartao(payload);
+        },
         onError: function(err){
           if(err&&err.cause&&err.cause[0]&&err.cause[0].code==='E301') return;
           if(err&&(err.type==='non_critical'||err.type==='validation')) return;
