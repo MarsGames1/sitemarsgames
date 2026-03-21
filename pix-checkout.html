@@ -468,6 +468,11 @@ async function creditarPacoteMP() {
       }
       xpCreditado = xpBonus;
       console.log('[XP Planeta] +' + xpBonus + ' creditado OK');
+      // Apaga localStorage do planeta para forçar recarga do Supabase no perfil
+      // (sem isso, perfil.html ignora o XP novo se localStorage >= valor do banco)
+      localStorage.removeItem('mg_planeta_xp');
+      localStorage.removeItem('mg_planeta_log');
+      localStorage.removeItem('mg_planeta_atv');
     }
   } catch(e) { console.error('[XP ERRO]', e.message); erros.push('XP: ' + e.message); }
 
