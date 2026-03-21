@@ -957,61 +957,39 @@ function iniciarPolling(reference){
         return;
       }
 
-      /* CAMADA 2: A cada 3 tentativas (~15s) chama mp-confirmar-pagamento
-         Essa edge fn já existe, sem CORS, funciona no pix-checkout também */
+      /* CAMADA 2: A cada 3 tentativas (~15s) chama marspass-ativar diretamente
+         (mp-confirmar-pagamento busca em 'pedidos', MarsPass usa 'marspass_assinaturas') */
       if(_pollTentativas % 3 === 0 && _pollReference){
         try{
-          var confRes = await fetch(SUPABASE_URL + '/functions/v1/mp-confirmar-pagamento', {
+          var ativRes = await fetch(SUPABASE_URL + '/functions/v1/marspass-ativar', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + session.access_token
-            },
-            body: JSON.stringify({ reference: _pollReference, tipo: 'marspass', plano: planoKey })
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+            body: JSON.stringify({ plano: planoKey, reference: _pollReference, user_email: email })
           });
-
-          if(confRes.ok){
-            var confData = await confRes.json();
-            console.log('[poll MP]', confData);
-
-            /* Se pagamento aprovado, ativa a assinatura no banco */
-            if(confData.aprovado || confData.pago){
-              /* Tenta ativar via edge fn dedicada */
-              try{
-                var ativRes = await fetch(SUPABASE_URL + '/functions/v1/marspass-ativar', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-                  body: JSON.stringify({ plano: planoKey, reference: _pollReference, user_email: email })
-                });
-                if(ativRes.ok){
-                  var ativData = await ativRes.json();
-                  if(ativData.ativo || ativData.success){
-                    clearInterval(pollInterval); clearInterval(timerInterval);
-                    mostrarSucesso(); return;
-                  }
-                }
-              }catch(eAtiv){ console.warn('[marspass-ativar]', eAtiv.message); }
-
-              /* Fallback direto no banco: ativa a assinatura pendente */
-              if(ass && ass.id){
-                var venc = new Date(); venc.setDate(venc.getDate() + 30);
-                var{error:updErr} = await sb.from('marspass_assinaturas').update({
-                  status: 'ativo',
-                  data_inicio: new Date().toISOString(),
-                  data_vencimento: venc.toISOString(),
-                  renovacoes: 1
-                }).eq('id', ass.id);
-
-                if(!updErr){
-                  clearInterval(pollInterval); clearInterval(timerInterval);
-                  mostrarSucesso(); return;
-                } else {
-                  console.error('[poll ativ fallback]', updErr.message);
-                }
-              }
+          if(ativRes.ok){
+            var ativData = await ativRes.json();
+            console.log('[poll marspass-ativar]', ativData);
+            if(ativData.ativo || ativData.success){
+              clearInterval(pollInterval); clearInterval(timerInterval);
+              mostrarSucesso(); return;
             }
           }
-        }catch(eConf){ console.warn('[poll confirmar]', eConf.message); }
+        }catch(eAtiv){ console.warn('[poll marspass-ativar err]', eAtiv.message); }
+
+        /* Fallback direto no banco se edge fn falhar */
+        if(ass && ass.id){
+          var venc = new Date(); venc.setDate(venc.getDate() + 30);
+          var{error:updErr} = await sb.from('marspass_assinaturas').update({
+            status: 'ativo',
+            data_inicio: new Date().toISOString(),
+            data_vencimento: venc.toISOString(),
+            renovacoes: 1
+          }).eq('id', ass.id);
+          if(!updErr){
+            clearInterval(pollInterval); clearInterval(timerInterval);
+            mostrarSucesso(); return;
+          }
+        }
       }
 
       /* CAMADA 3: Para após 5 minutos */
