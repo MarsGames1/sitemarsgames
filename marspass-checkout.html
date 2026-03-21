@@ -723,11 +723,7 @@ async function initCardBrick(){
   cardBrickCtrl=await bricks.create('cardPayment','cardBrick_container',{
     initialization:{amount:pl.valor, payer:{email:email}},
     customization:{
-      visual:{style:{theme:'dark',customVariables:{
-        baseColor:pl.cor||'#7c6af7',primaryColor:pl.cor||'#7c6af7',
-        formBackgroundColor:'#0f0f1a',inputBackgroundColor:'#131325',
-        inputFocusedBorderColor:pl.cor||'#7c6af7',borderRadiusFull:'10px',labelFontWeight:'700'
-      }}},
+      visual:{style:{theme:'dark'}},
       paymentMethods:{maxInstallments:12}
     },
     callbacks:{
@@ -932,7 +928,11 @@ function copiarCodigo(){
 /* ── SUCESSO + BOARDING PASS ── */
 async function mostrarSucesso(){
   var pl=PLANOS[planoKey];
-  document.getElementById('step-pix').style.display='none';
+  /* Esconde todos os steps ativos */
+  ['step-confirm','step-pix','step-expirado'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
   document.getElementById('step-sucesso').style.display='block';
   document.getElementById('sucessoCheck').textContent=pl.icon;
   document.getElementById('sucessoTitle').textContent='MarsPass '+pl.nome+' ativado!';
