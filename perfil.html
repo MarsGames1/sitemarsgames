@@ -6727,54 +6727,143 @@ function setupPlanetaCanvases(){
 }
 
 function drawSpaceBg(ctx,w,h){
-  /* Fundo estático */
-  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-  var ng=ctx.createRadialGradient(w*.35,h*.45,0,w*.35,h*.45,w*.55);
-  ng.addColorStop(0,'rgba(15,0,40,.7)');
-  ng.addColorStop(0.5,'rgba(5,0,20,.4)');
-  ng.addColorStop(1,'rgba(0,0,0,0)');
+  /* ── Fundo espacial premium ── */
+  ctx.fillStyle='#00000f';ctx.fillRect(0,0,w,h);
 
-  /* Gera estrelas variadas */
+  /* Nebulosa roxa-azul (fundo distante) */
+  var nb1=ctx.createRadialGradient(w*.62,h*.3,0,w*.62,h*.3,w*.55);
+  nb1.addColorStop(0,'rgba(60,20,120,.28)');
+  nb1.addColorStop(0.4,'rgba(30,10,80,.14)');
+  nb1.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=nb1;ctx.fillRect(0,0,w,h);
+
+  /* Nebulosa laranja-rosa (canto oposto) */
+  var nb2=ctx.createRadialGradient(w*.1,h*.75,0,w*.1,h*.75,w*.45);
+  nb2.addColorStop(0,'rgba(120,40,60,.22)');
+  nb2.addColorStop(0.5,'rgba(70,20,40,.10)');
+  nb2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=nb2;ctx.fillRect(0,0,w,h);
+
+  /* Nebulosa azul-ciano central-alta */
+  var nb3=ctx.createRadialGradient(w*.45,h*.1,0,w*.45,h*.1,w*.35);
+  nb3.addColorStop(0,'rgba(20,60,130,.20)');
+  nb3.addColorStop(0.6,'rgba(10,30,80,.08)');
+  nb3.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=nb3;ctx.fillRect(0,0,w,h);
+
+  /* Via Láctea — faixa diagonal de poeira estelar */
+  ctx.save();
+  ctx.globalAlpha=0.08;
+  var mlkG=ctx.createLinearGradient(0,h*.6,w,h*.2);
+  mlkG.addColorStop(0,'rgba(0,0,0,0)');
+  mlkG.addColorStop(0.3,'rgba(180,160,255,1)');
+  mlkG.addColorStop(0.5,'rgba(220,200,255,1)');
+  mlkG.addColorStop(0.7,'rgba(180,160,255,1)');
+  mlkG.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=mlkG;
+  ctx.beginPath();
+  ctx.ellipse(w*.5,h*.42,w*.55,h*.12,Math.PI*0.18,0,Math.PI*2);
+  ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.restore();
+
+  /* Estrelas: 3 camadas — poeira distante, médias, brilhantes */
   var stars=[];
-  for(var i=0;i<220;i++){
-    var gold=Math.random()>.88, blue=Math.random()>.92;
-    var r=gold?(.6+Math.random()*.5):(blue?(.4+Math.random()*.4):(.1+Math.random()*.5));
+
+  /* Camada 1: poeira estelar distante (muito pequenas e tenues) */
+  for(var i=0;i<320;i++){
     stars.push({
       x:Math.random()*w, y:Math.random()*h,
-      r:r, a:Math.random(),
-      s:Math.random()*.004+.0008,
-      col:gold?'rgba(255,215,100,':blue?'rgba(140,180,255,':'rgba(255,255,255,'
+      r:.08+Math.random()*.18, a:.2+Math.random()*.5,
+      s:.0004+Math.random()*.0008,
+      col:'rgba(200,210,255,', bright:false, layer:1
     });
   }
-
-  /* Estrelas de brilho ocasional (grandes) */
-  for(var j=0;j<8;j++){
+  /* Camada 2: estrelas médias com leve cintilação */
+  for(var i=0;i<180;i++){
+    var hue=Math.random();
+    var col=hue>.88?'rgba(255,220,130,':hue>.76?'rgba(160,200,255,':hue>.68?'rgba(255,180,180,':'rgba(255,255,255,';
     stars.push({
       x:Math.random()*w, y:Math.random()*h,
-      r:.8+Math.random()*.7, a:Math.random(),
-      s:Math.random()*.003+.001,
-      col:'rgba(255,255,255,', bright:true
+      r:.22+Math.random()*.38, a:.4+Math.random()*.6,
+      s:.0008+Math.random()*.002,
+      col:col, bright:false, layer:2
+    });
+  }
+  /* Camada 3: estrelas brilhantes com difração em cruz */
+  for(var i=0;i<18;i++){
+    var hue2=Math.random();
+    var col2=hue2>.6?'rgba(255,230,150,':hue2>.3?'rgba(180,220,255,':'rgba(255,255,255,';
+    stars.push({
+      x:Math.random()*w, y:Math.random()*h,
+      r:.5+Math.random()*.7, a:.6+Math.random()*.4,
+      s:.0012+Math.random()*.0025,
+      col:col2, bright:true, layer:3
+    });
+  }
+  /* Camada 4: estrelas gigantes com halo suave */
+  for(var i=0;i<6;i++){
+    stars.push({
+      x:Math.random()*w, y:Math.random()*h,
+      r:.9+Math.random()*.6, a:.7+Math.random()*.3,
+      s:.001+Math.random()*.002,
+      col:'rgba(255,245,220,', bright:true, giant:true, layer:4
     });
   }
 
   (function starLoop(){
     if(document.hidden||!_starLoopRunning){requestAnimationFrame(starLoop);return;}
     ctx.clearRect(0,0,w,h);
-    ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-    ctx.fillStyle=ng;ctx.fillRect(0,0,w,h);
+
+    /* Repinta fundo e nebulosas a cada frame */
+    ctx.fillStyle='#00000f';ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=nb1;ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=nb2;ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=nb3;ctx.fillRect(0,0,w,h);
+    ctx.save();ctx.globalAlpha=0.06;ctx.fillStyle=mlkG;
+    ctx.beginPath();ctx.ellipse(w*.5,h*.42,w*.55,h*.12,Math.PI*0.18,0,Math.PI*2);
+    ctx.fill();ctx.restore();
+
     stars.forEach(function(s){
       s.a+=s.s;
       if(s.a>1){s.a=1;s.s*=-1;}
-      else if(s.a<0){s.a=0;s.s*=-1;}
-      var alpha=s.bright?(s.a*.8):(s.a*.5);
+      else if(s.a<(s.layer===1?.15:.25)){s.a=(s.layer===1?.15:.25);s.s*=-1;}
+
+      var alpha=s.a*(s.layer===1?.55:s.layer===2?.75:.92);
       ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle=s.col+alpha+')';ctx.fill();
+      ctx.fillStyle=s.col+alpha.toFixed(2)+')';ctx.fill();
+
+      /* Halo suave para estrelas médias+ */
+      if(s.layer>=2&&s.a>.5){
+        var hg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);
+        hg.addColorStop(0,s.col+(alpha*.3).toFixed(2)+')');
+        hg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.beginPath();ctx.arc(s.x,s.y,s.r*4,0,Math.PI*2);
+        ctx.fillStyle=hg;ctx.fill();
+      }
+
       /* Cruz de difração para estrelas brilhantes */
-      if(s.bright&&s.a>.6){
-        ctx.strokeStyle=s.col+(s.a*.3)+')';
-        ctx.lineWidth=.5;
-        ctx.beginPath();ctx.moveTo(s.x-s.r*3,s.y);ctx.lineTo(s.x+s.r*3,s.y);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(s.x,s.y-s.r*3);ctx.lineTo(s.x,s.y+s.r*3);ctx.stroke();
+      if(s.bright&&s.a>.65){
+        var ca=s.a*(s.giant?.22:.18);
+        ctx.strokeStyle=s.col+ca.toFixed(2)+')';
+        ctx.lineWidth=s.giant?.7:.4;
+        var len=s.r*(s.giant?7:5);
+        ctx.beginPath();ctx.moveTo(s.x-len,s.y);ctx.lineTo(s.x+len,s.y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(s.x,s.y-len);ctx.lineTo(s.x,s.y+len);ctx.stroke();
+        /* Diagonal leve */
+        ctx.lineWidth=s.giant?.35:.2;
+        var dlen=len*.5;
+        ctx.beginPath();ctx.moveTo(s.x-dlen,s.y-dlen);ctx.lineTo(s.x+dlen,s.y+dlen);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(s.x+dlen,s.y-dlen);ctx.lineTo(s.x-dlen,s.y+dlen);ctx.stroke();
+      }
+
+      /* Halo grande para estrelas gigantes */
+      if(s.giant&&s.a>.6){
+        var gg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*12);
+        gg.addColorStop(0,s.col+(s.a*.12).toFixed(2)+')');
+        gg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.beginPath();ctx.arc(s.x,s.y,s.r*12,0,Math.PI*2);
+        ctx.fillStyle=gg;ctx.fill();
       }
     });
     requestAnimationFrame(starLoop);
@@ -6845,71 +6934,62 @@ function planetaDrawPlanet(){
   }
   ctx.restore();
 
-  /* Dano de asteroide — visual dramático, desaparece muito lentamente */
+  /* Dano de asteroide — elegante: cicatriz sutil que some em ~30s */
   if(planetaAsteroidDamage>0){
     ctx.save();ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
     var dmg=planetaAsteroidDamage;
-    var ix=CX+R*0.08, iy=CY-R*0.04;
+    var ix=CX+R*0.05, iy=CY-R*0.02;
 
-    /* Queimadura ampla cobrindo quase todo o planeta */
-    var ig=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.92);
-    ig.addColorStop(0,'rgba(255,140,20,'+(.88*dmg)+')');
-    ig.addColorStop(0.12,'rgba(220,70,0,'+(.72*dmg)+')');
-    ig.addColorStop(0.30,'rgba(130,30,0,'+(.52*dmg)+')');
-    ig.addColorStop(0.55,'rgba(60,10,0,'+(.30*dmg)+')');
-    ig.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=ig;ctx.fillRect(0,0,planetaStageW,planetaStageH);
+    /* Camada 1: Véu de calor avermelhado sobre o planeta */
+    var heatG=ctx.createRadialGradient(ix,iy,0,ix,iy,R*1.05);
+    heatG.addColorStop(0,'rgba(200,80,10,'+(.30*dmg)+')');
+    heatG.addColorStop(0.35,'rgba(160,50,0,'+(.16*dmg)+')');
+    heatG.addColorStop(0.70,'rgba(80,20,0,'+(.08*dmg)+')');
+    heatG.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=heatG;ctx.fillRect(0,0,planetaStageW,planetaStageH);
 
-    /* Cratera central profunda */
-    var cg=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.30*Math.max(0.35,dmg));
-    cg.addColorStop(0,'rgba(0,0,0,'+(.95*dmg)+')');
-    cg.addColorStop(0.25,'rgba(30,8,0,'+(.72*dmg)+')');
-    cg.addColorStop(0.60,'rgba(70,18,0,'+(.38*dmg)+')');
-    cg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=cg;ctx.fillRect(0,0,planetaStageW,planetaStageH);
+    /* Camada 2: Cratera — cicatriz escura circular pequena */
+    var crSize=R*0.15*Math.max(0.3,dmg);
+    var crG=ctx.createRadialGradient(ix,iy,0,ix,iy,crSize);
+    crG.addColorStop(0,'rgba(20,5,0,'+(.65*dmg)+')');
+    crG.addColorStop(0.4,'rgba(50,15,0,'+(.30*dmg)+')');
+    crG.addColorStop(0.75,'rgba(90,30,0,'+(.12*dmg)+')');
+    crG.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=crG;ctx.fillRect(0,0,planetaStageW,planetaStageH);
 
-    /* Anel de ejeção ao redor da cratera */
-    var rg=ctx.createRadialGradient(ix,iy,R*0.26*dmg,ix,iy,R*0.44*dmg);
-    rg.addColorStop(0,'rgba(0,0,0,0)');
-    rg.addColorStop(0.45,'rgba(170,65,0,'+(.42*dmg)+')');
-    rg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.beginPath();ctx.arc(ix,iy,R*0.44*dmg,0,Math.PI*2);
-    ctx.fillStyle=rg;ctx.fill();
-
-    /* Rachaduras curvas irradiando */
-    var numCracks=Math.round(7+dmg*5);
-    for(var ci=0;ci<numCracks;ci++){
-      var ca=ci*(Math.PI*2/numCracks)+spinY*0.04;
-      var cl=R*(0.24+ci*.02)*Math.max(0.35,dmg);
-      var alpha=(Math.min(.70,dmg*0.70)).toFixed(2);
-      var mx=ix+Math.cos(ca+0.18)*cl*0.55, my=iy+Math.sin(ca+0.18)*cl*0.55;
-      ctx.beginPath();ctx.moveTo(ix,iy);
-      ctx.quadraticCurveTo(mx,my,ix+Math.cos(ca)*cl,iy+Math.sin(ca)*cl);
-      ctx.strokeStyle='rgba(255,80,0,'+alpha+')';
-      ctx.lineWidth=1.8*dmg;ctx.stroke();
+    /* Camada 3: Anel de material ejetado — arco elegante */
+    if(dmg>0.1){
+      var ejectR=R*0.22*Math.max(0.25,dmg);
+      var ej=ctx.createRadialGradient(ix,iy,ejectR*.55,ix,iy,ejectR);
+      ej.addColorStop(0,'rgba(0,0,0,0)');
+      ej.addColorStop(0.5,'rgba(140,55,10,'+(.20*dmg)+')');
+      ej.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath();ctx.arc(ix,iy,ejectR,0,Math.PI*2);
+      ctx.fillStyle=ej;ctx.fill();
     }
 
-    /* Brilho de lava nas rachaduras */
-    if(dmg>0.25){
-      for(var li=0;li<numCracks;li++){
-        var la=li*(Math.PI*2/numCracks)+spinY*0.04+0.09;
-        var ll=R*0.14*dmg;
-        var lgg=ctx.createLinearGradient(ix,iy,ix+Math.cos(la)*ll,iy+Math.sin(la)*ll);
-        lgg.addColorStop(0,'rgba(255,210,50,'+(.65*dmg)+')');
-        lgg.addColorStop(1,'rgba(255,100,0,0)');
+    /* Camada 4: Fissuras finas — apenas quando dano > 40% */
+    if(dmg>0.4){
+      var nf=6;
+      for(var fi=0;fi<nf;fi++){
+        var fa=fi*(Math.PI*2/nf)+1.2;
+        var flen=R*(0.10+fi*.012)*dmg;
+        var falpha=(.28*dmg).toFixed(2);
         ctx.beginPath();ctx.moveTo(ix,iy);
-        ctx.lineTo(ix+Math.cos(la)*ll,iy+Math.sin(la)*ll);
-        ctx.strokeStyle=lgg;ctx.lineWidth=2.2*dmg;ctx.stroke();
+        var fmx=ix+Math.cos(fa+.12)*flen*.6, fmy=iy+Math.sin(fa+.12)*flen*.6;
+        ctx.quadraticCurveTo(fmx,fmy,ix+Math.cos(fa)*flen,iy+Math.sin(fa)*flen);
+        ctx.strokeStyle='rgba(180,70,0,'+falpha+')';
+        ctx.lineWidth=.8*dmg;ctx.stroke();
       }
     }
 
-    /* Névoa de fumaça escura */
-    if(dmg>0.12){
-      var sg=ctx.createRadialGradient(ix,iy,R*0.32,ix,iy,R*0.90);
-      sg.addColorStop(0,'rgba(0,0,0,0)');
-      sg.addColorStop(0.4,'rgba(8,3,0,'+(.25*dmg)+')');
-      sg.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=sg;ctx.fillRect(0,0,planetaStageW,planetaStageH);
+    /* Camada 5: Ponto brilhante de impacto — apenas logo após colisão */
+    if(dmg>0.75){
+      var glowG=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.08);
+      glowG.addColorStop(0,'rgba(255,200,80,'+(.50*(dmg-.75)/.25)+')');
+      glowG.addColorStop(0.5,'rgba(255,100,20,'+(.20*(dmg-.75)/.25)+')');
+      glowG.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=glowG;ctx.fillRect(0,0,planetaStageW,planetaStageH);
     }
 
     ctx.restore();
@@ -7288,7 +7368,7 @@ function planetaLoop(){
   /* Decai dano de asteroide quando evento já acabou */
   if(planetaAsteroidDamage>0&&planetaWeatherMode!=='ASTEROID'&&!planetaAsteroid){
     /* Recuperação muito lenta — planeta fica danificado por muito tempo */
-    planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.00008);
+    planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.00055); /* ~30s para 0 @ 60fps */
   }
   planetaDrawPlanet();
   planetaUpdateWeather();
