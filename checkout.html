@@ -40,28 +40,28 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .total-valor{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green);}
 
 /* METODOS */
-.metodos-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:12px;}
+.metodos-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:10px;}
 
-.metodo{position:relative;display:flex;align-items:center;gap:16px;padding:18px 20px;border:1.5px solid rgba(255,255,255,.07);border-radius:16px;margin-bottom:10px;cursor:pointer;transition:border-color .2s,background .2s;}
+.metodo{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s,background .2s;}
 .metodo:hover:not(.disabled){border-color:rgba(0,255,85,.3);background:rgba(0,255,85,.03);}
 .metodo.selected{border-color:var(--green);background:rgba(0,255,85,.05);}
 .metodo.disabled{opacity:.35;cursor:not-allowed;}
 
-.metodo-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;line-height:1;}
+.metodo-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;line-height:1;}
 .metodo-icon.pix{background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.15);}
 .metodo-icon.card{background:rgba(91,154,246,.08);border:1px solid rgba(91,154,246,.15);}
 
 .metodo-info{flex:1;min-width:0;}
-.metodo-nome{font-size:13px;font-weight:900;color:#eee;margin-bottom:3px;}
-.metodo-desc{font-size:11px;color:#555;font-weight:600;line-height:1.4;}
+.metodo-nome{font-size:12px;font-weight:900;color:#eee;margin-bottom:2px;}
+.metodo-desc{font-size:10px;color:#555;font-weight:600;line-height:1.3;}
 
-.metodo-badge{font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:99px;}
+.metodo-badge{font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;padding:2px 7px;border-radius:99px;white-space:nowrap;}
 .metodo-badge.instant{background:rgba(0,255,85,.1);color:var(--green);border:1px solid rgba(0,255,85,.2);}
 .metodo-badge.soon{background:rgba(255,255,255,.04);color:#444;border:1px solid rgba(255,255,255,.06);}
 
-.metodo-radio{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
+.metodo-radio{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
 .metodo.selected .metodo-radio{border-color:var(--green);}
-.metodo-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--green);transform:scale(0);transition:transform .2s;}
+.metodo-radio-dot{width:7px;height:7px;border-radius:50%;background:var(--green);transform:scale(0);transition:transform .2s;}
 .metodo.selected .metodo-radio-dot{transform:scale(1);}
 
 /* BOTÃO PRINCIPAL */
@@ -88,10 +88,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .desconto-row{display:none;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 2px;}
 .desconto-lbl{font-size:10px;font-weight:700;color:var(--green);}
 .desconto-val{font-size:13px;font-weight:900;color:var(--green);}
-/* Card Brick */
-#card-brick-wrap{margin-top:12px;overflow:hidden;}
-#cardBrick_container{max-width:100%;overflow:hidden;transform:scale(0.82);transform-origin:top left;width:122%;margin-bottom:-60px;}
-#cardBrick_container iframe{max-width:100%!important;}
+/* Card Brick — sem escala forçada, padding reduzido via CSS vars do Brick */
+#card-brick-wrap{margin-top:8px;overflow:hidden;border-radius:12px;}
+#cardBrick_container{max-width:100%;font-size:13px;}
+#cardBrick_container iframe{max-width:100%!important;border-radius:10px;}
+/* Reduz padding interno do Brick via font-size herdado */
+#cardBrick_container .andes-form-control__bottom{margin-top:2px!important;}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a28;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 20px;font-size:12px;font-weight:700;color:#eee;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap;}
@@ -156,7 +158,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
   </div>
 
   <div class="metodo" id="metodo-cartao" onclick="selecionarMetodo('cartao')">
-    <div class="metodo-icon card" style="font-size:18px">💳</div>
+    <div class="metodo-icon card">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x=".5" y=".5" width="17" height="13" rx="2.5" stroke="#5b9af6" stroke-opacity=".6"/>
+        <rect y="3" width="18" height="3" fill="#5b9af6" fill-opacity=".5"/>
+        <rect x="1" y="8" width="5" height="1.5" rx=".75" fill="#5b9af6" fill-opacity=".8"/>
+      </svg>
+    </div>
     <div class="metodo-info">
       <div class="metodo-nome">Cartão de crédito ou débito</div>
       <div class="metodo-desc">Até 12x — aprovação na hora</div>
@@ -339,7 +347,11 @@ async function initCardBrick(){
     cardBrickCtrl = await bricks.create('cardPayment','cardBrick_container',{
       initialization:{ amount: total, payer:{email:email} },
       customization:{
-        visual:{style:{theme:'dark'}},
+        visual:{
+          style:{theme:'dark'},
+          hideFormTitle: true,
+          hidePaymentButton: true
+        },
         paymentMethods:{ maxInstallments:12 }
       },
       callbacks:{
