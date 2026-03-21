@@ -798,12 +798,351 @@ async function pagarCartao(cardData){
     }else if(data.status==='pending'||data.status==='in_process'){
       showToast('Pagamento em análise. Verifique seu email.',true);
     }else{
-      throw new Error(data.status_detail||'Cartão recusado. Verifique os dados.');
+      throw new Error(data.status_detail||'Cartão recusado.');
     }
   }catch(err){
     showToast('❌ '+(err.message||'Tente novamente'),true);
     var btn=document.getElementById('btnAssinar');
     if(btn){btn.disabled=false;btn.classList.remove('loading');}
+  }
+}
+
+async function iniciarPagamento(){
+  var btn=document.getElementById('btnAssinar');
+  btn.disabled=true;btn.classList.add('loading');
+
+  /* Se cartão, Brick submete via submit() — dispara onSubmit callback */
+  if(metodoAtual==='cartao'){
+    if(!cardBrickCtrl){
+      showToast('Aguarde o formulário de cartão carregar.',true);
+      btn.disabled=false;btn.classList.remove('loading');
+      return;
+    }
+    try{
+      await cardBrickCtrl.submit();
+    }catch(e){
+      showToast('Preencha todos os dados do cartão.',true);
+      btn.disabled=false;btn.classList.remove('loading');
+    }
+    return;
+  }
+
+  try{
+    var r=await sb.auth.getSession();
+    if(!r.data||!r.data.session){
+      showToast('Faça login primeiro!',true);
+      setTimeout(function(){window.location.href='perfil.html'},1500);
+      return;
+    }
+    var session=r.data.session;
+
+    var response=await fetch(SUPABASE_URL+'/functions/v1/marspass-criar-pix',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+session.access_token
+      },
+      body:JSON.stringify({plano:planoKey})
+    });
+
+    var data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
+
+    pixData=data;
+    mostrarQRCode(data);
+
+  }catch(err){
+    showToast('Erro: '+(err.message||'Tente novamente'),true);
+    btn.disabled=false;btn.classList.remove('loading');
+  }
+}
+
+/* ── EXIBE QR CODE ── */
+function mostrarQRCode(data){
+  var pl=PLANOS[planoKey];
+  var valorFmt='R$ '+Number(data.valor).toFixed(2).replace('.',',');
+
+  document.getElementById('pixValor').textContent=valorFmt;
+  document.getElementById('pixPlanIcon').textContent=pl.icon;
+  document.getElementById('pixPlanNome').textContent='MarsPass '+pl.nome;
+  document.getElementById('instrValor').textContent=valorFmt;
+
+  /* QR Code */
+  if(data.qr_code_base64){
+    document.getElementById('qrImg').src='data:image/png;base64,'+data.qr_code_base64;
+  } else if(data.qr_code){
+    /* Gera QR Code via API gratuita */
+    document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(data.qr_code);
+  }
+
+  document.getElementById('pixCode').textContent=data.qr_code||'—';
+
+  /* Troca step */
+  document.getElementById('step-confirm').style.display='none';
+  document.getElementById('step-pix').style.display='block';
+
+  /* Timer 30 minutos */
+  iniciarTimer(data.expira_em||30);
+
+  /* Polling para verificar pagamento */
+  _pollReference = data.reference || '';
+  iniciarPolling(data.reference);
+}
+
+/* ── TIMER ── */
+function iniciarTimer(minutos){
+  timerSecs=minutos*60;
+  var ring=document.getElementById('timerRing');
+  var total=timerSecs;
+
+  clearInterval(timerInterval);
+  timerInterval=setInterval(function(){
+    timerSecs--;
+    var mins=Math.floor(timerSecs/60);
+    var secs=timerSecs%60;
+    document.getElementById('timerTxt').textContent=
+      String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+
+    /* Atualiza anel */
+    var offset=283*(1-timerSecs/total);
+    ring.style.strokeDashoffset=offset;
+
+    /* Muda cor quando <5min */
+    if(timerSecs<300) ring.style.stroke='var(--mars)';
+    else if(timerSecs<600) ring.style.stroke='var(--amber)';
+
+    if(timerSecs<=0){
+      clearInterval(timerInterval);
+      clearInterval(pollInterval);
+      mostrarExpirado();
+    }
+  },1000);
+}
+
+/* ── POLLING ──
+   Estratégia em 3 camadas:
+   1. A cada 5s: verifica no DB se o webhook já ativou (status='ativo')
+   2. A cada 15s: chama mp-confirmar-pagamento para confirmar no MP
+      e ativa a assinatura no banco se aprovado
+   3. Para após 5 minutos
+── */
+var _pollTentativas = 0;
+var _pollReference  = '';
+
+function iniciarPolling(reference){
+  clearInterval(pollInterval);
+  _pollTentativas = 0;
+  _pollReference  = reference || '';
+
+  pollInterval = setInterval(async function(){
+    _pollTentativas++;
+    try{
+      var r = await sb.auth.getSession();
+      if(!r.data || !r.data.session) return;
+      var session = r.data.session;
+      var email   = session.user.email;
+
+      /* CAMADA 1: Verifica no banco se webhook já ativou */
+      var{data:ass} = await sb.from('marspass_assinaturas')
+        .select('status,plano,id')
+        .eq('user_email', email)
+        .order('created_at', {ascending:false})
+        .limit(1)
+        .maybeSingle();
+
+      if(ass && ass.status === 'ativo'){
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        mostrarSucesso();
+        return;
+      }
+
+      /* CAMADA 2: A cada 3 tentativas (~15s) chama mp-confirmar-pagamento
+         Essa edge fn já existe, sem CORS, funciona no pix-checkout também */
+      if(_pollTentativas % 3 === 0 && _pollReference){
+        try{
+          var confRes = await fetch(SUPABASE_URL + '/functions/v1/mp-confirmar-pagamento', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + session.access_token
+            },
+            body: JSON.stringify({ reference: _pollReference, tipo: 'marspass', plano: planoKey })
+          });
+
+          if(confRes.ok){
+            var confData = await confRes.json();
+            console.log('[poll MP]', confData);
+
+            /* Se pagamento aprovado, ativa a assinatura no banco */
+            if(confData.aprovado || confData.pago){
+              /* Tenta ativar via edge fn dedicada */
+              try{
+                var ativRes = await fetch(SUPABASE_URL + '/functions/v1/marspass-ativar', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+                  body: JSON.stringify({ plano: planoKey, reference: _pollReference, user_email: email })
+                });
+                if(ativRes.ok){
+                  var ativData = await ativRes.json();
+                  if(ativData.ativo || ativData.success){
+                    clearInterval(pollInterval); clearInterval(timerInterval);
+                    mostrarSucesso(); return;
+                  }
+                }
+              }catch(eAtiv){ console.warn('[marspass-ativar]', eAtiv.message); }
+
+              /* Fallback direto no banco: ativa a assinatura pendente */
+              if(ass && ass.id){
+                var venc = new Date(); venc.setDate(venc.getDate() + 30);
+                var{error:updErr} = await sb.from('marspass_assinaturas').update({
+                  status: 'ativo',
+                  data_inicio: new Date().toISOString(),
+                  data_vencimento: venc.toISOString(),
+                  renovacoes: 1
+                }).eq('id', ass.id);
+
+                if(!updErr){
+                  clearInterval(pollInterval); clearInterval(timerInterval);
+                  mostrarSucesso(); return;
+                } else {
+                  console.error('[poll ativ fallback]', updErr.message);
+                }
+              }
+            }
+          }
+        }catch(eConf){ console.warn('[poll confirmar]', eConf.message); }
+      }
+
+      /* CAMADA 3: Para após 5 minutos */
+      if(_pollTentativas >= 60){
+        clearInterval(pollInterval);
+        console.warn('[poll] 5min sem ativação — encerrado');
+      }
+
+    }catch(e){ console.error('[Polling erro]', e.message); }
+  }, 5000);
+}
+
+/* ── COPIAR CÓDIGO ── */
+function copiarCodigo(){
+  var code=document.getElementById('pixCode').textContent;
+  navigator.clipboard.writeText(code).then(function(){
+    var btn=document.getElementById('copiarBtn');
+    btn.textContent='✓ Copiado!';
+    btn.classList.add('copiado');
+    showToast('✓ Código copiado!');
+    setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copiado')},3000);
+  }).catch(function(){
+    /* Fallback para iOS */
+    var el=document.createElement('textarea');
+    el.value=code;el.style.position='fixed';el.style.opacity='0';
+    document.body.appendChild(el);el.select();
+    document.execCommand('copy');document.body.removeChild(el);
+    showToast('✓ Código copiado!');
+  });
+}
+
+/* ── SUCESSO + BOARDING PASS ── */
+var _sucessoMostrado = false; /* idempotência — evita dupla chamada */
+async function mostrarSucesso(){
+  if(_sucessoMostrado) return;
+  _sucessoMostrado = true;
+
+  var pl=PLANOS[planoKey];
+  /* Esconde todos os steps */
+  ['step-confirm','step-pix','step-expirado'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+  var stepSuc = document.getElementById('step-sucesso');
+  if(stepSuc) stepSuc.style.display='block';
+  document.getElementById('sucessoCheck').textContent=pl.icon;
+  document.getElementById('sucessoTitle').textContent='MarsPass '+pl.nome+' ativado!';
+  document.getElementById('sucessoSub').textContent='Pagamento confirmado! Bem-vindo ao universo MarsPass.';
+
+  /* Preenche o boarding pass */
+  var destinos={
+    andromeda:{code:'AND',city:'Galáxia Andrômeda',classe:'ANDRÔMEDA'},
+    triangulo:{code:'TRI',city:'Galáxia Triângulo',classe:'TRIÂNGULO'},
+    centaurus:{code:'CEN',city:'Galáxia Centaurus',classe:'CENTAURUS'},
+    sombrero:{code:'SOM',city:'Galáxia Sombrero',classe:'SOMBRERO'}
+  };
+  var dest=destinos[planoKey]||destinos.andromeda;
+  var hoje=new Date();
+  var venc=new Date(hoje);venc.setDate(venc.getDate()+30);
+  var flightNum='MG-'+String(Math.floor(Math.random()*9000)+1000);
+  var barcodeNum='MG-'+Date.now().toString().slice(-6);
+
+  document.getElementById('bpFlightNum').textContent=flightNum;
+  document.getElementById('bpDestCode').textContent=dest.code;
+  document.getElementById('bpDestCity').textContent=dest.city;
+  document.getElementById('bpClasse').textContent=dest.classe;
+  document.getElementById('bpDate').textContent=hoje.toLocaleDateString('pt-BR');
+  document.getElementById('bpValidade').textContent=venc.toLocaleDateString('pt-BR');
+  document.getElementById('bpStubBadge').textContent=pl.icon;
+  document.getElementById('bpStubPlan').textContent=pl.nome.toUpperCase();
+  document.getElementById('bpBarcodeNum').textContent=barcodeNum;
+  document.getElementById('bpBarcode').title=barcodeNum;
+
+  /* Nome do passageiro via sessão */
+  try{
+    var r=await sb.auth.getSession();
+    if(r.data&&r.data.session){
+      var meta=r.data.session.user.user_metadata||{};
+      var nome=(meta.full_name||meta.name||r.data.session.user.email||'Cosmonauta').split(' ')[0].toUpperCase();
+      document.getElementById('bpPassenger').textContent=nome;
+    }
+  }catch(e){document.getElementById('bpPassenger').textContent='COSMONAUTA';}
+
+  lancarConfetti();
+  sessionStorage.removeItem('mp_plano_intencao');
+
+  /* Atualiza título MarsPass no perfil (soft update — edge function já faz o principal) */
+  try{
+    var rSess=await sb.auth.getSession();
+    if(rSess.data&&rSess.data.session){
+      var uEmail=rSess.data.session.user.email;
+      var TITULOS_MP={andromeda:'Andromedano',triangulo:'Trianguriano',centaurus:'Centauriano',sombrero:'Sombrerano'};
+      var tituloMP=TITULOS_MP[planoKey];
+      if(tituloMP&&uEmail){
+        await sb.from('perfis').update({titulo_exibido:tituloMP}).eq('email',uEmail);
+      }
+    }
+  }catch(e){console.warn('titulo mp update:',e);}
+}
+
+function baixarTicket(){
+  /* Canvas-based download do ticket */
+  showToast('📥 Salve a página como imagem pelo menu do navegador!');
+}
+
+/* ── EXPIRADO ── */
+function mostrarExpirado(){
+  document.getElementById('step-pix').style.display='none';
+  document.getElementById('step-expirado').style.display='block';
+}
+
+function voltarConfirm(){
+  document.getElementById('step-expirado').style.display='none';
+  document.getElementById('step-confirm').style.display='block';
+  var btn=document.getElementById('btnAssinar');
+  btn.disabled=false;btn.classList.remove('loading');
+}
+
+function lancarConfetti(){
+  var cores=['#7c6af7','#ff3c6e','#ffb300','#00d4ff','#00ff55','#fff'];
+  for(var i=0;i<40;i++){
+    var el=document.createElement('div');el.className='confetti-piece';
+    el.style.cssText=
+      'left:'+(10+Math.random()*80)+'%;top:'+(-5+Math.random()*20)+'%;'+
+      'background:'+cores[Math.floor(Math.random()*cores.length)]+';'+
+      'animation-delay:'+(Math.random()*1.2)+'s;'+
+      'animation-duration:'+(1.5+Math.random())+'s;'+
+      'width:'+(6+Math.random()*6)+'px;height:'+(6+Math.random()*6)+'px;'+
+      'transform:rotate('+(Math.random()*360)+'deg)';
+    document.body.appendChild(el);
+    setTimeout(function(e){e.remove()},3000,el);
   }
 }
 </script>
