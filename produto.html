@@ -2,6 +2,21 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+  <!-- SEO -->
+  <meta name="description" content="Compre jogos Steam offline com desconto na MarsGames. Entrega imediata após o pagamento. Pix e cartão aceitos.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://marsgames.com.br/produto.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MarsGames">
+  <meta property="og:title" content="Jogo Steam — MarsGames">
+  <meta property="og:description" content="Compre jogos Steam offline com desconto na MarsGames. Entrega imediata após o pagamento. Pix e cartão aceitos.">
+  <meta property="og:url" content="https://marsgames.com.br/produto.html">
+  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jogo Steam — MarsGames">
+  <meta name="twitter:description" content="Compre jogos Steam offline com desconto na MarsGames. Entrega imediata após o pagamento. Pix e cartão aceitos.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarsGames — Produto</title>
 <meta name="description" content="Jogos PC Steam com até 90% OFF. Entrega imediata.">
@@ -581,7 +596,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     <!-- Imagem + Avaliações -->
     <div class="prod-img-col">
       <div class="prod-img-main">
-        <img id="prodImg" src="" alt="">
+        <img loading="lazy" id="prodImg" src="" alt="">
         <div class="prod-img-badge" id="prodBadge">Oferta</div>
         <div class="prod-plat-tag" id="prodPlatTag">STEAM OFFLINE</div>
       </div>
@@ -1131,7 +1146,7 @@ function atualizarCarrinho(){
     var isMenor=cupomAtual&&preco===menorPreco;
     var tag=isMenor?'<span style="font-size:7px;font-weight:900;background:rgba(0,255,85,.12);border:1px solid rgba(0,255,85,.25);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px">DESCONTO</span>':'';
     return '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--dim);align-items:center">'+
-      '<img src="'+esc(p.imagem||'')+'" style="width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--dim);flex-shrink:0">'+
+      '<img loading="lazy" src="'+esc(p.imagem||'')+'" style="width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--dim);flex-shrink:0">'+
       '<div style="flex:1;min-width:0">'+
         '<div style="font-size:11px;font-weight:700;color:#eee;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+tag+'</div>'+
         '<div style="font-size:13px;font-weight:900;color:var(--green)">R$ '+preco.toFixed(2).replace('.',',')+'</div>'+

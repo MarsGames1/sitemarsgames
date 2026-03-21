@@ -2,6 +2,21 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+  <!-- SEO -->
+  <meta name="description" content="MarsGames — Jogos Steam offline com até 90% de desconto. Entrega imediata via Pix ou cartão. Loja 100% digital, segura e brasileira.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://marsgames.com.br/index.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MarsGames">
+  <meta property="og:title" content="MarsGames — Jogos Steam com até 90% OFF">
+  <meta property="og:description" content="MarsGames — Jogos Steam offline com até 90% de desconto. Entrega imediata via Pix ou cartão. Loja 100% digital, segura e brasileira.">
+  <meta property="og:url" content="https://marsgames.com.br/index.html">
+  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MarsGames — Jogos Steam com até 90% OFF">
+  <meta name="twitter:description" content="MarsGames — Jogos Steam offline com até 90% de desconto. Entrega imediata via Pix ou cartão. Loja 100% digital, segura e brasileira.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarsGames — Jogos PC com até 90% OFF</title>
 <meta name="description" content="Loja virtual de jogos para PC. Chaves Steam com até 90% de desconto. Entrega imediata 24h.">
@@ -3526,7 +3541,7 @@ footer::before{
     <!-- Vídeo Forza Horizon 6 -->
     <video id="heroVideo" autoplay muted loop playsinline preload="auto"
       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.2s ease;z-index:1">
-      <source src="https://marsgames1.github.io/sitemarsgames/forza.webm" type="video/webm">
+      <source src="https://marsgames.com.br/sitemarsgames/forza.webm" type="video/webm">
     </video>
     <div class="hero-video-overlay" style="z-index:2"></div>
   </div>
@@ -4574,7 +4589,7 @@ function aplicarFavs(){
   <div class="modal-box">
     <button class="modal-close" onclick="fecharModal()">✕</button>
     <div class="modal-handle"></div>
-<img class="modal-img" id="modalImg" src="" alt="">
+<img loading="lazy" class="modal-img" id="modalImg" src="" alt="">
     <div class="modal-body">
       <div class="modal-cat" id="modalCat"></div>
       <div class="modal-name" id="modalName"></div>
@@ -4590,7 +4605,7 @@ function aplicarFavs(){
 
 <!-- ══ NOTIF POPUP ══ -->
 <div class="notif-popup" id="notifPopup">
-  <img class="notif-img" id="notifImg" src="" alt="">
+  <img loading="lazy" class="notif-img" id="notifImg" src="" alt="">
   <div class="notif-info">
     <div class="notif-name" id="notifName"></div>
     <div class="notif-action" id="notifAction"></div>
@@ -5155,7 +5170,7 @@ function atualizarCarrinho(){
     var isMenor=cupomAtual&&preco===menorPreco;
     var tag=isMenor?'<span style="font-size:7px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;background:rgba(0,255,85,.12);border:1px solid rgba(0,255,85,.25);color:var(--green);padding:1px 5px;border-radius:3px;margin-left:4px">DESCONTO</span>':'';
     return '<div class="cart-item">'+
-      (p.imagem?'<img class="cart-item-img" src="'+p.imagem+'" alt="">':'<div class="cart-item-img"></div>')+
+      (p.imagem?'<img loading="lazy" class="cart-item-img" src="'+p.imagem+'" alt="">':'<div class="cart-item-img"></div>')+
       '<div class="cart-item-info">'+
         '<div class="cart-item-name">'+esc(p.nome)+tag+'</div>'+
         '<div class="cart-item-price">R$ '+preco.toFixed(2).replace('.',',')+'</div>'+

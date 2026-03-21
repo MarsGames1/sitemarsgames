@@ -1,6 +1,15 @@
 User-agent: *
-Disallow: /Adm.html
-Disallow: /adm.html
 Allow: /
 
-Sitemap: https://marsgames1.github.io/sitemarsgames/sitemap.xml
+# Páginas privadas — não indexar
+Disallow: /checkout.html
+Disallow: /pix-checkout.html
+Disallow: /marspass-checkout.html
+Disallow: /aguardando-pagamento.html
+Disallow: /sucesso.html
+Disallow: /marspass-sucesso.html
+Disallow: /perfil.html
+Disallow: /chaves.html
+Disallow: /admin.html
+
+Sitemap: https://marsgames.com.br/sitemap.xml

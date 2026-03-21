@@ -2,6 +2,21 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+  <!-- SEO -->
+  <meta name="description" content="Finalizar compra na MarsGames. Pague com Pix ou cartão de forma rápida e segura.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://marsgames.com.br/checkout.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MarsGames">
+  <meta property="og:title" content="Finalizar Compra — MarsGames">
+  <meta property="og:description" content="Finalizar compra na MarsGames. Pague com Pix ou cartão de forma rápida e segura.">
+  <meta property="og:url" content="https://marsgames.com.br/checkout.html">
+  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Finalizar Compra — MarsGames">
+  <meta name="twitter:description" content="Finalizar compra na MarsGames. Pague com Pix ou cartão de forma rápida e segura.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Finalizar compra — MarsGames</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -206,7 +221,7 @@ function renderResumo(){
   var desc=calcDesc(),total=Math.max(0,sub-desc);
   document.getElementById('itensList').innerHTML=itens.map(p=>
     '<div class="item-row">'+
-    '<img class="item-img" src="'+esc(p.imagem||'')+'" onerror="this.style.display=\'none\'" alt="">'+
+    '<img loading="lazy" class="item-img" src="'+esc(p.imagem||'')+'" onerror="this.style.display=\'none\'" alt="">'+
     '<div class="item-nome">'+esc(p.nome)+'</div>'+
     '<div class="item-preco">'+fmt(p.preco)+'</div>'+
     '</div>'

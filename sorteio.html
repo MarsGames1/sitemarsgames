@@ -2,6 +2,21 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+  <!-- SEO -->
+  <meta name="description" content="Sorteios semanais de jogos na MarsGames. Use seus MarsTickets para concorrer a prêmios incríveis.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://marsgames.com.br/sorteio.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MarsGames">
+  <meta property="og:title" content="Sorteios Semanais — MarsGames">
+  <meta property="og:description" content="Sorteios semanais de jogos na MarsGames. Use seus MarsTickets para concorrer a prêmios incríveis.">
+  <meta property="og:url" content="https://marsgames.com.br/sorteio.html">
+  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sorteios Semanais — MarsGames">
+  <meta name="twitter:description" content="Sorteios semanais de jogos na MarsGames. Use seus MarsTickets para concorrer a prêmios incríveis.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarsGames — Sorteios</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -3488,7 +3503,7 @@ async function pvpGerarPixReal(){
     if(qrWrap){
       var qrHtml='';
       if(data.qr_code_base64){
-        qrHtml='<img src="data:image/png;base64,'+data.qr_code_base64+'" style="width:140px;height:140px;border-radius:10px;display:block;margin:0 auto" alt="QR Code Pix">';
+        qrHtml='<img loading="lazy" src="data:image/png;base64,'+data.qr_code_base64+'" style="width:140px;height:140px;border-radius:10px;display:block;margin:0 auto" alt="QR Code Pix">';
       } else {
         qrHtml='<div style="width:140px;height:140px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:11px;color:#555;font-weight:700;text-align:center;padding:10px">QR disponível<br>use chave Pix</div>';
       }
@@ -3655,7 +3670,7 @@ function pvpIniciarDuelo(){
   var nome=((meta.full_name||meta.name||userSession.user.email||'VOCÊ').split(' ')[0]).toUpperCase().slice(0,9);
   document.getElementById('pvpNomeP1').textContent=nome;
   var av=document.getElementById('pvpAvP1');
-  if(meta.avatar_url){av.innerHTML='<img src="'+meta.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';}
+  if(meta.avatar_url){av.innerHTML='<img loading="lazy" src="'+meta.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';}
   else{av.textContent=nome[0]||'🚀';}
   document.getElementById('pvpPtsP1').textContent='0';document.getElementById('pvpPtsP2').textContent='?';
   document.getElementById('pvpHpP1').style.width='100%';document.getElementById('pvpHpP2').style.width='100%';

@@ -2,6 +2,21 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+  <!-- SEO -->
+  <meta name="description" content="Compra concluída! Sua chave Steam já está disponível. Obrigado por comprar na MarsGames.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://marsgames.com.br/sucesso.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MarsGames">
+  <meta property="og:title" content="Compra Concluída — MarsGames">
+  <meta property="og:description" content="Compra concluída! Sua chave Steam já está disponível. Obrigado por comprar na MarsGames.">
+  <meta property="og:url" content="https://marsgames.com.br/sucesso.html">
+  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Compra Concluída — MarsGames">
+  <meta name="twitter:description" content="Compra concluída! Sua chave Steam já está disponível. Obrigado por comprar na MarsGames.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarsGames — Pagamento confirmado</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -240,7 +255,7 @@ function mostrarSucesso(pedido){
     document.getElementById('pedidoBox').style.display='block';
     document.getElementById('pedidoItens').innerHTML=itens.map(function(i){
       return '<div class="pedido-item">'
-        +(i.imagem?'<img class="pedido-item-img" src="'+esc(i.imagem)+'" alt="">':'<div class="pedido-item-img"></div>')
+        +(i.imagem?'<img loading="lazy" class="pedido-item-img" src="'+esc(i.imagem)+'" alt="">':'<div class="pedido-item-img"></div>')
         +'<div class="pedido-item-nome">'+esc(i.nome||'Jogo')+'</div>'
         +'<div class="pedido-item-val">R$ '+Number(i.preco||0).toFixed(2).replace('.',',')+'</div>'
         +'</div>';
