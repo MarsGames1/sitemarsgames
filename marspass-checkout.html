@@ -762,23 +762,27 @@ async function pagarCartao(cardData){
     if(!r.data||!r.data.session){ showToast('Faça login primeiro!',true); return; }
     var session=r.data.session;
     var pl=PLANOS[planoKey]||PLANOS.andromeda;
-    var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)||(cardData.payer&&cardData.payer.first_name&&(cardData.payer.first_name+' '+(cardData.payer.last_name||'')).trim())||'';
-    if(!_cardholderName){var _meta=session.user.user_metadata||{};_cardholderName=(_meta.full_name||_meta.name||session.user.email||'Cliente').toUpperCase();}
-    console.log('[marspass pagarCartao] cardholder=',_cardholderName,'amount=',cardData.transaction_amount||pl.valor);
+    var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)
+      ||(cardData.formData&&cardData.formData.cardholder&&cardData.formData.cardholder.name)
+      ||(cardData.additional_info&&cardData.additional_info.payer&&(cardData.additional_info.payer.first_name||''))
+      ||'';
+    var _issuerId=cardData.issuer_id?parseInt(String(cardData.issuer_id),10):0;
+    var _mpCardData={
+      token:             cardData.token             || '',
+      payment_method_id: cardData.payment_method_id || '',
+      installments:      Number(cardData.installments)||1,
+      payer:             cardData.payer              || {},
+      transaction_amount: cardData.transaction_amount || pl.valor || 0
+    };
+    if(_issuerId>0) _mpCardData.issuer_id=_issuerId;
+    if(_cardholderName) _mpCardData.cardholder={name:_cardholderName};
+    console.log('[marspass pagarCartao] _mpCardData=', JSON.stringify(_mpCardData));
     var response=await fetch(SUPABASE_URL+'/functions/v1/marspass-criar-cartao',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
       body:JSON.stringify({
         plano: planoKey,
-        cardData: {
-          token:             cardData.token             || '',
-          payment_method_id: cardData.payment_method_id || '',
-          installments:      Number(cardData.installments)||1,
-          issuer_id:         cardData.issuer_id?parseInt(String(cardData.issuer_id),10)||null:null,
-          payer:             cardData.payer              || {},
-          transaction_amount: cardData.transaction_amount || pl.valor || 0,
-          cardholder:        {name: _cardholderName}
-        }
+        cardData: _mpCardData
       })
     });
     var data=await response.json();

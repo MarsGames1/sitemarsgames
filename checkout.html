@@ -339,14 +339,12 @@ async function initCardBrick(){
           /* Mostra loading no botão do PIX (reutilizado como indicador) */
           var brickArea=document.getElementById('brick-area');
           if(brickArea)brickArea.style.opacity='.5';
+          /* O Brick entrega os dados no root ou dentro de formData/data dependendo da versão */
           var fd=cardData&&cardData.formData?cardData.formData:cardData&&cardData.data?cardData.data:cardData;
-          /* transaction_amount fica no root do cardData, não dentro de formData */
+          /* campos que ficam no root e podem ser perdidos na extração */
           if(!fd.transaction_amount && cardData.transaction_amount) fd.transaction_amount = cardData.transaction_amount;
-          /* cardholder.name também fica no root — garantir que chegue no fd */
-          if((!fd.cardholder||!fd.cardholder.name) && cardData.cardholder&&cardData.cardholder.name){
-            fd.cardholder=fd.cardholder||{};
-            fd.cardholder.name=cardData.cardholder.name;
-          }
+          if(!fd.cardholder && cardData.cardholder) fd.cardholder = cardData.cardholder;
+          console.log('[onSubmit] fd completo=', JSON.stringify(fd));
           await pagarCartao(fd);
           if(brickArea)brickArea.style.opacity='1';
         },
@@ -418,13 +416,23 @@ async function pagarCartao(cardData){
       var idxM=precos.indexOf(Math.min(...precos));
       itensDesc[idxM]={...itensDesc[idxM],preco:Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())};
     }
-    /* cardholder.name: tenta Brick, depois metadados do usuário, depois email como fallback */
-    var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)||(cardData.additional_info&&cardData.additional_info.payer&&(cardData.additional_info.payer.first_name+' '+cardData.additional_info.payer.last_name).trim())||(cardData.payer&&cardData.payer.first_name&&(cardData.payer.first_name+' '+(cardData.payer.last_name||'')).trim())||'';
-    if(!_cardholderName){
-      var _meta=session.user.user_metadata||{};
-      _cardholderName=(_meta.full_name||_meta.name||session.user.email||'Cliente').toUpperCase();
-    }
-    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id?parseInt(String(cardData.issuer_id),10)||null:null,payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0,cardholder:{name:_cardholderName}};
+    /* Busca nome do titular em todos os lugares possíveis do Brick */
+    var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)
+      ||(cardData.formData&&cardData.formData.cardholder&&cardData.formData.cardholder.name)
+      ||(cardData.additional_info&&cardData.additional_info.payer&&(cardData.additional_info.payer.first_name||''))
+      ||'';
+    var _cd={
+      token:cardData.token||'',
+      payment_method_id:cardData.payment_method_id||'',
+      installments:Number(cardData.installments)||1,
+      payer:cardData.payer||{},
+      transaction_amount:cardData.transaction_amount||getTotal()||0
+    };
+    /* issuer_id: só número válido */
+    var _issuerId=cardData.issuer_id?parseInt(String(cardData.issuer_id),10):0;
+    if(_issuerId>0) _cd.issuer_id=_issuerId;
+    /* cardholder: só inclui se tiver nome — MP rejeita com code 8 se vier vazio */
+    if(_cardholderName) _cd.cardholder={name:_cardholderName};
     console.log('[pagarCartao] _cd COMPLETO=', JSON.stringify(_cd));
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao',{
       method:'POST',
