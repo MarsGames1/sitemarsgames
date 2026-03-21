@@ -311,10 +311,21 @@ async function irParaSucesso(ref) {
   const tipo    = itens[0]?.tipo || '';
 
   if (tipo === 'marspoints') {
-    await creditarPacoteMP().catch(e => console.error('[MP crédito]', e));
+    let _mpCreditOk = false;
+    try {
+      await creditarPacoteMP();
+      _mpCreditOk = true;
+    } catch(e) {
+      console.error('[MP crédito]', e);
+      // Fallback: perfil.html vai tentar creditar ao carregar
+      sessionStorage.setItem('mg_loja_pago', 'sim');
+    }
     show('stateSuccess');
-    document.getElementById('successTitle').innerHTML = 'MarsPoints <span>Creditados!</span>';
-    document.getElementById('successSub').textContent = 'Seus MarsPoints estão disponíveis agora!';
+    document.getElementById('successIcon').textContent = _mpCreditOk ? '✅' : '⚡';
+    document.getElementById('successTitle').innerHTML  = 'MarsPoints <span>Creditados!</span>';
+    document.getElementById('successSub').textContent  = _mpCreditOk
+      ? 'Seus MarsPoints e bônus estão disponíveis agora!'
+      : 'Pagamento confirmado! Seus itens serão creditados em instantes.';
     document.getElementById('successBtn').href        = 'perfil.html#loja-mp';
     document.getElementById('successBtn').textContent = '⭐ Ver meus MarsPoints';
     setTimeout(() => { window.location.href = 'perfil.html#loja-mp'; }, 5000);
@@ -336,8 +347,16 @@ async function irParaSucesso(ref) {
 }
 
 // Credita Marspoints após pagamento confirmado
+// IDEMPOTÊNCIA: usa mg_loja_creditado_<ref> no sessionStorage para garantir
+// que o crédito ocorra exatamente uma vez, mesmo se o usuário recarregar.
 async function creditarPacoteMP() {
   if (!userEmail) return;
+  const _idemKey = 'mg_loja_creditado_' + (reference || pedidoId || 'noop');
+  if (sessionStorage.getItem(_idemKey)) {
+    console.log('[creditarPacoteMP] já creditado — ignorando dupla chamada');
+    return;
+  }
+  sessionStorage.setItem(_idemKey, '1');
   const pkgId   = sessionStorage.getItem('mg_loja_pkg_id') || '';
   const pkgMP   = parseInt(sessionStorage.getItem('mg_loja_pkg_mp') || '0');
   const bonusRaw = sessionStorage.getItem('mg_loja_pkg_bonus') || '[]';
@@ -370,10 +389,13 @@ async function creditarPacoteMP() {
     const tktRows = await tktRes.json();
     const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade) || 0;
     const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
+    // FIX: não sobrescreve ultima_renovacao — preserva ciclo de renovação semanal do usuário
+    const tktPayload = { user_email: userEmail, quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus };
+    if (!tktRows || !tktRows[0]) tktPayload.ultima_renovacao = new Date().toISOString(); // só define se registro é novo
     await fetch(`${SUPA_URL}/rest/v1/tickets`, {
       method: 'POST',
       headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ user_email: userEmail, quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus, ultima_renovacao: new Date().toISOString() })
+      body: JSON.stringify(tktPayload)
     });
     document.getElementById('pollMsg').textContent = `✅ +${pkgMP.toLocaleString('pt-BR')} MP + ${tktBonus} Tickets creditados!`;
   } else {
@@ -399,10 +421,15 @@ async function creditarPacoteMP() {
     });
   }
 
+  // Atualiza badge de MarsPoints ganhos na tela de sucesso
+  const ptsEl = document.getElementById('ptsGanhos');
+  if (ptsEl) ptsEl.textContent = pkgMP.toLocaleString('pt-BR');
+
   // Limpa sessão
   sessionStorage.removeItem('mg_loja_pkg_id');
   sessionStorage.removeItem('mg_loja_pkg_mp');
   sessionStorage.removeItem('mg_loja_pkg_bonus');
+  sessionStorage.removeItem('mg_itens_pendentes');
 }
 
 // Executa o câmbio após pagamento da taxa via Pix

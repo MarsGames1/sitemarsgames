@@ -386,6 +386,96 @@ async function pagar() {
     return;
   }
 
+
+/* ── Credita pacote MP comprado com cartão (approved imediato) ──
+   Executa 1 SELECT + 1 UPSERT por tabela — sem sobrecarga.
+   Idempotência via sessionStorage evita duplo crédito em retry. ── */
+async function creditarPacoteMPCartao(session) {
+  const pkgId   = sessionStorage.getItem('mg_loja_pkg_id')    || '';
+  const pkgMP   = parseInt(sessionStorage.getItem('mg_loja_pkg_mp') || '0');
+  const bonusRaw = sessionStorage.getItem('mg_loja_pkg_bonus') || '[]';
+  const itensRaw = sessionStorage.getItem('mg_itens_pendentes')|| '[]';
+
+  // Só executa se for compra de pacote MP
+  const itens = JSON.parse(itensRaw);
+  if (!itens.length || itens[0].tipo !== 'marspoints') return false;
+
+  const _idemKey = 'mg_loja_creditado_cartao_' + pkgId + '_' + Date.now().toString(36).slice(-4);
+  if (sessionStorage.getItem('mg_loja_creditado_cartao')) return true; // já creditou
+  sessionStorage.setItem('mg_loja_creditado_cartao', '1');
+
+  const email = session.user.email;
+  const bonus = JSON.parse(bonusRaw);
+  const token = session.access_token;
+  const SUPA_URL_C = SUPABASE_URL;
+  const SUPA_KEY_C = SUPABASE_KEY;
+
+  try {
+    // 1. MarsPoints
+    const mpRes = await fetch(`${SUPA_URL_C}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(email)}&limit=1`, {
+      headers: { 'apikey': SUPA_KEY_C, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    const mpRows = await mpRes.json();
+    const mpAtual = (mpRows && mpRows[0] && mpRows[0].pontos) || 0;
+    const hist    = (mpRows && mpRows[0] && mpRows[0].historico) || [];
+    hist.unshift({ pontos: pkgMP, descricao: 'Compra pacote MP (cartão): ' + pkgId, data: new Date().toISOString(), tipo: 'compra_mp' });
+    await fetch(`${SUPA_URL_C}/rest/v1/marspoints`, {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY_C, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ user_email: email, pontos: mpAtual + pkgMP, historico: hist.slice(0, 50) })
+    });
+
+    // 2. Tickets bônus
+    const tktBonus = bonus.filter(b => b.type === 'tkt').reduce((s, b) => {
+      const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0);
+    }, 0);
+    if (tktBonus > 0) {
+      const tktRes = await fetch(`${SUPA_URL_C}/rest/v1/tickets?user_email=eq.${encodeURIComponent(email)}&limit=1`, {
+        headers: { 'apikey': SUPA_KEY_C, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      });
+      const tktRows = await tktRes.json();
+      const tktAtual = (tktRows && tktRows[0] && tktRows[0].quantidade)      || 0;
+      const tktTotal = (tktRows && tktRows[0] && tktRows[0].total_acumulado) || 0;
+      // FIX: não sobrescreve ultima_renovacao de registro existente
+      const tktPayload = { user_email: email, quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus };
+      if (!tktRows || !tktRows[0]) tktPayload.ultima_renovacao = new Date().toISOString();
+      await fetch(`${SUPA_URL_C}/rest/v1/tickets`, {
+        method: 'POST',
+        headers: { 'apikey': SUPA_KEY_C, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(tktPayload)
+      });
+    }
+
+    // 3. XP Planeta
+    const xpBonus = bonus.filter(b => b.type === 'xp').reduce((s, b) => {
+      const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0);
+    }, 0);
+    if (xpBonus > 0) {
+      const plRes = await fetch(`${SUPA_URL_C}/rest/v1/planetas?user_email=eq.${encodeURIComponent(email)}&limit=1`, {
+        headers: { 'apikey': SUPA_KEY_C, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      });
+      const plRows = await plRes.json();
+      const xpAtual = (plRows && plRows[0] && plRows[0].xp) || 0;
+      const pLog    = (plRows && plRows[0] && plRows[0].log) || [];
+      pLog.unshift({ label: 'Bônus XP pacote '+pkgId+' (cartão)', xp: xpBonus, icon: '🌟', t: new Date().toLocaleTimeString('pt-BR') });
+      await fetch(`${SUPA_URL_C}/rest/v1/planetas`, {
+        method: 'POST',
+        headers: { 'apikey': SUPA_KEY_C, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({ user_email: email, xp: xpAtual + xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() })
+      });
+    }
+
+    // Limpa sessionStorage de compra
+    ['mg_loja_pkg_id','mg_loja_pkg_mp','mg_loja_pkg_bonus','mg_itens_pendentes'].forEach(k => sessionStorage.removeItem(k));
+    return true;
+  } catch(e) {
+    console.error('[creditarPacoteMPCartao]', e);
+    // Fallback: perfil.html tenta creditar ao carregar
+    sessionStorage.setItem('mg_loja_pago', 'sim');
+    return false;
+  }
+}
+
   /* PIX */
   try {
     var r = await sb.auth.getSession();
@@ -460,7 +550,18 @@ async function pagarCartao(cardData){
     if(data.status==='approved'){
       sessionStorage.setItem('mg_pedido_id', data.pedido_id||'');
       sessionStorage.setItem('mg_user_email', session.user.email||'');
-      window.location.href = 'sucesso.html';
+      // Se for compra de pacote MP com cartão, credita antes de redirecionar
+      const _itensCheck = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
+      if (_itensCheck.length && _itensCheck[0].tipo === 'marspoints') {
+        showToast('✅ Pagamento aprovado! Creditando...');
+        await creditarPacoteMPCartao(session).catch(e => {
+          console.error('[cartao MP]', e);
+          sessionStorage.setItem('mg_loja_pago', 'sim'); // fallback via perfil.html
+        });
+        window.location.href = 'perfil.html#loja-mp';
+      } else {
+        window.location.href = 'sucesso.html';
+      }
     } else if(data.status==='pending'||data.status==='in_process'){
       showToast('Pagamento em análise — você receberá confirmação por email.');
       setTimeout(()=>window.location.href='index.html',3000);
