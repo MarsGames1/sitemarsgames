@@ -3414,7 +3414,7 @@ async function carregarPerfil(user){
          provider:(user.app_metadata&&user.app_metadata.provider)||'google'},
         {onConflict:'id'}
       ).select().single(),
-      sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle(),
+      sb.from('marspoints').select('pontos,pontos_historico').eq('user_email',user.email).maybeSingle(),
       sb.from('tickets').select('quantidade').eq('user_email',user.email).maybeSingle()
     ]);
 
@@ -3422,6 +3422,17 @@ async function carregarPerfil(user){
     if(mpRes.data){
       perfil.pontos    = mpRes.data.pontos || 0;
       perfil.historico = mpRes.data.historico || [];
+      /* ── PONTOS HISTÓRICOS: máximo já atingido, nunca desce ── */
+      var _hKey = 'mg_pontos_hist_' + user.email;
+      var _hLocal = parseInt(localStorage.getItem(_hKey)||'0');
+      /* Se a tabela já tem a coluna pontos_historico, usa ela */
+      var _hDb = mpRes.data.pontos_historico || 0;
+      /* Histórico = o maior entre: DB, localStorage, saldo atual */
+      perfil.pontos_historico = Math.max(_hDb, _hLocal, perfil.pontos);
+      /* Persiste no localStorage para próxima carga */
+      if(perfil.pontos_historico > _hLocal){
+        localStorage.setItem(_hKey, String(perfil.pontos_historico));
+      }
     }
 
     perfilData = perfil;
@@ -3552,7 +3563,9 @@ async function verificarLevelUpXP(user){
 
 function renderPerfil(p){
   var pts=p.pontos||0;
-  var nivel=getNivel(pts);
+  /* Nível baseado no histórico máximo — nunca desce com gastos */
+  var ptsNivel = p.pontos_historico||pts;
+  var nivel=getNivel(ptsNivel);
   var prox=NIVEIS[NIVEIS.indexOf(nivel)+1];
 
   // Avatar
@@ -3600,12 +3613,12 @@ function renderPerfil(p){
 
   // Progresso
   var proxNivel=prox||nivel;
-  var progAtual=pts-nivel.min;
+  var progAtual=ptsNivel-nivel.min;
   var progTotal=proxNivel.min-nivel.min;
   var pct=prox?Math.min(100,Math.round((progAtual/progTotal)*100)):100;
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('progFill').style.background=nivel.cor;
-  document.getElementById('progLabelAtual').textContent=nivel.nome+' ('+pts+' pts)';
+  document.getElementById('progLabelAtual').textContent=nivel.nome+' ('+ptsNivel+' pts)';
   document.getElementById('progLabelProx').textContent=prox?(proxNivel.nome+' ('+proxNivel.min+' pts)'):'Nível máximo!';
 
   // Stats
@@ -3872,7 +3885,11 @@ function renderConquistas(perfil){
               hist.unshift({descricao:'🏆 Conquista desbloqueada: '+c.nome+' — "'+c.titulo+'"',pontos:c.pts,data:new Date().toISOString(),tipo:'conquista'});
             }
           });
-          await sb.from('marspoints').upsert({user_email:userSession.user.email,pontos:ptsAtuais+bonusTotal,historico:hist.slice(0,50)},{onConflict:'user_email'});
+          var _nhAval=Math.max(ptsAtuais+bonusTotal,perfilData&&perfilData.pontos_historico||0);
+          await sb.from('marspoints').upsert({user_email:userSession.user.email,pontos:ptsAtuais+bonusTotal,pontos_historico:_nhAval,historico:hist.slice(0,50)},{onConflict:'user_email'});
+          if(perfilData) perfilData.pontos_historico=_nhAval;
+          var _hKA='mg_pontos_hist_'+(userSession.user.email||'');
+          if(_nhAval>parseInt(localStorage.getItem(_hKA)||'0')) localStorage.setItem(_hKA,String(_nhAval));
         }
 
         /* Notifica o usuário sobre conquistas novas */
@@ -5287,16 +5304,23 @@ function perfilAtualizarMarspoints(novoPts){
   if(novoPts===undefined||novoPts===null)return;
   var pts=Number(novoPts)||0;
 
-  /* 1. Stat hero */
+  /* Atualiza histórico máximo — nunca desce */
+  var _hKey='mg_pontos_hist_'+(userSession&&userSession.user?userSession.user.email:'anon');
+  var _hAtual=parseInt(localStorage.getItem(_hKey)||'0');
+  var ptsHist=Math.max(pts,_hAtual,perfilData&&perfilData.pontos_historico||0);
+  if(ptsHist>_hAtual) localStorage.setItem(_hKey,String(ptsHist));
+  if(perfilData) perfilData.pontos_historico=ptsHist;
+
+  /* 1. Stat hero — mostra saldo atual */
   var mpEl=document.getElementById('statMarsPoints');
   if(mpEl)mpEl.textContent=pts.toLocaleString('pt-BR');
 
-  /* 2. Pontos acima do avatar */
+  /* 2. Pontos acima do avatar — mostra saldo atual */
   var perfilPtsEl=document.getElementById('perfilPts');
   if(perfilPtsEl)perfilPtsEl.textContent=pts.toLocaleString('pt-BR');
 
-  /* 3. Nível, barra de progresso, desconto */
-  var nivel=getNivel(pts);
+  /* 3. Nível e barra — baseados no HISTÓRICO, nunca descem */
+  var nivel=getNivel(ptsHist);
   var prox=NIVEIS[NIVEIS.indexOf(nivel)+1];
 
   var tagEl=document.getElementById('nivelTag');
@@ -5306,13 +5330,13 @@ function perfilAtualizarMarspoints(novoPts){
   if(nivelBadge){nivelBadge.textContent=nivel.emoji;}
 
   var proxNivel=prox||nivel;
-  var progAtual=pts-nivel.min;
+  var progAtual=ptsHist-nivel.min;
   var progTotal=proxNivel.min-nivel.min;
   var pct=prox?Math.min(100,Math.round((progAtual/progTotal)*100)):100;
   var fill=document.getElementById('progFill');
   if(fill){fill.style.width=pct+'%';fill.style.background=nivel.cor;}
   var lblAtual=document.getElementById('progLabelAtual');
-  if(lblAtual)lblAtual.textContent=nivel.nome+' ('+pts+' pts)';
+  if(lblAtual)lblAtual.textContent=nivel.nome+' ('+ptsHist+' pts)';
   var lblProx=document.getElementById('progLabelProx');
   if(lblProx)lblProx.textContent=prox?(proxNivel.nome+' ('+proxNivel.min+' pts)'):'Nível máximo!';
 
