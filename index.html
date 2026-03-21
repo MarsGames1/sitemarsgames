@@ -3541,7 +3541,7 @@ footer::before{
     <!-- Vídeo Forza Horizon 6 -->
     <video id="heroVideo" autoplay muted loop playsinline preload="auto"
       style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.2s ease;z-index:1">
-      <source src="https://marsgames.com.br/sitemarsgames/forza.webm" type="video/webm">
+      <source src="/forza.webm" type="video/webm">
     </video>
     <div class="hero-video-overlay" style="z-index:2"></div>
   </div>
@@ -5696,7 +5696,7 @@ else window.addEventListener('load', dispararThree);
   function _ini(){
     if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_ini,500);return;}
     var em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||'anon_'+Math.random().toString(36).slice(2,8);
-    var pg=window.location.pathname.replace(/.*sitemarsgames\//,'').replace('.html','')||'index';
+    var pg=window.location.pathname.replace(/^\//, '').replace('.html', '').replace(/\/$/, '') || 'index';
     _pc=sb.channel('site-visitors');
     _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});});
     _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:em,pagina:pg,online_at:new Date().toISOString()});},25000);
