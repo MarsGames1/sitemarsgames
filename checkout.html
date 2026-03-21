@@ -90,7 +90,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .desconto-val{font-size:13px;font-weight:900;color:var(--green);}
 /* Card Brick */
 #card-brick-wrap{margin-top:12px;overflow:hidden;}
-#cardBrick_container{max-width:100%;overflow:hidden;}
+#cardBrick_container{max-width:100%;overflow:hidden;transform:scale(0.82);transform-origin:top left;width:122%;margin-bottom:-60px;}
 #cardBrick_container iframe{max-width:100%!important;}
 
 /* TOAST */
@@ -349,9 +349,16 @@ async function initCardBrick(){
           if(wrap) wrap.style.minHeight='0';
         },
         onSubmit: async function(cardData){
-          /* MP Brick v2: dados reais estão em cardData.formData */
-          var payload = (cardData && cardData.formData) ? cardData.formData : cardData;
-          await pagarCartao(payload);
+          /* MP Brick v2 — loga estrutura completa para diagnóstico */
+          console.log('[Brick RAW]', JSON.stringify(cardData));
+          /* O Brick pode entregar em diferentes formatos dependendo da versão:
+             - { token, payment_method_id, installments, payer, ... } direto
+             - { formData: { token, ... }, selectedPaymentMethod }
+             - { data: { token, ... } } */
+          var fd = cardData;
+          if(cardData && cardData.formData) fd = cardData.formData;
+          else if(cardData && cardData.data) fd = cardData.data;
+          await pagarCartao(fd);
         },
         onError: function(err){
           if(err&&err.cause&&err.cause[0]&&err.cause[0].code==='E301') return;
@@ -550,13 +557,31 @@ async function pagarCartao(cardData){
       itensComDesconto[idxMenor] = {...itensComDesconto[idxMenor], preco: Math.max(0, Number(itensComDesconto[idxMenor].preco)-desc)};
     }
 
+    /* Loga o que será enviado para diagnóstico */
+    console.log('[pagarCartao] cardData recebido:', JSON.stringify(cardData));
+
+    var _cardDataPayload = {
+      token:             cardData.token             || '',
+      payment_method_id: cardData.payment_method_id || '',
+      installments:      Number(cardData.installments)||1,
+      issuer_id:         cardData.issuer_id          || '',
+      payer:             cardData.payer              || {}
+    };
+    console.log('[mp-criar-cartao] cardData:', JSON.stringify(_cardDataPayload));
     var response = await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
-      body: JSON.stringify({ itens: itensComDesconto, cardData, cupom: cupomAtual||null, total: getTotal() })
+      body: JSON.stringify({
+        itens: itensComDesconto,
+        cupom: cupomAtual||null,
+        cardData: _cardDataPayload
+      })
     });
     var data = await response.json();
-    if(!response.ok) throw new Error(data.error||'Erro no pagamento com cartão');
+    if(!response.ok){
+      console.error('[mp-criar-cartao erro]', JSON.stringify(data));
+      throw new Error(data.error||data.message||JSON.stringify(data).slice(0,200));
+    }
     if(data.status==='approved'){
       sessionStorage.setItem('mg_pedido_id', data.pedido_id||'');
       sessionStorage.setItem('mg_user_email', session.user.email||'');
