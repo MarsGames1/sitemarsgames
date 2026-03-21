@@ -769,7 +769,8 @@ async function pagarCartao(cardData){
           payment_method_id: cardData.payment_method_id || '',
           installments:      Number(cardData.installments)||1,
           issuer_id:         cardData.issuer_id          || '',
-          payer:             cardData.payer              || {}
+          payer:             cardData.payer              || {},
+          transaction_amount: cardData.transaction_amount || pl.valor || 0
         }
       })
     });
@@ -1548,7 +1549,7 @@ async function pagarCartao(cardData){
         installments:      cardData.installments       || 1,
         issuer_id:         cardData.issuer_id          || '',
         payer:             cardData.payer              || {},
-        transaction_amount: parseFloat(document.getElementById('pixValor')?.textContent?.replace('R$ ','').replace(',','.')) || 0
+        transaction_amount: cardData.transaction_amount || parseFloat(document.getElementById('pixValor')?.textContent?.replace('R$ ','').replace(',','.')) || 0
       })
     });
     var data=await response.json();

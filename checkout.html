@@ -411,7 +411,7 @@ async function pagarCartao(cardData){
       var idxM=precos.indexOf(Math.min(...precos));
       itensDesc[idxM]={...itensDesc[idxM],preco:Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())};
     }
-    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id||'',payer:cardData.payer||{}};
+    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id||'',payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0};
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
