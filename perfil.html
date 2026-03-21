@@ -998,9 +998,9 @@ body.tema-claro .section-loader{color:var(--muted)}
   padding:10px 12px;border-radius:12px;
   font-size:10.5px;font-weight:800;letter-spacing:.3px;
   cursor:pointer;white-space:nowrap;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.07);
-  color:#505068;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  color:#9090b0;
   transition:all .2s;
   position:relative;overflow:hidden;
 }
@@ -1009,9 +1009,9 @@ body.tema-claro .section-loader{color:var(--muted)}
   border-radius:2px 2px 0 0;opacity:0;transition:opacity .2s;
 }
 .tab:hover{
-  background:rgba(255,255,255,.07);
-  border-color:rgba(255,255,255,.16);
-  color:#bbb;
+  background:rgba(255,255,255,.09);
+  border-color:rgba(255,255,255,.2);
+  color:#ddddf0;
   transform:translateY(-2px);
   box-shadow:0 6px 18px rgba(0,0,0,.25);
 }
@@ -1044,9 +1044,9 @@ body.tema-claro .section-loader{color:var(--muted)}
   50%{box-shadow:0 0 20px rgba(255,215,0,.4),0 4px 28px rgba(255,184,0,.25)}
 }
 .tab-marspass{
-  background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,140,0,.06));
-  border-color:rgba(255,200,0,.25);
-  color:#c8a000;
+  background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,140,0,.07));
+  border-color:rgba(255,200,0,.3);
+  color:#d4a800;
   position:relative;
 }
 .tab-marspass::before{
@@ -1057,16 +1057,16 @@ body.tema-claro .section-loader{color:var(--muted)}
   pointer-events:none;
 }
 .tab-marspass:hover{
-  background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,140,0,.1));
-  border-color:rgba(255,200,0,.5);
+  background:linear-gradient(135deg,rgba(255,215,0,.18),rgba(255,140,0,.12));
+  border-color:rgba(255,200,0,.55);
   color:#FFD700;
-  box-shadow:0 6px 22px rgba(255,200,0,.2);
+  box-shadow:0 6px 22px rgba(255,200,0,.22);
 }
 .tab-marspass.active{
-  background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,140,0,.12));
-  border-color:rgba(255,200,0,.6);
+  background:linear-gradient(135deg,rgba(255,215,0,.22),rgba(255,140,0,.14));
+  border-color:rgba(255,200,0,.65);
   color:#FFD700;
-  box-shadow:0 6px 24px rgba(255,200,0,.25);
+  box-shadow:0 6px 24px rgba(255,200,0,.28);
   animation:marspassGlow 2.5s ease-in-out infinite;
 }
 .tab-marspass.active::after{
@@ -1079,49 +1079,49 @@ body.tema-claro .section-loader{color:var(--muted)}
 }
 
 /* ── MarsPoints ── */
-.tab-marspoints{border-color:rgba(0,255,85,.1);color:#2a7040}
-.tab-marspoints:hover{border-color:rgba(0,255,85,.3);color:var(--green);background:rgba(0,255,85,.05);}
+.tab-marspoints{border-color:rgba(0,255,85,.12);color:#3d9960}
+.tab-marspoints:hover{border-color:rgba(0,255,85,.3);color:var(--green);background:rgba(0,255,85,.06);}
 .tab-marspoints.active{background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.4);color:var(--green);box-shadow:0 6px 20px rgba(0,255,85,.12);}
 .tab-marspoints.active::after{background:var(--green);}
 
 /* ── Tickets ── */
-.tab-tickets{border-color:rgba(255,183,0,.12);color:#6a5010}
+.tab-tickets{border-color:rgba(255,183,0,.15);color:#a07820}
 .tab-tickets:hover{border-color:rgba(255,183,0,.35);color:var(--amber);background:rgba(255,183,0,.05);}
 .tab-tickets.active{background:rgba(255,183,0,.1);border-color:rgba(255,183,0,.45);color:var(--amber);box-shadow:0 6px 20px rgba(255,183,0,.12);}
 .tab-tickets.active::after{background:var(--amber);}
 
 /* ── Prêmios ── */
-.tab-premios{border-color:rgba(255,215,0,.1);color:#6a5800}
+.tab-premios{border-color:rgba(255,215,0,.12);color:#a08800}
 .tab-premios:hover{border-color:rgba(255,215,0,.35);color:#FFD700;background:rgba(255,215,0,.05);}
 .tab-premios.active{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.45);color:#FFD700;box-shadow:0 6px 20px rgba(255,215,0,.12);}
 .tab-premios.active::after{background:#FFD700;}
 
 /* ── DNA Alien ── */
-.tab-dna{border-color:rgba(0,255,231,.1);color:#1a5a5a}
+.tab-dna{border-color:rgba(0,255,231,.12);color:#208888}
 .tab-dna:hover{border-color:rgba(0,255,231,.3);color:#00ffe7;background:rgba(0,255,231,.05);}
 .tab-dna.active{background:rgba(0,255,231,.08);border-color:rgba(0,255,231,.4);color:#00ffe7;box-shadow:0 6px 20px rgba(0,255,231,.1);}
 .tab-dna.active::after{background:#00ffe7;}
 
 /* ── Aniversário ── */
-.tab-aniversario{border-color:rgba(255,45,122,.15);color:#8a2050}
+.tab-aniversario{border-color:rgba(255,45,122,.18);color:#c23870}
 .tab-aniversario:hover{border-color:rgba(255,45,122,.35);color:#ff2d7a;background:rgba(255,45,122,.06);}
 .tab-aniversario.active{color:#ff2d7a;background:rgba(255,45,122,.1);border-color:rgba(255,45,122,.5);box-shadow:0 6px 20px rgba(255,45,122,.12);}
 .tab-aniversario.active::after{background:#ff2d7a;}
 
 /* ── Câmbio ── */
-.tab-cambio{border-color:rgba(0,255,231,.12);color:#1a6060}
+.tab-cambio{border-color:rgba(0,255,231,.14);color:#208888}
 .tab-cambio:hover{border-color:rgba(0,255,231,.3);color:#00ffe7;background:rgba(0,255,231,.05);}
 .tab-cambio.active{color:#00ffe7;background:rgba(0,255,231,.08);border-color:rgba(0,255,231,.4);box-shadow:0 6px 20px rgba(0,255,231,.1);}
 .tab-cambio.active::after{background:#00ffe7;}
 
 /* ── Loja MP ── */
-.tab-loja-mp{border-color:rgba(255,194,0,.15);color:#5a4800}
+.tab-loja-mp{border-color:rgba(255,194,0,.18);color:#907000}
 .tab-loja-mp:hover{border-color:rgba(255,194,0,.4);color:#ffc200;background:rgba(255,194,0,.06);}
 .tab-loja-mp.active{color:#ffc200;background:rgba(255,194,0,.1);border-color:rgba(255,194,0,.5);box-shadow:0 6px 20px rgba(255,194,0,.12);}
 .tab-loja-mp.active::after{background:#ffc200;}
 
 /* ── Planeta ── */
-.tab-planeta{border-color:rgba(0,184,230,.12);color:#1a4860}
+.tab-planeta{border-color:rgba(0,184,230,.15);color:#2070a0}
 .tab-planeta:hover{border-color:rgba(0,184,230,.35);color:#00b8e6;background:rgba(0,184,230,.05);}
 .tab-planeta.active{color:#00b8e6;background:rgba(0,184,230,.1);border-color:rgba(0,184,230,.45);box-shadow:0 6px 20px rgba(0,184,230,.12);}
 .tab-planeta.active::after{background:#00b8e6;}
@@ -2253,9 +2253,9 @@ setTimeout(function(){
         <div class="pstat-val" id="statFavs" style="font-size:14px">—</div>
         <div class="pstat-lbl">Favoritos</div>
       </div>
-      <div class="pstat">
-        <div class="pstat-val" id="statDesconto">0%</div>
-        <div class="pstat-lbl">Desconto atual</div>
+      <div class="pstat" onclick="showTab('marspass-perfil',document.querySelector('.tab-marspass'))" style="cursor:pointer">
+        <div class="pstat-val" id="statDesconto" style="font-size:12px">—</div>
+        <div class="pstat-lbl">Nível</div>
       </div>
       <div class="pstat" style="border-color:rgba(0,255,85,.25);background:rgba(0,255,85,.05);cursor:pointer"
            onclick="showTab('pontos',document.querySelector('.tab'))">
@@ -2297,40 +2297,40 @@ setTimeout(function(){
         <div class="benef-nome" style="color:var(--bronze)">Bronze</div>
         <div class="benef-pts">0 pts</div>
         <div class="benef-titulo" style="color:var(--bronze);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Recruta Marciano"</div>
-        <div class="benef-desc" style="color:var(--bronze)">Sem desconto</div>
+        <div class="benef-desc" style="color:var(--bronze)">Acesso à plataforma</div>
       </div>
       <div class="benef-card nivel-prata" id="benef-prata">
         <span class="benef-emoji">🥈</span>
         <div class="benef-nome" style="color:var(--prata)">Prata</div>
         <div class="benef-pts">200 pts</div>
         <div class="benef-titulo" style="color:var(--prata);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Explorador"</div>
-        <div class="benef-desc" style="color:var(--prata)">5% OFF + Tema claro</div>
+        <div class="benef-desc" style="color:var(--prata)">Tema claro + benefícios</div>
       </div>
       <div class="benef-card nivel-ouro" id="benef-ouro">
         <span class="benef-emoji">🥇</span>
         <div class="benef-nome" style="color:var(--ouro)">Ouro</div>
         <div class="benef-pts">1.000 pts</div>
         <div class="benef-titulo" style="color:var(--ouro);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Comandante"</div>
-        <div class="benef-desc" style="color:var(--ouro)">10% OFF + 2 tickets sorteio</div>
+        <div class="benef-desc" style="color:var(--ouro)">2 tickets sorteio</div>
       </div>
       <div class="benef-card nivel-esmeralda" id="benef-esmeralda">
         <span class="benef-emoji">💚</span>
         <div class="benef-nome" style="color:var(--esm)">Esmeralda</div>
         <div class="benef-pts">2.000 pts</div>
         <div class="benef-titulo" style="color:var(--esm);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Elite Mars"</div>
-        <div class="benef-desc" style="color:var(--esm)">15% OFF + 2 tickets + Garimpo</div>
+        <div class="benef-desc" style="color:var(--esm)">2 tickets + Garimpo</div>
       </div>
       <div class="benef-card nivel-diamante" id="benef-diamante">
         <span class="benef-emoji">💎</span>
         <div class="benef-nome" style="color:var(--dia)">Diamante</div>
         <div class="benef-pts">10.000 pts</div>
         <div class="benef-titulo" style="color:var(--dia);font-size:9px;font-weight:700;margin-bottom:4px;opacity:.7">"Lendário"</div>
-        <div class="benef-desc" style="color:var(--dia)">20% OFF + 3 tickets + Acesso VIP</div>
+        <div class="benef-desc" style="color:var(--dia)">3 tickets + Acesso VIP</div>
       </div>
     </div>
 
     <!-- Cupom ativo -->
-    <div id="cupomSection"></div>
+    
   </div>
 
   <!-- CONQUISTAS -->
@@ -2393,28 +2393,28 @@ setTimeout(function(){
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(205,159,106,.05)">
           <span style="font-size:11px;font-weight:700;color:var(--bronze)">🥉 Bronze</span>
-          <span style="font-size:10px;color:var(--muted)">0 — 99 pts</span>
-          <span style="font-size:11px;font-weight:900;color:var(--bronze)">Sem desconto</span>
+          <span style="font-size:10px;color:var(--muted)">0 — 199 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--bronze)">Entrada</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(232,232,232,.03)">
           <span style="font-size:11px;font-weight:700;color:var(--prata)">🥈 Prata</span>
-          <span style="font-size:10px;color:var(--muted)">100 — 499 pts</span>
-          <span style="font-size:11px;font-weight:900;color:var(--prata)">5% OFF</span>
+          <span style="font-size:10px;color:var(--muted)">200 — 999 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--prata)">Nível 2</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(255,215,0,.04)">
           <span style="font-size:11px;font-weight:700;color:var(--ouro)">🥇 Ouro</span>
-          <span style="font-size:10px;color:var(--muted)">500 — 999 pts</span>
-          <span style="font-size:11px;font-weight:900;color:var(--ouro)">10% OFF</span>
+          <span style="font-size:10px;color:var(--muted)">1.000 — 1.999 pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--ouro)">Nível 3</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:rgba(80,200,120,.04)">
           <span style="font-size:11px;font-weight:700;color:var(--esm)">💚 Esmeralda</span>
           <span style="font-size:10px;color:var(--muted)">2.000 — 9.999 pts</span>
-          <span style="font-size:11px;font-weight:900;color:var(--esm)">15% OFF</span>
+          <span style="font-size:11px;font-weight:900;color:var(--esm)">Nível 4</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid rgba(185,242,255,.2);background:rgba(185,242,255,.04)">
           <span style="font-size:11px;font-weight:700;color:var(--dia)">💎 Diamante</span>
-          <span style="font-size:10px;color:var(--muted)">5.000+ pts</span>
-          <span style="font-size:11px;font-weight:900;color:var(--dia)">20% OFF</span>
+          <span style="font-size:10px;color:var(--muted)">10.000+ pts</span>
+          <span style="font-size:11px;font-weight:900;color:var(--dia)">Nível 5</span>
         </div>
       </div>
     </div>
@@ -3077,11 +3077,11 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
 
 // ── NÍVEIS ──
 var NIVEIS=[
-  {nome:'Bronze',   min:0,     max:199,   cor:'var(--bronze)',emoji:'🥉',cls:'nivel-bronze',   desc:'Sem desconto',pct:0,  titulo:'Recruta Marciano'},
-  {nome:'Prata',    min:200,   max:999,   cor:'var(--prata)', emoji:'🥈',cls:'nivel-prata',    desc:'5% OFF',      pct:5,  titulo:'Explorador'},
-  {nome:'Ouro',     min:1000,  max:1999,  cor:'var(--ouro)',  emoji:'🥇',cls:'nivel-ouro',     desc:'10% OFF',     pct:10, titulo:'Comandante'},
-  {nome:'Esmeralda',min:2000,  max:9999,  cor:'var(--esm)',   emoji:'💚',cls:'nivel-esmeralda',desc:'15% OFF',     pct:15, titulo:'Elite Mars'},
-  {nome:'Diamante', min:10000, max:999999,cor:'var(--dia)',   emoji:'💎',cls:'nivel-diamante', desc:'20% OFF',     pct:20, titulo:'Lendário'},
+  {nome:'Bronze',   min:0,     max:199,   cor:'var(--bronze)',emoji:'🥉',cls:'nivel-bronze',   desc:'Entrada',    pct:0,  titulo:'Recruta Marciano'},
+  {nome:'Prata',    min:200,   max:999,   cor:'var(--prata)', emoji:'🥈',cls:'nivel-prata',    desc:'Nível 2',    pct:0,  titulo:'Explorador'},
+  {nome:'Ouro',     min:1000,  max:1999,  cor:'var(--ouro)',  emoji:'🥇',cls:'nivel-ouro',     desc:'Nível 3',    pct:0,  titulo:'Comandante'},
+  {nome:'Esmeralda',min:2000,  max:9999,  cor:'var(--esm)',   emoji:'💚',cls:'nivel-esmeralda',desc:'Nível 4',    pct:0,  titulo:'Elite Mars'},
+  {nome:'Diamante', min:10000, max:999999,cor:'var(--dia)',   emoji:'💎',cls:'nivel-diamante', desc:'Nível 5',    pct:0,  titulo:'Lendário'},
 ];
 
 function getNivel(pts){
@@ -3348,11 +3348,10 @@ async function carregarPerfil(user){
 
     perfilData = perfil;
     renderPerfil(perfil);
-    carregarBeneficiosCupom(perfil);
 
     /* ── Busca dados para conquistas em paralelo (sem bloquear UI) ── */
     Promise.all([
-      Promise.resolve(sb.from('pedidos').select('id,produto_nome,created_at').eq('cliente_email',user.email)).catch(function(){return{data:[]};}),
+      Promise.resolve(sb.from('pedidos').select('id,produto_nome,valor,created_at').eq('cliente_email',user.email)).catch(function(){return{data:[]};}),
       Promise.resolve(sb.from('avaliacoes').select('id').eq('user_email',user.email)).catch(function(){return{data:[]};})
     ]).then(function(results){
       var peds  = results[0].data || [];
@@ -3368,12 +3367,25 @@ async function carregarPerfil(user){
       perfil.total_avaliacoes = avals.length;
       perfil.rpg_comprados    = rpg_comprados;
       perfil.promo_comprados  = promo_comprados;
-      /* indicacoes já pode estar no perfil.indicacoes (campo da tabela perfis) */
       perfil.indicacoes       = perfil.indicacoes || 0;
+      /* Calcula total gasto */
+      perfil.total_gasto = peds.reduce(function(s,p){return s+Number(p.valor||0);},0);
 
       perfilData = perfil;
       renderConquistas(perfil);
+
+      /* Atualiza stats no hero */
+      var elPeds=document.getElementById('statPedidos');
+      var elGasto=document.getElementById('statGasto');
+      if(elPeds) elPeds.textContent=peds.length;
+      if(elGasto) elGasto.textContent='R$ '+Number(perfil.total_gasto).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
     }).catch(function(e){ console.warn('[conquistas data]',e); renderConquistas(perfil); });
+
+    /* Favoritos — busca rápida só count */
+    sb.from('favoritos').select('id',{count:'exact',head:true}).eq('user_id',user.id).then(function(r){
+      var elFavs=document.getElementById('statFavs');
+      if(elFavs) elFavs.textContent=r.count||0;
+    }).catch(function(){});
 
     /* Tickets no hero — usa dado já carregado */
     var tktQtd = (tktRes.data && tktRes.data.quantidade) || 0;
@@ -3392,7 +3404,6 @@ async function carregarPerfil(user){
     }catch(_){}
     perfilData = fallback;
     renderPerfil(fallback);
-    carregarBeneficiosCupom(fallback);
     renderConquistas(fallback);
     carregarMarsPassPerfil(user);
   }
@@ -3490,8 +3501,8 @@ function renderPerfil(p){
   document.getElementById('progLabelProx').textContent=prox?(proxNivel.nome+' ('+proxNivel.min+' pts)'):'Nível máximo!';
 
   // Stats
-  document.getElementById('statGasto').textContent='R$ '+Number(p.total_gasto||0).toFixed(0);
-  document.getElementById('statDesconto').textContent=nivel.pct+'%';
+  document.getElementById('statGasto').textContent='R$ '+Number(p.total_gasto||0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  document.getElementById('statDesconto').textContent=nivel.emoji+' '+nivel.nome;
   // MarsPoints — já temos o valor em memória, não precisa de nova query
   var mpEl=document.getElementById('statMarsPoints');
   if(mpEl)mpEl.textContent=pts.toLocaleString('pt-BR');
@@ -3509,38 +3520,6 @@ function renderPerfil(p){
   var nomeSlug=nivel.nome.toLowerCase();
   var cardAtual=document.getElementById('benef-'+nomeSlug);
   if(cardAtual)cardAtual.classList.add('atual');
-}
-
-function carregarBeneficiosCupom(p){
-  var nivel=getNivel(p.pontos||0);
-  var cupomSection=document.getElementById('cupomSection');
-
-  if(nivel.pct===0){
-    cupomSection.innerHTML='<div class="sem-cupom"><strong>Nenhum cupom disponível ainda</strong>Alcance o nível Prata (200 pts) para ganhar seu primeiro desconto!</div>';
-    return;
-  }
-
-  var cupomCode='MARS'+nivel.nome.toUpperCase().substring(0,3)+nivel.pct;
-  cupomSection.innerHTML=
-    '<div class="cupom-box">'+
-      '<div class="cupom-info">'+
-        '<div class="cupom-label">Seu cupom de desconto</div>'+
-        '<div class="cupom-code">'+cupomCode+'</div>'+
-        '<div class="cupom-desc">'+nivel.pct+'% de desconto — válido para todos os jogos</div>'+
-      '</div>'+
-      '<button class="cupom-copy" onclick="copiarCupom(\''+cupomCode+'\')">'+
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>'+
-        'Copiar'+
-      '</button>'+
-    '</div>';
-}
-
-function copiarCupom(code){
-  navigator.clipboard.writeText(code).then(function(){
-    showToast('Cupom copiado: '+code);
-  }).catch(function(){
-    showToast('Cupom: '+code);
-  });
 }
 
 async function carregarPedidos(userId){
@@ -5219,10 +5198,7 @@ function perfilAtualizarMarspoints(novoPts){
   /* 6. Atualiza perfilData em memória */
   if(perfilData) perfilData.pontos=pts;
 
-  /* 7. Cupom de desconto */
-  if(perfilData) carregarBeneficiosCupom(perfilData);
-
-  /* 8. Tema desbloqueado */
+  /* 7. Tema desbloqueado */
   checkTema(nivel);
 }
 
