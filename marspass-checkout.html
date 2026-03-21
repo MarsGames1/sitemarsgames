@@ -349,7 +349,7 @@ body{
 .seguranca{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:10px;color:#333;font-weight:600}
 
 @media(max-width:500px){
-  #step-confirm,#step-pix,#step-sucesso,#step-expirado{padding:24px 18px}
+  #step-confirm,#step-pix,#step-sucesso,#step-expirado{padding:24px 18px;display:none}
   .plan-price{font-size:28px}
   .qr-img{width:165px;height:165px}
   .pix-code{font-size:9px;word-break:break-all}
@@ -882,28 +882,75 @@ function iniciarTimer(minutos){
   },1000);
 }
 
-/* ── POLLING ── */
+/* ── POLLING ──
+   Estratégia dupla:
+   1. A cada 5s: verifica no DB se o webhook já ativou (status='ativo')
+   2. A cada 15s: chama edge fn marspass-confirmar-pix para forçar verificação
+      (fallback quando o webhook do Mercado Pago não dispara)
+── */
+var _pollTentativas = 0;
+var _pollReference  = '';
+
 function iniciarPolling(reference){
   clearInterval(pollInterval);
-  pollInterval=setInterval(async function(){
-    try{
-      var r=await sb.auth.getSession();
-      if(!r.data||!r.data.session) return;
-      var email=r.data.session.user.email;
+  _pollTentativas = 0;
+  _pollReference  = reference;
 
-      var{data:assinatura}=await sb.from('marspass_assinaturas')
-        .select('status,plano')
-        .eq('referencia_pagamento',reference)
-        .eq('user_email',email)   /* garante que só o dono vê */
+  pollInterval = setInterval(async function(){
+    _pollTentativas++;
+    try{
+      var r = await sb.auth.getSession();
+      if(!r.data || !r.data.session) return;
+      var session = r.data.session;
+      var email   = session.user.email;
+
+      /* 1. Verifica no banco (barato — 1 SELECT por polling) */
+      var{data:ass} = await sb.from('marspass_assinaturas')
+        .select('status,plano,id')
+        .eq('user_email', email)
+        .in('status', ['ativo','pendente'])
+        .order('created_at', {ascending:false})
+        .limit(1)
         .maybeSingle();
 
-      if(assinatura&&assinatura.status==='ativo'){
+      if(ass && ass.status === 'ativo'){
         clearInterval(pollInterval);
         clearInterval(timerInterval);
         mostrarSucesso();
+        return;
       }
-    }catch(e){console.error('Polling erro:',e);}
-  },5000);
+
+      /* 2. A cada 3 tentativas (~15s): chama edge fn para confirmar pagamento
+            — ativa o registro se o webhook não rodou */
+      if(_pollTentativas % 3 === 0){
+        try{
+          var confirmRes = await fetch(SUPABASE_URL + '/functions/v1/marspass-confirmar-pix', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + session.access_token
+            },
+            body: JSON.stringify({ reference: reference, plano: planoKey })
+          });
+          var confirmData = await confirmRes.json();
+          if(confirmRes.ok && (confirmData.ativo || confirmData.status === 'ativo')){
+            clearInterval(pollInterval);
+            clearInterval(timerInterval);
+            mostrarSucesso();
+            return;
+          }
+        }catch(eConf){ console.warn('[poll edge]', eConf.message); }
+      }
+
+      /* 3. Fallback final: se chegou >60 tentativas (~5min) sem confirmação,
+            para o poll e avisa — não expira a tela, deixa o usuário agir */
+      if(_pollTentativas > 60){
+        clearInterval(pollInterval);
+        console.warn('[poll] 5 min sem confirmação — parando polling automático');
+      }
+
+    }catch(e){ console.error('[Polling erro]', e); }
+  }, 5000);
 }
 
 /* ── COPIAR CÓDIGO ── */
@@ -926,14 +973,19 @@ function copiarCodigo(){
 }
 
 /* ── SUCESSO + BOARDING PASS ── */
+var _sucessoMostrado = false; /* idempotência — evita dupla chamada */
 async function mostrarSucesso(){
+  if(_sucessoMostrado) return;
+  _sucessoMostrado = true;
+
   var pl=PLANOS[planoKey];
-  /* Esconde todos os steps ativos */
+  /* Esconde todos os steps */
   ['step-confirm','step-pix','step-expirado'].forEach(function(id){
     var el=document.getElementById(id);
     if(el) el.style.display='none';
   });
-  document.getElementById('step-sucesso').style.display='block';
+  var stepSuc = document.getElementById('step-sucesso');
+  if(stepSuc) stepSuc.style.display='block';
   document.getElementById('sucessoCheck').textContent=pl.icon;
   document.getElementById('sucessoTitle').textContent='MarsPass '+pl.nome+' ativado!';
   document.getElementById('sucessoSub').textContent='Pagamento confirmado! Bem-vindo ao universo MarsPass.';
