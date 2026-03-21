@@ -428,9 +428,7 @@ async function pagarCartao(cardData){
       payer:cardData.payer||{},
       transaction_amount:cardData.transaction_amount||getTotal()||0
     };
-    /* issuer_id: só número válido */
-    var _issuerId=cardData.issuer_id?parseInt(String(cardData.issuer_id),10):0;
-    if(_issuerId>0) _cd.issuer_id=_issuerId;
+    /* issuer_id: NÃO enviar — o token já carrega essa info e mandar errado causa code 8 */
     /* cardholder: só inclui se tiver nome — MP rejeita com code 8 se vier vazio */
     if(_cardholderName) _cd.cardholder={name:_cardholderName};
     console.log('[pagarCartao] _cd COMPLETO=', JSON.stringify(_cd));

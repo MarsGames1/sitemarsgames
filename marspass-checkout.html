@@ -774,7 +774,7 @@ async function pagarCartao(cardData){
       payer:             cardData.payer              || {},
       transaction_amount: cardData.transaction_amount || pl.valor || 0
     };
-    if(_issuerId>0) _mpCardData.issuer_id=_issuerId;
+    /* issuer_id: NÃO enviar — causa code 8 */
     if(_cardholderName) _mpCardData.cardholder={name:_cardholderName};
     console.log('[marspass pagarCartao] _mpCardData=', JSON.stringify(_mpCardData));
     var response=await fetch(SUPABASE_URL+'/functions/v1/marspass-criar-cartao',{
