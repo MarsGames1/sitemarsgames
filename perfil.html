@@ -3457,6 +3457,34 @@ async function carregarPerfil(user){
       var elGasto=document.getElementById('statGasto');
       if(elPeds) elPeds.textContent=peds.length;
       if(elGasto) elGasto.textContent='R$ '+Number(perfil.total_gasto).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+
+      /* ── XP por jogo comprado: 50 XP por pedido (creditado 1x por pedido) ── */
+      (function creditarXPPedidos(){
+        var XP_POR_JOGO = 50;
+        var xpKey = 'mg_planeta_xp_pedidos_' + (user.email||'');
+        var jaCredMax = parseInt(localStorage.getItem(xpKey)||'0');
+        /* Só credita os pedidos novos (acima do máximo já creditado) */
+        var novos = peds.length - jaCredMax;
+        if(novos > 0 && typeof window.planetaAddXPSilent === 'function'){
+          var xpTotal = novos * XP_POR_JOGO;
+          window.planetaAddXPSilent(
+            xpTotal,
+            novos===1 ? 'Jogo adquirido' : novos+' jogos adquiridos',
+            '🎮','rgba(0,255,85,.1)','#00ff55'
+          );
+          localStorage.setItem(xpKey, String(peds.length));
+          console.log('[Planeta XP] +'+xpTotal+' XP por '+novos+' jogo(s) novo(s)');
+        } else if(novos > 0){
+          /* planeta ainda não carregou — tenta de novo em 2s */
+          setTimeout(function(){
+            if(typeof window.planetaAddXPSilent === 'function'){
+              var xpTotal2 = novos * XP_POR_JOGO;
+              window.planetaAddXPSilent(xpTotal2,'Jogos adquiridos','🎮','rgba(0,255,85,.1)','#00ff55');
+              localStorage.setItem(xpKey, String(peds.length));
+            }
+          }, 2000);
+        }
+      })();
     }).catch(function(e){ console.warn('[conquistas data]',e); renderConquistas(perfil); });
 
     /* Favoritos — busca rápida só count */
@@ -6793,50 +6821,98 @@ function planetaDrawPlanet(){
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);
   ctx.fillStyle=grd;ctx.fill();
 
-  /* Continentes/manchas — clipeados ao disco */
+  /* Continentes/manchas — clipeados ao disco, cor compatível com cada era */
+  var continenteCols={
+    'I': ['rgba(180,80,10,','rgba(120,40,5,'],
+    'II':['rgba(160,30,5,', 'rgba(100,10,0,'],
+    'III':['rgba(0,80,180,','rgba(0,40,120,'],
+    'IV': ['rgba(0,120,40,','rgba(0,80,20,'],
+    'V':  ['rgba(100,20,200,','rgba(60,0,150,'],
+    'VI': ['rgba(0,180,160,','rgba(0,100,100,']
+  };
+  var cc=continenteCols[e.n]||continenteCols['I'];
   ctx.save();ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
-  for(var i=0;i<7;i++){
-    var angle=spinY+i*0.92;
-    var bx=CX+(Math.cos(angle)*R*.50);
-    var by=CY+(Math.sin(angle*.68+i*.88+tiltX)*R*.36);
-    var brad=R*(.14+Math.abs(Math.sin(i*1.9))*.1);
+  for(var i=0;i<8;i++){
+    var angle=spinY+i*0.85+0.3;
+    var bx=CX+(Math.cos(angle)*R*.44);
+    var by=CY+(Math.sin(angle*.72+i*.82+tiltX)*R*.38);
+    var brad=R*(.10+Math.abs(Math.sin(i*1.7))*.12);
     var bg2=ctx.createRadialGradient(bx,by,0,bx,by,brad);
-    bg2.addColorStop(0,'rgba(0,0,0,.32)');
-    bg2.addColorStop(0.55,'rgba(0,0,0,.10)');
+    bg2.addColorStop(0,cc[0]+'.38)');
+    bg2.addColorStop(0.5,cc[1]+'.18)');
     bg2.addColorStop(1,'rgba(0,0,0,0)');
     ctx.beginPath();ctx.arc(bx,by,brad,0,Math.PI*2);ctx.fillStyle=bg2;ctx.fill();
   }
   ctx.restore();
 
-  /* Dano de asteroide — apenas durante evento ASTEROID, decai suavemente */
+  /* Dano de asteroide — visual dramático, desaparece muito lentamente */
   if(planetaAsteroidDamage>0){
     ctx.save();ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.clip();
     var dmg=planetaAsteroidDamage;
-    /* Mancha de impacto central */
-    var ix=CX+R*0.1, iy=CY-R*0.05;
-    var ig=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.55*dmg);
-    ig.addColorStop(0,'rgba(255,120,30,'+(.7*dmg)+')');
-    ig.addColorStop(0.3,'rgba(180,60,0,'+(.45*dmg)+')');
-    ig.addColorStop(0.7,'rgba(80,20,0,'+(.2*dmg)+')');
+    var ix=CX+R*0.08, iy=CY-R*0.04;
+
+    /* Queimadura ampla cobrindo quase todo o planeta */
+    var ig=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.92);
+    ig.addColorStop(0,'rgba(255,140,20,'+(.88*dmg)+')');
+    ig.addColorStop(0.12,'rgba(220,70,0,'+(.72*dmg)+')');
+    ig.addColorStop(0.30,'rgba(130,30,0,'+(.52*dmg)+')');
+    ig.addColorStop(0.55,'rgba(60,10,0,'+(.30*dmg)+')');
     ig.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=ig;ctx.fillRect(0,0,planetaStageW,planetaStageH);
-    /* Cratera temporária */
-    var cg=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.18*dmg);
-    cg.addColorStop(0,'rgba(0,0,0,'+(.8*dmg)+')');
-    cg.addColorStop(0.5,'rgba(60,30,0,'+(.4*dmg)+')');
+
+    /* Cratera central profunda */
+    var cg=ctx.createRadialGradient(ix,iy,0,ix,iy,R*0.30*Math.max(0.35,dmg));
+    cg.addColorStop(0,'rgba(0,0,0,'+(.95*dmg)+')');
+    cg.addColorStop(0.25,'rgba(30,8,0,'+(.72*dmg)+')');
+    cg.addColorStop(0.60,'rgba(70,18,0,'+(.38*dmg)+')');
     cg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=cg;ctx.fillRect(0,0,planetaStageW,planetaStageH);
-    /* Rachaduras irradiando */
-    ctx.strokeStyle='rgba(255,100,0,'+(.5*dmg)+')';ctx.lineWidth=1;
-    for(var c=0;c<6;c++){
-      var ca=c*1.05+spinY*0.2;
-      var cl=R*(0.18+c*.04)*dmg;
+
+    /* Anel de ejeção ao redor da cratera */
+    var rg=ctx.createRadialGradient(ix,iy,R*0.26*dmg,ix,iy,R*0.44*dmg);
+    rg.addColorStop(0,'rgba(0,0,0,0)');
+    rg.addColorStop(0.45,'rgba(170,65,0,'+(.42*dmg)+')');
+    rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();ctx.arc(ix,iy,R*0.44*dmg,0,Math.PI*2);
+    ctx.fillStyle=rg;ctx.fill();
+
+    /* Rachaduras curvas irradiando */
+    var numCracks=Math.round(7+dmg*5);
+    for(var ci=0;ci<numCracks;ci++){
+      var ca=ci*(Math.PI*2/numCracks)+spinY*0.04;
+      var cl=R*(0.24+ci*.02)*Math.max(0.35,dmg);
+      var alpha=(Math.min(.70,dmg*0.70)).toFixed(2);
+      var mx=ix+Math.cos(ca+0.18)*cl*0.55, my=iy+Math.sin(ca+0.18)*cl*0.55;
       ctx.beginPath();ctx.moveTo(ix,iy);
-      ctx.lineTo(ix+Math.cos(ca)*cl,iy+Math.sin(ca)*cl);ctx.stroke();
+      ctx.quadraticCurveTo(mx,my,ix+Math.cos(ca)*cl,iy+Math.sin(ca)*cl);
+      ctx.strokeStyle='rgba(255,80,0,'+alpha+')';
+      ctx.lineWidth=1.8*dmg;ctx.stroke();
     }
+
+    /* Brilho de lava nas rachaduras */
+    if(dmg>0.25){
+      for(var li=0;li<numCracks;li++){
+        var la=li*(Math.PI*2/numCracks)+spinY*0.04+0.09;
+        var ll=R*0.14*dmg;
+        var lgg=ctx.createLinearGradient(ix,iy,ix+Math.cos(la)*ll,iy+Math.sin(la)*ll);
+        lgg.addColorStop(0,'rgba(255,210,50,'+(.65*dmg)+')');
+        lgg.addColorStop(1,'rgba(255,100,0,0)');
+        ctx.beginPath();ctx.moveTo(ix,iy);
+        ctx.lineTo(ix+Math.cos(la)*ll,iy+Math.sin(la)*ll);
+        ctx.strokeStyle=lgg;ctx.lineWidth=2.2*dmg;ctx.stroke();
+      }
+    }
+
+    /* Névoa de fumaça escura */
+    if(dmg>0.12){
+      var sg=ctx.createRadialGradient(ix,iy,R*0.32,ix,iy,R*0.90);
+      sg.addColorStop(0,'rgba(0,0,0,0)');
+      sg.addColorStop(0.4,'rgba(8,3,0,'+(.25*dmg)+')');
+      sg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=sg;ctx.fillRect(0,0,planetaStageW,planetaStageH);
+    }
+
     ctx.restore();
-    /* Decai gradualmente quando não está em ASTEROID */
-    if(planetaWeatherMode!=='ASTEROID') planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.002);
   }
 
   /* Sombra direcional nítida */
@@ -7059,9 +7135,10 @@ function planetaUpdateWeather(){
     /* Inicializa o asteroide se não existe */
     if(!planetaAsteroid){
       planetaAsteroid={
-        x:-30, y:h*(.15+Math.random()*.2),
-        vx:2.8+Math.random()*1.5, vy:1.2+Math.random()*1.2,
-        r:8+Math.random()*5, phase:'incoming', timer:0, debris:[]
+        x:-40, y:h*(.12+Math.random()*.18),
+        vx:4.5+Math.random()*2.5, vy:1.8+Math.random()*1.8,
+        r:14+Math.random()*8, phase:'incoming', timer:0, debris:[],
+        trail:[]  /* partículas de rastro */
       };
     }
     var ast=planetaAsteroid;
@@ -7109,10 +7186,17 @@ function planetaUpdateWeather(){
       var prog=Math.min(1,ast.timer/80);
       var shockR=prog*w*.45;
 
-      /* Flash inicial */
-      if(ast.timer<20){
-        var flashA=(1-ast.timer/20)*.55;
-        ctx.fillStyle='rgba(255,220,120,'+flashA+')';ctx.fillRect(0,0,w,h);
+      /* Flash inicial — muito mais intenso e duradouro */
+      if(ast.timer<35){
+        var fProg=ast.timer/35;
+        var flashA=ast.timer<8?(ast.timer/8):(1-fProg);
+        flashA*=0.90;
+        ctx.fillStyle='rgba(255,230,130,'+flashA+')';ctx.fillRect(0,0,w,h);
+        /* Segundo flash em laranja */
+        if(ast.timer>5&&ast.timer<25){
+          var f2=((ast.timer-5)/20);
+          ctx.fillStyle='rgba(255,100,0,'+(0.5*(1-f2))+')';ctx.fillRect(0,0,w,h);
+        }
       }
 
       /* Onda de choque */
@@ -7130,14 +7214,17 @@ function planetaUpdateWeather(){
 
       if(ast.timer>100){
         ast.phase='debris'; ast.timer=0;
-        for(var db=0;db<22;db++){
-          var spd=2+Math.random()*5;
+        for(var db=0;db<45;db++){
+          var spd=3+Math.random()*9;
           var ang=Math.random()*Math.PI*2;
+          var size=1.5+Math.random()*4.5;
+          var cols2=['rgba(255,140,40,','rgba(255,220,80,','rgba(200,60,0,','rgba(255,255,180,'];
           ast.debris.push({
-            x:CX2, y:CY2,
+            x:CX2+((Math.random()-.5)*20), y:CY2+((Math.random()-.5)*20),
             vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd,
-            r:1+Math.random()*3, a:1,
-            col:Math.random()>.5?'rgba(255,140,40,':'rgba(255,220,80,'
+            vy2:-spd*.3, /* gravidade */
+            r:size, a:1,
+            col:cols2[Math.floor(Math.random()*cols2.length)]
           });
         }
       }
@@ -7147,8 +7234,9 @@ function planetaUpdateWeather(){
       var allGone=true;
       ast.debris.forEach(function(d){
         d.x+=d.vx; d.y+=d.vy;
-        d.vx*=0.96; d.vy*=0.96;
-        d.a=Math.max(0,d.a-0.008);
+        d.vy+=(d.vy2||0)*0.02; /* gravidade leve */
+        d.vx*=0.97; d.vy*=0.97;
+        d.a=Math.max(0,d.a-0.005); /* debris duram mais */
         if(d.a>0){
           allGone=false;
           ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
@@ -7157,8 +7245,7 @@ function planetaUpdateWeather(){
       });
       ctx.restore();
 
-      /* Decai dano */
-      planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.004);
+      /* Dano não decai durante debris — só depois que todo debris some */
 
       if(allGone||ast.timer>350){
         planetaAsteroid=null;
@@ -7200,7 +7287,8 @@ function planetaLoop(){
   planetaNoiseT+=0.008;
   /* Decai dano de asteroide quando evento já acabou */
   if(planetaAsteroidDamage>0&&planetaWeatherMode!=='ASTEROID'&&!planetaAsteroid){
-    planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.0015);
+    /* Recuperação muito lenta — planeta fica danificado por muito tempo */
+    planetaAsteroidDamage=Math.max(0,planetaAsteroidDamage-0.00008);
   }
   planetaDrawPlanet();
   planetaUpdateWeather();
