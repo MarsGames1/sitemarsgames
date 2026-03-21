@@ -1726,33 +1726,81 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* PEDIDOS */
 .pedidos-list{display:flex;flex-direction:column;gap:10px}
-.pedido-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
-  padding:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.pedido-img{width:48px;height:48px;border-radius:8px;object-fit:cover;
-  background:var(--dim);flex-shrink:0}
-.pedido-info{flex:1;min-width:150px}
-.pedido-nome{font-size:12px;font-weight:700;color:#eee;margin-bottom:3px}
+.pedido-card{
+  background:linear-gradient(135deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.015) 100%);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  padding:0;overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:border-color .2s,box-shadow .2s;
+}
+.pedido-card:hover{border-color:rgba(255,255,255,.14);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.pedido-card-header{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+}
+.pedido-img{width:52px;height:52px;border-radius:10px;object-fit:cover;
+  background:var(--dim);flex-shrink:0;border:1px solid rgba(255,255,255,.06)}
+.pedido-info{flex:1;min-width:0}
+.pedido-nome{font-size:12px;font-weight:800;color:#eee;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pedido-data{font-size:10px;color:var(--muted);font-weight:600}
-.pedido-preco{font-size:14px;font-weight:900;color:var(--green);white-space:nowrap}
+.pedido-preco{font-size:15px;font-weight:900;color:var(--green);white-space:nowrap}
 .pedido-status{font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
-  padding:3px 9px;border-radius:99px;border:1px solid}
+  padding:3px 10px;border-radius:99px;border:1px solid;white-space:nowrap}
 .status-entregue{color:var(--green);background:rgba(0,255,85,.08);border-color:rgba(0,255,85,.25)}
 .status-pendente{color:var(--amber);background:rgba(255,179,0,.08);border-color:rgba(255,179,0,.25)}
 .sem-pedidos{text-align:center;padding:48px 20px;color:var(--muted);font-size:12px;font-weight:600}
+.pedido-body{padding:0 16px 14px}
+
+/* ── CHAVE ── */
+.chave-box{
+  background:rgba(0,255,85,.04);
+  border:1px solid rgba(0,255,85,.12);
+  border-radius:10px;padding:12px 14px;margin-bottom:10px;
+}
+.chave-label{font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(0,255,85,.5);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.chave-valor{font-family:monospace;font-size:12px;font-weight:700;color:var(--green);
+  word-break:break-all;line-height:1.6;margin-bottom:8px}
+.chave-copiar{width:100%;padding:7px;border-radius:7px;background:rgba(0,255,85,.12);
+  border:1px solid rgba(0,255,85,.25);color:var(--green);font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:900;cursor:pointer;letter-spacing:.5px;transition:background .15s}
+.chave-copiar:hover{background:rgba(0,255,85,.22)}
 
 /* ── AVALIAÇÃO ── */
-.aval-wrap{width:100%;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)}
-.aval-titulo{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,183,0,.7);margin-bottom:10px}
-.aval-estrelas{display:flex;gap:4px;margin-bottom:10px}
-.aval-estrela{font-size:22px;cursor:pointer;opacity:.25;transition:opacity .15s,transform .15s;line-height:1;user-select:none}
-.aval-estrela.hover,.aval-estrela.ativa{opacity:1;transform:scale(1.15)}
-.aval-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;resize:none;outline:none;min-height:60px;transition:border-color .2s;line-height:1.5}
-.aval-textarea:focus{border-color:rgba(255,183,0,.4)}
-.aval-textarea::placeholder{color:#555}
-.aval-btn{margin-top:8px;padding:8px 18px;border-radius:8px;background:rgba(255,183,0,.12);border:1px solid rgba(255,183,0,.3);color:#ffb700;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;width:100%}
-.aval-btn:hover:not(:disabled){background:rgba(255,183,0,.22)}
+.aval-wrap{margin-top:10px}
+.aval-card{
+  background:rgba(255,183,0,.04);
+  border:1px solid rgba(255,183,0,.15);
+  border-radius:10px;padding:14px;
+}
+.aval-titulo{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,183,0,.8);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.aval-bonus{font-size:9px;font-weight:700;color:rgba(0,255,85,.7);
+  background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.15);
+  border-radius:99px;padding:2px 8px;margin-left:auto}
+.aval-estrelas{display:flex;gap:6px;margin:10px 0}
+.aval-estrela{font-size:24px;cursor:pointer;opacity:.2;transition:opacity .15s,transform .15s;
+  line-height:1;user-select:none}
+.aval-estrela.hover,.aval-estrela.ativa{opacity:1;transform:scale(1.2)}
+.aval-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:9px 12px;color:#fff;font-family:'Montserrat',sans-serif;
+  font-size:11px;resize:none;outline:none;min-height:56px;transition:border-color .2s;
+  line-height:1.5;box-sizing:border-box;margin-bottom:8px}
+.aval-textarea:focus{border-color:rgba(255,183,0,.35)}
+.aval-textarea::placeholder{color:#444}
+.aval-btn{width:100%;padding:9px;border-radius:8px;
+  background:linear-gradient(135deg,rgba(255,183,0,.18),rgba(255,140,0,.1));
+  border:1px solid rgba(255,183,0,.35);color:#ffb700;
+  font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.aval-btn:hover:not(:disabled){background:linear-gradient(135deg,rgba(255,183,0,.28),rgba(255,140,0,.18));
+  box-shadow:0 4px 16px rgba(255,183,0,.15)}
 .aval-btn:disabled{opacity:.4;cursor:not-allowed}
-.aval-enviada{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,183,0,.06);border:1px solid rgba(255,183,0,.2);border-radius:8px;font-size:11px;font-weight:700;color:#ffb700}
+.aval-enviada{display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:rgba(0,255,85,.06);border:1px solid rgba(0,255,85,.2);
+  border-radius:8px;font-size:11px;font-weight:700;color:var(--green)}
 
 /* ── Conquistas ── */
 .conquistas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
@@ -3065,11 +3113,39 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
       comentario:comentario.trim()||null
     });
     if(error)throw error;
+
+    /* ── Credita +100 MP e +50 XP pela avaliação ── */
+    try{
+      /* MarsPoints +100 */
+      var mpRes=await sb.from('marspoints').select('pontos,historico').eq('user_email',userEmail).maybeSingle();
+      var mpAtual=(mpRes.data&&mpRes.data.pontos)||0;
+      var hist=Array.isArray(mpRes.data&&mpRes.data.historico)?mpRes.data.historico:[];
+      hist.unshift({descricao:'⭐ Avaliação: '+produtoNome,pontos:100,data:new Date().toISOString(),tipo:'avaliacao'});
+      if(mpRes.data){
+        await sb.from('marspoints').update({pontos:mpAtual+100,historico:hist.slice(0,50),updated_at:new Date().toISOString()}).eq('user_email',userEmail);
+      } else {
+        await sb.from('marspoints').insert({user_email:userEmail,pontos:100,historico:hist});
+      }
+      /* Planeta +50 XP */
+      var plRes=await sb.from('planetas').select('xp,atividades,log').eq('user_email',userEmail).maybeSingle();
+      var plXp=(plRes.data&&plRes.data.xp)||0;
+      var plAtv=(plRes.data&&plRes.data.atividades)||0;
+      var plLog=Array.isArray(plRes.data&&plRes.data.log)?plRes.data.log:[];
+      plLog.unshift({label:'Avaliou: '+produtoNome,xp:50,icon:'⭐',bg:'rgba(255,183,0,.1)',color:'#ffb300',t:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+      if(plRes.data){
+        await sb.from('planetas').update({xp:plXp+50,atividades:plAtv+1,log:plLog.slice(0,20),updated_at:new Date().toISOString()}).eq('user_email',userEmail);
+      } else {
+        await sb.from('planetas').insert({user_email:userEmail,xp:50,atividades:1,log:plLog,updated_at:new Date().toISOString()});
+      }
+      /* Atualiza UI de pontos */
+      if(typeof perfilAtualizarPontos==='function') perfilAtualizarPontos(mpAtual+100);
+    }catch(mpErr){console.warn('[aval bonus]',mpErr);}
+
     var wrapDiv=document.getElementById('aval-wrap-'+pedidoId);
     if(wrapDiv){
-      wrapDiv.innerHTML='<div class="aval-enviada">⭐ Avaliação enviada — obrigado pelo feedback!</div>';
+      wrapDiv.innerHTML='<div class="aval-enviada">✅ Avaliação enviada — +100 MP e +50 XP creditados!</div>';
     }
-    showToast('Avaliação enviada! Obrigado ⭐');
+    showToast('⭐ Avaliação enviada! +100 MP e +50 XP');
   }catch(err){
     console.error('[avaliacao]',err);
     showToast('Erro ao enviar avaliação. Tente novamente.');
@@ -3611,31 +3687,31 @@ async function carregarPedidos(userId){
       var chaves=p.chaves_entregues||[];
       var chavesValidas=chaves.filter(function(c){return c.conteudo&&c.conteudo!=='ERRO_ESTOQUE';});
 
-      var chavesHtml='';
+      var bodyHtml='';
+
+      /* Chaves */
       if(chavesValidas.length>0){
-        chavesHtml='<div style="width:100%;margin-top:12px;border-top:1px solid rgba(0,255,85,.1);padding-top:12px">';
-        chavesHtml+=chavesValidas.map(function(c){
+        var chavesHtml=chavesValidas.map(function(c){
           var conteudo=esc(c.conteudo||'');
-          var corpo='<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--green);word-break:break-all;line-height:1.6">'+conteudo+'</div>';
-          return '<div style="background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.15);border-radius:8px;padding:10px 12px;margin-bottom:6px">'+
-            '<div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,255,85,.5);margin-bottom:8px">🔑 Sua chave</div>'+
-            corpo+
-            '<button onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'" '+
-              'style="margin-top:8px;width:100%;padding:6px;border-radius:6px;background:var(--green);border:none;color:#000;font-weight:900;font-size:10px;letter-spacing:1px;cursor:pointer">'+
-              '📋 Copiar chave</button>'+
+          return '<div class="chave-box">'+
+            '<div class="chave-label">🔑 Sua chave de acesso</div>'+
+            '<div class="chave-valor">'+conteudo+'</div>'+
+            '<button class="chave-copiar" onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'">📋 Copiar chave</button>'+
           '</div>';
         }).join('');
-        chavesHtml+='</div>';
 
-        /* ── BLOCO DE AVALIAÇÃO — só aparece em pedidos pagos com chave ── */
+        /* Avaliação */
         var pedIdEsc=esc(p.id||'');
         var jaAvaliou=p._avaliado||false;
+        var avalHtml='';
         if(jaAvaliou){
-          chavesHtml+='<div class="aval-wrap"><div class="aval-enviada">⭐ Avaliação enviada — obrigado pelo feedback!</div></div>';
+          avalHtml='<div class="aval-enviada">✅ Avaliação enviada — obrigado pelo feedback! +100 MP</div>';
         } else {
-          chavesHtml+=
-            '<div class="aval-wrap" id="aval-wrap-'+pedIdEsc+'">'+
-              '<div class="aval-titulo">⭐ Avalie sua experiência</div>'+
+          avalHtml=
+            '<div class="aval-card" id="aval-wrap-'+pedIdEsc+'">'+
+              '<div class="aval-titulo">⭐ Avalie sua experiência'+
+                '<span class="aval-bonus">+100 MP · +50 XP</span>'+
+              '</div>'+
               '<div class="aval-estrelas" id="aval-stars-'+pedIdEsc+'" data-pedido="'+pedIdEsc+'" data-val="0">'+
                 '<span class="aval-estrela" data-v="1">★</span>'+
                 '<span class="aval-estrela" data-v="2">★</span>'+
@@ -3643,28 +3719,33 @@ async function carregarPedidos(userId){
                 '<span class="aval-estrela" data-v="4">★</span>'+
                 '<span class="aval-estrela" data-v="5">★</span>'+
               '</div>'+
-              '<textarea class="aval-textarea" id="aval-txt-'+pedIdEsc+'" maxlength="200" placeholder="Deixe um comentário sobre o site (opcional)..."></textarea>'+
+              '<textarea class="aval-textarea" id="aval-txt-'+pedIdEsc+'" maxlength="200" placeholder="Deixe uma avaliação sobre o jogo (opcional)..."></textarea>'+
               '<button class="aval-btn" id="aval-btn-'+pedIdEsc+'" onclick="enviarAvaliacao(\''+pedIdEsc+'\',\''+esc(p.produto_nome||'')+'\',\''+esc(img)+'\')">'+
-                'Enviar avaliação'+
+                '⭐ Enviar avaliação'+
               '</button>'+
             '</div>';
         }
+        bodyHtml='<div class="pedido-body">'+chavesHtml+'<div class="aval-wrap">'+avalHtml+'</div></div>';
 
       } else if(statusPago){
-        chavesHtml='<div style="width:100%;margin-top:10px;font-size:10px;color:var(--muted)">🔑 Chave em processamento — atualize a página em instantes.</div>';
+        bodyHtml='<div class="pedido-body"><div style="font-size:10px;color:var(--muted);padding:4px 0 8px">🔑 Chave em processamento — atualize a página em instantes.</div></div>';
       }
 
-      return '<div class="pedido-card" style="flex-wrap:wrap">'+
-        (img?'<img class="pedido-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'" loading="lazy">':'<div class="pedido-img"></div>')+
-        '<div class="pedido-info">'+
-          '<div class="pedido-nome">'+esc(p.produto_nome||'Produto')+'</div>'+
-          '<div class="pedido-data">'+fmtDate(p.created_at)+'</div>'+
+      return '<div class="pedido-card">'+
+        '<div class="pedido-card-header">'+
+          (img?'<img class="pedido-img" src="'+esc(img)+'" alt="" onerror="this.style.display=\'none\'" loading="lazy">':'<div class="pedido-img"></div>')+
+          '<div class="pedido-info">'+
+            '<div class="pedido-nome">'+esc(p.produto_nome||'Produto')+'</div>'+
+            '<div class="pedido-data">'+fmtDate(p.created_at)+'</div>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+
+            '<div class="pedido-preco">R$ '+Number(p.valor||0).toFixed(2).replace('.',',')+'</div>'+
+            '<span class="pedido-status '+(statusPago?'status-entregue':'status-pendente')+'">'+
+              (statusPago?'pago':'pendente')+
+            '</span>'+
+          '</div>'+
         '</div>'+
-        '<div class="pedido-preco">R$ '+Number(p.valor||0).toFixed(2).replace('.',',')+'</div>'+
-        '<span class="pedido-status '+(statusPago?'status-entregue':'status-pendente')+'">'+
-          (statusPago?'pago':'pendente')+
-        '</span>'+
-        chavesHtml+
+        bodyHtml+
       '</div>';
     }).join('');
   }catch(e){
