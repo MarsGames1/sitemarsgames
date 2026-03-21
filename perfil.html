@@ -2336,10 +2336,6 @@ setTimeout(function(){
   <!-- CONQUISTAS -->
   <div class="tab-content" id="tab-conquistas">
     <div class="conquistas-grid" id="conquistasGrid"></div>
-    <div class="titulo-seletor">
-      <div class="titulo-seletor-label">Título exibido no seu perfil</div>
-      <div class="titulo-opcoes" id="tituloOpcoes"></div>
-    </div>
   </div>
 
   <!-- PEDIDOS -->
@@ -2588,6 +2584,12 @@ setTimeout(function(){
         <div style="font-size:10px;color:#333;margin-top:12px;text-align:center">
           Anéis são desbloqueados por nível e assinatura MarsPass
         </div>
+      </div>
+
+      <!-- Seletor de título — logo abaixo do anel -->
+      <div class="titulo-seletor" id="tituloSeletorWrap" style="display:none">
+        <div class="titulo-seletor-label">🏷️ Título exibido no seu perfil</div>
+        <div class="titulo-opcoes" id="tituloOpcoes"></div>
       </div>
     </div>
   </div>
@@ -4004,6 +4006,8 @@ async function carregarMarsPassPerfil(user, forcado){
   document.getElementById('mp-perfil-ativo').style.display='none';
   document.getElementById('mp-perfil-inativo').style.display='none';
   document.getElementById('anelSelectorWrap').style.display='none';
+  var twrap=document.getElementById('tituloSeletorWrap');
+  if(twrap) twrap.style.display='none';
 
   /* Busca assinatura e perfil em paralelo */
   var[assRes, perfilRes]=await Promise.all([
@@ -4219,6 +4223,9 @@ function renderAnelSelector(nivelAtual, planoMarsPass, anelAtivo){
   var wrap=document.getElementById('anelSelectorWrap');
   var grid=document.getElementById('anelGrid');
   wrap.style.display='block';
+  /* Mostra seletor de título junto com o anel */
+  var twrap=document.getElementById('tituloSeletorWrap');
+  if(twrap) twrap.style.display='block';
 
   /* Determina índice do nível atual */
   var idxNivel=ORDEM_NIVEL.indexOf(nivelAtual);
