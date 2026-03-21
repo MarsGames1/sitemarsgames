@@ -849,6 +849,7 @@ function mostrarQRCode(data){
   iniciarTimer(data.expira_em||30);
 
   /* Polling para verificar pagamento */
+  _pollReference = data.reference || '';
   iniciarPolling(data.reference);
 }
 
@@ -883,24 +884,29 @@ function iniciarTimer(minutos){
 }
 
 /* ── POLLING ──
-   Consulta o banco a cada 5s buscando status='ativo' para o usuário.
-   Sem chamada a edge functions externas — evita erros de CORS.
-   O webhook do Mercado Pago atualiza o registro diretamente no DB.
+   Estratégia em 3 camadas:
+   1. A cada 5s: verifica no DB se o webhook já ativou (status='ativo')
+   2. A cada 15s: chama mp-confirmar-pagamento para confirmar no MP
+      e ativa a assinatura no banco se aprovado
+   3. Para após 5 minutos
 ── */
 var _pollTentativas = 0;
+var _pollReference  = '';
 
 function iniciarPolling(reference){
   clearInterval(pollInterval);
   _pollTentativas = 0;
+  _pollReference  = reference || '';
 
   pollInterval = setInterval(async function(){
     _pollTentativas++;
     try{
       var r = await sb.auth.getSession();
       if(!r.data || !r.data.session) return;
-      var email = r.data.session.user.email;
+      var session = r.data.session;
+      var email   = session.user.email;
 
-      /* Busca assinatura mais recente do usuário com status ativo ou pendente */
+      /* CAMADA 1: Verifica no banco se webhook já ativou */
       var{data:ass} = await sb.from('marspass_assinaturas')
         .select('status,plano,id')
         .eq('user_email', email)
@@ -915,10 +921,67 @@ function iniciarPolling(reference){
         return;
       }
 
-      /* Para de tentar após 5 minutos (60 × 5s) sem ativação */
+      /* CAMADA 2: A cada 3 tentativas (~15s) chama mp-confirmar-pagamento
+         Essa edge fn já existe, sem CORS, funciona no pix-checkout também */
+      if(_pollTentativas % 3 === 0 && _pollReference){
+        try{
+          var confRes = await fetch(SUPABASE_URL + '/functions/v1/mp-confirmar-pagamento', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + session.access_token
+            },
+            body: JSON.stringify({ reference: _pollReference, tipo: 'marspass', plano: planoKey })
+          });
+
+          if(confRes.ok){
+            var confData = await confRes.json();
+            console.log('[poll MP]', confData);
+
+            /* Se pagamento aprovado, ativa a assinatura no banco */
+            if(confData.aprovado || confData.pago){
+              /* Tenta ativar via edge fn dedicada */
+              try{
+                var ativRes = await fetch(SUPABASE_URL + '/functions/v1/marspass-ativar', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+                  body: JSON.stringify({ plano: planoKey, reference: _pollReference, user_email: email })
+                });
+                if(ativRes.ok){
+                  var ativData = await ativRes.json();
+                  if(ativData.ativo || ativData.success){
+                    clearInterval(pollInterval); clearInterval(timerInterval);
+                    mostrarSucesso(); return;
+                  }
+                }
+              }catch(eAtiv){ console.warn('[marspass-ativar]', eAtiv.message); }
+
+              /* Fallback direto no banco: ativa a assinatura pendente */
+              if(ass && ass.id){
+                var venc = new Date(); venc.setDate(venc.getDate() + 30);
+                var{error:updErr} = await sb.from('marspass_assinaturas').update({
+                  status: 'ativo',
+                  data_inicio: new Date().toISOString(),
+                  data_vencimento: venc.toISOString(),
+                  renovacoes: 1
+                }).eq('id', ass.id);
+
+                if(!updErr){
+                  clearInterval(pollInterval); clearInterval(timerInterval);
+                  mostrarSucesso(); return;
+                } else {
+                  console.error('[poll ativ fallback]', updErr.message);
+                }
+              }
+            }
+          }
+        }catch(eConf){ console.warn('[poll confirmar]', eConf.message); }
+      }
+
+      /* CAMADA 3: Para após 5 minutos */
       if(_pollTentativas >= 60){
         clearInterval(pollInterval);
-        console.warn('[poll] 5min sem confirmação do webhook — polling encerrado');
+        console.warn('[poll] 5min sem ativação — encerrado');
       }
 
     }catch(e){ console.error('[Polling erro]', e.message); }
