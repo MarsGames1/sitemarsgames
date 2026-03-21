@@ -340,6 +340,8 @@ async function initCardBrick(){
           var brickArea=document.getElementById('brick-area');
           if(brickArea)brickArea.style.opacity='.5';
           var fd=cardData&&cardData.formData?cardData.formData:cardData&&cardData.data?cardData.data:cardData;
+          /* transaction_amount fica no root do cardData, não dentro de formData */
+          if(!fd.transaction_amount && cardData.transaction_amount) fd.transaction_amount = cardData.transaction_amount;
           await pagarCartao(fd);
           if(brickArea)brickArea.style.opacity='1';
         },
@@ -412,6 +414,7 @@ async function pagarCartao(cardData){
       itensDesc[idxM]={...itensDesc[idxM],preco:Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())};
     }
     var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id||'',payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0,cardholder:{name:(cardData.cardholder&&cardData.cardholder.name)||''}};
+    console.log('[pagarCartao] _cd.transaction_amount=',_cd.transaction_amount,'getTotal()=',getTotal());
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
