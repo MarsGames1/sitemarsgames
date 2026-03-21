@@ -3659,6 +3659,26 @@ function pvpIniciarDuelo(){
   else{av.textContent=nome[0]||'🚀';}
   document.getElementById('pvpPtsP1').textContent='0';document.getElementById('pvpPtsP2').textContent='?';
   document.getElementById('pvpHpP1').style.width='100%';document.getElementById('pvpHpP2').style.width='100%';
+
+  /* ── MOSTRA TELA "BUSCANDO OPONENTE" ANTES DO COMBATE ── */
+  pvpMostrarTela('wait');
+  /* Atualiza info na tela de espera */
+  var sala=pvpSalaAtual||{};
+  var siEl=document.getElementById('pvpInfoSala'); if(siEl) siEl.textContent=sala.name||'—';
+  var enEl=document.getElementById('pvpInfoEntrada'); if(enEl) enEl.textContent=sala.entrada||'—';
+  var prEl=document.getElementById('pvpInfoPremio'); if(prEl) prEl.textContent=sala.premio||'—';
+  /* Esconde botão demo */
+  var demoBtn=document.querySelector('#pvpTela-wait .pvp-btn-demo');
+  if(demoBtn) demoBtn.style.display='none';
+
+  /* Aguarda 4-8s simulando busca, depois inicia combate */
+  var delay=4000+Math.random()*4000;
+  setTimeout(function(){
+    pvpIniciarCombate();
+  }, delay);
+}
+
+function pvpIniciarCombate(){
   pvpMostrarTela('combat');
   var dots=document.getElementById('pvpDots'); dots.innerHTML='';
   for(var d=0;d<5;d++){var dot=document.createElement('div');dot.className='pvp-dot'+(d===0?' cur':'');dots.appendChild(dot);}
@@ -3798,22 +3818,10 @@ async function pvpSalvarRodada(){
   }
 }
 
-/* Tela de suspense "procurando oponente" antes de entrar o bot */
+/* Suspense bot — já estamos na tela result, só aguarda e chama callback */
 function pvpMostrarAguardandoOponente(callback){
-  var tela=document.getElementById('pvpTela-result');
-  if(tela){
-    /* Mostra tela de busca temporária dentro do modal */
-    var waitEl=document.getElementById('pvpTela-wait');
-    if(waitEl){
-      waitEl.style.display='block';
-      /* Esconde o botão demo */
-      var demoBtn=waitEl.querySelector('.pvp-btn-demo');
-      if(demoBtn) demoBtn.style.display='none';
-    }
-    pvpMostrarTela('wait');
-  }
-  /* Aguarda entre 8 e 15s — dá sensação de busca real */
-  var delay=8000+Math.random()*7000;
+  /* Delay curto pois o suspense já foi na tela wait antes do combate */
+  var delay=2000+Math.random()*2000;
   setTimeout(callback, delay);
 }
 
