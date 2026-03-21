@@ -774,7 +774,7 @@ async function pagarCartao(cardData){
           token:             cardData.token             || '',
           payment_method_id: cardData.payment_method_id || '',
           installments:      Number(cardData.installments)||1,
-          issuer_id:         cardData.issuer_id          || '',
+          issuer_id:         cardData.issuer_id?parseInt(String(cardData.issuer_id),10)||null:null,
           payer:             cardData.payer              || {},
           transaction_amount: cardData.transaction_amount || pl.valor || 0,
           cardholder:        {name: _cardholderName}
@@ -1554,7 +1554,7 @@ async function pagarCartao(cardData){
         token:             cardData.token             || '',
         payment_method_id: cardData.payment_method_id || '',
         installments:      cardData.installments       || 1,
-        issuer_id:         cardData.issuer_id          || '',
+        issuer_id:         cardData.issuer_id?parseInt(String(cardData.issuer_id),10)||null:null,
         payer:             cardData.payer              || {},
         transaction_amount: cardData.transaction_amount || parseFloat(document.getElementById('pixValor')?.textContent?.replace('R$ ','').replace(',','.')) || 0
       })

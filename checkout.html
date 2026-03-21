@@ -424,8 +424,8 @@ async function pagarCartao(cardData){
       var _meta=session.user.user_metadata||{};
       _cardholderName=(_meta.full_name||_meta.name||session.user.email||'Cliente').toUpperCase();
     }
-    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id||'',payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0,cardholder:{name:_cardholderName}};
-    console.log('[pagarCartao] _cd.transaction_amount=',_cd.transaction_amount,'getTotal()=',getTotal(),'cardholder=',_cardholderName);
+    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id?parseInt(String(cardData.issuer_id),10)||null:null,payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0,cardholder:{name:_cardholderName}};
+    console.log('[pagarCartao] _cd COMPLETO=', JSON.stringify(_cd));
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
