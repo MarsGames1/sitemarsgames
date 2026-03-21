@@ -342,6 +342,11 @@ async function initCardBrick(){
           var fd=cardData&&cardData.formData?cardData.formData:cardData&&cardData.data?cardData.data:cardData;
           /* transaction_amount fica no root do cardData, não dentro de formData */
           if(!fd.transaction_amount && cardData.transaction_amount) fd.transaction_amount = cardData.transaction_amount;
+          /* cardholder.name também fica no root — garantir que chegue no fd */
+          if((!fd.cardholder||!fd.cardholder.name) && cardData.cardholder&&cardData.cardholder.name){
+            fd.cardholder=fd.cardholder||{};
+            fd.cardholder.name=cardData.cardholder.name;
+          }
           await pagarCartao(fd);
           if(brickArea)brickArea.style.opacity='1';
         },
@@ -413,7 +418,9 @@ async function pagarCartao(cardData){
       var idxM=precos.indexOf(Math.min(...precos));
       itensDesc[idxM]={...itensDesc[idxM],preco:Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())};
     }
-    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id||'',payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0,cardholder:{name:(cardData.cardholder&&cardData.cardholder.name)||''}};
+    /* cardholder.name pode vir em diferentes lugares dependendo da versão do Brick */
+    var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)||(cardData.additional_info&&cardData.additional_info.payer&&(cardData.additional_info.payer.first_name+' '+cardData.additional_info.payer.last_name).trim())||(cardData.payer&&cardData.payer.first_name&&(cardData.payer.first_name+' '+(cardData.payer.last_name||'')).trim())||'';
+    var _cd={token:cardData.token||'',payment_method_id:cardData.payment_method_id||'',installments:Number(cardData.installments)||1,issuer_id:cardData.issuer_id||'',payer:cardData.payer||{},transaction_amount:cardData.transaction_amount||getTotal()||0,cardholder:{name:_cardholderName}};
     console.log('[pagarCartao] _cd.transaction_amount=',_cd.transaction_amount,'getTotal()=',getTotal());
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-cartao',{
       method:'POST',
