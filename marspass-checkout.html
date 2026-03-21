@@ -738,6 +738,8 @@ async function initCardBrick(){
         var fd = cardData;
         if(cardData && cardData.formData) fd = cardData.formData;
         else if(cardData && cardData.data) fd = cardData.data;
+        if(!fd.transaction_amount && cardData.transaction_amount) fd.transaction_amount = cardData.transaction_amount;
+        if((!fd.cardholder||!fd.cardholder.name) && cardData.cardholder&&cardData.cardholder.name){fd.cardholder=fd.cardholder||{};fd.cardholder.name=cardData.cardholder.name;}
         await pagarCartao(fd);
         /* re-habilita botão se pagarCartao não redirecionou */
         var btn=document.getElementById('btnAssinar');
@@ -759,6 +761,10 @@ async function pagarCartao(cardData){
     var r=await sb.auth.getSession();
     if(!r.data||!r.data.session){ showToast('Faça login primeiro!',true); return; }
     var session=r.data.session;
+    var pl=PLANOS[planoKey]||PLANOS.andromeda;
+    var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)||(cardData.payer&&cardData.payer.first_name&&(cardData.payer.first_name+' '+(cardData.payer.last_name||'')).trim())||'';
+    if(!_cardholderName){var _meta=session.user.user_metadata||{};_cardholderName=(_meta.full_name||_meta.name||session.user.email||'Cliente').toUpperCase();}
+    console.log('[marspass pagarCartao] cardholder=',_cardholderName,'amount=',cardData.transaction_amount||pl.valor);
     var response=await fetch(SUPABASE_URL+'/functions/v1/marspass-criar-cartao',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
@@ -770,7 +776,8 @@ async function pagarCartao(cardData){
           installments:      Number(cardData.installments)||1,
           issuer_id:         cardData.issuer_id          || '',
           payer:             cardData.payer              || {},
-          transaction_amount: cardData.transaction_amount || pl.valor || 0
+          transaction_amount: cardData.transaction_amount || pl.valor || 0,
+          cardholder:        {name: _cardholderName}
         }
       })
     });
