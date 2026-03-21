@@ -523,7 +523,7 @@ body.tema-claro .surpresa-btn{background:#fff;border-color:var(--border2);box-sh
 /* ── Perfil ── */
 body.tema-claro .perfil-hero{background:linear-gradient(135deg,rgba(214,58,20,.06) 0%,rgba(0,153,51,.03) 100%);border-color:var(--border)}
 body.tema-claro .perfil-nome{color:var(--text)}
-body.tema-claro .perfil-email{color:var(--muted)}
+body.tema-claro .perfil-email{color:rgba(255,255,255,.65)}
 body.tema-claro .pstat{background:rgba(0,0,0,.04);border-color:var(--border)}
 body.tema-claro .pstat-val{color:var(--mars)}
 body.tema-claro .tabs-wrap{background:#f8f8fc;border-color:var(--border)}
@@ -685,8 +685,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* Hero do perfil */
 .perfil-hero{
-  background:linear-gradient(135deg,rgba(232,66,26,.08) 0%,rgba(0,255,85,.04) 100%);
-  border:1px solid var(--border);border-radius:20px;padding:28px;
+  background:linear-gradient(135deg,rgba(232,66,26,.18) 0%,rgba(0,255,85,.10) 100%);
+  border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:28px;
   display:flex;align-items:center;gap:24px;margin-bottom:28px;
   position:relative;overflow:hidden;flex-wrap:wrap;
 }
@@ -950,11 +950,11 @@ body.tema-claro .section-loader{color:var(--muted)}
 /* Stats rápidas */
 .perfil-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-left:auto;align-self:center}
 @media(min-width:768px){.perfil-stats{grid-template-columns:repeat(6,1fr)}}
-.pstat{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;
-  padding:12px 16px;text-align:center}
-.pstat-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--green);line-height:1}
+.pstat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;
+  padding:12px 16px;text-align:center;backdrop-filter:blur(4px)}
+.pstat-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#fff;line-height:1}
 .pstat-lbl{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--muted);margin-top:4px}
+  color:rgba(255,255,255,.6);margin-top:4px}
 
 /* ══ TABS — NOVO SISTEMA DE BOTÕES ══ */
 .tabs-wrap{
@@ -3467,9 +3467,11 @@ async function carregarPerfil(user){
 
     /* Tickets no hero — usa dado já carregado */
     var tktQtd = (tktRes.data && tktRes.data.quantidade) || 0;
-    var hTkt = document.getElementById('heroTicketCount');
-    if(hTkt) hTkt.textContent = tktQtd;
     meusTickets = tktQtd;
+    var _stTkt = document.getElementById('statTickets');
+    if(_stTkt) _stTkt.textContent = tktQtd;
+    var _tktCount = document.getElementById('ticketsCount');
+    if(_tktCount) _tktCount.textContent = tktQtd;
 
     /* MarsPass — aba padrão, carrega junto */
     carregarMarsPassPerfil(user);
