@@ -3465,11 +3465,14 @@ async function carregarPerfil(user){
       if(elFavs) elFavs.textContent=r.count||0;
     }).catch(function(){});
 
-    /* Tickets no hero — usa dado já carregado */
+    /* Tickets no hero — usa dado já carregado no Promise.all */
     var tktQtd = (tktRes.data && tktRes.data.quantidade) || 0;
-    var hTkt = document.getElementById('heroTicketCount');
-    if(hTkt) hTkt.textContent = tktQtd;
     meusTickets = tktQtd;
+    /* FIX: atualiza stat card #statTickets (estava sempre zerado) */
+    var _stTkt = document.getElementById('statTickets');
+    if(_stTkt) _stTkt.textContent = tktQtd;
+    var _tktCount = document.getElementById('ticketsCount');
+    if(_tktCount) _tktCount.textContent = tktQtd;
 
     /* MarsPass — aba padrão, carrega junto */
     carregarMarsPassPerfil(user);
@@ -3490,6 +3493,11 @@ async function carregarPerfil(user){
   setTimeout(function(){
     verificarLevelUpXP(user);
   }, 800);
+
+  /* ── FASE 4: Processa bônus da Loja MP pendente (volta de pagamento) ── */
+  setTimeout(function(){
+    if(typeof processarBonusLojaPendente === 'function') processarBonusLojaPendente(user);
+  }, 1400);
 }
 
 /* Verifica subida de nível e concede XP bônus ao planeta — crédita uma vez por nível */
@@ -6464,6 +6472,86 @@ function lojaConfetti(col){
     f++;if(alive)requestAnimationFrame(draw);else c.remove();
   })();
 }
+
+/* ── processarBonusLojaPendente
+   Lê flags gravadas antes do redirect para checkout/pix
+   e credita tickets/XP após confirmação de pagamento.
+   Usa 1 SELECT + 1 UPSERT — sem sobrecarga no Supabase.
+── */
+window.processarBonusLojaPendente = async function(user){
+  var pago  = sessionStorage.getItem('mg_loja_pago');
+  var bonus = sessionStorage.getItem('mg_loja_pkg_bonus');
+  var pkgId = sessionStorage.getItem('mg_loja_pkg_id');
+  var pkgMp = sessionStorage.getItem('mg_loja_pkg_mp');
+
+  if(!pago || pago !== 'sim' || !bonus) return;
+
+  /* Remove imediatamente — evita duplo crédito em recargas */
+  sessionStorage.removeItem('mg_loja_pago');
+  sessionStorage.removeItem('mg_loja_pkg_bonus');
+  sessionStorage.removeItem('mg_loja_pkg_id');
+  sessionStorage.removeItem('mg_loja_pkg_mp');
+
+  var bonusArr = [];
+  try{ bonusArr = JSON.parse(bonus); }catch(e){ return; }
+  if(!bonusArr.length) return;
+
+  var email = user.email;
+
+  for(var i = 0; i < bonusArr.length; i++){
+    var b = bonusArr[i];
+
+    /* ── Tickets ── */
+    if(b.type === 'tkt'){
+      var qtd = parseInt((b.label || '').replace(/\D/g, '')) || 0;
+      if(qtd > 0){
+        try{
+          /* 1 SELECT para pegar saldo atual */
+          var r = await sb.from('tickets')
+            .select('quantidade,total_acumulado')
+            .eq('user_email', email)
+            .maybeSingle();
+          var atual = (r.data && r.data.quantidade)      || 0;
+          var acc   = (r.data && r.data.total_acumulado) || 0;
+          /* 1 UPSERT — sem queries extras */
+          await sb.from('tickets').upsert({
+            user_email: email,
+            quantidade: atual + qtd,
+            total_acumulado: acc + qtd
+          }, {onConflict: 'user_email'});
+          meusTickets = atual + qtd;
+          var _st = document.getElementById('statTickets');
+          if(_st) _st.textContent = meusTickets;
+          var _tc = document.getElementById('ticketsCount');
+          if(_tc) _tc.textContent = meusTickets;
+          showToast('🎟️ +' + qtd + ' Tickets creditados!');
+        }catch(e){ console.error('[bonus tkt]', e); }
+      }
+    }
+
+    /* ── XP Planeta ── */
+    if(b.type === 'xp'){
+      var xq = parseInt((b.label || '').replace(/\D/g, '')) || 0;
+      if(xq > 0 && typeof window.planetaAddXPSilent === 'function'){
+        window.planetaAddXPSilent(xq, 'Compra Loja MP', '💰', 'rgba(255,194,0,.15)', '#ffc200');
+      }
+    }
+  }
+
+  /* Histórico local da loja */
+  var pkg = LOJA_PKGS.find(function(p){ return p.id === pkgId; });
+  if(pkg){
+    lojaPurchHist.unshift({
+      icon: pkg.icon, name: pkg.name, color: pkg.mpColor,
+      mp: parseInt(pkgMp) || pkg.mp,
+      date: new Date().toLocaleDateString('pt-BR')
+    });
+    if(lojaPurchHist.length > 20) lojaPurchHist.pop();
+    localStorage.setItem('mg_loja_hist', JSON.stringify(lojaPurchHist));
+    renderLojaHist();
+  }
+};
+
 })();
 
 /* ══════════════════════════════════════════════════
