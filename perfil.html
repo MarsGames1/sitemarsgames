@@ -3650,23 +3650,38 @@ async function carregarPedidos(userId){
       await Promise.all(pedidosSemChave.map(async function(ped){
         try{
           var qtdPedido=ped.quantidade||1;
-          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&select=*&limit='+qtdPedido;
+
+          /* 1ª tentativa: busca por pedido_id com status=entregue (correto) */
+          var chUrl=SUPABASE_URL+'/rest/v1/estoque_chaves?pedido_id=eq.'+ped.id+'&status=eq.entregue&select=id,conteudo,tipo,status&limit='+qtdPedido;
           var chRes=await fetch(chUrl,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+tkn2,'Accept':'application/json'}});
+          var chEntregues=[];
           if(chRes.ok){
             var chRows=await chRes.json();
-            var chEntregues=(chRows||[]).filter(function(c){return c.status==='entregue'||c.conteudo;});
-            chEntregues=chEntregues.slice(0,qtdPedido);
-            if(chEntregues.length>0){
-              var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
-              if(pedIdx>=0){
-                data[pedIdx].chaves_entregues=chEntregues;
-                if(data[pedIdx].status==='pendente'||data[pedIdx].status==='aprovado'){
-                  data[pedIdx].status='pago';
-                }
+            chEntregues=(chRows||[]).filter(function(c){return c.conteudo&&c.conteudo!=='ERRO_ESTOQUE';});
+          }
+
+          /* 2ª tentativa: se não achou por pedido_id, tenta por produto_id + status=entregue
+             (cobre casos onde a edge function vinculou pelo produto mas não pelo pedido) */
+          if(chEntregues.length===0 && ped.produto_id){
+            var chUrl2=SUPABASE_URL+'/rest/v1/estoque_chaves?produto_id=eq.'+ped.produto_id+'&status=eq.entregue&select=id,conteudo,tipo,status&order=created_at.desc&limit='+qtdPedido;
+            var chRes2=await fetch(chUrl2,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+tkn2,'Accept':'application/json'}});
+            if(chRes2.ok){
+              var chRows2=await chRes2.json();
+              chEntregues=(chRows2||[]).filter(function(c){return c.conteudo&&c.conteudo!=='ERRO_ESTOQUE';});
+            }
+          }
+
+          /* Limita à quantidade comprada */
+          chEntregues=chEntregues.slice(0,qtdPedido);
+
+          if(chEntregues.length>0){
+            var pedIdx=data.findIndex(function(x){return x.id===ped.id;});
+            if(pedIdx>=0){
+              data[pedIdx].chaves_entregues=chEntregues;
+              if(data[pedIdx].status==='pendente'||data[pedIdx].status==='aprovado'){
+                data[pedIdx].status='pago';
               }
             }
-          }else{
-            console.warn('[chaves] HTTP erro',chRes.status);
           }
         }catch(ce){console.warn('[chaves pedido]',ped.id,ce);}
       }));
