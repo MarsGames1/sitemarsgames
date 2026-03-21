@@ -884,12 +884,12 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .pvp-fila-badge{position:absolute;top:13px;right:13px;background:rgba(255,208,0,.1);border:1px solid rgba(255,208,0,.28);color:#ffd000;font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;animation:pvpBlink 1.5s ease-in-out infinite;display:none;}
 @keyframes pvpBlink{0%,100%{opacity:1}50%{opacity:.3}}
 .pvp-rules{background:linear-gradient(160deg,#0d1226,#080d1a);border:1px solid rgba(255,34,51,.12);border-radius:14px;padding:22px 24px;margin:0 20px 24px;}
-.pvp-rules h3{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#ff2233;text-transform:uppercase;margin-bottom:16px;}
+.pvp-rules h3{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#ff4455;text-transform:uppercase;margin-bottom:16px;}
 .pvp-rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;}
 .pvp-rule{display:flex;gap:11px;align-items:flex-start;}
 .pvp-rule-icon{width:32px;height:32px;background:rgba(255,34,51,.07);border:1px solid rgba(255,34,51,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.pvp-rule strong{display:block;font-size:12px;font-weight:700;color:#ccc;margin-bottom:2px;}
-.pvp-rule p{font-size:11px;color:#444;line-height:1.45;}
+.pvp-rule strong{display:block;font-size:12px;font-weight:700;color:#eee;margin-bottom:3px;}
+.pvp-rule p{font-size:11px;color:#888;line-height:1.5;}
 .pvp-lb{background:linear-gradient(160deg,#0d1226,#080d1a);border:1px solid rgba(255,34,51,.12);border-radius:14px;overflow:hidden;margin:0 20px 24px;}
 .pvp-lb-top{padding:16px 20px;border-bottom:1px solid rgba(255,34,51,.08);display:flex;align-items:center;justify-content:space-between;}
 .pvp-lb-top h3{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#fff;text-transform:uppercase;}
@@ -1063,8 +1063,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .rd-spin-btn:hover{transform:translateY(-3px);box-shadow:0 10px 36px rgba(255,194,0,.5);}
 .rd-spin-btn:disabled{background:linear-gradient(135deg,#1a1c28,#12141e);color:#2e3248;cursor:not-allowed;box-shadow:none;}
 .rd-spin-btn:disabled::before{display:none;}
-.rd-cost-note{text-align:center;font-size:12px;color:#333;letter-spacing:.5px;}
-.rd-cost-note strong{color:rgba(255,194,0,.55);}
+.rd-cost-note{text-align:center;font-size:12px;color:#888;letter-spacing:.5px;}
+.rd-cost-note strong{color:rgba(255,194,0,.85);}
 .rd-login-note{text-align:center;font-size:12px;color:#444;padding:12px;}
 .rd-login-note a{color:#ffc200;text-decoration:none;}
 /* Side da roda */
@@ -1080,10 +1080,10 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .rd-res-val.neutral{color:#444;}
 .rd-res-val.coupon{color:#00ffe7;text-shadow:0 0 14px rgba(0,255,231,.3);}
 .rd-res-desc{font-size:12px;color:#333;line-height:1.5;max-width:220px;margin-top:3px;}
-.rd-card{background:#0c1020;border:1px solid rgba(255,255,255,.04);border-radius:11px;overflow:hidden;}
-.rd-card-head{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;}
-.rd-card-head h3{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#333;text-transform:uppercase;}
-.rd-card-head .ct{font-size:10px;color:#333;}
+.rd-card{background:#0c1020;border:1px solid rgba(255,255,255,.06);border-radius:11px;overflow:hidden;}
+.rd-card-head{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.rd-card-head h3{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#aaa;text-transform:uppercase;}
+.rd-card-head .ct{font-size:10px;color:#888;}
 .rd-hist-list{max-height:180px;overflow-y:auto;}
 .rd-hist-list::-webkit-scrollbar{width:2px;}
 .rd-hist-list::-webkit-scrollbar-thumb{background:rgba(255,194,0,.12);}
@@ -1095,11 +1095,11 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .rd-hist-prize{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;white-space:nowrap;}
 .rd-hist-prize.good{color:#00d96e;}.rd-hist-prize.bad{color:#ff1f30;}.rd-hist-prize.neutral{color:#333;}.rd-hist-prize.coupon{color:#00ffe7;}
 .rd-tbl-card{background:#0c1020;border:1px solid rgba(255,255,255,.04);border-radius:11px;padding:13px;}
-.rd-tbl-card h3{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#333;text-transform:uppercase;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.04);}
-.rd-tbl-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.02);}
+.rd-tbl-card h3{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#aaa;text-transform:uppercase;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.06);}
+.rd-tbl-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
 .rd-tbl-row:last-child{border-bottom:none;}
 .rd-tbl-color{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-.rd-tbl-name{font-size:11px;color:#aaa;flex:1;font-weight:600;}
+.rd-tbl-name{font-size:11px;color:#ccc;flex:1;font-weight:600;}
 /* Roda Modais */
 .rd-overlay{position:fixed;inset:0;background:rgba(4,6,14,.94);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(14px);}
 .rd-overlay.open{display:flex;}
@@ -1462,19 +1462,21 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
           <div class="pvp-rules">
             <h3>📋 Regras da Arena</h3>
             <div class="pvp-rules-grid">
-              <div class="pvp-rule"><div class="pvp-rule-icon">💰</div><div><strong>Entrada paga</strong><p>Pague a entrada da sala para entrar na fila do duelo.</p></div></div>
-              <div class="pvp-rule"><div class="pvp-rule-icon">❓</div><div><strong>5 perguntas de games</strong><p>Múltipla escolha. 10 segundos por questão.</p></div></div>
-              <div class="pvp-rule"><div class="pvp-rule-icon">⏱️</div><div><strong>Velocidade importa</strong><p>Cada um responde separado. Pontuações comparadas no final.</p></div></div>
-              <div class="pvp-rule"><div class="pvp-rule-icon">🏆</div><div><strong>Vencedor leva tudo</strong><p>Prêmio creditado automaticamente no perfil.</p></div></div>
-              <div class="pvp-rule"><div class="pvp-rule-icon">🤝</div><div><strong>Empate</strong><p>Ambos recebem o valor de volta + 10 Marspoints bônus.</p></div></div>
-              <div class="pvp-rule"><div class="pvp-rule-icon">⏳</div><div><strong>Fila permanente</strong><p>Duelo inicia automaticamente assim que um oponente entrar.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">💰</div><div><strong>Entrada em Marspoints</strong><p>Bronze: 50 MP · Prata: 150 MP · Ouro: 300 MP. Descontado ao entrar na fila.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">❓</div><div><strong>5 perguntas de games</strong><p>Múltipla escolha sobre o universo gamer. 10 segundos por questão.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">⏱️</div><div><strong>Velocidade importa</strong><p>Cada jogador responde separado. Mais acertos e mais rápido = vitória.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">🏆</div><div><strong>Prêmios por sala</strong><p>Bronze: 150 MP + 3 Tickets · Prata: 400 MP + 7 Tickets · Ouro: 800 MP + 15 Tickets.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">🤝</div><div><strong>Empate</strong><p>Ambos recebem 100 Marspoints bônus. A entrada não é devolvida.</p></div></div>
+              <div class="pvp-rule"><div class="pvp-rule-icon">🤖</div><div><strong>Sem oponente?</strong><p>Após 15s sem adversário, um bot entra automaticamente na partida.</p></div></div>
             </div>
           </div>
           <div class="pvp-lb">
             <div class="pvp-lb-top"><h3>🏅 Ranking dos Duelistas</h3><span>Este mês</span></div>
             <div class="pvp-lb-head"><span>#</span><span>Jogador</span><span>Vitórias</span><span>Derrotas</span><span>MP Ganhos</span></div>
             <div id="pvpLbList">
-              <div style="text-align:center;padding:20px;font-size:11px;color:#555">Carregando ranking...</div>
+              <div class="pvp-lb-row"><div class="pvp-lb-rank r1">01</div><div class="pvp-lb-player"><div class="pvp-lb-av">🚀</div><div><div class="pvp-lb-name">NovaMars</div><div class="pvp-lb-tag">LENDÁRIO</div></div></div><div class="pvp-lb-val w">24</div><div class="pvp-lb-val l">6</div><div class="pvp-lb-val m">1.200 MP</div></div>
+              <div class="pvp-lb-row"><div class="pvp-lb-rank r2">02</div><div class="pvp-lb-player"><div class="pvp-lb-av">⚡</div><div><div class="pvp-lb-name">AstroKid</div><div class="pvp-lb-tag">VETERANO</div></div></div><div class="pvp-lb-val w">18</div><div class="pvp-lb-val l">9</div><div class="pvp-lb-val m">700 MP</div></div>
+              <div class="pvp-lb-row"><div class="pvp-lb-rank r3">03</div><div class="pvp-lb-player"><div class="pvp-lb-av">🎮</div><div><div class="pvp-lb-name">GalaxPlayer</div><div class="pvp-lb-tag">VETERANO</div></div></div><div class="pvp-lb-val w">15</div><div class="pvp-lb-val l">10</div><div class="pvp-lb-val m">500 MP</div></div>
             </div>
           </div>
         </div>
@@ -1533,12 +1535,6 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
             <div class="rd-tbl-card">
               <h3>Tabela de Prêmios</h3>
               <div id="rdTblBody"></div>
-            </div>
-            <div class="rd-card" style="margin-top:14px">
-              <div class="rd-card-head"><h3>🏆 Top Giradores do Mês</h3></div>
-              <div id="rdTopGiradores" style="padding:8px 0">
-                <div style="padding:12px;text-align:center;font-size:11px;color:#333">Carregando...</div>
-              </div>
             </div>
           </div>
         </div>
@@ -1937,10 +1933,10 @@ function mostrarBloqueadoMarsPass(tipo){
     document.getElementById('lockTitle').textContent='Saia da Via Láctea comum';
     document.getElementById('lockSub').textContent='Este sorteio é exclusivo para assinantes MarsPass. Prêmios incríveis, menos competidores e muito mais chance de ganhar. Qualquer plano dá acesso!';
     document.getElementById('lockPlans').innerHTML=
-      '<span class="lock-plan-badge premium">🌀 Andrômeda — R$19,90</span>'+
-      '<span class="lock-plan-badge premium">🔺 Triângulo — R$24,90</span>'+
-      '<span class="lock-plan-badge premium">⚡ Centaurus — R$29,90</span>'+
-      '<span class="lock-plan-badge premium">🌐 Sombrero — R$39,90</span>';
+      '<span class="lock-plan-badge premium">🌀 Andrômeda</span>'+
+      '<span class="lock-plan-badge premium">🔺 Triângulo</span>'+
+      '<span class="lock-plan-badge premium">⚡ Centaurus</span>'+
+      '<span class="lock-plan-badge premium">🌐 Sombrero</span>';
   } else {
     document.getElementById('lockEyebrow').textContent='Sorteio VIP — Ultra Exclusivo';
     document.getElementById('lockTitle').textContent='Vá mais longe no universo Mars';
@@ -2642,7 +2638,6 @@ function spaGo(page){
     document.getElementById('spaBtnRoda').classList.add('active');
     rdInit();
     rdAtualizarMpDisplay();
-    setTimeout(rdCarregarTopGiradores, 800);
   }
 }
 
@@ -2722,9 +2717,15 @@ function rdInit(){
   /* Tabela de prêmios */
   var tbl = document.getElementById('rdTblBody');
   if(tbl && !tbl.children.length){
+    var typeIcon={good:'✅',bad:'💥',coupon:'🎟️',neutral:'⚫'};
+    var typeColor={good:'#00d96e',bad:'#ff4455',coupon:'#00ffe7',neutral:'#555'};
     RD_SLICES.forEach(function(s){
       var r = document.createElement('div'); r.className='rd-tbl-row';
-      r.innerHTML='<div class="rd-tbl-color" style="background:'+s.gradient[0]+';box-shadow:0 0 5px '+s.gradient[0]+'55"></div><span class="rd-tbl-name">'+s.name+'</span>';
+      r.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)';
+      r.innerHTML=
+        '<div style="width:10px;height:10px;border-radius:3px;flex-shrink:0;background:'+s.gradient[0]+';box-shadow:0 0 6px '+s.gradient[0]+'88"></div>'+
+        '<span style="font-size:11px;color:#ddd;flex:1;font-weight:700">'+s.name+'</span>'+
+        '<span style="font-size:10px;font-weight:700;color:'+typeColor[s.type]+';white-space:nowrap">'+typeIcon[s.type]+' '+s.prize+'</span>';
       tbl.appendChild(r);
     });
   }
@@ -3127,7 +3128,40 @@ async function rdAplicarEfeito(sl){
     /* Salva giro no histórico do Supabase */
     await sb.from('roda_giros').insert({user_id:userSession.user.id,user_email:userSession.user.email,resultado:sl.name,tipo:sl.type,prize:sl.prize,created_at:new Date().toISOString()});
     /* Jogo grátis — cria notificação */
-    if(sl.id===3){ await sb.from('notificacoes').insert({user_email:userSession.user.email,tipo:'jogo_gratis',mensagem:'Você ganhou um jogo grátis na Roda da Fortuna!',lida:false,created_at:new Date().toISOString()}); }
+    if(sl.id===3){ await sb.from('notificacoes_cliente').insert({user_email:userSession.user.email,tipo:'jogo',titulo:'🎮 Você ganhou um jogo grátis!',mensagem:'Você ganhou um jogo grátis na Roda da Fortuna! Entre em contato pelo perfil para resgatar.',lida:false,created_at:new Date().toISOString()}); }
+    /* Cupom — gera código único e insere na tabela cupons */
+    if(sl.type==='coupon'){
+      var pct=sl.id===5?5:10; /* id5=5%OFF, id7=10%OFF */
+      var rand=Math.random().toString(36).slice(2,7).toUpperCase();
+      var cupomCodigo='RODA'+pct+'_'+rand;
+      var validade=new Date(); validade.setDate(validade.getDate()+30); /* 30 dias */
+      try{
+        await sb.from('cupons').insert({
+          codigo:cupomCodigo,
+          desconto:pct,
+          validade:validade.toISOString().split('T')[0],
+          max_usos:1,
+          usos:0,
+          ativo:true,
+          max_usos_por_email:1,
+          emails_usados:[],
+          origem:'roda_fortuna',
+          user_email_exclusivo:userSession.user.email
+        });
+        /* Notifica o cliente com o código */
+        await sb.from('notificacoes_cliente').insert({
+          user_email:userSession.user.email,
+          tipo:'mensagem',
+          titulo:'🎟️ Seu cupom chegou! '+pct+'% OFF',
+          mensagem:'Você ganhou um cupom de '+pct+'% OFF na Roda da Fortuna! Código: '+cupomCodigo+' · Válido por 30 dias.',
+          lida:false,
+          created_at:new Date().toISOString()
+        });
+        /* Atualiza o prize exibido com o código real */
+        sl._cupomCodigo=cupomCodigo;
+        sl.prize=pct+'% OFF — Código: '+cupomCodigo;
+      }catch(ce){console.warn('[cupom roda]',ce);}
+    }
     /* Atualiza display */
     var val=document.getElementById('rodaMpVal'); if(val) val.textContent=rdMpAtual.toLocaleString('pt-BR');
     var navVal=document.getElementById('spaNavMpVal'); if(navVal) navVal.textContent=rdMpAtual.toLocaleString('pt-BR');
@@ -3243,18 +3277,6 @@ var PVP_QS={
     {q:'Em Mario Kart, qual item faz perder controle?',opts:['Cogumelo','Banana','Estrela','Casco'],ans:1},
     {q:'Qual é a cidade principal de GTA: San Andreas?',opts:['Vice City','Liberty City','Los Santos','Blaine County'],ans:2},
     {q:'Qual é o starter Fogo em Kanto (Pokémon)?',opts:['Squirtle','Bulbasaur','Charmander','Pikachu'],ans:2},
-    {q:'Qual jogo tem o personagem Kratos?',opts:["Assassin's Creed",'God of War','Devil May Cry','Bayonetta'],ans:1},
-    {q:'Em Fortnite, qual é o objetivo principal?',opts:['Capturar bandeira','Ser o último sobrevivente','Destruir base inimiga','Coletar recursos'],ans:1},
-    {q:'O que significa "NPC" em games?',opts:['New Player Character','Non-Playable Character','Next Phase Combat','Network Play Control'],ans:1},
-    {q:'Qual game tem o personagem Lara Croft?',opts:['Uncharted','Tomb Raider','Prince of Persia','Resident Evil'],ans:1},
-    {q:'Em qual plataforma nasceu o Sonic?',opts:['NES','Super Nintendo','Mega Drive (Sega)','Atari'],ans:2},
-    {q:'Qual é o nome do encanador da Nintendo?',opts:['Luigi','Mario','Wario','Donkey Kong'],ans:1},
-    {q:'O que é "HP" em RPGs?',opts:['High Power','Hit Points (pontos de vida)','Hero Points','Heavy Punch'],ans:1},
-    {q:'Qual jogo tem o modo "Battle Royale" mais famoso?',opts:['GTA V','Warzone / Fortnite','FIFA','Minecraft'],ans:1},
-    {q:'Em qual ano o PlayStation 1 foi lançado no Japão?',opts:['1991','1994','1998','2000'],ans:1},
-    {q:'Qual item protege no Crash Bandicoot?',opts:['Aku Aku','Nitro','Wumpa','Caixa'],ans:0},
-    {q:'Qual empresa faz os processadores do PS5?',opts:['Intel','Nvidia','AMD','Qualcomm'],ans:2},
-    {q:'Em Among Us, qual cor é famosa por ser "sus"?',opts:['Azul','Verde','Vermelho','Amarelo'],ans:2},
   ],
   silver:[
     {q:'Qual engine foi usada em "The Witcher 3"?',opts:['Unreal Engine 4','REDengine 3','Unity','CryEngine'],ans:1},
@@ -3265,21 +3287,9 @@ var PVP_QS={
     {q:'FPS significa:',opts:['First Person Shooter','Frames Per Second','Fantasy Play Style','Ambos A e B'],ans:3},
     {q:'Em Among Us, objetivo dos Impostores:',opts:['Completar tarefas','Eliminar Crewmates','Sabotear apenas','Votar nos outros'],ans:1},
     {q:'Qual jogo popularizou o gênero MOBA?',opts:['Starcraft','DotA / LoL','Diablo','Counter-Strike'],ans:1},
-    {q:'Qual franquia tem os personagens Cloud e Tifa?',opts:['Dragon Quest','Final Fantasy','Kingdom Hearts','Tales of'],ans:1},
-    {q:'Em qual ano foi lançado o primeiro Call of Duty?',opts:['2001','2003','2005','2007'],ans:1},
-    {q:'O que é "ping" em games online?',opts:['Velocidade de download','Latência da conexão em ms','Qualidade gráfica','Taxa de quadros'],ans:1},
-    {q:'Em Overwatch, qual herói tem a Ult "Dragonstrike"?',opts:['Genji','Hanzo','Reaper','Cassidy'],ans:1},
-    {q:'Qual game introduziu o "Battle Pass"?',opts:['Fortnite','PUBG','Apex Legends','Valorant'],ans:0},
-    {q:'O que significa "meta" no universo gamer?',opts:['Objetivo do mapa','Estratégia mais eficiente no momento','Moeda do jogo','Tipo de servidor'],ans:1},
-    {q:'Qual é a empresa por trás do Apex Legends?',opts:['Activision','EA / Respawn','Ubisoft','Square Enix'],ans:1},
-    {q:'Em Minecraft, qual bloco não pode ser destruído na sobrevivência?',opts:['Bedrock','Obsidiana','Minério de Diamante','Nether Quartz'],ans:0},
-    {q:'Qual franquia de terror tem Leon S. Kennedy?',opts:['Silent Hill','Dead Space','Resident Evil','Alan Wake'],ans:2},
-    {q:'Qual é o nome do vilão principal de Zelda?',opts:['Ganondorf','Vaati','Majora','Zant'],ans:0},
-    {q:'Em qual jogo existe a personagem "Aloy"?',opts:['God of War','Horizon Zero Dawn','Ghost of Tsushima','The Last of Us'],ans:1},
-    {q:'O que é "buff" em games?',opts:['Efeito negativo no personagem','Melhoria temporária de atributo','Habilidade especial','Tipo de armadura'],ans:1},
   ],
   gold:[
-    {q:'Resolução exata do 4K Ultra HD?',opts:['1920x1080','2560x1440','3840x2160','4096x2304'],ans:2},
+    {q:'Resolução exata do 4K Ultra HD?',opts:['1920×1080','2560×1440','3840×2160','4096×2304'],ans:2},
     {q:'Qual jogo tem a "Kill Screen" no nível 256?',opts:['Tetris','Pac-Man','Galaga','Space Invaders'],ans:1},
     {q:'TDP em processadores significa:',opts:['Total Data Processing','Thermal Design Power','Time Delivery Per-frame','Texture Display Protocol'],ans:1},
     {q:'Comando do Hadouken em Street Fighter II:',opts:['Meia-lua frente + Soco','Meia-lua trás + Chute','Frente, Baixo, Diagonal + Soco','Carregar trás, Frente + Soco'],ans:0},
@@ -3287,18 +3297,6 @@ var PVP_QS={
     {q:'"Jitter" em redes de games significa:',opts:['Velocidade de download','Variação no atraso de pacotes','Bloqueio de portas','Perda de conexão'],ans:1},
     {q:'O "Pai dos Videogames" é:',opts:['Shigeru Miyamoto','Nolan Bushnell','Ralph Baer','Hideo Kojima'],ans:2},
     {q:'Qual NÃO foi dirigido por Hideo Kojima?',opts:['Metal Gear Solid','Death Stranding','Snatcher','Ghost of Tsushima'],ans:3},
-    {q:'Qual tecnologia anti-aliasing a Nvidia chama de DLSS?',opts:['Deep Learning Super Sampling','Direct Light Shadow System','Dual Layer Screen Shader','Dynamic Low Shader Sampling'],ans:0},
-    {q:'Em qual ano foi lançado o primeiro Doom?',opts:['1991','1993','1996','1998'],ans:1},
-    {q:'Qual é o nome da IA vilã em "System Shock"?',opts:['GLaDOS','SHODAN','HAL 9000','AM'],ans:1},
-    {q:'O speedrun de Super Mario Bros world record é aproximadamente:',opts:['6 minutos','4 minutos','10 minutos','2 minutos'],ans:1},
-    {q:'Qual protocolo de rede é preferido para games online?',opts:['HTTP','UDP','FTP','SMTP'],ans:1},
-    {q:'Qual é o nome do protagonista de "Disco Elysium"?',opts:['Harry Du Bois','Jean Vicquemare','Kim Kitsuragi','Cuno'],ans:0},
-    {q:'Em Elden Ring, quem criou o Elden Ring original?',opts:['Marika','Godfrey','Radagon','Rennala'],ans:0},
-    {q:'O que é "Netcode" em jogos online?',opts:['Código de trapaça','Sistema de sincronização entre jogadores','Protocolo de download','API de conquistas'],ans:1},
-    {q:'Qual game usou pela 1ª vez o "Nemesis System"?',opts:['The Witcher 3','Shadow of Mordor','Batman Arkham','Cyberpunk 2077'],ans:1},
-    {q:'Qual é a taxa de quadros padrão de filmes (não games)?',opts:['30 FPS','24 FPS','60 FPS','48 FPS'],ans:1},
-    {q:'Em qual jogo existe o personagem "2B"?',opts:['Xenoblade Chronicles','Nier: Automata','Bayonetta','Astral Chain'],ans:1},
-    {q:'Qual tecnologia permite ray tracing em tempo real nos jogos modernos?',opts:['DirectX 11','Vulkan','DirectX 12 Ultimate','OpenGL 4.6'],ans:2},
   ]
 };
 /*
@@ -3884,91 +3882,16 @@ function pvpMostrarResultadoFinal(resultado, oponenteNome, isBot){
 async function pvpCarregarLeaderboard(){
   try{
     var ini=new Date();ini.setDate(1);ini.setHours(0,0,0,0);
-    /* Usa pvp_rodadas — tabela correta */
-    var{data}=await sb.from('pvp_rodadas')
-      .select('user_email,user_nome,resultado,pontuacao')
-      .gte('created_at',ini.toISOString())
-      .eq('status','finalizado')
-      .not('resultado','is',null);
-    if(!data||!data.length){
-      document.getElementById('pvpLbList').innerHTML=
-        '<div style="text-align:center;padding:20px;font-size:11px;color:#555">Nenhuma duelo este mês ainda. Seja o primeiro!</div>';
-      return;
-    }
+    var{data}=await sb.from('pvp_duelos').select('user_email,resultado').gte('created_at',ini.toISOString());
+    if(!data||!data.length) return;
     var agg={};
-    data.forEach(function(d){
-      if(!agg[d.user_email]) agg[d.user_email]={nome:d.user_nome||d.user_email,w:0,l:0,e:0,mp:0};
-      if(d.resultado==='vitoria'){agg[d.user_email].w++;agg[d.user_email].mp+=150;}
-      else if(d.resultado==='derrota'){agg[d.user_email].l++;}
-      else{agg[d.user_email].e++;agg[d.user_email].mp+=100;}
-    });
+    data.forEach(function(d){if(!agg[d.user_email])agg[d.user_email]={w:0,l:0,mp:0};if(d.resultado==='vitoria'){agg[d.user_email].w++;agg[d.user_email].mp+=100;}else if(d.resultado==='derrota')agg[d.user_email].l++;});
     var ranks=['r1','r2','r3','rn','rn'];
-    var lista=Object.values(agg).sort(function(a,b){
-      if(b.w!==a.w) return b.w-a.w;
-      return b.mp-a.mp;
-    }).slice(0,5);
-    var avatares=['🥇','🥈','🥉','🎮','🎮'];
-    var tags=['CAMPEÃO','VICE','3º LUGAR','DUELISTA','DUELISTA'];
-    var html=lista.map(function(p,i){
-      var n=String(i+1).padStart(2,'0');
-      /* Mascara email mas mostra nome se disponível */
-      var display=p.nome&&!p.nome.includes('@')
-        ? p.nome
-        : p.nome.replace(/(.{3}).*(@.*)/,'$1***$2');
-      return '<div class="pvp-lb-row">'+
-        '<div class="pvp-lb-rank '+(ranks[i]||'rn')+'">'+n+'</div>'+
-        '<div class="pvp-lb-player">'+
-          '<div class="pvp-lb-av">'+avatares[i]+'</div>'+
-          '<div>'+
-            '<div class="pvp-lb-name">'+display+'</div>'+
-            '<div class="pvp-lb-tag">'+tags[i]+'</div>'+
-          '</div>'+
-        '</div>'+
-        '<div class="pvp-lb-val w">'+p.w+'</div>'+
-        '<div class="pvp-lb-val l">'+p.l+'</div>'+
-        '<div class="pvp-lb-val m">'+p.mp+' MP</div>'+
-      '</div>';
-    }).join('');
+    var lista=Object.keys(agg).map(function(e){return{email:e.replace(/(.{3}).*(@.*)/,'$1***$2'),w:agg[e].w,l:agg[e].l,mp:agg[e].mp};}).sort(function(a,b){return b.w-a.w;}).slice(0,5);
+    var html=lista.map(function(p,i){var n=String(i+1).padStart(2,'0');return '<div class="pvp-lb-row"><div class="pvp-lb-rank '+ranks[i]+'">'+n+'</div><div class="pvp-lb-player"><div class="pvp-lb-av">🎮</div><div><div class="pvp-lb-name">'+p.email+'</div><div class="pvp-lb-tag">DUELISTA</div></div></div><div class="pvp-lb-val w">'+p.w+'</div><div class="pvp-lb-val l">'+p.l+'</div><div class="pvp-lb-val m">'+p.mp+' MP</div></div>';}).join('');
     if(html) document.getElementById('pvpLbList').innerHTML=html;
-  }catch(e){console.warn('[pvp leaderboard]',e);}
+  }catch(e){}
 }
-async function rdCarregarTopGiradores(){
-  var el=document.getElementById('rdTopGiradores');
-  if(!el) return;
-  try{
-    var ini=new Date();ini.setDate(1);ini.setHours(0,0,0,0);
-    var{data}=await sb.from('roda_giros')
-      .select('user_email,tipo')
-      .gte('created_at',ini.toISOString());
-    if(!data||!data.length){
-      el.innerHTML='<div style="padding:12px;text-align:center;font-size:11px;color:#444">Nenhum giro este mês ainda.</div>';
-      return;
-    }
-    var agg={};
-    data.forEach(function(d){
-      if(!agg[d.user_email]) agg[d.user_email]={giros:0,bons:0};
-      agg[d.user_email].giros++;
-      if(d.tipo==='good') agg[d.user_email].bons++;
-    });
-    var lista=Object.keys(agg).map(function(e){
-      return{email:e.replace(/(.{3}).*(@.*)/,'$1***$2'),giros:agg[e].giros,bons:agg[e].bons};
-    }).sort(function(a,b){return b.giros-a.giros;}).slice(0,5);
-    var medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
-    el.innerHTML=lista.map(function(p,i){
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.04)">'+
-        '<div style="display:flex;align-items:center;gap:8px">'+
-          '<span style="font-size:14px">'+medals[i]+'</span>'+
-          '<span style="font-size:11px;font-weight:700;color:#ccc">'+p.email+'</span>'+
-        '</div>'+
-        '<div style="display:flex;gap:10px;font-size:10px">'+
-          '<span style="color:#ffc200;font-weight:700">'+p.giros+' giros</span>'+
-          '<span style="color:var(--green)">'+p.bons+' prêmios</span>'+
-        '</div>'+
-      '</div>';
-    }).join('');
-  }catch(e){el.innerHTML='<div style="padding:12px;text-align:center;font-size:11px;color:#444">Erro ao carregar.</div>';}
-}
-
 document.getElementById('pvpModalBg').addEventListener('click',function(e){if(e.target===this)pvpFecharModal();});
 document.getElementById('rdOverlay').addEventListener('click',function(e){if(e.target===this)rdCloseModal();});
 
