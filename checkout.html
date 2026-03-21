@@ -79,10 +79,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 #brick-area{display:none;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:2px;margin-bottom:10px;overflow:hidden;}
 #cardBrick_container{width:100%;}
 #cardBrick_container iframe{max-width:100%!important;}
-/* Esconde o botão interno do Brick — usamos nosso próprio botão externo */
-#cardBrick_container [class*="submit-button"],
-#cardBrick_container [class*="payment-button"],
-#cardBrick_container button[type="submit"]{display:none!important;}
 
 /* ─── BOTÃO ─── */
 .btn-pg{width:100%;padding:15px;border-radius:12px;border:none;color:#000;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;margin-top:10px;}
@@ -307,11 +303,11 @@ async function selecionarMetodo(m){
   var btn=document.getElementById('btnPagar');
   if(m==='cartao'){
     brick.style.display='block';
-    btn.className='btn-pg btn-card';
-    btn.querySelector('.btxt').textContent='💳 Pagar com Cartão';
+    btn.style.display='none';  /* Brick tem seu próprio botão */
     await initCardBrick();
   }else{
     brick.style.display='none';
+    btn.style.display='';
     btn.className='btn-pg btn-pix';
     btn.querySelector('.btxt').textContent='⚡ Pagar com Pix';
   }
@@ -333,15 +329,19 @@ async function initCardBrick(){
     cardBrickCtrl=await mpInstance.bricks().create('cardPayment','cardBrick_container',{
       initialization:{amount:total,payer:{email}},
       customization:{
-        visual:{style:{theme:'dark'},hideFormTitle:true,hidePaymentButton:true},
+        visual:{style:{theme:'dark'},hideFormTitle:true},
         paymentMethods:{maxInstallments:12}
       },
       callbacks:{
         onReady:()=>{},
         onSubmit:async(cardData)=>{
           console.log('[Brick RAW]',JSON.stringify(cardData));
+          /* Mostra loading no botão do PIX (reutilizado como indicador) */
+          var brickArea=document.getElementById('brick-area');
+          if(brickArea)brickArea.style.opacity='.5';
           var fd=cardData&&cardData.formData?cardData.formData:cardData&&cardData.data?cardData.data:cardData;
           await pagarCartao(fd);
+          if(brickArea)brickArea.style.opacity='1';
         },
         onError:(err)=>{
           if(err&&err.type==='non_critical')return;
@@ -361,15 +361,8 @@ async function pagar(){
   var btn=document.getElementById('btnPagar');
   btn.disabled=true;btn.classList.add('loading');
   if(metodoSelecionado==='cartao'){
-    if(!cardBrickCtrl){showToast('Formulário do cartão não carregou.');btn.disabled=false;btn.classList.remove('loading');return;}
-    /* MP Brick: submit() dispara validação e chama onSubmit se ok
-       Não fazer await — o Brick é assíncrono e chama onSubmit no callback */
-    cardBrickCtrl.submit().catch(e=>{
-      console.warn('[Brick submit]',e);
-      btn.disabled=false;btn.classList.remove('loading');
-    });
-    /* Timeout de segurança: reseta botão se onSubmit não for chamado em 20s */
-    setTimeout(()=>{if(btn.disabled)btn.disabled=false;btn.classList.remove('loading');},20000);
+    /* O Brick tem seu próprio botão — este código não deve ser atingido */
+    btn.disabled=false;btn.classList.remove('loading');
     return;
   }
   /* PIX */
