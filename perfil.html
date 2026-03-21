@@ -6730,42 +6730,29 @@ function drawSpaceBg(ctx,w,h){
   /* ── Fundo espacial premium ── */
   ctx.fillStyle='#00000f';ctx.fillRect(0,0,w,h);
 
-  /* Nebulosa roxa-azul (fundo distante) */
-  var nb1=ctx.createRadialGradient(w*.62,h*.3,0,w*.62,h*.3,w*.55);
-  nb1.addColorStop(0,'rgba(60,20,120,.28)');
-  nb1.addColorStop(0.4,'rgba(30,10,80,.14)');
+  /* Nebulosa roxa-azul — canto superior direito, bem suave */
+  var nb1=ctx.createRadialGradient(w*.78,h*.18,0,w*.78,h*.18,w*.38);
+  nb1.addColorStop(0,'rgba(50,15,100,.18)');
+  nb1.addColorStop(0.5,'rgba(25,8,60,.08)');
   nb1.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=nb1;ctx.fillRect(0,0,w,h);
 
-  /* Nebulosa laranja-rosa (canto oposto) */
-  var nb2=ctx.createRadialGradient(w*.1,h*.75,0,w*.1,h*.75,w*.45);
-  nb2.addColorStop(0,'rgba(120,40,60,.22)');
-  nb2.addColorStop(0.5,'rgba(70,20,40,.10)');
+  /* Nebulosa azul-petróleo — canto inferior esquerdo */
+  var nb2=ctx.createRadialGradient(w*.08,h*.85,0,w*.08,h*.85,w*.32);
+  nb2.addColorStop(0,'rgba(10,40,90,.16)');
+  nb2.addColorStop(0.5,'rgba(5,20,50,.07)');
   nb2.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=nb2;ctx.fillRect(0,0,w,h);
 
-  /* Nebulosa azul-ciano central-alta */
-  var nb3=ctx.createRadialGradient(w*.45,h*.1,0,w*.45,h*.1,w*.35);
-  nb3.addColorStop(0,'rgba(20,60,130,.20)');
-  nb3.addColorStop(0.6,'rgba(10,30,80,.08)');
+  /* Nebulosa carmim — canto inferior direito */
+  var nb3=ctx.createRadialGradient(w*.88,h*.82,0,w*.88,h*.82,w*.28);
+  nb3.addColorStop(0,'rgba(100,20,40,.14)');
+  nb3.addColorStop(0.5,'rgba(50,10,20,.06)');
   nb3.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=nb3;ctx.fillRect(0,0,w,h);
 
-  /* Via Láctea — faixa diagonal de poeira estelar */
-  ctx.save();
-  ctx.globalAlpha=0.08;
-  var mlkG=ctx.createLinearGradient(0,h*.6,w,h*.2);
-  mlkG.addColorStop(0,'rgba(0,0,0,0)');
-  mlkG.addColorStop(0.3,'rgba(180,160,255,1)');
-  mlkG.addColorStop(0.5,'rgba(220,200,255,1)');
-  mlkG.addColorStop(0.7,'rgba(180,160,255,1)');
-  mlkG.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=mlkG;
-  ctx.beginPath();
-  ctx.ellipse(w*.5,h*.42,w*.55,h*.12,Math.PI*0.18,0,Math.PI*2);
-  ctx.fill();
-  ctx.globalAlpha=1;
-  ctx.restore();
+  /* Via Láctea — poeira estelar como estrelas minúsculas extras (sem elipse sólida) */
+  /* Adicionada nas camadas de estrelas para evitar mancha sobre o planeta */
 
   /* Estrelas: 3 camadas — poeira distante, médias, brilhantes */
   var stars=[];
@@ -6779,34 +6766,47 @@ function drawSpaceBg(ctx,w,h){
       col:'rgba(200,210,255,', bright:false, layer:1
     });
   }
-  /* Camada 2: estrelas médias com leve cintilação */
+  /* Faixa da Via Láctea — estrelas minúsculas em banda diagonal */
+  for(var i=0;i<120;i++){
+    var t=i/120;
+    var bx=w*(0.05+t*0.9);
+    var by=h*(0.65-t*0.45)+(Math.random()-.5)*h*.28;
+    stars.push({
+      x:bx, y:by,
+      r:.05+Math.random()*.12, a:.15+Math.random()*.35,
+      s:.0003+Math.random()*.0006,
+      col:Math.random()>.5?'rgba(210,200,255,':'rgba(255,245,220,',
+      bright:false, layer:1
+    });
+  }
+  /* Camada 2: estrelas médias — cintilação mais rápida e visível */
   for(var i=0;i<180;i++){
     var hue=Math.random();
     var col=hue>.88?'rgba(255,220,130,':hue>.76?'rgba(160,200,255,':hue>.68?'rgba(255,180,180,':'rgba(255,255,255,';
     stars.push({
       x:Math.random()*w, y:Math.random()*h,
-      r:.22+Math.random()*.38, a:.4+Math.random()*.6,
-      s:.0008+Math.random()*.002,
+      r:.25+Math.random()*.42, a:.35+Math.random()*.65,
+      s:.004+Math.random()*.009,   /* 5x mais rápido */
       col:col, bright:false, layer:2
     });
   }
-  /* Camada 3: estrelas brilhantes com difração em cruz */
-  for(var i=0;i<18;i++){
+  /* Camada 3: estrelas brilhantes — cintilação bem visível */
+  for(var i=0;i<22;i++){
     var hue2=Math.random();
     var col2=hue2>.6?'rgba(255,230,150,':hue2>.3?'rgba(180,220,255,':'rgba(255,255,255,';
     stars.push({
       x:Math.random()*w, y:Math.random()*h,
-      r:.5+Math.random()*.7, a:.6+Math.random()*.4,
-      s:.0012+Math.random()*.0025,
+      r:.55+Math.random()*.75, a:.5+Math.random()*.5,
+      s:.006+Math.random()*.012,   /* cintila visivelmente */
       col:col2, bright:true, layer:3
     });
   }
-  /* Camada 4: estrelas gigantes com halo suave */
-  for(var i=0;i<6;i++){
+  /* Camada 4: estrelas gigantes — cintilação lenta e profunda */
+  for(var i=0;i<8;i++){
     stars.push({
       x:Math.random()*w, y:Math.random()*h,
-      r:.9+Math.random()*.6, a:.7+Math.random()*.3,
-      s:.001+Math.random()*.002,
+      r:.9+Math.random()*.7, a:.6+Math.random()*.4,
+      s:.003+Math.random()*.005,
       col:'rgba(255,245,220,', bright:true, giant:true, layer:4
     });
   }
@@ -6820,9 +6820,6 @@ function drawSpaceBg(ctx,w,h){
     ctx.fillStyle=nb1;ctx.fillRect(0,0,w,h);
     ctx.fillStyle=nb2;ctx.fillRect(0,0,w,h);
     ctx.fillStyle=nb3;ctx.fillRect(0,0,w,h);
-    ctx.save();ctx.globalAlpha=0.06;ctx.fillStyle=mlkG;
-    ctx.beginPath();ctx.ellipse(w*.5,h*.42,w*.55,h*.12,Math.PI*0.18,0,Math.PI*2);
-    ctx.fill();ctx.restore();
 
     stars.forEach(function(s){
       s.a+=s.s;
