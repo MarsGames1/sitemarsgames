@@ -391,79 +391,62 @@ async function pagar() {
    Executa 1 SELECT + 1 UPSERT por tabela — sem sobrecarga.
    Idempotência via sessionStorage evita duplo crédito em retry. ── */
 async function creditarPacoteMPCartao(session) {
-  const pkgId  = sessionStorage.getItem('mg_loja_pkg_id')    || '';
+  const pkgId  = sessionStorage.getItem('mg_loja_pkg_id') || '';
   const pkgMP  = parseInt(sessionStorage.getItem('mg_loja_pkg_mp') || '0');
-  const itensRaw = sessionStorage.getItem('mg_itens_pendentes') || '[]';
 
-  // Só executa se for compra de pacote MP
   let itens = [];
-  try { itens = JSON.parse(itensRaw); } catch(e) {}
+  try { itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]'); } catch(e) {}
   if (!itens.length || itens[0].tipo !== 'marspoints') return false;
 
-  // Idempotência
   if (sessionStorage.getItem('mg_loja_creditado_cartao')) return true;
   sessionStorage.setItem('mg_loja_creditado_cartao', '1');
 
   const email = session.user.email;
   const token = session.access_token;
-  const SUPA_URL_C = SUPABASE_URL;
-  const SUPA_KEY_C = SUPABASE_KEY;
+  const SU = SUPABASE_URL, SK = SUPABASE_KEY;
 
-  // Lê bonus: primeiro mg_loja_pkg_bonus, fallback para itens[0].bonus
   let bonus = [];
-  try {
-    const bonusRaw = sessionStorage.getItem('mg_loja_pkg_bonus') || '[]';
-    bonus = JSON.parse(bonusRaw);
-  } catch(e) {}
+  try { bonus = JSON.parse(sessionStorage.getItem('mg_loja_pkg_bonus') || '[]'); } catch(e) {}
   if (!bonus.length && itens[0] && Array.isArray(itens[0].bonus)) bonus = itens[0].bonus;
-
   console.log('[creditarPacoteMPCartao] pkgId:', pkgId, '| pkgMP:', pkgMP, '| bonus:', JSON.stringify(bonus));
 
-  const headers = {
-    'apikey': SUPA_KEY_C,
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  };
+  const hBase = { 'apikey': SK, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  const hMin  = { ...hBase, 'Prefer': 'return=minimal' };
 
   let tktCreditado = 0, xpCreditado = 0;
   const erros = [];
 
   // ── 1. MarsPoints ──
   try {
-    const mpRes  = await fetch(`${SUPA_URL_C}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(email)}&limit=1`, { headers });
-    if (!mpRes.ok) throw new Error(`MP SELECT ${mpRes.status}`);
-    const mpRows = await mpRes.json();
-    const mpAtual = (mpRows[0] && mpRows[0].pontos)    || 0;
-    const hist    = (mpRows[0] && mpRows[0].historico) || [];
+    const mpGet = await fetch(`${SU}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(email)}&limit=1`, { headers: hBase });
+    if (!mpGet.ok) throw new Error(`MP SELECT ${mpGet.status}`);
+    const mpRows = await mpGet.json();
+    const existe = mpRows.length > 0;
+    const mpAtual = existe ? (mpRows[0].pontos || 0) : 0;
+    const hist = existe ? (mpRows[0].historico || []) : [];
     hist.unshift({ pontos: pkgMP, descricao: 'Compra pacote MP (cartão): ' + pkgId, data: new Date().toISOString(), tipo: 'compra_mp' });
-    const mpWrite = await fetch(`${SUPA_URL_C}/rest/v1/marspoints`, {
-      method: 'POST',
-      headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ user_email: email, pontos: mpAtual + pkgMP, historico: hist.slice(0, 50) })
-    });
+    const payload = { pontos: mpAtual + pkgMP, historico: hist.slice(0, 50) };
+    const mpWrite = existe
+      ? await fetch(`${SU}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(email)}`, { method: 'PATCH', headers: hMin, body: JSON.stringify(payload) })
+      : await fetch(`${SU}/rest/v1/marspoints`, { method: 'POST', headers: hMin, body: JSON.stringify({ user_email: email, ...payload }) });
     if (!mpWrite.ok) throw new Error(`MP WRITE ${mpWrite.status}: ${(await mpWrite.text()).slice(0,100)}`);
     console.log('[MP cartão] ✅ +' + pkgMP);
   } catch(e) { console.error('[MP cartão ERRO]', e.message); erros.push(e.message); }
 
-  // ── 2. Tickets bônus ──
+  // ── 2. Tickets ──
   try {
-    const tktBonus = bonus
-      .filter(b => b.type === 'tkt')
+    const tktBonus = bonus.filter(b => b.type === 'tkt')
       .reduce((s, b) => { const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0); }, 0);
     if (tktBonus > 0) {
-      const tktGet = await fetch(`${SUPA_URL_C}/rest/v1/tickets?user_email=eq.${encodeURIComponent(email)}&limit=1`, { headers });
+      const tktGet = await fetch(`${SU}/rest/v1/tickets?user_email=eq.${encodeURIComponent(email)}&limit=1`, { headers: hBase });
       if (!tktGet.ok) throw new Error(`TKT SELECT ${tktGet.status}`);
       const tktRows = await tktGet.json();
-      const tktAtual = (tktRows[0] && tktRows[0].quantidade)      || 0;
-      const tktTotal = (tktRows[0] && tktRows[0].total_acumulado) || 0;
-      const tktPayload = { user_email: email, quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus };
-      if (!tktRows[0]) tktPayload.ultima_renovacao = new Date().toISOString();
-      const tktWrite = await fetch(`${SUPA_URL_C}/rest/v1/tickets`, {
-        method: 'POST',
-        headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify(tktPayload)
-      });
+      const tktExiste = tktRows.length > 0;
+      const tktAtual = tktExiste ? (tktRows[0].quantidade || 0) : 0;
+      const tktTotal = tktExiste ? (tktRows[0].total_acumulado || 0) : 0;
+      const tktWrite = tktExiste
+        ? await fetch(`${SU}/rest/v1/tickets?user_email=eq.${encodeURIComponent(email)}`, { method: 'PATCH', headers: hMin, body: JSON.stringify({ quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus }) })
+        : await fetch(`${SU}/rest/v1/tickets`, { method: 'POST', headers: hMin, body: JSON.stringify({ user_email: email, quantidade: tktBonus, total_acumulado: tktBonus, ultima_renovacao: new Date().toISOString() }) });
       if (!tktWrite.ok) throw new Error(`TKT WRITE ${tktWrite.status}: ${(await tktWrite.text()).slice(0,100)}`);
       tktCreditado = tktBonus;
       console.log('[Tickets cartão] ✅ +' + tktBonus);
@@ -472,36 +455,30 @@ async function creditarPacoteMPCartao(session) {
 
   // ── 3. XP Planeta ──
   try {
-    const xpBonus = bonus
-      .filter(b => b.type === 'xp')
+    const xpBonus = bonus.filter(b => b.type === 'xp')
       .reduce((s, b) => { const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0); }, 0);
     if (xpBonus > 0) {
-      const plGet = await fetch(`${SUPA_URL_C}/rest/v1/planetas?user_email=eq.${encodeURIComponent(email)}&limit=1`, { headers });
+      const plGet = await fetch(`${SU}/rest/v1/planetas?user_email=eq.${encodeURIComponent(email)}&limit=1`, { headers: hBase });
       if (!plGet.ok) throw new Error(`XP SELECT ${plGet.status}`);
       const plRows = await plGet.json();
-      const xpAtual = (plRows[0] && plRows[0].xp)  || 0;
-      const pLog    = (plRows[0] && plRows[0].log)  || [];
+      const plExiste = plRows.length > 0;
+      const xpAtual = plExiste ? (plRows[0].xp || 0) : 0;
+      const pLog = plExiste ? (plRows[0].log || []) : [];
       pLog.unshift({ label: 'Bônus XP pacote ' + pkgId + ' (cartão)', xp: xpBonus, icon: '🌟', t: new Date().toLocaleTimeString('pt-BR') });
-      const plWrite = await fetch(`${SUPA_URL_C}/rest/v1/planetas`, {
-        method: 'POST',
-        headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({ user_email: email, xp: xpAtual + xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() })
-      });
+      const plWrite = plExiste
+        ? await fetch(`${SU}/rest/v1/planetas?user_email=eq.${encodeURIComponent(email)}`, { method: 'PATCH', headers: hMin, body: JSON.stringify({ xp: xpAtual + xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() }) })
+        : await fetch(`${SU}/rest/v1/planetas`, { method: 'POST', headers: hMin, body: JSON.stringify({ user_email: email, xp: xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() }) });
       if (!plWrite.ok) throw new Error(`XP WRITE ${plWrite.status}: ${(await plWrite.text()).slice(0,100)}`);
       xpCreditado = xpBonus;
       console.log('[XP cartão] ✅ +' + xpBonus);
     }
   } catch(e) { console.error('[XP cartão ERRO]', e.message); erros.push(e.message); }
 
-  // Fallback: se alguma etapa falhou, perfil.html retenta
   if (erros.length > 0) {
     console.warn('[creditarPacoteMPCartao] erros:', erros);
     sessionStorage.setItem('mg_loja_pago', 'sim');
   }
-
-  // Limpa sessão
   ['mg_loja_pkg_id','mg_loja_pkg_mp','mg_loja_pkg_bonus','mg_itens_pendentes','mg_loja_creditado_cartao'].forEach(k => sessionStorage.removeItem(k));
-
   return erros.length === 0;
 }
 

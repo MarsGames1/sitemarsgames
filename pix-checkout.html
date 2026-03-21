@@ -337,9 +337,9 @@ async function irParaSucesso(ref) {
 
 // ═══════════════════════════════════════════════════════════
 // creditarPacoteMP — credita MP + Tickets + XP do planeta
-// Cada etapa tem try/catch independente: falha em tickets NÃO
-// impede crédito de XP. Fallback lê bonus de mg_itens_pendentes
-// se mg_loja_pkg_bonus estiver vazio.
+// Usa PATCH (update) quando registro já existe, POST (insert)
+// quando é novo. Cada etapa é independente — falha em tickets
+// não impede crédito de XP. Fallback lê bonus de mg_itens_pendentes.
 // ═══════════════════════════════════════════════════════════
 async function creditarPacoteMP() {
   if (!userEmail) return;
@@ -355,50 +355,70 @@ async function creditarPacoteMP() {
   const pkgId = sessionStorage.getItem('mg_loja_pkg_id') || '';
   const pkgMP = parseInt(sessionStorage.getItem('mg_loja_pkg_mp') || '0');
 
-  // Lê bonus de mg_loja_pkg_bonus; se vazio, usa itens embeddados como fallback
+  // Lê bonus: mg_loja_pkg_bonus, fallback para itens embeddados
   let bonus = [];
   try {
     const bonusRaw = sessionStorage.getItem('mg_loja_pkg_bonus') || '[]';
     bonus = JSON.parse(bonusRaw);
-  } catch(e) { bonus = []; }
-
-  // Fallback: lê bonus do próprio objeto de itens (salvo pela perfil.html)
+  } catch(e) {}
   if (!bonus.length) {
     try {
-      const itensRaw = sessionStorage.getItem('mg_itens_pendentes') || '[]';
-      const itens = JSON.parse(itensRaw);
+      const itens = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
       if (itens[0] && Array.isArray(itens[0].bonus)) bonus = itens[0].bonus;
     } catch(e) {}
   }
 
   console.log('[creditarPacoteMP] pkgId:', pkgId, '| pkgMP:', pkgMP, '| bonus:', JSON.stringify(bonus));
 
-  // Token: prefere JWT do usuário (permite escrita via RLS), fallback para anon key
   const token = (accessToken && accessToken.length > 20) ? accessToken : SUPA_KEY;
-  const headers = { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  const hBase = { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  const hMin  = { ...hBase, 'Prefer': 'return=minimal' };
 
-  let tktCreditado = 0;
-  let xpCreditado  = 0;
+  // Helper: upsert seguro — PATCH se existir, POST se não existir
+  async function upsertRow(table, emailFilter, payload) {
+    const url = `${SUPA_URL}/rest/v1/${table}?user_email=eq.${encodeURIComponent(emailFilter)}`;
+    // Tenta PATCH primeiro (update)
+    const patch = await fetch(url, { method: 'PATCH', headers: hMin, body: JSON.stringify(payload) });
+    if (patch.ok) return patch;
+    // Se 404 ou registro não existe (PATCH afeta 0 linhas mas retorna 204), tenta POST
+    if (patch.status === 404 || patch.status === 406) {
+      const post = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+        method: 'POST', headers: hMin,
+        body: JSON.stringify({ ...payload, user_email: emailFilter })
+      });
+      return post;
+    }
+    return patch;
+  }
+
+  let tktCreditado = 0, xpCreditado = 0;
   const erros = [];
 
   // ── 1. MarsPoints ──────────────────────────────────────────
   try {
-    const mpRes  = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, { headers });
-    if (!mpRes.ok) throw new Error(`MP SELECT ${mpRes.status}`);
-    const mpRows = await mpRes.json();
-    const mpAtual = (mpRows[0] && mpRows[0].pontos) || 0;
-    const hist    = (mpRows[0] && mpRows[0].historico) || [];
+    const mpGet = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, { headers: hBase });
+    if (!mpGet.ok) throw new Error(`MP SELECT ${mpGet.status}`);
+    const mpRows = await mpGet.json();
+    const existe  = mpRows.length > 0;
+    const mpAtual = existe ? (mpRows[0].pontos || 0) : 0;
+    const hist    = existe ? (mpRows[0].historico || []) : [];
     hist.unshift({ pontos: pkgMP, descricao: 'Compra pacote MP: ' + pkgId, data: new Date().toISOString(), tipo: 'compra_mp' });
 
-    const mpWrite = await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
-      method: 'POST',
-      headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ user_email: userEmail, pontos: mpAtual + pkgMP, historico: hist.slice(0, 50) })
-    });
-    if (!mpWrite.ok) {
-      const errTxt = await mpWrite.text();
-      throw new Error(`MP WRITE ${mpWrite.status}: ${errTxt.slice(0,120)}`);
+    const payload = { pontos: mpAtual + pkgMP, historico: hist.slice(0, 50) };
+    let mpWrite;
+    if (existe) {
+      // PATCH — atualiza registro existente
+      mpWrite = await fetch(`${SUPA_URL}/rest/v1/marspoints?user_email=eq.${encodeURIComponent(userEmail)}`, {
+        method: 'PATCH', headers: hMin, body: JSON.stringify(payload)
+      });
+    } else {
+      // POST — cria novo registro
+      mpWrite = await fetch(`${SUPA_URL}/rest/v1/marspoints`, {
+        method: 'POST', headers: hMin,
+        body: JSON.stringify({ user_email: userEmail, ...payload })
+      });
     }
+    if (!mpWrite.ok) throw new Error(`MP WRITE ${mpWrite.status}: ${(await mpWrite.text()).slice(0,120)}`);
     console.log('[MP] ✅ +' + pkgMP + ' creditado');
   } catch(e) {
     console.error('[MP ERRO]', e.message);
@@ -412,25 +432,28 @@ async function creditarPacoteMP() {
       .reduce((s, b) => { const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0); }, 0);
 
     if (tktBonus > 0) {
-      const tktGet = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, { headers });
+      const tktGet = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, { headers: hBase });
       if (!tktGet.ok) throw new Error(`TKT SELECT ${tktGet.status}`);
-      const tktRows = await tktGet.json();
-      const tktAtual = (tktRows[0] && tktRows[0].quantidade)      || 0;
-      const tktTotal = (tktRows[0] && tktRows[0].total_acumulado) || 0;
+      const tktRows  = await tktGet.json();
+      const tktExiste = tktRows.length > 0;
+      const tktAtual  = tktExiste ? (tktRows[0].quantidade      || 0) : 0;
+      const tktTotal  = tktExiste ? (tktRows[0].total_acumulado || 0) : 0;
 
-      // Não sobrescreve ultima_renovacao em registro existente
-      const tktPayload = { user_email: userEmail, quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus };
-      if (!tktRows[0]) tktPayload.ultima_renovacao = new Date().toISOString();
-
-      const tktWrite = await fetch(`${SUPA_URL}/rest/v1/tickets`, {
-        method: 'POST',
-        headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify(tktPayload)
-      });
-      if (!tktWrite.ok) {
-        const errTxt = await tktWrite.text();
-        throw new Error(`TKT WRITE ${tktWrite.status}: ${errTxt.slice(0,120)}`);
+      let tktWrite;
+      if (tktExiste) {
+        // PATCH — só atualiza quantidade e total, preserva ultima_renovacao
+        tktWrite = await fetch(`${SUPA_URL}/rest/v1/tickets?user_email=eq.${encodeURIComponent(userEmail)}`, {
+          method: 'PATCH', headers: hMin,
+          body: JSON.stringify({ quantidade: tktAtual + tktBonus, total_acumulado: tktTotal + tktBonus })
+        });
+      } else {
+        // POST — cria registro novo
+        tktWrite = await fetch(`${SUPA_URL}/rest/v1/tickets`, {
+          method: 'POST', headers: hMin,
+          body: JSON.stringify({ user_email: userEmail, quantidade: tktBonus, total_acumulado: tktBonus, ultima_renovacao: new Date().toISOString() })
+        });
       }
+      if (!tktWrite.ok) throw new Error(`TKT WRITE ${tktWrite.status}: ${(await tktWrite.text()).slice(0,120)}`);
       tktCreditado = tktBonus;
       console.log('[Tickets] ✅ +' + tktBonus + ' creditado');
     }
@@ -446,22 +469,27 @@ async function creditarPacoteMP() {
       .reduce((s, b) => { const m = (b.label || '').match(/\d+/); return s + (m ? parseInt(m[0]) : 0); }, 0);
 
     if (xpBonus > 0) {
-      const plGet = await fetch(`${SUPA_URL}/rest/v1/planetas?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, { headers });
+      const plGet = await fetch(`${SUPA_URL}/rest/v1/planetas?user_email=eq.${encodeURIComponent(userEmail)}&limit=1`, { headers: hBase });
       if (!plGet.ok) throw new Error(`XP SELECT ${plGet.status}`);
-      const plRows = await plGet.json();
-      const xpAtual = (plRows[0] && plRows[0].xp)   || 0;
-      const pLog    = (plRows[0] && plRows[0].log)   || [];
+      const plRows  = await plGet.json();
+      const plExiste = plRows.length > 0;
+      const xpAtual  = plExiste ? (plRows[0].xp  || 0) : 0;
+      const pLog     = plExiste ? (plRows[0].log  || []) : [];
       pLog.unshift({ label: 'Bônus XP pacote ' + pkgId, xp: xpBonus, icon: '🌟', t: new Date().toLocaleTimeString('pt-BR') });
 
-      const plWrite = await fetch(`${SUPA_URL}/rest/v1/planetas`, {
-        method: 'POST',
-        headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({ user_email: userEmail, xp: xpAtual + xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() })
-      });
-      if (!plWrite.ok) {
-        const errTxt = await plWrite.text();
-        throw new Error(`XP WRITE ${plWrite.status}: ${errTxt.slice(0,120)}`);
+      let plWrite;
+      if (plExiste) {
+        plWrite = await fetch(`${SUPA_URL}/rest/v1/planetas?user_email=eq.${encodeURIComponent(userEmail)}`, {
+          method: 'PATCH', headers: hMin,
+          body: JSON.stringify({ xp: xpAtual + xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() })
+        });
+      } else {
+        plWrite = await fetch(`${SUPA_URL}/rest/v1/planetas`, {
+          method: 'POST', headers: hMin,
+          body: JSON.stringify({ user_email: userEmail, xp: xpBonus, log: pLog.slice(0, 20), updated_at: new Date().toISOString() })
+        });
       }
+      if (!plWrite.ok) throw new Error(`XP WRITE ${plWrite.status}: ${(await plWrite.text()).slice(0,120)}`);
       xpCreditado = xpBonus;
       console.log('[XP Planeta] ✅ +' + xpBonus + ' creditado');
     }
@@ -474,26 +502,20 @@ async function creditarPacoteMP() {
   const parts = [`✅ +${pkgMP.toLocaleString('pt-BR')} MP`];
   if (tktCreditado > 0) parts.push(`+${tktCreditado} Tickets`);
   if (xpCreditado  > 0) parts.push(`+${xpCreditado} XP`);
-  if (erros.length > 0) parts.push(`⚠️ Erro parcial — verifique perfil`);
-
+  if (erros.length > 0) parts.push(`⚠️ Erro parcial`);
   const msgEl = document.getElementById('pollMsg');
   if (msgEl) msgEl.textContent = parts.join(' · ');
-
-  // Atualiza badge de pontos na tela de sucesso
   const ptsEl = document.getElementById('ptsGanhos');
   if (ptsEl) ptsEl.textContent = pkgMP.toLocaleString('pt-BR');
 
-  // Se houve erro de tickets/XP, salva flag para perfil.html tentar novamente
+  // Fallback: se algo falhou, perfil.html retenta ao carregar
   if (erros.length > 0) {
-    console.warn('[creditarPacoteMP] erros:', erros);
-    sessionStorage.setItem('mg_loja_pago', 'sim'); // perfil.html retenta via processarBonusLojaPendente
+    console.warn('[creditarPacoteMP] erros pendentes:', erros);
+    sessionStorage.setItem('mg_loja_pago', 'sim');
   }
 
   // Limpa sessão
-  sessionStorage.removeItem('mg_loja_pkg_id');
-  sessionStorage.removeItem('mg_loja_pkg_mp');
-  sessionStorage.removeItem('mg_loja_pkg_bonus');
-  sessionStorage.removeItem('mg_itens_pendentes');
+  ['mg_loja_pkg_id','mg_loja_pkg_mp','mg_loja_pkg_bonus','mg_itens_pendentes'].forEach(k => sessionStorage.removeItem(k));
 }
 
 // Executa o câmbio após pagamento da taxa via Pix
