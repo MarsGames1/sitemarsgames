@@ -7499,23 +7499,26 @@ async function planetaCarregarSupabase(){
   try{
     var{data}=await sb.from('planetas').select('xp,jogos,atividades,log').eq('user_email',email).maybeSingle();
     if(data){
-      var sbXP=data.xp||0;
-      /* FIX: Supabase é a fonte de verdade — sempre sincroniza,
-         independente do valor no localStorage */
-      if(sbXP>=0){
-        planetaTotalXP=sbXP;
-        planetaJogos=Math.max(planetaJogos,data.jogos||0);
-        planetaAtv=Math.max(planetaAtv,data.atividades||0);
-        var sbLog=data.log||[];
-        if(sbLog.length>0) planetaLog=sbLog;
-        localStorage.setItem('mg_planeta_xp',String(planetaTotalXP));
-        localStorage.setItem('mg_planeta_jogos',String(planetaJogos));
-        localStorage.setItem('mg_planeta_atv',String(planetaAtv));
-        localStorage.setItem('mg_planeta_log',JSON.stringify(planetaLog));
-        planetaEraIdx=0;
-        while(planetaEraIdx<PLANETA_ERAS.length-1&&planetaTotalXP>=PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
-        planetaUpdateUI();planetaRenderLog();
-      }
+      var sbXP = data.xp || 0;
+      /* Usa o MAIOR valor entre DB e localStorage
+         — protege contra regressão por edge fn com bug */
+      var localXP = parseInt(localStorage.getItem('mg_planeta_xp')||'0');
+      planetaTotalXP = Math.max(sbXP, localXP);
+      planetaJogos   = Math.max(planetaJogos, data.jogos||0);
+      planetaAtv     = Math.max(planetaAtv, data.atividades||0);
+      var sbLog = data.log||[];
+      /* Só substitui o log se o DB tiver entradas mais recentes */
+      if(sbLog.length > 0 && sbXP >= localXP) planetaLog = sbLog;
+      else if(sbLog.length > planetaLog.length)  planetaLog = sbLog;
+      localStorage.setItem('mg_planeta_xp',    String(planetaTotalXP));
+      localStorage.setItem('mg_planeta_jogos',  String(planetaJogos));
+      localStorage.setItem('mg_planeta_atv',    String(planetaAtv));
+      localStorage.setItem('mg_planeta_log',    JSON.stringify(planetaLog));
+      planetaEraIdx = 0;
+      while(planetaEraIdx < PLANETA_ERAS.length-1 && planetaTotalXP >= PLANETA_ERAS[planetaEraIdx+1].xp) planetaEraIdx++;
+      /* Se o DB estava desatualizado (localXP > sbXP), corrige o DB */
+      if(localXP > sbXP) planetaSyncSupabase();
+      planetaUpdateUI(); planetaRenderLog();
     }
   }catch(e){console.log('[Planeta load]',e.message);}
 }
