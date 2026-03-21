@@ -883,32 +883,27 @@ function iniciarTimer(minutos){
 }
 
 /* ── POLLING ──
-   Estratégia dupla:
-   1. A cada 5s: verifica no DB se o webhook já ativou (status='ativo')
-   2. A cada 15s: chama edge fn marspass-confirmar-pix para forçar verificação
-      (fallback quando o webhook do Mercado Pago não dispara)
+   Consulta o banco a cada 5s buscando status='ativo' para o usuário.
+   Sem chamada a edge functions externas — evita erros de CORS.
+   O webhook do Mercado Pago atualiza o registro diretamente no DB.
 ── */
 var _pollTentativas = 0;
-var _pollReference  = '';
 
 function iniciarPolling(reference){
   clearInterval(pollInterval);
   _pollTentativas = 0;
-  _pollReference  = reference;
 
   pollInterval = setInterval(async function(){
     _pollTentativas++;
     try{
       var r = await sb.auth.getSession();
       if(!r.data || !r.data.session) return;
-      var session = r.data.session;
-      var email   = session.user.email;
+      var email = r.data.session.user.email;
 
-      /* 1. Verifica no banco (barato — 1 SELECT por polling) */
+      /* Busca assinatura mais recente do usuário com status ativo ou pendente */
       var{data:ass} = await sb.from('marspass_assinaturas')
         .select('status,plano,id')
         .eq('user_email', email)
-        .in('status', ['ativo','pendente'])
         .order('created_at', {ascending:false})
         .limit(1)
         .maybeSingle();
@@ -920,36 +915,13 @@ function iniciarPolling(reference){
         return;
       }
 
-      /* 2. A cada 3 tentativas (~15s): chama edge fn para confirmar pagamento
-            — ativa o registro se o webhook não rodou */
-      if(_pollTentativas % 3 === 0){
-        try{
-          var confirmRes = await fetch(SUPABASE_URL + '/functions/v1/marspass-confirmar-pix', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + session.access_token
-            },
-            body: JSON.stringify({ reference: reference, plano: planoKey })
-          });
-          var confirmData = await confirmRes.json();
-          if(confirmRes.ok && (confirmData.ativo || confirmData.status === 'ativo')){
-            clearInterval(pollInterval);
-            clearInterval(timerInterval);
-            mostrarSucesso();
-            return;
-          }
-        }catch(eConf){ console.warn('[poll edge]', eConf.message); }
-      }
-
-      /* 3. Fallback final: se chegou >60 tentativas (~5min) sem confirmação,
-            para o poll e avisa — não expira a tela, deixa o usuário agir */
-      if(_pollTentativas > 60){
+      /* Para de tentar após 5 minutos (60 × 5s) sem ativação */
+      if(_pollTentativas >= 60){
         clearInterval(pollInterval);
-        console.warn('[poll] 5 min sem confirmação — parando polling automático');
+        console.warn('[poll] 5min sem confirmação do webhook — polling encerrado');
       }
 
-    }catch(e){ console.error('[Polling erro]', e); }
+    }catch(e){ console.error('[Polling erro]', e.message); }
   }, 5000);
 }
 
