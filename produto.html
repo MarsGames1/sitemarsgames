@@ -850,6 +850,20 @@ async function init(){
   if(!data){showError();return}
   produto=data;
 
+  // Incrementa views — fire-and-forget, não bloqueia o carregamento da página
+  // Usa sessionStorage para não contar múltiplos reloads da mesma sessão
+  (function(){
+    var _vKey='mg_view_'+data.id;
+    if(!sessionStorage.getItem(_vKey)){
+      sessionStorage.setItem(_vKey,'1');
+      sb.from('produtos')
+        .update({views:(data.views||0)+1})
+        .eq('id',data.id)
+        .then(function(){})
+        .catch(function(){});
+    }
+  })();
+
   // Sincroniza favoritos do Supabase (por user_id) antes de renderizar
   try{
     var rs=await sb.auth.getSession();
