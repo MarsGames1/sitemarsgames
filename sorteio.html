@@ -512,6 +512,15 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   margin-bottom:24px;
 }
 .premio-icon{font-size:32px;flex-shrink:0}
+/* Imagem do prêmio no card */
+.premio-img{
+  width:72px;height:72px;border-radius:10px;
+  object-fit:cover;flex-shrink:0;
+  border:1px solid rgba(255,215,0,.2);
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+.premio-img:hover{transform:scale(1.06);box-shadow:0 6px 24px rgba(255,215,0,.2)}
 .premio-info{}
 .premio-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:4px}
 .premio-nome{font-size:16px;font-weight:900;color:#fff}
@@ -1295,7 +1304,7 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 
         <!-- Prêmio -->
         <div class="premio-box">
-          <div class="premio-icon">🎮</div>
+          <div class="premio-icon" id="premioIcon">🎮</div>
           <div class="premio-info">
             <div class="premio-label">Prêmio</div>
             <div class="premio-nome" id="premiNome">—</div>
@@ -1981,6 +1990,16 @@ function renderSorteio(s){
   document.getElementById('sorteioDesc').textContent=s.descricao||'';
   document.getElementById('premiNome').textContent=s.premio;
   document.getElementById('premiPlat').textContent=s.plataforma||'Steam Key';
+
+  /* Imagem do prêmio — exibe se existir, fallback para emoji */
+  var premioIconEl=document.getElementById('premioIcon');
+  if(s.imagem_url){
+    premioIconEl.className='';
+    premioIconEl.innerHTML='<img src="'+s.imagem_url+'" alt="'+s.premio+'" class="premio-img" onerror="this.parentElement.className=\'premio-icon\';this.parentElement.innerHTML=\'🎮\'">';
+  } else {
+    premioIconEl.className='premio-icon';
+    premioIconEl.innerHTML='🎮';
+  }
 
   /* Aplica classe e cor de acento ao card */
   var card=document.getElementById('sorteioCardMain');
