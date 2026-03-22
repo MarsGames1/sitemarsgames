@@ -390,12 +390,12 @@ async function pagar(){
     var r=await sb.auth.getSession();
     if(!r.data||!r.data.session){showToast('Faça login para continuar.');setTimeout(()=>window.location.href='perfil.html',1200);btn.disabled=false;btn.classList.remove('loading');return;}
     var session=r.data.session;
-    var itensDesc=itens.map(p=>({...p,currency_id:'BRL'}));
+    var itensDesc=itens.map(p=>({...p,currency_id:'BRL',preco:Math.round(Number(p.preco)*100)/100}));
     if(cupomAtual){
       var precos=itensDesc.map(p=>Number(p.preco));
       var menor=Math.min(...precos);
       var idxM=precos.indexOf(menor);
-      itensDesc[idxM]={...itensDesc[idxM],preco:Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())};
+      itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())*100)/100};
     }
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
       method:'POST',
@@ -425,11 +425,11 @@ async function pagarCartao(cardData){
     var r=await sb.auth.getSession();
     if(!r.data||!r.data.session){showToast('Sessão expirada.');btn.disabled=false;btn.classList.remove('loading');return;}
     var session=r.data.session;
-    var itensDesc=itens.map(p=>({...p,currency_id:'BRL'}));
+    var itensDesc=itens.map(p=>({...p,currency_id:'BRL',preco:Math.round(Number(p.preco)*100)/100}));
     if(cupomAtual){
       var precos=itensDesc.map(p=>Number(p.preco));
       var idxM=precos.indexOf(Math.min(...precos));
-      itensDesc[idxM]={...itensDesc[idxM],preco:Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())};
+      itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())*100)/100};
     }
     /* Busca nome do titular em todos os lugares possíveis do Brick */
     var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)
