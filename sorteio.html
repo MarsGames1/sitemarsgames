@@ -165,29 +165,35 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
 }
 .nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
 
-/* MarsPass — anéis especiais */
+/* ── MarsPass — anéis idênticos ao perfil ── */
+@keyframes androPulse{0%,100%{box-shadow:0 0 16px rgba(124,106,247,.7),0 0 32px rgba(124,106,247,.3),0 0 64px rgba(255,60,110,.1)}50%{box-shadow:0 0 28px rgba(124,106,247,1),0 0 56px rgba(124,106,247,.5),0 0 80px rgba(255,60,110,.2)}}
+@keyframes navCentSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes centFlare{0%,100%{box-shadow:0 0 20px rgba(255,179,0,.8),0 0 40px rgba(255,107,0,.4)}50%{box-shadow:0 0 36px rgba(255,200,0,1),0 0 60px rgba(255,107,0,.7)}}
+@keyframes navSombSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes sombPulse{0%,100%{box-shadow:0 0 20px rgba(255,60,110,.9),0 0 40px rgba(255,60,110,.4)}50%{box-shadow:0 0 40px rgba(255,100,180,1),0 0 80px rgba(255,60,110,.7)}}
 .nav-nivel-andromeda .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#7c6af7,#aa99ff,#fff,#7c6af7,#9d8fff,#7c6af7);
-  animation:navDiaRotate 3s linear infinite;
-  box-shadow:0 0 12px rgba(124,106,247,.6),0 0 24px rgba(124,106,247,.3);
+  border:2px solid transparent!important;
+  background:conic-gradient(from 0deg,#3a1fa8,#7c6af7,#c4b8ff,#ff3c6e,#7c6af7,#3a1fa8) border-box;
+  box-shadow:0 0 14px rgba(124,106,247,.8),0 0 28px rgba(124,106,247,.3),0 0 42px rgba(255,60,110,.1);
+  animation:androPulse 2.5s ease-in-out infinite;
 }
-.nav-nivel-andromeda .nav-avatar-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;}
-.nav-nivel-andromeda .nav-user-avatar{border:none;position:relative;z-index:1;}
-.nav-nivel-triangulo .nav-user-avatar{border-color:#00ffe7!important;animation:navEsmPulse 1.8s ease-in-out infinite;}
+.nav-nivel-andromeda .nav-user-avatar{border:none!important;position:relative;z-index:1}
 .nav-nivel-centaurus .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#00ffe7,#7c6af7,#fff,#00ffe7,#a78bfa,#00ffe7);
-  animation:navDiaRotate 2s linear infinite;
-  box-shadow:0 0 14px rgba(0,255,231,.6),0 0 28px rgba(124,106,247,.4);
+  border:2px solid transparent!important;
+  background:conic-gradient(from 0deg,#7A4800,#c07800,#ffb300,#ffe566,#ff6b00,#ffb300,#7A4800) border-box;
+  box-shadow:0 0 14px rgba(255,179,0,.8),0 0 28px rgba(255,107,0,.3);
+  animation:navCentSpin 4s linear infinite,centFlare 2s ease-in-out infinite;
 }
-.nav-nivel-centaurus .nav-avatar-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;}
-.nav-nivel-centaurus .nav-user-avatar{border:none;position:relative;z-index:1;}
+.nav-nivel-centaurus .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0}
+.nav-nivel-centaurus .nav-user-avatar{border:none!important;position:relative;z-index:1}
 .nav-nivel-sombrero .nav-avatar-ring{
-  background:conic-gradient(from 0deg,#ff3c6e,#ff9900,#fff,#ff3c6e,#ffb300,#ff3c6e);
-  animation:navDiaRotate 1.5s linear infinite;
-  box-shadow:0 0 14px rgba(255,60,110,.7),0 0 28px rgba(255,153,0,.4);
+  border:2px solid transparent!important;
+  background:conic-gradient(from 0deg,#600020,#c01040,#ff3c6e,#ff80a0,#ff3c6e,#c01040,#600020) border-box;
+  box-shadow:0 0 18px rgba(255,60,110,.9),0 0 36px rgba(255,60,110,.4);
+  animation:navSombSpin 3s linear infinite,sombPulse 1.8s ease-in-out infinite;
 }
-.nav-nivel-sombrero .nav-avatar-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;}
-.nav-nivel-sombrero .nav-user-avatar{border:none;position:relative;z-index:1;}
+.nav-nivel-sombrero .nav-avatar-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg,#0a0a0e);z-index:0}
+.nav-nivel-sombrero .nav-user-avatar{border:none!important;position:relative;z-index:1}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
