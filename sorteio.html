@@ -2361,8 +2361,13 @@ function assinarRealtime(sorteioId){
 }
 
 /* Também escuta exclusão */
+var _realtimeDeleteChannel = null;
 function assinarRealtimeDelete(sorteioId){
-  sb.channel('sorteio_delete_'+sorteioId)
+  if(_realtimeDeleteChannel){
+    sb.removeChannel(_realtimeDeleteChannel);
+    _realtimeDeleteChannel = null;
+  }
+  _realtimeDeleteChannel = sb.channel('sorteio_delete_'+sorteioId)
     .on('postgres_changes',{
       event:'DELETE',schema:'public',table:'sorteios_periodicos',
       filter:'id=eq.'+sorteioId
@@ -2663,7 +2668,13 @@ function spaGo(page){
     /* Carrega o sorteio só quando a página está visível */
     if(contadorInterval) clearInterval(contadorInterval);
     setTipoSorteio(tipoAtual||'diario');
-  } else if(page === 'arena'){
+  } else {
+    /* Saiu da página de sorteios — fecha os dois canais realtime para liberar conexão */
+    if(_realtimeChannel){ sb.removeChannel(_realtimeChannel); _realtimeChannel = null; }
+    if(_realtimeDeleteChannel){ sb.removeChannel(_realtimeDeleteChannel); _realtimeDeleteChannel = null; }
+    if(contadorInterval){ clearInterval(contadorInterval); contadorInterval = null; }
+  }
+  if(page === 'arena'){
     document.getElementById('pageArena').classList.add('visible');
     document.getElementById('spaBtnArena').classList.add('active');
     _pvpRenderComSessao();
