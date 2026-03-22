@@ -1792,30 +1792,13 @@ sb.auth.onAuthStateChange(function(event,session){
 });
 
 /* ── TICKETS ── */
-
-/* Retorna o bônus de tickets do plano MarsPass ativo (0 se não tiver) */
-async function getBonusMarsPass(email){
-  var MP_TICKETS={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
-  try{
-    var{data}=await sb.from('marspass_assinaturas')
-      .select('plano')
-      .eq('user_email',email)
-      .eq('status','ativo')
-      .gt('data_vencimento',new Date().toISOString())
-      .maybeSingle();
-    return(data&&MP_TICKETS[data.plano])||0;
-  }catch(e){return 0;}
-}
-
 async function carregarTickets(user){
   var{data}=await sb.from('tickets').select('*').eq('user_email',user.email).maybeSingle();
 
-  /* Sem registro: cria com tickets baseados no nível + MarsPass */
+  /* Sem registro: cria com tickets baseados no nível (+2 a mais que antes) */
   if(!data){
     var nivel=await getNivelUsuario(user.email);
-    var bonusNivel=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
-    var bonusMP=await getBonusMarsPass(user.email);
-    var qtd=bonusNivel+bonusMP;
+    var qtd=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
     var{data:novo}=await sb.from('tickets').insert({
       user_id:user.id,user_email:user.email,
       quantidade:qtd,total_acumulado:qtd,
@@ -1829,9 +1812,7 @@ async function carregarTickets(user){
     var diffDias=Math.floor((agora-ultima)/(1000*60*60*24));
     if(diffDias>=7){
       var nivel=await getNivelUsuario(user.email);
-      var bonusNivel=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
-      var bonusMP=await getBonusMarsPass(user.email);
-      var bonus=bonusNivel+bonusMP;
+      var bonus=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
       var novaQtd=data.quantidade+bonus;
       await sb.from('tickets').update({
         quantidade:novaQtd,
@@ -1840,10 +1821,7 @@ async function carregarTickets(user){
       }).eq('user_email',user.email);
       data.quantidade=novaQtd;
       data.ultima_renovacao=agora.toISOString();
-      var msg=bonusMP>0
-        ?'🎟️ +'+bonus+' tickets renovados! ('+bonusNivel+' nível + '+bonusMP+' MarsPass)'
-        :'🎟️ +'+bonus+' tickets renovados!';
-      showToast(msg);
+      showToast('🎟️ +'+bonus+' tickets renovados!');
     }
   }
 
@@ -2629,11 +2607,31 @@ async function atualizarNavbar(session){
       if(imgAvatar) imgAvatar.style.display='none';
       if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
     }
-    try{
-      var mp=await sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle();
-      var pts=(mp.data&&mp.data.pontos)||0;
-      wrap.className='nav-avatar-wrap nav-nivel-'+getNavNivel(pts);
-    }catch(e){wrap.className='nav-avatar-wrap nav-nivel-bronze';}
+    /* Aplica anel do cache imediatamente */
+    var _cacheKey='mg_nav_'+session.user.email;
+    var _cached=null;
+    try{_cached=JSON.parse(localStorage.getItem(_cacheKey)||'null');}catch(_){}
+    if(_cached&&_cached.anel){
+      wrap.className='nav-avatar-wrap nav-nivel-'+_cached.anel;
+    } else {
+      wrap.className='nav-avatar-wrap nav-nivel-bronze';
+    }
+    /* Busca nível + anel escolhido do banco — atualiza se cache expirou (10s) */
+    var _agora=Date.now();
+    var _cacheOk=_cached&&(_agora-(_cached.ts||0)<10000);
+    if(!_cacheOk){
+      try{
+        var[_mpRes,_perfRes]=await Promise.all([
+          sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
+          sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
+        ]);
+        var _pts=(_mpRes.data&&_mpRes.data.pontos)||0;
+        var _anel=(_perfRes.data&&_perfRes.data.anel_escolhido)||null;
+        var _nivelRing=_anel||getNavNivel(_pts);
+        wrap.className='nav-avatar-wrap nav-nivel-'+_nivelRing;
+        try{localStorage.setItem(_cacheKey,JSON.stringify({anel:_nivelRing,ts:_agora}));}catch(_){}
+      }catch(e){/* mantém o que já estava */}
+    }
   } else {
     if(btnLogin) btnLogin.style.display='flex';
     wrap.style.display='none';
@@ -2737,7 +2735,7 @@ var RD_SLICES = [
    desc:'Um asteroide cruzou seu caminho e arrancou 3 Marstickets do seu bolso.',
    icon:'<path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/>',
    gradient:['#ff7a30','#4a1000'], mpDelta:0, ticketsDelta:-3},
-  {id:5, name:'Cupom 5% OFF',  pct:15, type:'coupon', prize:'Cupom 5% OFF',       title:'DESCONTO CÓSMICO!',
+  {id:5, name:'Cupom 5% OFF',  pct:7,  type:'coupon', prize:'Cupom 5% OFF',       title:'DESCONTO CÓSMICO!',
    desc:'Um cupom de 5% pousou na sua conta. Use na próxima compra!',
    icon:'<path d="M9 9h.01M15 15h.01"/><path d="M7 7h10v10H7z"/><path d="M7 2H2v5M22 7V2h-5M17 22h5v-5M2 17v5h5"/>',
    gradient:['#00d4f5','#003a50'], mpDelta:0, ticketsDelta:0},
@@ -2745,11 +2743,11 @@ var RD_SLICES = [
    desc:'A Polícia Intergaláctica te deteve. Fiança de 50 Marspoints debitada.',
    icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
    gradient:['#ff1f30','#3a0008'], mpDelta:-50, ticketsDelta:0},
-  {id:7, name:'Cupom 10% OFF', pct:10, type:'coupon', prize:'Cupom 10% OFF',      title:'OFERTA ORBITAL!',
+  {id:7, name:'Cupom 10% OFF', pct:5,  type:'coupon', prize:'Cupom 10% OFF',      title:'OFERTA ORBITAL!',
    desc:'Um cupom de 10% entrou na sua conta. Não desperdiça!',
    icon:'<circle cx="12" cy="12" r="10"/><path d="M9.5 9.5h.01M14.5 14.5h.01"/><path d="M15 9l-6 6"/>',
    gradient:['#38c4f8','#002030'], mpDelta:0, ticketsDelta:0},
-  {id:8, name:'Buraco Negro',  pct:28, type:'neutral', prize:'Absolutamente nada', title:'SUGADO PELO VAZIO!',
+  {id:8, name:'Buraco Negro',  pct:41, type:'neutral', prize:'Absolutamente nada', title:'SUGADO PELO VAZIO!',
    desc:'Um buraco negro devorou seu giro. Não houve sobreviventes.',
    icon:'<circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9"/>',
    gradient:['#1e1e30','#04040a'], mpDelta:0, ticketsDelta:0},
