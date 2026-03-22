@@ -4690,8 +4690,94 @@ function initSupabase(){
   }
 });
   onSupabaseReady();
+  monitorarSupabase();
 }
 setTimeout(initSupabase, 50);
+
+/* ══ MONITOR SUPABASE — avisa no Discord se o banco cair ══
+   Testa uma query leve a cada 2 minutos.
+   Só dispara o alerta uma vez por sessão para não spammar.
+   Segue o mesmo padrão do webhook de comentários. ══ */
+(function(){
+  var WEBHOOK_MONITOR='https://discord.com/api/webhooks/1482046917205557443/H7w5ZFSXY9dVLk4cPTC2FljzniZLu4os8LsYqOL_DqBsHicVcVkclqTrZ4OEXnyKvVX0';
+  var _alertaEnviado=false;
+  var _monitorInterval=null;
+
+  window.monitorarSupabase=function(){
+    /* Primeira checagem após 10s — dá tempo do SDK inicializar */
+    setTimeout(function(){ checarSupabase(); }, 10000);
+    /* Depois checa a cada 2 minutos */
+    _monitorInterval=setInterval(checarSupabase, 120000);
+  };
+
+  async function checarSupabase(){
+    if(!sb) return;
+    try{
+      /* Query mínima — só busca 1 produto ativo, sem dados pesados */
+      var inicio=Date.now();
+      var{error}=await sb.from('produtos')
+        .select('id',{count:'exact',head:true})
+        .eq('ativo',true)
+        .limit(1);
+      var latencia=Date.now()-inicio;
+
+      if(error){
+        enviarAlerta('❌ ERRO', error.message, latencia, 0xFF0000);
+        return;
+      }
+
+      /* Latência alta (>5s) também é sinal de problema */
+      if(latencia>5000){
+        enviarAlerta('⚠️ LENTO', 'Latência crítica: '+latencia+'ms', latencia, 0xFFB300);
+        return;
+      }
+
+      /* Tudo OK — reseta flag se havia alerta ativo */
+      if(_alertaEnviado){
+        _alertaEnviado=false;
+        notificar({embeds:[{
+          title:'✅ Supabase recuperado — MarsGames',
+          color:0x00FF55,
+          description:'Banco voltou a responder normalmente.',
+          timestamp:new Date().toISOString()
+        }]});
+      }
+    }catch(e){
+      enviarAlerta('🔴 FORA DO AR', e.message||'Sem resposta do banco', null, 0xFF0000);
+    }
+  }
+
+  function enviarAlerta(tipo, detalhe, latencia, cor){
+    /* Uma notificação por tipo por sessão — evita spam */
+    var chave='mg_alerta_supa_'+tipo;
+    if(sessionStorage.getItem(chave)) return;
+    sessionStorage.setItem(chave,'1');
+    _alertaEnviado=true;
+
+    var fields=[
+      {name:'Status', value:tipo, inline:true},
+      {name:'Detalhe', value:detalhe||'—', inline:true},
+      {name:'Horário', value:new Date().toLocaleString('pt-BR'), inline:true}
+    ];
+    if(latencia!=null) fields.push({name:'Latência', value:latencia+'ms', inline:true});
+
+    notificar({embeds:[{
+      title:'🚨 ALERTA SUPABASE — MarsGames',
+      color:cor,
+      fields:fields,
+      footer:{text:'Monitor automático — index.html'},
+      timestamp:new Date().toISOString()
+    }]});
+  }
+
+  function notificar(payload){
+    fetch(WEBHOOK_MONITOR,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    }).catch(function(){});
+  }
+})();
 
 /* ══ TEMA CLARO — aplicar em todas as páginas ══ */
 (function(){
