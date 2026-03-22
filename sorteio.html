@@ -117,13 +117,8 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
 .pvp-pix-pago-btn{background:linear-gradient(135deg,#00b33c,#00ff55)!important;color:#000!important;font-weight:900!important;font-size:12px!important}
 .pvp-pix-aviso{font-size:9px;color:#555;text-align:center;line-height:1.5;padding:0 8px}
 
-.nav-avatar-wrap{
-  position:relative;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;width:42px;height:42px;overflow:visible;
-}
-.nav-avatar-ring{
-  position:absolute;inset:0;border-radius:50%;z-index:0;pointer-events:none;
-}
+.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;overflow:visible}
+.nav-avatar-ring{position:absolute;inset:0;border-radius:50%;z-index:0;pointer-events:none}
 .nav-user-avatar{
   width:34px;height:34px;border-radius:50%;
   border:2.5px solid #444;
@@ -131,52 +126,44 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
   overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
   position:relative;z-index:1;
   background:#131318;
-  /* clip-path removido — cortava o anel de animação */
 }
-.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 #navAvatarFallback{
   width:100%;height:100%;
   background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
 }
-
-/* ── Anéis de nível — borda animada no avatar ── */
-/* Bronze — âmbar pulsante */
+/* Bronze — borda âmbar quente */
 .nav-nivel-bronze .nav-user-avatar{
   border-color:#cd9f6a !important;
   animation:navBronzePulse 2.5s ease-in-out infinite;
 }
-/* Prata — borda prateada shimmer */
+/* Prata — borda prateada */
 .nav-nivel-prata .nav-user-avatar{
   border-color:#e8e8e8 !important;
   animation:navPrataShimmer 3s ease-in-out infinite;
 }
-/* Ouro — borda dourada pulsante */
+/* Ouro — borda dourada */
 .nav-nivel-ouro .nav-user-avatar{
   border-color:#FFD700 !important;
   animation:navOuroPulse 2s ease-in-out infinite;
 }
-/* Esmeralda — borda verde pulsante */
+/* Esmeralda — borda verde */
 .nav-nivel-esmeralda .nav-user-avatar{
   border-color:#50c878 !important;
   animation:navEsmPulse 1.8s ease-in-out infinite;
 }
-/* Diamante — ring conic-gradient girando */
+/* Diamante — disco girando */
 .nav-nivel-diamante .nav-avatar-ring{
   background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
   animation:navDiaRotate 2.5s linear infinite;
   box-shadow:0 0 16px rgba(185,242,255,.7),0 0 32px rgba(123,97,255,.4);
 }
 .nav-nivel-diamante .nav-avatar-ring::before{
-  content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;z-index:0;
+  content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0;
 }
-.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1;}
-
-/* MarsPass — anéis especiais */
-.nav-nivel-andromeda .nav-user-avatar{border-color:#7c6af7 !important;animation:navEsmPulse 2s ease-in-out infinite;}
-.nav-nivel-centaurus .nav-user-avatar{border-color:#00ffe7 !important;animation:navEsmPulse 1.5s ease-in-out infinite;}
-.nav-nivel-sombrero .nav-user-avatar{border-color:#ff3c6e !important;animation:navBronzePulse 1.8s ease-in-out infinite;}
+.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -346,13 +333,13 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .spa-page-btn{
   display:flex;align-items:center;gap:10px;width:100%;
   padding:11px 12px;border-radius:10px;border:none;
-  background:transparent;color:#999;font-family:'Montserrat',sans-serif;
+  background:transparent;color:#cc7755;font-family:'Montserrat',sans-serif;
   font-size:12px;font-weight:700;letter-spacing:.5px;
   cursor:pointer;transition:all .2s;text-align:left;
   position:relative;
 }
-.spa-page-btn:hover{background:rgba(255,255,255,.06);color:#ddd;}
-.spa-page-btn.active{background:rgba(232,66,26,.1);color:#fff;}
+.spa-page-btn:hover{background:rgba(255,255,255,.05);color:#ff9977;}
+.spa-page-btn.active{background:rgba(232,66,26,.12);color:#fff;}
 .spa-page-btn.active::before{
   content:'';position:absolute;left:0;top:20%;bottom:20%;
   width:3px;border-radius:2px;background:var(--mars);
@@ -362,35 +349,22 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   width:30px;height:30px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
   font-size:14px;flex-shrink:0;transition:all .2s;
-  background:rgba(255,255,255,.06);
+  background:rgba(255,255,255,.04);
 }
-/* Sorteios — laranja */
-.spa-page-btn:not(.pvp-btn):not(.roda-btn) .btn-icon{
-  background:rgba(232,66,26,.1);
-}
-.spa-page-btn:not(.pvp-btn):not(.roda-btn):not(.active){
-  color:#cc7755;
-}
-.spa-page-btn:not(.pvp-btn):not(.roda-btn):hover{color:#ff9977;}
-.spa-page-btn.active .btn-icon{background:rgba(232,66,26,.2);box-shadow:0 0 8px rgba(232,66,26,.3);}
-
-/* PvP — vermelho */
-.spa-page-btn.pvp-btn:not(.active){color:#cc3344;}
-.spa-page-btn.pvp-btn:not(.active) .btn-icon{background:rgba(255,34,51,.1);}
-.spa-page-btn.pvp-btn:hover:not(.active){color:#ff5566;}
-.spa-page-btn.pvp-btn.active{background:rgba(255,34,51,.1);}
+.spa-page-btn.active .btn-icon{background:rgba(232,66,26,.15);}
+.spa-page-btn.pvp-btn{color:#cc3344;}
+.spa-page-btn.pvp-btn:hover{color:#ff5566;}
+.spa-page-btn.pvp-btn.active{background:rgba(255,34,51,.12);color:#fff;}
 .spa-page-btn.pvp-btn.active::before{background:#ff2233;box-shadow:0 0 8px #ff2233;}
+.spa-page-btn.pvp-btn .btn-icon{background:rgba(255,34,51,.1);}
 .spa-page-btn.pvp-btn.active .btn-icon{background:rgba(255,34,51,.2);box-shadow:0 0 8px rgba(255,34,51,.3);}
-
-/* Roda — amarelo/dourado */
-.spa-page-btn.roda-btn:not(.active){color:#cc9900;}
-.spa-page-btn.roda-btn:not(.active) .btn-icon{background:rgba(255,194,0,.1);}
-.spa-page-btn.roda-btn:hover:not(.active){color:#ffd700;}
-.spa-page-btn.roda-btn.active{background:rgba(255,194,0,.08);}
+.spa-page-btn.roda-btn{color:#cc9900;}
+.spa-page-btn.roda-btn:hover{color:#ffd700;}
+.spa-page-btn.roda-btn.active{background:rgba(255,194,0,.1);color:#fff;}
 .spa-page-btn.roda-btn.active::before{background:#ffc200;box-shadow:0 0 8px #ffc200;}
-.spa-page-btn.roda-btn.active .btn-icon{background:rgba(255,194,0,.18);box-shadow:0 0 8px rgba(255,194,0,.3);}
-
-.spa-nav-sep{height:1px;background:rgba(255,255,255,.06);margin:12px 8px;}
+.spa-page-btn.roda-btn .btn-icon{background:rgba(255,194,0,.1);}
+.spa-page-btn.roda-btn.active .btn-icon{background:rgba(255,194,0,.2);box-shadow:0 0 8px rgba(255,194,0,.3);}
+.spa-nav-sep{height:1px;background:rgba(255,255,255,.04);margin:12px 8px;}
 
 /* MP chip na nav */
 .spa-mp-chip{
@@ -2638,30 +2612,23 @@ async function atualizarNavbar(session){
       if(imgAvatar) imgAvatar.style.display='none';
       if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
     }
-    /* Aplica anel do cache imediatamente */
-    var _cacheKey='mg_nav_'+session.user.email;
-    var _cached=null;
-    try{_cached=JSON.parse(localStorage.getItem(_cacheKey)||'null');}catch(_){}
-    if(_cached&&_cached.anel){
-      wrap.className='nav-avatar-wrap nav-nivel-'+_cached.anel;
-    } else {
-      wrap.className='nav-avatar-wrap nav-nivel-bronze';
-    }
-    /* Busca nível + anel escolhido do banco — atualiza se cache expirou (10s) */
-    var _agora=Date.now();
-    var _cacheOk=_cached&&(_agora-(_cached.ts||0)<10000);
-    if(!_cacheOk){
+    /* Aplica cache imediatamente */
+    var _ck='mg_nav_'+session.user.email,_ca=null;
+    try{_ca=JSON.parse(localStorage.getItem(_ck)||'null');}catch(_){}
+    wrap.className='nav-avatar-wrap nav-nivel-'+(_ca&&_ca.anel?_ca.anel:'bronze');
+    /* Busca banco se cache expirou (10s) */
+    if(!_ca||Date.now()-(_ca.ts||0)>10000){
       try{
-        var[_mpRes,_perfRes]=await Promise.all([
+        var[_mr,_pr]=await Promise.all([
           sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
           sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
         ]);
-        var _pts=(_mpRes.data&&_mpRes.data.pontos)||0;
-        var _anel=(_perfRes.data&&_perfRes.data.anel_escolhido)||null;
-        var _nivelRing=_anel||getNavNivel(_pts);
-        wrap.className='nav-avatar-wrap nav-nivel-'+_nivelRing;
-        try{localStorage.setItem(_cacheKey,JSON.stringify({anel:_nivelRing,ts:_agora}));}catch(_){}
-      }catch(e){/* mantém o que já estava */}
+        var _pts=(_mr.data&&_mr.data.pontos)||0;
+        var _anel=(_pr.data&&_pr.data.anel_escolhido)||null;
+        var _nivel=_anel||getNavNivel(_pts);
+        wrap.className='nav-avatar-wrap nav-nivel-'+_nivel;
+        try{localStorage.setItem(_ck,JSON.stringify({anel:_nivel,ts:Date.now()}));}catch(_){}
+      }catch(e){/* mantém cache */}
     }
   } else {
     if(btnLogin) btnLogin.style.display='flex';
@@ -2766,7 +2733,7 @@ var RD_SLICES = [
    desc:'Um asteroide cruzou seu caminho e arrancou 3 Marstickets do seu bolso.',
    icon:'<path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/>',
    gradient:['#ff7a30','#4a1000'], mpDelta:0, ticketsDelta:-3},
-  {id:5, name:'Cupom 5% OFF',  pct:7,  type:'coupon', prize:'Cupom 5% OFF',       title:'DESCONTO CÓSMICO!',
+  {id:5, name:'Cupom 5% OFF',  pct:15, type:'coupon', prize:'Cupom 5% OFF',       title:'DESCONTO CÓSMICO!',
    desc:'Um cupom de 5% pousou na sua conta. Use na próxima compra!',
    icon:'<path d="M9 9h.01M15 15h.01"/><path d="M7 7h10v10H7z"/><path d="M7 2H2v5M22 7V2h-5M17 22h5v-5M2 17v5h5"/>',
    gradient:['#00d4f5','#003a50'], mpDelta:0, ticketsDelta:0},
@@ -2774,11 +2741,11 @@ var RD_SLICES = [
    desc:'A Polícia Intergaláctica te deteve. Fiança de 50 Marspoints debitada.',
    icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
    gradient:['#ff1f30','#3a0008'], mpDelta:-50, ticketsDelta:0},
-  {id:7, name:'Cupom 10% OFF', pct:5,  type:'coupon', prize:'Cupom 10% OFF',      title:'OFERTA ORBITAL!',
+  {id:7, name:'Cupom 10% OFF', pct:10, type:'coupon', prize:'Cupom 10% OFF',      title:'OFERTA ORBITAL!',
    desc:'Um cupom de 10% entrou na sua conta. Não desperdiça!',
    icon:'<circle cx="12" cy="12" r="10"/><path d="M9.5 9.5h.01M14.5 14.5h.01"/><path d="M15 9l-6 6"/>',
    gradient:['#38c4f8','#002030'], mpDelta:0, ticketsDelta:0},
-  {id:8, name:'Buraco Negro',  pct:41, type:'neutral', prize:'Absolutamente nada', title:'SUGADO PELO VAZIO!',
+  {id:8, name:'Buraco Negro',  pct:28, type:'neutral', prize:'Absolutamente nada', title:'SUGADO PELO VAZIO!',
    desc:'Um buraco negro devorou seu giro. Não houve sobreviventes.',
    icon:'<circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9"/>',
    gradient:['#1e1e30','#04040a'], mpDelta:0, ticketsDelta:0},

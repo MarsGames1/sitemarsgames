@@ -4713,28 +4713,27 @@ setTimeout(initSupabase, 50);
   async function checarSupabase(){
     if(!sb) return;
     try{
-      /* Query mínima — só busca 1 produto ativo, sem dados pesados */
       var inicio=Date.now();
-      var{error}=await sb.from('produtos')
-        .select('id',{count:'exact',head:true})
-        .eq('ativo',true)
-        .limit(1);
+      /* Timeout de 8s — se banco não responder, lança exceção de queda */
+      var _qPromise=sb.from('produtos').select('id',{count:'exact',head:true}).eq('ativo',true).limit(1);
+      var _tPromise=new Promise(function(_,rej){setTimeout(function(){rej(new Error('Timeout 8s — banco sem resposta'));},8000);});
+      var _res=await Promise.race([_qPromise,_tPromise]);
       var latencia=Date.now()-inicio;
 
-      if(error){
-        enviarAlerta('❌ ERRO', error.message, latencia, 0xFF0000);
+      if(_res.error){
+        enviarAlerta('ERRO', '❌ '+_res.error.message, latencia, 0xFF0000);
         return;
       }
-
-      /* Latência alta (>5s) também é sinal de problema */
       if(latencia>5000){
-        enviarAlerta('⚠️ LENTO', 'Latência crítica: '+latencia+'ms', latencia, 0xFFB300);
+        enviarAlerta('LENTO', '⚠️ Latência crítica: '+latencia+'ms', latencia, 0xFFB300);
         return;
       }
 
-      /* Tudo OK — reseta flag se havia alerta ativo */
+      /* Tudo OK — envia recuperação se havia alerta ativo */
       if(_alertaEnviado){
         _alertaEnviado=false;
+        /* Limpa chaves de anti-spam para próxima queda notificar normalmente */
+        ['ERRO','LENTO','FORA_DO_AR'].forEach(function(t){sessionStorage.removeItem('mg_supa_'+t);});
         notificar({embeds:[{
           title:'✅ Supabase recuperado — MarsGames',
           color:0x00FF55,
@@ -4743,20 +4742,21 @@ setTimeout(initSupabase, 50);
         }]});
       }
     }catch(e){
-      enviarAlerta('🔴 FORA DO AR', e.message||'Sem resposta do banco', null, 0xFF0000);
+      enviarAlerta('FORA_DO_AR', '🔴 '+(e.message||'Sem resposta do banco'), null, 0xFF0000);
     }
   }
 
   function enviarAlerta(tipo, detalhe, latencia, cor){
-    /* Uma notificação por tipo por sessão — evita spam */
-    var chave='mg_alerta_supa_'+tipo;
-    if(sessionStorage.getItem(chave)) return;
-    sessionStorage.setItem(chave,'1');
+    /* Anti-spam: máximo 1 alerta por tipo a cada 5 minutos
+       Reseta automaticamente — queda real sempre notifica */
+    var chave='mg_supa_'+tipo;
+    var ultimo=parseInt(sessionStorage.getItem(chave)||'0');
+    if(Date.now()-ultimo<300000) return; /* 5 min */
+    sessionStorage.setItem(chave, String(Date.now()));
     _alertaEnviado=true;
 
     var fields=[
-      {name:'Status', value:tipo, inline:true},
-      {name:'Detalhe', value:detalhe||'—', inline:true},
+      {name:'Tipo', value:detalhe||tipo, inline:false},
       {name:'Horário', value:new Date().toLocaleString('pt-BR'), inline:true}
     ];
     if(latencia!=null) fields.push({name:'Latência', value:latencia+'ms', inline:true});
