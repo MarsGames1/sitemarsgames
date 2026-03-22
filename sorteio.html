@@ -117,54 +117,66 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
 .pvp-pix-pago-btn{background:linear-gradient(135deg,#00b33c,#00ff55)!important;color:#000!important;font-weight:900!important;font-size:12px!important}
 .pvp-pix-aviso{font-size:9px;color:#555;text-align:center;line-height:1.5;padding:0 8px}
 
-.nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nav-avatar-ring{position:absolute;inset:-3px;border-radius:50%;z-index:0}
+.nav-avatar-wrap{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;width:42px;height:42px;overflow:visible;
+}
+.nav-avatar-ring{
+  position:absolute;inset:0;border-radius:50%;z-index:0;pointer-events:none;
+}
 .nav-user-avatar{
   width:34px;height:34px;border-radius:50%;
   border:2.5px solid #444;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;cursor:pointer;text-decoration:none;flex-shrink:0;
   position:relative;z-index:1;
-  clip-path:circle(50%);-webkit-clip-path:circle(50%);
   background:#131318;
+  /* clip-path removido — cortava o anel de animação */
 }
-.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;}
 #navAvatarFallback{
   width:100%;height:100%;
   background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
 }
-/* Bronze — borda âmbar quente */
+
+/* ── Anéis de nível — borda animada no avatar ── */
+/* Bronze — âmbar pulsante */
 .nav-nivel-bronze .nav-user-avatar{
   border-color:#cd9f6a !important;
   animation:navBronzePulse 2.5s ease-in-out infinite;
 }
-/* Prata — borda prateada */
+/* Prata — borda prateada shimmer */
 .nav-nivel-prata .nav-user-avatar{
   border-color:#e8e8e8 !important;
   animation:navPrataShimmer 3s ease-in-out infinite;
 }
-/* Ouro — borda dourada */
+/* Ouro — borda dourada pulsante */
 .nav-nivel-ouro .nav-user-avatar{
   border-color:#FFD700 !important;
   animation:navOuroPulse 2s ease-in-out infinite;
 }
-/* Esmeralda — borda verde */
+/* Esmeralda — borda verde pulsante */
 .nav-nivel-esmeralda .nav-user-avatar{
   border-color:#50c878 !important;
   animation:navEsmPulse 1.8s ease-in-out infinite;
 }
-/* Diamante — disco girando */
+/* Diamante — ring conic-gradient girando */
 .nav-nivel-diamante .nav-avatar-ring{
   background:conic-gradient(from 0deg,#b9f2ff,#a78bfa,#fff,#00ffff,#e0b0ff,#fff,#7b61ff,#b9f2ff);
   animation:navDiaRotate 2.5s linear infinite;
   box-shadow:0 0 16px rgba(185,242,255,.7),0 0 32px rgba(123,97,255,.4);
 }
 .nav-nivel-diamante .nav-avatar-ring::before{
-  content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0;
+  content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;z-index:0;
 }
-.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
+.nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1;}
+
+/* MarsPass — anéis especiais */
+.nav-nivel-andromeda .nav-user-avatar{border-color:#7c6af7 !important;animation:navEsmPulse 2s ease-in-out infinite;}
+.nav-nivel-centaurus .nav-user-avatar{border-color:#00ffe7 !important;animation:navEsmPulse 1.5s ease-in-out infinite;}
+.nav-nivel-sombrero .nav-user-avatar{border-color:#ff3c6e !important;animation:navBronzePulse 1.8s ease-in-out infinite;}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -328,18 +340,18 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 .spa-nav-section{margin-bottom:8px;}
 .spa-nav-label{
   font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:#333;padding:0 8px;margin-bottom:8px;margin-top:16px;display:block;
+  color:#666;padding:0 8px;margin-bottom:8px;margin-top:16px;display:block;
 }
 .spa-nav-label:first-child{margin-top:0;}
 .spa-page-btn{
   display:flex;align-items:center;gap:10px;width:100%;
   padding:11px 12px;border-radius:10px;border:none;
-  background:transparent;color:#555;font-family:'Montserrat',sans-serif;
+  background:transparent;color:#999;font-family:'Montserrat',sans-serif;
   font-size:12px;font-weight:700;letter-spacing:.5px;
   cursor:pointer;transition:all .2s;text-align:left;
   position:relative;
 }
-.spa-page-btn:hover{background:rgba(255,255,255,.04);color:#aaa;}
+.spa-page-btn:hover{background:rgba(255,255,255,.06);color:#ddd;}
 .spa-page-btn.active{background:rgba(232,66,26,.1);color:#fff;}
 .spa-page-btn.active::before{
   content:'';position:absolute;left:0;top:20%;bottom:20%;
@@ -350,25 +362,44 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   width:30px;height:30px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
   font-size:14px;flex-shrink:0;transition:all .2s;
-  background:rgba(255,255,255,.04);
+  background:rgba(255,255,255,.06);
 }
-.spa-page-btn.active .btn-icon{background:rgba(232,66,26,.15);}
+/* Sorteios — laranja */
+.spa-page-btn:not(.pvp-btn):not(.roda-btn) .btn-icon{
+  background:rgba(232,66,26,.1);
+}
+.spa-page-btn:not(.pvp-btn):not(.roda-btn):not(.active){
+  color:#cc7755;
+}
+.spa-page-btn:not(.pvp-btn):not(.roda-btn):hover{color:#ff9977;}
+.spa-page-btn.active .btn-icon{background:rgba(232,66,26,.2);box-shadow:0 0 8px rgba(232,66,26,.3);}
+
+/* PvP — vermelho */
+.spa-page-btn.pvp-btn:not(.active){color:#cc3344;}
+.spa-page-btn.pvp-btn:not(.active) .btn-icon{background:rgba(255,34,51,.1);}
+.spa-page-btn.pvp-btn:hover:not(.active){color:#ff5566;}
 .spa-page-btn.pvp-btn.active{background:rgba(255,34,51,.1);}
 .spa-page-btn.pvp-btn.active::before{background:#ff2233;box-shadow:0 0 8px #ff2233;}
-.spa-page-btn.pvp-btn.active .btn-icon{background:rgba(255,34,51,.15);}
+.spa-page-btn.pvp-btn.active .btn-icon{background:rgba(255,34,51,.2);box-shadow:0 0 8px rgba(255,34,51,.3);}
+
+/* Roda — amarelo/dourado */
+.spa-page-btn.roda-btn:not(.active){color:#cc9900;}
+.spa-page-btn.roda-btn:not(.active) .btn-icon{background:rgba(255,194,0,.1);}
+.spa-page-btn.roda-btn:hover:not(.active){color:#ffd700;}
 .spa-page-btn.roda-btn.active{background:rgba(255,194,0,.08);}
 .spa-page-btn.roda-btn.active::before{background:#ffc200;box-shadow:0 0 8px #ffc200;}
-.spa-page-btn.roda-btn.active .btn-icon{background:rgba(255,194,0,.12);}
-.spa-nav-sep{height:1px;background:rgba(255,255,255,.04);margin:12px 8px;}
+.spa-page-btn.roda-btn.active .btn-icon{background:rgba(255,194,0,.18);box-shadow:0 0 8px rgba(255,194,0,.3);}
+
+.spa-nav-sep{height:1px;background:rgba(255,255,255,.06);margin:12px 8px;}
 
 /* MP chip na nav */
 .spa-mp-chip{
   margin:12px 8px 0;padding:10px 12px;border-radius:10px;
   background:rgba(255,183,0,.06);border:1px solid rgba(255,183,0,.15);
 }
-.spa-mp-chip-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px;}
+.spa-mp-chip-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin-bottom:4px;}
 .spa-mp-chip-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#ffb300;}
-.spa-mp-chip-sub{font-size:10px;color:#444;margin-top:2px;}
+.spa-mp-chip-sub{font-size:10px;color:#777;margin-top:2px;}
 
 /* Conteúdo principal */
 .spa-content{flex:1;min-width:0;padding:0 0 80px;overflow-x:hidden;}
