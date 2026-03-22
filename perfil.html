@@ -4614,10 +4614,26 @@ async function carregarTicketsPerfil(user){
   document.getElementById('ticketsCount').textContent=qtd;
   document.getElementById('ticketsTotalAcumulado').textContent=total;
 
-  /* Bonus semanal baseado no nível */
+  /* Bonus semanal = nível + plano MarsPass */
   var nivel=getNivel(perfilData?perfilData.pontos||0:0);
-  var bonus=nivel.nome==='Diamante'?5:nivel.nome==='Esmeralda'?4:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:3;
-  document.getElementById('ticketsBonusPorSemana').textContent='+'+bonus;
+  var bonusNivelPerfil=nivel.nome==='Diamante'?5:nivel.nome==='Esmeralda'?4:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:3;
+  /* Busca bônus do plano MarsPass ativo */
+  var MP_TCK_PERFIL={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
+  var bonusMPPerfil=0;
+  try{
+    var{data:mpAss}=await sb.from('marspass_assinaturas')
+      .select('plano')
+      .eq('user_email',user.email)
+      .eq('status','ativo')
+      .gt('data_vencimento',new Date().toISOString())
+      .maybeSingle();
+    bonusMPPerfil=(mpAss&&MP_TCK_PERFIL[mpAss.plano])||0;
+  }catch(_){}
+  var bonusTotalPerfil=bonusNivelPerfil+bonusMPPerfil;
+  var bonusLabel=bonusMPPerfil>0
+    ?'+'+bonusTotalPerfil+' ('+bonusNivelPerfil+' nível + '+bonusMPPerfil+' MarsPass)'
+    :'+'+bonusTotalPerfil;
+  document.getElementById('ticketsBonusPorSemana').textContent=bonusLabel;
 
   /* Timer renovação */
   var ultima=new Date(data.ultima_renovacao||new Date());

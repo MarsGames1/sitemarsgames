@@ -1792,13 +1792,30 @@ sb.auth.onAuthStateChange(function(event,session){
 });
 
 /* ── TICKETS ── */
+
+/* Retorna o bônus de tickets do plano MarsPass ativo (0 se não tiver) */
+async function getBonusMarsPass(email){
+  var MP_TICKETS={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
+  try{
+    var{data}=await sb.from('marspass_assinaturas')
+      .select('plano')
+      .eq('user_email',email)
+      .eq('status','ativo')
+      .gt('data_vencimento',new Date().toISOString())
+      .maybeSingle();
+    return(data&&MP_TICKETS[data.plano])||0;
+  }catch(e){return 0;}
+}
+
 async function carregarTickets(user){
   var{data}=await sb.from('tickets').select('*').eq('user_email',user.email).maybeSingle();
 
-  /* Sem registro: cria com tickets baseados no nível (+2 a mais que antes) */
+  /* Sem registro: cria com tickets baseados no nível + MarsPass */
   if(!data){
     var nivel=await getNivelUsuario(user.email);
-    var qtd=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
+    var bonusNivel=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
+    var bonusMP=await getBonusMarsPass(user.email);
+    var qtd=bonusNivel+bonusMP;
     var{data:novo}=await sb.from('tickets').insert({
       user_id:user.id,user_email:user.email,
       quantidade:qtd,total_acumulado:qtd,
@@ -1812,7 +1829,9 @@ async function carregarTickets(user){
     var diffDias=Math.floor((agora-ultima)/(1000*60*60*24));
     if(diffDias>=7){
       var nivel=await getNivelUsuario(user.email);
-      var bonus=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
+      var bonusNivel=nivel==='diamante'?5:nivel==='esmeralda'?4:nivel==='ouro'?4:nivel==='prata'?3:3;
+      var bonusMP=await getBonusMarsPass(user.email);
+      var bonus=bonusNivel+bonusMP;
       var novaQtd=data.quantidade+bonus;
       await sb.from('tickets').update({
         quantidade:novaQtd,
@@ -1821,7 +1840,10 @@ async function carregarTickets(user){
       }).eq('user_email',user.email);
       data.quantidade=novaQtd;
       data.ultima_renovacao=agora.toISOString();
-      showToast('🎟️ +'+bonus+' tickets renovados!');
+      var msg=bonusMP>0
+        ?'🎟️ +'+bonus+' tickets renovados! ('+bonusNivel+' nível + '+bonusMP+' MarsPass)'
+        :'🎟️ +'+bonus+' tickets renovados!';
+      showToast(msg);
     }
   }
 
@@ -2361,13 +2383,8 @@ function assinarRealtime(sorteioId){
 }
 
 /* Também escuta exclusão */
-var _realtimeDeleteChannel = null;
 function assinarRealtimeDelete(sorteioId){
-  if(_realtimeDeleteChannel){
-    sb.removeChannel(_realtimeDeleteChannel);
-    _realtimeDeleteChannel = null;
-  }
-  _realtimeDeleteChannel = sb.channel('sorteio_delete_'+sorteioId)
+  sb.channel('sorteio_delete_'+sorteioId)
     .on('postgres_changes',{
       event:'DELETE',schema:'public',table:'sorteios_periodicos',
       filter:'id=eq.'+sorteioId
@@ -2668,13 +2685,7 @@ function spaGo(page){
     /* Carrega o sorteio só quando a página está visível */
     if(contadorInterval) clearInterval(contadorInterval);
     setTipoSorteio(tipoAtual||'diario');
-  } else {
-    /* Saiu da página de sorteios — fecha os dois canais realtime para liberar conexão */
-    if(_realtimeChannel){ sb.removeChannel(_realtimeChannel); _realtimeChannel = null; }
-    if(_realtimeDeleteChannel){ sb.removeChannel(_realtimeDeleteChannel); _realtimeDeleteChannel = null; }
-    if(contadorInterval){ clearInterval(contadorInterval); contadorInterval = null; }
-  }
-  if(page === 'arena'){
+  } else if(page === 'arena'){
     document.getElementById('pageArena').classList.add('visible');
     document.getElementById('spaBtnArena').classList.add('active');
     _pvpRenderComSessao();
