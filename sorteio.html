@@ -118,7 +118,7 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
 .pvp-pix-aviso{font-size:9px;color:#555;text-align:center;line-height:1.5;padding:0 8px}
 
 .nav-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:42px;height:42px;overflow:visible}
-.nav-avatar-ring{position:absolute;inset:0;border-radius:50%;z-index:0;pointer-events:none}
+.nav-avatar-ring{position:absolute;inset:-4px;border-radius:50%;z-index:0;pointer-events:none}
 .nav-user-avatar{
   width:34px;height:34px;border-radius:50%;
   border:2.5px solid #444;
@@ -164,6 +164,30 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
   content:'';position:absolute;inset:3px;border-radius:50%;background:#0a0a0e;z-index:0;
 }
 .nav-nivel-diamante .nav-user-avatar{border:none;position:relative;z-index:1}
+
+/* MarsPass — anéis especiais */
+.nav-nivel-andromeda .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#7c6af7,#aa99ff,#fff,#7c6af7,#9d8fff,#7c6af7);
+  animation:navDiaRotate 3s linear infinite;
+  box-shadow:0 0 12px rgba(124,106,247,.6),0 0 24px rgba(124,106,247,.3);
+}
+.nav-nivel-andromeda .nav-avatar-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;}
+.nav-nivel-andromeda .nav-user-avatar{border:none;position:relative;z-index:1;}
+.nav-nivel-triangulo .nav-user-avatar{border-color:#00ffe7!important;animation:navEsmPulse 1.8s ease-in-out infinite;}
+.nav-nivel-centaurus .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#00ffe7,#7c6af7,#fff,#00ffe7,#a78bfa,#00ffe7);
+  animation:navDiaRotate 2s linear infinite;
+  box-shadow:0 0 14px rgba(0,255,231,.6),0 0 28px rgba(124,106,247,.4);
+}
+.nav-nivel-centaurus .nav-avatar-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;}
+.nav-nivel-centaurus .nav-user-avatar{border:none;position:relative;z-index:1;}
+.nav-nivel-sombrero .nav-avatar-ring{
+  background:conic-gradient(from 0deg,#ff3c6e,#ff9900,#fff,#ff3c6e,#ffb300,#ff3c6e);
+  animation:navDiaRotate 1.5s linear infinite;
+  box-shadow:0 0 14px rgba(255,60,110,.7),0 0 28px rgba(255,153,0,.4);
+}
+.nav-nivel-sombrero .nav-avatar-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:#0a0a0e;}
+.nav-nivel-sombrero .nav-user-avatar{border:none;position:relative;z-index:1;}
 
 html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
