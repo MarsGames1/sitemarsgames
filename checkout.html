@@ -441,15 +441,26 @@ async function pagar(){
     var session=r.data.session;
     var itensDesc=itens.map(p=>({...p,currency_id:'BRL',preco:Math.round(Number(p.preco)*100)/100}));
     var _desc=calcDesc();
+    /* Identifica a origem do desconto para passar à edge e ao pix-checkout */
+    var _origemDesconto = assinaturaAtiva && !cupomAtual ? 'marspass' : (cupomAtual ? 'cupom' : null);
     if(_desc>0){
       // Aplica o desconto no item de maior preco para nao zerar itens baratos
       var idxM=itensDesc.reduce((bi,p,i)=>Number(p.preco)>Number(itensDesc[bi].preco)?i:bi,0);
       itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-_desc)*100)/100};
     }
+    /* Monta payload — desconto_marspass é enviado separado para a edge registrar corretamente */
+    var pixPayload = {itens:itensDesc, cupom: cupomAtual||null};
+    if(_origemDesconto === 'marspass' && assinaturaAtiva){
+      pixPayload.desconto_marspass = {
+        plano: assinaturaAtiva.plano,
+        desconto_pct: assinaturaAtiva.desconto_pct,
+        valor_desconto: _desc
+      };
+    }
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({itens:itensDesc,cupom:cupomAtual||null})
+      body:JSON.stringify(pixPayload)
     });
     var data=await resp.json();
     if(!resp.ok)throw new Error(data.error||'Erro ao gerar Pix');
@@ -460,6 +471,9 @@ async function pagar(){
     sessionStorage.setItem('mg_user_id',session.user.id||'');
     sessionStorage.setItem('mg_access_token',session.access_token||'');
     sessionStorage.setItem('mg_refresh_token',session.refresh_token||'');
+    /* Salva origem do desconto para o pix-checkout identificar o pedido corretamente */
+    if(_origemDesconto) sessionStorage.setItem('mg_desconto_origem', _origemDesconto);
+    else sessionStorage.removeItem('mg_desconto_origem');
     /* Salva cupom para marcar como usado após confirmação */
     if(cupomAtual)sessionStorage.setItem('mg_cupom_pix',JSON.stringify({id:cupomAtual.id,email:session.user.email,emails_usados:cupomAtual.emails_usados||[],usos:cupomAtual.usos_atuais||cupomAtual.usos||0}));
     window.location.href='pix-checkout.html';
