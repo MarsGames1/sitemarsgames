@@ -205,14 +205,63 @@ try{var _c=sessionStorage.getItem('mg_cupom');if(_c)cupomAtual=JSON.parse(_c);}c
 let metodoSelecionado='pix';
 let mpInstance=null,cardBrickCtrl=null;
 
+/* ── DESCONTO MARSPASS ── */
+const MP_PLANOS_DESCONTO={andromeda:3,triangulo:5,centaurus:10,sombrero:15};
+let assinaturaAtiva=null;
+
+async function verificarAssinaturaAtiva(){
+  try{
+    var r=await sb.auth.getSession();
+    if(!r.data||!r.data.session)return;
+    var email=r.data.session.user.email;
+    var{data}=await sb.from('marspass_assinaturas')
+      .select('plano,status,data_vencimento')
+      .eq('user_email',email)
+      .eq('status','ativo')
+      .gt('data_vencimento',new Date().toISOString())
+      .maybeSingle();
+    if(!data)return;
+    var pct=MP_PLANOS_DESCONTO[data.plano]||0;
+    if(pct<=0)return;
+    assinaturaAtiva={plano:data.plano,desconto_pct:pct};
+    mostrarBannerAssinatura(data.plano,pct);
+    renderResumo();
+    if(cardBrickCtrl){cardBrickCtrl.unmount();cardBrickCtrl=null;}
+    if(metodoSelecionado==='cartao')await initCardBrick();
+  }catch(e){console.warn('[marspass desconto]',e);}
+}
+
+function nomeIconePlano(plano){
+  var map={andromeda:'🌀 Andrômeda',triangulo:'🔺 Triângulo',centaurus:'⚡ Centaurus',sombrero:'🌐 Sombrero'};
+  return map[plano]||plano;
+}
+
+function mostrarBannerAssinatura(plano,pct){
+  var existente=document.getElementById('banner-marspass');
+  if(existente)existente.remove();
+  var banner=document.createElement('div');
+  banner.id='banner-marspass';
+  banner.style.cssText='background:rgba(0,255,85,.07);border:1px solid rgba(0,255,85,.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;color:#00ff55;';
+  banner.innerHTML='<span style="font-size:18px">🌌</span><span>MarsPass <strong>'+nomeIconePlano(plano)+'</strong> ativo — <strong>'+pct+'% OFF</strong> aplicado automaticamente!</span>';
+  document.querySelector('.wrap').insertBefore(banner,document.querySelector('.section'));
+}
+
 /* ── RENDER ── */
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function calcDesc(){
-  if(!cupomAtual||!itens.length)return 0;
-  var menor=Math.min(...itens.map(p=>Number(p.preco)));
-  return cupomAtual.desconto_tipo==='percentual'?Math.round(menor*(cupomAtual.desconto_valor/100)*100)/100:Math.min(cupomAtual.desconto_valor,menor);
+  if(!itens.length)return 0;
+  var subtotal=itens.reduce((s,p)=>s+Number(p.preco),0);
+  var descAssinatura=assinaturaAtiva?Math.round(subtotal*(assinaturaAtiva.desconto_pct/100)*100)/100:0;
+  var descCupom=0;
+  if(cupomAtual){
+    var menor=Math.min(...itens.map(p=>Number(p.preco)));
+    descCupom=cupomAtual.desconto_tipo==='percentual'
+      ?Math.round(menor*(cupomAtual.desconto_valor/100)*100)/100
+      :Math.min(cupomAtual.desconto_valor,menor);
+  }
+  return Math.round(Math.max(descAssinatura,descCupom)*100)/100;
 }
-function getTotal(){return Math.max(0,itens.reduce((s,p)=>s+Number(p.preco),0)-calcDesc());}
+function getTotal(){return Math.max(0,Math.round((itens.reduce((s,p)=>s+Number(p.preco),0)-calcDesc())*100)/100);}
 function fmt(v){return'R$ '+Number(v).toFixed(2).replace('.',',');}
 
 function renderResumo(){
@@ -391,11 +440,11 @@ async function pagar(){
     if(!r.data||!r.data.session){showToast('Faça login para continuar.');setTimeout(()=>window.location.href='perfil.html',1200);btn.disabled=false;btn.classList.remove('loading');return;}
     var session=r.data.session;
     var itensDesc=itens.map(p=>({...p,currency_id:'BRL',preco:Math.round(Number(p.preco)*100)/100}));
-    if(cupomAtual){
-      var precos=itensDesc.map(p=>Number(p.preco));
-      var menor=Math.min(...precos);
-      var idxM=precos.indexOf(menor);
-      itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())*100)/100};
+    var _desc=calcDesc();
+    if(_desc>0){
+      // Aplica o desconto no item de maior preco para nao zerar itens baratos
+      var idxM=itensDesc.reduce((bi,p,i)=>Number(p.preco)>Number(itensDesc[bi].preco)?i:bi,0);
+      itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-_desc)*100)/100};
     }
     var resp=await fetch(SUPABASE_URL+'/functions/v1/mp-criar-pix',{
       method:'POST',
@@ -426,10 +475,10 @@ async function pagarCartao(cardData){
     if(!r.data||!r.data.session){showToast('Sessão expirada.');btn.disabled=false;btn.classList.remove('loading');return;}
     var session=r.data.session;
     var itensDesc=itens.map(p=>({...p,currency_id:'BRL',preco:Math.round(Number(p.preco)*100)/100}));
-    if(cupomAtual){
-      var precos=itensDesc.map(p=>Number(p.preco));
-      var idxM=precos.indexOf(Math.min(...precos));
-      itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-calcDesc())*100)/100};
+    var _desc=calcDesc();
+    if(_desc>0){
+      var idxM=itensDesc.reduce((bi,p,i)=>Number(p.preco)>Number(itensDesc[bi].preco)?i:bi,0);
+      itensDesc[idxM]={...itensDesc[idxM],preco:Math.round(Math.max(0,Number(itensDesc[idxM].preco)-_desc)*100)/100};
     }
     /* Busca nome do titular em todos os lugares possíveis do Brick */
     var _cardholderName=(cardData.cardholder&&cardData.cardholder.name)
@@ -526,6 +575,7 @@ async function creditarPacoteMPCartao(session){
 }
 
 renderResumo();
+verificarAssinaturaAtiva();
 /* Restaura cupom se havia um aplicado */
 if(cupomAtual){
   var descTxt=cupomAtual.desconto_tipo==='percentual'?cupomAtual.desconto_valor+'% OFF':fmt(cupomAtual.desconto_valor)+' OFF';
