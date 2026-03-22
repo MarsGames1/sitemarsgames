@@ -2612,10 +2612,13 @@ async function atualizarNavbar(session){
       if(imgAvatar) imgAvatar.style.display='none';
       if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
     }
-    /* Aplica cache imediatamente */
+    /* Aplica cache imediatamente — valida o anel antes de usar */
+    var _NIVEIS_VALIDOS=['bronze','prata','ouro','esmeralda','diamante','andromeda','triangulo','centaurus','sombrero'];
     var _ck='mg_nav_'+session.user.email,_ca=null;
     try{_ca=JSON.parse(localStorage.getItem(_ck)||'null');}catch(_){}
-    wrap.className='nav-avatar-wrap nav-nivel-'+(_ca&&_ca.anel?_ca.anel:'bronze');
+    var _anelCache=(_ca&&_ca.anel&&_NIVEIS_VALIDOS.indexOf(_ca.anel)>=0)?_ca.anel:'bronze';
+    wrap.className='nav-avatar-wrap nav-nivel-'+_anelCache;
+    wrap.style.display='flex'; /* garante display mesmo após className */
     /* Busca banco se cache expirou (10s) */
     if(!_ca||Date.now()-(_ca.ts||0)>10000){
       try{
