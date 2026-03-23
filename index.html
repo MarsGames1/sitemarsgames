@@ -853,9 +853,9 @@ body.tema-claro .exit-sub{color:#666}
 }
 .hero-title .line2{color:var(--green);text-shadow:0 0 40px rgba(0,255,85,.3)}
 .hero-sub{
-  font-size:12px;color:rgba(255,255,255,.92);font-weight:600;
+  font-size:12px;color:rgba(255,255,255,.88);font-weight:600;
   letter-spacing:.3px;max-width:500px;margin:10px 0 20px;line-height:1.7;
-  text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 30px rgba(0,0,0,.5);
+  text-shadow:0 1px 10px rgba(0,0,0,.9),0 0 30px rgba(0,0,0,.6);
 }
 @media(min-width:480px){.hero-sub{font-size:13px}}
 .hero-btns{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
@@ -870,12 +870,12 @@ body.tema-claro .exit-sub{color:#666}
 }
 .btn-mars-green{background:var(--green);color:#000}
 .btn-mars-green:hover{box-shadow:0 0 28px var(--green-glow);transform:translateY(-2px)}
-.btn-mars-outline{background:transparent;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.3)}
+.btn-mars-outline{background:transparent;color:#888;border:1px solid var(--border2)}
 .btn-mars-outline:hover{color:#fff;border-color:#444;transform:translateY(-1px)}
 
 /* Countdown */
 .countdown{display:flex;align-items:center;gap:5px;margin-top:20px;flex-wrap:nowrap}
-.countdown-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-right:2px;display:none}
+.countdown-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-right:2px;display:none;text-shadow:0 1px 8px rgba(0,0,0,.8)}
 @media(min-width:400px){.countdown-label{display:block}}
 .count-block{
   background:rgba(232,66,26,.1);border:1px solid rgba(232,66,26,.25);
@@ -884,8 +884,8 @@ body.tema-claro .exit-sub{color:#666}
 }
 .count-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--mars);line-height:1}
 @media(min-width:400px){.count-val{font-size:18px}}
-.count-lbl{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:3px}
-.count-sep{font-family:'Orbitron',sans-serif;font-size:16px;color:rgba(232,66,26,.4);font-weight:900;align-self:flex-start;padding-top:6px}
+.count-lbl{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:3px}
+.count-sep{font-family:'Orbitron',sans-serif;font-size:16px;color:rgba(232,66,26,.85);font-weight:900;align-self:flex-start;padding-top:6px;text-shadow:0 0 10px rgba(232,66,26,.5)}
 
 /* Hero stats — visível em todos os tamanhos */
 .hero-stats{
@@ -906,7 +906,7 @@ body.tema-claro .exit-sub{color:#666}
   border-radius:10px;padding:12px 8px;text-align:center;
 }
 .hero-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--green)}
-.hero-stat-label{font-size:8px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.hero-stat-label{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
 
 /* ══ PROMO BANNER ══ */
 .promo-banner{
@@ -1232,21 +1232,23 @@ body.tema-claro .exit-sub{color:#666}
 
 /* ══ NOTIF POPUP ══ */
 .notif-popup{
-  position:fixed;bottom:80px;left:16px;z-index:150; /* acima da nav bottom no mobile */
-  background:var(--card);border:1px solid var(--border);
+  position:fixed;bottom:80px;left:16px;z-index:150;
+  background:rgba(30,30,42,.97);border:1px solid rgba(255,255,255,.18);
   border-left:3px solid var(--mars);border-radius:10px;
   padding:12px 14px;display:flex;align-items:center;gap:10px;
   max-width:280px;
+  box-shadow:0 8px 32px rgba(0,0,0,.55);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   opacity:0;transform:translateY(16px);
   transition:opacity .4s,transform .4s;pointer-events:none;
 }
 @media(min-width:768px){.notif-popup{bottom:24px;left:24px;max-width:300px}}
 .notif-popup.show{opacity:1;transform:translateY(0)}
-.notif-img{width:36px;height:36px;border-radius:6px;object-fit:cover;background:var(--dim);flex-shrink:0}
-.notif-name{font-size:11px;font-weight:700;color:#fff}
-.notif-action{font-size:10px;color:var(--muted);margin-top:2px}
+.notif-img{width:40px;height:40px;border-radius:6px;object-fit:cover;background:var(--dim);flex-shrink:0;border:1px solid rgba(255,255,255,.1)}
+.notif-name{font-size:12px;font-weight:800;color:#fff}
+.notif-action{font-size:10px;color:rgba(255,255,255,.7);margin-top:2px}
 .notif-action strong{color:var(--green)}
-.notif-time{font-size:8px;color:#333;margin-top:3px;font-weight:600}
+.notif-time{font-size:9px;color:rgba(255,255,255,.45);margin-top:4px;font-weight:600}
 
 /* ══ TOAST ══ */
 #toast{
@@ -3554,7 +3556,7 @@ footer::before{
       JOGOS PC<br>
       <span class="line2">ATÉ 90% OFF</span>
     </h1>
-    <p class="hero-sub">Chaves Steam originais com os melhores preços do Brasil. Compre agora, receba na hora — sem complicação.</p>
+    <p class="hero-sub">Chaves Steam originais e contas Steam off com os melhores preços do Brasil. Compre agora com nosso sistema de confiança Mercado Pago, receba na hora — sem complicação.</p>
     <div class="hero-btns">
       <a class="btn-mars btn-mars-green" href="catalogo.html">Ver catálogo completo</button>
       <a class="btn-mars btn-mars-outline" href="https://discord.gg/bKnR9accnw" target="_blank">Discord da comunidade</a>
