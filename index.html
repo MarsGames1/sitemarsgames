@@ -801,15 +801,15 @@ body.tema-claro .exit-sub{color:#666}
 .hero-video-overlay{
   position:absolute;inset:0;z-index:1;
   background:
-    linear-gradient(to top, rgba(6,6,8,.65) 0%, rgba(6,6,8,.38) 40%, rgba(6,6,8,.08) 75%, transparent 100%),
-    rgba(6,6,8,.04);
+    linear-gradient(to top, rgba(6,6,8,.42) 0%, rgba(6,6,8,.20) 40%, rgba(6,6,8,.04) 75%, transparent 100%),
+    rgba(6,6,8,.02);
 }
 @media(min-width:768px){
   .hero-video-overlay{
     background:
-      linear-gradient(to right, rgba(6,6,8,.55) 0%, rgba(6,6,8,.35) 45%, rgba(6,6,8,.08) 75%, transparent 100%),
-      linear-gradient(to top, rgba(6,6,8,.25) 0%, transparent 40%),
-      rgba(6,6,8,.04);
+      linear-gradient(to right, rgba(6,6,8,.36) 0%, rgba(6,6,8,.18) 45%, rgba(6,6,8,.04) 75%, transparent 100%),
+      linear-gradient(to top, rgba(6,6,8,.14) 0%, transparent 40%),
+      rgba(6,6,8,.02);
   }
 }
 .hero-scan{
@@ -3843,9 +3843,18 @@ function aplicarFavs(){
   function tryCarregar(){
     if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
     sb.from('produtos').select('id,nome,preco,preco_original,imagem,categoria,estoque,ativo')
-      .eq('ativo',true).order('created_at',{ascending:false}).limit(20)
+      .eq('ativo',true).limit(60)
       .then(function(res){
-        iniciarCarrossel(res.data||[]);
+        var produtos = res.data || [];
+        /* Embaralha com seed do dia — muda a cada meia-noite */
+        var hoje = new Date();
+        var seed = hoje.getFullYear()*10000 + (hoje.getMonth()+1)*100 + hoje.getDate();
+        function seededRand(s){ s=(s^61)^(s>>16); s+=s<<3; s^=s>>4; s*=0x27d4eb2d; s^=s>>15; return (s>>>0)/0xFFFFFFFF; }
+        for(var i=produtos.length-1;i>0;i--){
+          var j=Math.floor(seededRand(seed+i)*(i+1));
+          var tmp=produtos[i]; produtos[i]=produtos[j]; produtos[j]=tmp;
+        }
+        iniciarCarrossel(produtos.slice(0,20));
       }).catch(function(){
         iniciarCarrossel([]);
       });
