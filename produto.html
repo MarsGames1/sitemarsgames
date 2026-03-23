@@ -1252,9 +1252,24 @@ async function carregarAvaliacoesProduto(produtoNome){
   if(!section)return;
 
   try{
-    var{data,error}=await sb.from('avaliacoes')
-      .select('*').eq('produto_nome',produtoNome).eq('aprovado',true)
-      .order('created_at',{ascending:false});
+    /* Busca aprovadas: tenta por produto_id primeiro (mais preciso), depois por nome (ilike) */
+    var rows=[];
+    /* 1. Tenta por produto_id se o produto estiver carregado */
+    if(typeof produto!=='undefined'&&produto&&produto.id){
+      var r1=await sb.from('avaliacoes')
+        .select('*').eq('produto_id',produto.id).eq('aprovado',true)
+        .order('created_at',{ascending:false});
+      if(!r1.error&&r1.data&&r1.data.length>0) rows=r1.data;
+    }
+    /* 2. Fallback: busca por nome (ilike = case-insensitive) */
+    if(!rows.length){
+      var r2=await sb.from('avaliacoes')
+        .select('*').ilike('produto_nome',produtoNome.trim()).eq('aprovado',true)
+        .order('created_at',{ascending:false});
+      if(!r2.error&&r2.data) rows=r2.data;
+    }
+    var data=rows;
+    var error=null;
 
     if(error||!data||data.length===0){section.style.display='none';return;}
     section.style.display='block';
