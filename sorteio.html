@@ -92,7 +92,7 @@ body.tema-claro .sorteio-card{background:#fff;border-color:var(--border)}
 .pvp-confirm-nome{font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase}
 .pvp-vs-text{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#ff2233;text-shadow:0 0 20px rgba(255,34,51,.6)}
 .pvp-confirm-summary{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;margin-bottom:12px}
-.pvp-confirm-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;color:#888}
+.pvp-confirm-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.72)}
 .pvp-confirm-row:last-child{border-bottom:none}
 .pvp-confirm-row strong{color:#fff;font-weight:700}
 .pvp-confirm-row.prize{background:rgba(255,215,0,.04);margin:0 -14px;padding:8px 14px;border-radius:6px}
@@ -929,8 +929,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .pvp-room-price{font-size:30px;font-weight:900;color:#fff;line-height:1;margin-bottom:14px;font-family:'Orbitron',sans-serif;}
 .pvp-room-price span{font-size:13px;color:#444;font-weight:400;font-family:'Montserrat',sans-serif;}
 .pvp-room-prize{background:rgba(255,34,51,.05);border:1px solid rgba(255,34,51,.12);border-radius:8px;padding:10px 13px;margin-bottom:14px;}
-.pvp-room-prize strong{display:block;color:#ddd;font-size:12px;font-weight:700;margin-bottom:2px;}
-.pvp-room-prize span{font-size:11px;color:#555;}
+.pvp-room-prize strong{display:block;color:#fff;font-size:12px;font-weight:700;margin-bottom:2px;}
+.pvp-room-prize span{font-size:11px;color:rgba(255,255,255,.65);}
 .pvp-room-stats{display:flex;gap:8px;margin-bottom:16px;}
 .pvp-room-stat{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);border-radius:7px;padding:7px 5px;text-align:center;}
 .pvp-room-stat strong{display:block;font-size:16px;color:#fff;font-weight:700;}
@@ -1074,8 +1074,8 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 .pvp-score-box strong{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;}
 .pvp-score-box.p1 strong{color:#ff2233;}.pvp-score-box.p2 strong{color:#00cfff;}
 .pvp-prize-box{background:linear-gradient(135deg,rgba(255,208,0,.06),rgba(255,106,0,.03));border:1px solid rgba(255,208,0,.2);border-radius:11px;padding:12px;margin-bottom:14px;animation:pvpFU .4s .55s ease backwards;}
-.pvp-prize-box span{display:block;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
-.pvp-prize-box strong{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;color:#ffd000;}
+.pvp-prize-box span{display:block;font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+.pvp-prize-box strong{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;color:#ffd700;text-shadow:0 0 12px rgba(255,215,0,.5);}
 .pvp-again-btn{width:100%;padding:13px;background:linear-gradient(135deg,#ff2233,#cc0011);border:none;border-radius:9px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#fff;cursor:pointer;transition:all .2s;animation:pvpFU .4s .65s ease backwards;}
 .pvp-again-btn:hover{transform:scale(1.03);box-shadow:0 6px 26px rgba(255,34,51,.5);}
 
@@ -3510,7 +3510,7 @@ function _pvpRenderComSessao(){
     }
   },800);
 }
-var PVP_PIX_CHAVE='marsgames@pagamentos.com';
+var PVP_PIX_CHAVE='7949d607-c35e-46df-bfbf-8d7244669b47';
 var pvpPagamentoPendente=null;
 var pvpConfirmacaoInterval=null;
 var pvpPixPaymentId=null;
@@ -3607,7 +3607,7 @@ async function pvpGerarPixReal(){
     pvpPollPixPagamento(pvpPixPaymentId, pvpPixReference, 0);
   }catch(e){
     console.error('[pvp pix real]',e);
-    if(qrWrap) qrWrap.innerHTML='<div style="font-size:11px;color:#ff8888;text-align:center;padding:12px">Erro ao gerar QR Code.<br>Use a chave Pix abaixo.</div>';
+    if(qrWrap) qrWrap.innerHTML='<div style="font-size:11px;color:#ff9966;text-align:center;padding:12px">QR Code indisponível.<br>Use a chave Pix abaixo para pagar.</div>';
     /* Fallback: mostra chave estática */
     var chaveEl=document.getElementById('pvpPixChave');
     if(chaveEl) chaveEl.textContent=PVP_PIX_CHAVE;
