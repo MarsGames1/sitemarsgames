@@ -3434,6 +3434,28 @@ async function carregarPerfil(user){
     ]);
 
     var perfil = perfilRes.data || fallback;
+
+    /* ── 200 MP de boas-vindas — creditado apenas uma vez no primeiro acesso ── */
+    (async function creditarBoasVindas(){
+      try{
+        var bvKey='mg_bv_mp_'+(user.email||'');
+        if(localStorage.getItem(bvKey)) return; /* já creditou */
+        /* Se já tem MP no banco, não é o primeiro acesso */
+        if(mpRes.data && (mpRes.data.pontos||0)>0){ localStorage.setItem(bvKey,'1'); return; }
+        /* Primeiro acesso real — credita 200 MP */
+        var histBv=[{descricao:'🚀 Bem-vindo à MarsGames! Bônus de boas-vindas.',pontos:200,data:new Date().toISOString(),tipo:'boas_vindas'}];
+        await sb.from('marspoints').upsert(
+          {user_email:user.email,pontos:200,historico:histBv,updated_at:new Date().toISOString()},
+          {onConflict:'user_email'}
+        );
+        localStorage.setItem(bvKey,'1');
+        /* Atualiza saldo exibido */
+        if(mpRes.data){ mpRes.data.pontos=200; mpRes.data.historico=histBv; }
+        else { mpRes={data:{pontos:200,historico:histBv,pontos_historico:200}}; }
+        setTimeout(function(){ showToast('🚀 Bem-vindo! +200 MarsPoints de boas-vindas na sua conta!'); },1200);
+      }catch(e){ console.warn('[boas-vindas MP]',e); }
+    })();
+
     if(mpRes.data){
       perfil.pontos    = mpRes.data.pontos || 0;
       perfil.historico = mpRes.data.historico || [];
@@ -5046,32 +5068,61 @@ async function creditarTicketsBV(assinatura){
   if(!userSession||!assinatura) return;
   if(assinatura.tickets_boas_vindas_creditados) return; /* já creditou */
 
-  var TICKETS_PLANO={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
-  var qtd=TICKETS_PLANO[assinatura.plano]||0;
-  if(qtd===0) return;
+  /* Benefícios por plano — MP dobrados, XP de Mundo, Tickets */
+  var PLANO_BV={
+    andromeda:{tickets:3, mp:100, xp:50,  xpLabel:'XP de Mundo — Andrômeda'},
+    triangulo: {tickets:5, mp:160, xp:100, xpLabel:'XP de Mundo — Triângulo'},
+    centaurus: {tickets:8, mp:200, xp:200, xpLabel:'XP de Mundo — Centaurus'},
+    sombrero:  {tickets:12,mp:300, xp:400, xpLabel:'XP de Mundo — Sombrero'},
+  };
+  var bv=PLANO_BV[assinatura.plano]||PLANO_BV.andromeda;
 
   try{
-    /* Busca tickets atuais */
+    /* ── Tickets ── */
     var{data:tckData}=await sb.from('tickets')
       .select('id,quantidade').eq('user_email',userSession.user.email).maybeSingle();
-
     if(tckData){
       await sb.from('tickets')
-        .update({quantidade:(tckData.quantidade||0)+qtd, updated_at:new Date().toISOString()})
+        .update({quantidade:(tckData.quantidade||0)+bv.tickets, updated_at:new Date().toISOString()})
         .eq('id',tckData.id);
     } else {
-      await sb.from('tickets')
-        .insert({user_email:userSession.user.email, quantidade:qtd});
+      await sb.from('tickets').insert({user_email:userSession.user.email, quantidade:bv.tickets});
     }
 
-    /* Marca como creditado na assinatura */
+    /* ── MarsPoints ── */
+    var{data:mpData}=await sb.from('marspoints')
+      .select('pontos,historico').eq('user_email',userSession.user.email).maybeSingle();
+    var mpAtual=(mpData&&mpData.pontos)||0;
+    var hist=Array.isArray(mpData&&mpData.historico)?mpData.historico:[];
+    hist.unshift({descricao:'🌌 Bônus MarsPass '+assinatura.plano+' — bem-vindo!',pontos:bv.mp,data:new Date().toISOString(),tipo:'marspass'});
+    if(mpData){
+      await sb.from('marspoints').update({pontos:mpAtual+bv.mp,historico:hist.slice(0,50),updated_at:new Date().toISOString()}).eq('user_email',userSession.user.email);
+    } else {
+      await sb.from('marspoints').insert({user_email:userSession.user.email,pontos:bv.mp,historico:hist});
+    }
+
+    /* ── XP de Mundo (planeta) ── */
+    var xpKey='mg_mp_xp_bv_'+(userSession.user.email||'');
+    if(!localStorage.getItem(xpKey)){
+      var creditarXP=function(){
+        if(typeof planetaAddXPSilent==='function'){
+          planetaAddXPSilent(bv.xp,bv.xpLabel,'🌌','rgba(124,106,247,.12)','#c4b8ff');
+          localStorage.setItem(xpKey,'1');
+        } else {
+          setTimeout(creditarXP,800);
+        }
+      };
+      setTimeout(creditarXP,600);
+    }
+
+    /* ── Marca como creditado ── */
     await sb.from('marspass_assinaturas')
       .update({tickets_boas_vindas_creditados:true})
       .eq('id',assinatura.id);
 
-    showToast('🎟️ +'+qtd+' tickets MarsPass creditados na sua conta!');
+    showToast('🌌 MarsPass ativado! +'+bv.mp+' MP, +'+bv.tickets+' tickets e +'+bv.xp+' XP de Mundo!');
   }catch(e){
-    console.warn('Erro ao creditar tickets bv:',e);
+    console.warn('Erro ao creditar boas-vindas MarsPass:',e);
   }
 }
 
@@ -5108,13 +5159,18 @@ async function creditarTicketsBV(assinatura){
         <div class="mp-benef-grid">
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">⭐</div>
-            <div class="mp-benef-item-nome">50 MarsPoints</div>
+            <div class="mp-benef-item-nome">200 MarsPoints</div>
             <div class="mp-benef-item-desc">Creditados ao assinar</div>
           </div>
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">🎟️</div>
             <div class="mp-benef-item-nome">+3 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🌍</div>
+            <div class="mp-benef-item-nome">+50 XP de Mundo</div>
+            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
           </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
@@ -5162,13 +5218,18 @@ async function creditarTicketsBV(assinatura){
         <div class="mp-benef-grid">
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">⭐</div>
-            <div class="mp-benef-item-nome">80 MarsPoints</div>
+            <div class="mp-benef-item-nome">160 MarsPoints</div>
             <div class="mp-benef-item-desc">Creditados ao assinar</div>
           </div>
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">🎟️</div>
             <div class="mp-benef-item-nome">+5 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🌍</div>
+            <div class="mp-benef-item-nome">+100 XP de Mundo</div>
+            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
           </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
@@ -5224,6 +5285,11 @@ async function creditarTicketsBV(assinatura){
             <div class="mp-benef-item-nome">+8 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
           </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🌍</div>
+            <div class="mp-benef-item-nome">+200 XP de Mundo</div>
+            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
+          </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
             <div class="mp-benef-item-nome">10% de desconto</div>
@@ -5270,13 +5336,18 @@ async function creditarTicketsBV(assinatura){
         <div class="mp-benef-grid">
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">⭐</div>
-            <div class="mp-benef-item-nome">150 MarsPoints</div>
+            <div class="mp-benef-item-nome">300 MarsPoints</div>
             <div class="mp-benef-item-desc">Creditados ao assinar</div>
           </div>
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">🎟️</div>
             <div class="mp-benef-item-nome">+12 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
+          </div>
+          <div class="mp-benef-item destaque">
+            <div class="mp-benef-item-icon">🌍</div>
+            <div class="mp-benef-item-nome">+400 XP de Mundo</div>
+            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
           </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
