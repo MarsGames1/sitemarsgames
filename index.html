@@ -801,15 +801,15 @@ body.tema-claro .exit-sub{color:#666}
 .hero-video-overlay{
   position:absolute;inset:0;z-index:1;
   background:
-    linear-gradient(to top, rgba(6,6,8,.42) 0%, rgba(6,6,8,.20) 40%, rgba(6,6,8,.04) 75%, transparent 100%),
-    rgba(6,6,8,.02);
+    linear-gradient(to top, rgba(6,6,8,.88) 0%, rgba(6,6,8,.65) 40%, rgba(6,6,8,.2) 75%, transparent 100%),
+    rgba(6,6,8,.1);
 }
 @media(min-width:768px){
   .hero-video-overlay{
     background:
-      linear-gradient(to right, rgba(6,6,8,.36) 0%, rgba(6,6,8,.18) 45%, rgba(6,6,8,.04) 75%, transparent 100%),
-      linear-gradient(to top, rgba(6,6,8,.14) 0%, transparent 40%),
-      rgba(6,6,8,.02);
+      linear-gradient(to right, rgba(6,6,8,.82) 0%, rgba(6,6,8,.6) 45%, rgba(6,6,8,.15) 75%, transparent 100%),
+      linear-gradient(to top, rgba(6,6,8,.45) 0%, transparent 40%),
+      rgba(6,6,8,.1);
   }
 }
 .hero-scan{
@@ -842,7 +842,7 @@ body.tema-claro .exit-sub{color:#666}
 .hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--mars);animation:pulse 1.5s ease-in-out infinite}
 .hero-eyebrow{
   font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
-  color:rgba(232,66,26,.7);margin-bottom:10px;
+  color:rgba(255,120,80,1);margin-bottom:10px;text-shadow:0 1px 8px rgba(0,0,0,.8);
 }
 .hero-title{
   font-family:'Orbitron',sans-serif;
@@ -853,8 +853,9 @@ body.tema-claro .exit-sub{color:#666}
 }
 .hero-title .line2{color:var(--green);text-shadow:0 0 40px rgba(0,255,85,.3)}
 .hero-sub{
-  font-size:12px;color:#777;font-weight:600;
+  font-size:12px;color:rgba(255,255,255,.92);font-weight:600;
   letter-spacing:.3px;max-width:500px;margin:10px 0 20px;line-height:1.7;
+  text-shadow:0 1px 10px rgba(0,0,0,.85),0 0 30px rgba(0,0,0,.5);
 }
 @media(min-width:480px){.hero-sub{font-size:13px}}
 .hero-btns{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
@@ -869,7 +870,7 @@ body.tema-claro .exit-sub{color:#666}
 }
 .btn-mars-green{background:var(--green);color:#000}
 .btn-mars-green:hover{box-shadow:0 0 28px var(--green-glow);transform:translateY(-2px)}
-.btn-mars-outline{background:transparent;color:#888;border:1px solid var(--border2)}
+.btn-mars-outline{background:transparent;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.3)}
 .btn-mars-outline:hover{color:#fff;border-color:#444;transform:translateY(-1px)}
 
 /* Countdown */
@@ -905,7 +906,7 @@ body.tema-claro .exit-sub{color:#666}
   border-radius:10px;padding:12px 8px;text-align:center;
 }
 .hero-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--green)}
-.hero-stat-label{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.hero-stat-label{font-size:8px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
 
 /* ══ PROMO BANNER ══ */
 .promo-banner{
@@ -3553,7 +3554,7 @@ footer::before{
       JOGOS PC<br>
       <span class="line2">ATÉ 90% OFF</span>
     </h1>
-    <p class="hero-sub">Chaves Steam originais e contas Steam off com os melhores preços do Brasil. Compre agora com nosso sistema de confiança Mercado Pago, receba na hora — sem complicação.</p>
+    <p class="hero-sub">Chaves Steam originais com os melhores preços do Brasil. Compre agora, receba na hora — sem complicação.</p>
     <div class="hero-btns">
       <a class="btn-mars btn-mars-green" href="catalogo.html">Ver catálogo completo</button>
       <a class="btn-mars btn-mars-outline" href="https://discord.gg/bKnR9accnw" target="_blank">Discord da comunidade</a>
@@ -3843,18 +3844,9 @@ function aplicarFavs(){
   function tryCarregar(){
     if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
     sb.from('produtos').select('id,nome,preco,preco_original,imagem,categoria,estoque,ativo')
-      .eq('ativo',true).limit(60)
+      .eq('ativo',true).order('created_at',{ascending:false}).limit(20)
       .then(function(res){
-        var produtos = res.data || [];
-        /* Embaralha com seed do dia — muda a cada meia-noite */
-        var hoje = new Date();
-        var seed = hoje.getFullYear()*10000 + (hoje.getMonth()+1)*100 + hoje.getDate();
-        function seededRand(s){ s=(s^61)^(s>>16); s+=s<<3; s^=s>>4; s*=0x27d4eb2d; s^=s>>15; return (s>>>0)/0xFFFFFFFF; }
-        for(var i=produtos.length-1;i>0;i--){
-          var j=Math.floor(seededRand(seed+i)*(i+1));
-          var tmp=produtos[i]; produtos[i]=produtos[j]; produtos[j]=tmp;
-        }
-        iniciarCarrossel(produtos.slice(0,20));
+        iniciarCarrossel(res.data||[]);
       }).catch(function(){
         iniciarCarrossel([]);
       });
