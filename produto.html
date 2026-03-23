@@ -1253,7 +1253,7 @@ async function carregarAvaliacoesProduto(produtoNome){
 
   try{
     var{data,error}=await sb.from('avaliacoes')
-      .select('*').eq('produto_nome',produtoNome)
+      .select('*').eq('produto_nome',produtoNome).eq('aprovado',true)
       .order('created_at',{ascending:false});
 
     if(error||!data||data.length===0){section.style.display='none';return;}
