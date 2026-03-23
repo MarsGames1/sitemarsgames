@@ -3434,28 +3434,6 @@ async function carregarPerfil(user){
     ]);
 
     var perfil = perfilRes.data || fallback;
-
-    /* ── 200 MP de boas-vindas — creditado apenas uma vez no primeiro acesso ── */
-    (async function creditarBoasVindas(){
-      try{
-        var bvKey='mg_bv_mp_'+(user.email||'');
-        if(localStorage.getItem(bvKey)) return; /* já creditou */
-        /* Se já tem MP no banco, não é o primeiro acesso */
-        if(mpRes.data && (mpRes.data.pontos||0)>0){ localStorage.setItem(bvKey,'1'); return; }
-        /* Primeiro acesso real — credita 200 MP */
-        var histBv=[{descricao:'🚀 Bem-vindo à MarsGames! Bônus de boas-vindas.',pontos:200,data:new Date().toISOString(),tipo:'boas_vindas'}];
-        await sb.from('marspoints').upsert(
-          {user_email:user.email,pontos:200,historico:histBv,updated_at:new Date().toISOString()},
-          {onConflict:'user_email'}
-        );
-        localStorage.setItem(bvKey,'1');
-        /* Atualiza saldo exibido */
-        if(mpRes.data){ mpRes.data.pontos=200; mpRes.data.historico=histBv; }
-        else { mpRes={data:{pontos:200,historico:histBv,pontos_historico:200}}; }
-        setTimeout(function(){ showToast('🚀 Bem-vindo! +200 MarsPoints de boas-vindas na sua conta!'); },1200);
-      }catch(e){ console.warn('[boas-vindas MP]',e); }
-    })();
-
     if(mpRes.data){
       perfil.pontos    = mpRes.data.pontos || 0;
       perfil.historico = mpRes.data.historico || [];
@@ -4613,35 +4591,12 @@ async function carregarMarsPointsPerfil(user){
 
 /* ── MARSTICKETS ── */
 async function carregarTicketsPerfil(user){
-  var{data}=await sb.from('tickets').select('*').eq('user_email',user.email).maybeSingle();
+  var SETE_DIAS = 7 * 24 * 60 * 60 * 1000;
 
-  /* Sem registro: cria com base no nível */
-  if(!data){
-    var mp=await sb.from('marspoints').select('pontos').eq('user_email',user.email).maybeSingle();
-    var pts=(mp.data&&mp.data.pontos)||0;
-    var bonus=pts>=5000?5:pts>=1000?4:pts>=500?4:pts>=100?3:3;
-    var{data:novo}=await sb.from('tickets').insert({
-      user_id:user.id,user_email:user.email,
-      quantidade:bonus,total_acumulado:bonus,
-      ultima_renovacao:new Date().toISOString()
-    }).select().single();
-    data=novo;
-  }
-  if(!data)return;
-
-  var qtd=data.quantidade||0;
-  var total=data.total_acumulado||0;
-
-  /* Atualiza hero */
-  document.getElementById('ticketsCount').textContent=qtd;
-  document.getElementById('ticketsTotalAcumulado').textContent=total;
-
-  /* Bonus semanal = nível + plano MarsPass */
-  var nivel=getNivel(perfilData?perfilData.pontos||0:0);
-  var bonusNivelPerfil=nivel.nome==='Diamante'?5:nivel.nome==='Esmeralda'?4:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:3;
-  /* Busca bônus do plano MarsPass ativo */
-  var MP_TCK_PERFIL={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
-  var bonusMPPerfil=0;
+  /* ── 1. Bônus MarsPass ativo ── */
+  var MP_TCK = {andromeda:3, triangulo:5, centaurus:8, sombrero:12};
+  var bonusMarsPass = 0;
+  var planoAtivo = null;
   try{
     var{data:mpAss}=await sb.from('marspass_assinaturas')
       .select('plano')
@@ -4649,56 +4604,116 @@ async function carregarTicketsPerfil(user){
       .eq('status','ativo')
       .gt('data_vencimento',new Date().toISOString())
       .maybeSingle();
-    bonusMPPerfil=(mpAss&&MP_TCK_PERFIL[mpAss.plano])||0;
+    if(mpAss){ planoAtivo=mpAss.plano; bonusMarsPass=MP_TCK[mpAss.plano]||0; }
   }catch(_){}
-  var bonusTotalPerfil=bonusNivelPerfil+bonusMPPerfil;
-  var bonusLabel=bonusMPPerfil>0
-    ?'+'+bonusTotalPerfil+' ('+bonusNivelPerfil+' nível + '+bonusMPPerfil+' MarsPass)'
-    :'+'+bonusTotalPerfil;
+
+  /* ── 2. Bônus por nível de MarsPoints ── */
+  var pts = (perfilData&&perfilData.pontos)||0;
+  var nivel = getNivel(pts);
+  var bonusNivel = nivel.nome==='Diamante'?5:nivel.nome==='Esmeralda'?4:nivel.nome==='Ouro'?4:nivel.nome==='Prata'?3:3;
+  var bonusTotal = bonusNivel + bonusMarsPass;
+
+  /* ── 3. Busca registro de tickets ── */
+  var{data}=await sb.from('tickets').select('*').eq('user_email',user.email).maybeSingle();
+
+  /* Primeiro acesso — cria registro com bônus inicial */
+  if(!data){
+    var{data:novo}=await sb.from('tickets').insert({
+      user_id:user.id, user_email:user.email,
+      quantidade:bonusTotal, total_acumulado:bonusTotal,
+      ultima_renovacao:new Date().toISOString()
+    }).select().single();
+    data=novo;
+    if(data) showToast('🎟️ +'+bonusTotal+' tickets adicionados à sua conta!');
+  }
+  if(!data) return;
+
+  /* ── 4. RENOVAÇÃO REAL — credita se passaram 7 dias ── */
+  var agora = new Date();
+  var ultimaRenovacao = new Date(data.ultima_renovacao||agora);
+  var diff = agora - ultimaRenovacao;
+
+  if(diff >= SETE_DIAS){
+    /* Quantas semanas passaram (pode ter ficado offline mais de uma semana) */
+    var semanasPassadas = Math.floor(diff / SETE_DIAS);
+    var totalCreditar = bonusTotal * semanasPassadas;
+    var novaUltima = new Date(ultimaRenovacao.getTime() + semanasPassadas * SETE_DIAS);
+
+    var novaQtd = (data.quantidade||0) + totalCreditar;
+    var novoTotal = (data.total_acumulado||0) + totalCreditar;
+
+    var{error:errRen}=await sb.from('tickets').update({
+      quantidade: novaQtd,
+      total_acumulado: novoTotal,
+      ultima_renovacao: novaUltima.toISOString()
+    }).eq('user_email',user.email);
+
+    if(!errRen){
+      data.quantidade = novaQtd;
+      data.total_acumulado = novoTotal;
+      data.ultima_renovacao = novaUltima.toISOString();
+      var msgSemanas = semanasPassadas>1 ? semanasPassadas+' semanas creditadas!' : 'semana creditada!';
+      showToast('🎟️ +'+totalCreditar+' tickets — renovação de '+msgSemanas);
+    }
+  }
+
+  /* ── 5. Atualiza UI ── */
+  var qtd = data.quantidade||0;
+  var total = data.total_acumulado||0;
+  document.getElementById('ticketsCount').textContent=qtd;
+  document.getElementById('ticketsTotalAcumulado').textContent=total;
+
+  /* Label bônus/semana */
+  var bonusLabel = bonusMarsPass>0
+    ? '+'+bonusTotal+' ('+bonusNivel+' nível + '+bonusMarsPass+' MarsPass)'
+    : '+'+bonusTotal;
   document.getElementById('ticketsBonusPorSemana').textContent=bonusLabel;
 
-  /* Timer renovação */
-  var ultima=new Date(data.ultima_renovacao||new Date());
-  var proxRenovacao=new Date(ultima);
-  proxRenovacao.setDate(proxRenovacao.getDate()+7);
-
+  /* ── 6. Timer até próxima renovação (agora baseado na data real) ── */
+  var proxRenovacao = new Date(new Date(data.ultima_renovacao).getTime() + SETE_DIAS);
+  function pad2(n){return String(n).padStart(2,'0')}
   function atualizarTimer(){
-    var diff=proxRenovacao-new Date();
-    if(diff<=0){document.getElementById('ticketsResetTimer').textContent='Renovando...';return}
-    var d=Math.floor(diff/86400000);
-    var h=Math.floor((diff%86400000)/3600000);
-    var m=Math.floor((diff%3600000)/60000);
-    var txt=d>0?d+'d '+pad2(h)+'h '+pad2(m)+'m':pad2(h)+'h '+pad2(m)+'m '+pad2(Math.floor((diff%60000)/1000))+'s';
+    var resto = proxRenovacao - new Date();
+    if(resto<=0){
+      document.getElementById('ticketsResetTimer').textContent='Processando...';
+      /* Recarrega para aplicar nova renovação */
+      setTimeout(function(){ carregarTicketsPerfil(user); }, 2000);
+      return;
+    }
+    var d=Math.floor(resto/86400000);
+    var h=Math.floor((resto%86400000)/3600000);
+    var m=Math.floor((resto%3600000)/60000);
+    var s=Math.floor((resto%60000)/1000);
+    var txt=d>0 ? d+'d '+pad2(h)+'h '+pad2(m)+'m' : pad2(h)+'h '+pad2(m)+'m '+pad2(s)+'s';
     document.getElementById('ticketsResetTimer').textContent=txt;
   }
-  function pad2(n){return String(n).padStart(2,'0')}
   atualizarTimer();
   setInterval(atualizarTimer,1000);
 
-  /* Participações */
+  /* ── 7. Participações em sorteios ── */
   var{data:parts,count}=await sb.from('sorteio_participacoes')
     .select('*',{count:'exact'}).eq('user_email',user.email);
   var totalUsados=(parts||[]).reduce(function(s,p){return s+(p.tickets_usados||0)},0);
   document.getElementById('ticketsUsadosSorteio').textContent=totalUsados;
   document.getElementById('ticketsSorteiosParticipados').textContent=count||0;
 
-  /* Histórico */
+  /* ── 8. Histórico real ── */
   var hist=[];
-  // Participações em sorteios
   if(parts&&parts.length){
     parts.forEach(function(p){
-      hist.push({icon:'🎲',desc:'Participou de sorteio',val:-p.tickets_usados,data:p.created_at});
+      hist.push({icon:'🎲',desc:'Participou de sorteio',val:'-'+p.tickets_usados,data:p.created_at});
     });
   }
-  // Renovações (simulado com base na data)
-  hist.push({icon:'✨',desc:'Tickets semanais adicionados',val:'+'+bonus,data:data.ultima_renovacao});
+  /* Entrada de renovação real */
+  hist.push({
+    icon:'✨',
+    desc:'Tickets semanais creditados'+(planoAtivo?' (nível + MarsPass '+planoAtivo+')':' (por nível)'),
+    val:'+'+bonusTotal,
+    data:data.ultima_renovacao
+  });
   hist.sort(function(a,b){return new Date(b.data)-new Date(a.data)});
 
   var listEl=document.getElementById('ticketsHistoricoList');
-  if(!hist.length){
-    listEl.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:11px">Nenhuma movimentação ainda.</div>';
-    return;
-  }
   listEl.innerHTML=hist.map(function(h){
     var ganho=String(h.val).startsWith('+');
     var dt=h.data?new Date(h.data).toLocaleDateString('pt-BR'):'—';
@@ -5068,61 +5083,32 @@ async function creditarTicketsBV(assinatura){
   if(!userSession||!assinatura) return;
   if(assinatura.tickets_boas_vindas_creditados) return; /* já creditou */
 
-  /* Benefícios por plano — MP dobrados, XP de Mundo, Tickets */
-  var PLANO_BV={
-    andromeda:{tickets:3, mp:100, xp:50,  xpLabel:'XP de Mundo — Andrômeda'},
-    triangulo: {tickets:5, mp:160, xp:100, xpLabel:'XP de Mundo — Triângulo'},
-    centaurus: {tickets:8, mp:200, xp:200, xpLabel:'XP de Mundo — Centaurus'},
-    sombrero:  {tickets:12,mp:300, xp:400, xpLabel:'XP de Mundo — Sombrero'},
-  };
-  var bv=PLANO_BV[assinatura.plano]||PLANO_BV.andromeda;
+  var TICKETS_PLANO={andromeda:3,triangulo:5,centaurus:8,sombrero:12};
+  var qtd=TICKETS_PLANO[assinatura.plano]||0;
+  if(qtd===0) return;
 
   try{
-    /* ── Tickets ── */
+    /* Busca tickets atuais */
     var{data:tckData}=await sb.from('tickets')
       .select('id,quantidade').eq('user_email',userSession.user.email).maybeSingle();
+
     if(tckData){
       await sb.from('tickets')
-        .update({quantidade:(tckData.quantidade||0)+bv.tickets, updated_at:new Date().toISOString()})
+        .update({quantidade:(tckData.quantidade||0)+qtd, updated_at:new Date().toISOString()})
         .eq('id',tckData.id);
     } else {
-      await sb.from('tickets').insert({user_email:userSession.user.email, quantidade:bv.tickets});
+      await sb.from('tickets')
+        .insert({user_email:userSession.user.email, quantidade:qtd});
     }
 
-    /* ── MarsPoints ── */
-    var{data:mpData}=await sb.from('marspoints')
-      .select('pontos,historico').eq('user_email',userSession.user.email).maybeSingle();
-    var mpAtual=(mpData&&mpData.pontos)||0;
-    var hist=Array.isArray(mpData&&mpData.historico)?mpData.historico:[];
-    hist.unshift({descricao:'🌌 Bônus MarsPass '+assinatura.plano+' — bem-vindo!',pontos:bv.mp,data:new Date().toISOString(),tipo:'marspass'});
-    if(mpData){
-      await sb.from('marspoints').update({pontos:mpAtual+bv.mp,historico:hist.slice(0,50),updated_at:new Date().toISOString()}).eq('user_email',userSession.user.email);
-    } else {
-      await sb.from('marspoints').insert({user_email:userSession.user.email,pontos:bv.mp,historico:hist});
-    }
-
-    /* ── XP de Mundo (planeta) ── */
-    var xpKey='mg_mp_xp_bv_'+(userSession.user.email||'');
-    if(!localStorage.getItem(xpKey)){
-      var creditarXP=function(){
-        if(typeof planetaAddXPSilent==='function'){
-          planetaAddXPSilent(bv.xp,bv.xpLabel,'🌌','rgba(124,106,247,.12)','#c4b8ff');
-          localStorage.setItem(xpKey,'1');
-        } else {
-          setTimeout(creditarXP,800);
-        }
-      };
-      setTimeout(creditarXP,600);
-    }
-
-    /* ── Marca como creditado ── */
+    /* Marca como creditado na assinatura */
     await sb.from('marspass_assinaturas')
       .update({tickets_boas_vindas_creditados:true})
       .eq('id',assinatura.id);
 
-    showToast('🌌 MarsPass ativado! +'+bv.mp+' MP, +'+bv.tickets+' tickets e +'+bv.xp+' XP de Mundo!');
+    showToast('🎟️ +'+qtd+' tickets MarsPass creditados na sua conta!');
   }catch(e){
-    console.warn('Erro ao creditar boas-vindas MarsPass:',e);
+    console.warn('Erro ao creditar tickets bv:',e);
   }
 }
 
@@ -5159,18 +5145,13 @@ async function creditarTicketsBV(assinatura){
         <div class="mp-benef-grid">
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">⭐</div>
-            <div class="mp-benef-item-nome">200 MarsPoints</div>
+            <div class="mp-benef-item-nome">50 MarsPoints</div>
             <div class="mp-benef-item-desc">Creditados ao assinar</div>
           </div>
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">🎟️</div>
             <div class="mp-benef-item-nome">+3 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
-          </div>
-          <div class="mp-benef-item destaque">
-            <div class="mp-benef-item-icon">🌍</div>
-            <div class="mp-benef-item-nome">+50 XP de Mundo</div>
-            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
           </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
@@ -5218,18 +5199,13 @@ async function creditarTicketsBV(assinatura){
         <div class="mp-benef-grid">
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">⭐</div>
-            <div class="mp-benef-item-nome">160 MarsPoints</div>
+            <div class="mp-benef-item-nome">80 MarsPoints</div>
             <div class="mp-benef-item-desc">Creditados ao assinar</div>
           </div>
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">🎟️</div>
             <div class="mp-benef-item-nome">+5 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
-          </div>
-          <div class="mp-benef-item destaque">
-            <div class="mp-benef-item-icon">🌍</div>
-            <div class="mp-benef-item-nome">+100 XP de Mundo</div>
-            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
           </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
@@ -5285,11 +5261,6 @@ async function creditarTicketsBV(assinatura){
             <div class="mp-benef-item-nome">+8 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
           </div>
-          <div class="mp-benef-item destaque">
-            <div class="mp-benef-item-icon">🌍</div>
-            <div class="mp-benef-item-nome">+200 XP de Mundo</div>
-            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
-          </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
             <div class="mp-benef-item-nome">10% de desconto</div>
@@ -5336,18 +5307,13 @@ async function creditarTicketsBV(assinatura){
         <div class="mp-benef-grid">
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">⭐</div>
-            <div class="mp-benef-item-nome">300 MarsPoints</div>
+            <div class="mp-benef-item-nome">150 MarsPoints</div>
             <div class="mp-benef-item-desc">Creditados ao assinar</div>
           </div>
           <div class="mp-benef-item destaque">
             <div class="mp-benef-item-icon">🎟️</div>
             <div class="mp-benef-item-nome">+12 Tickets / semana</div>
             <div class="mp-benef-item-desc">Crédito automático toda semana</div>
-          </div>
-          <div class="mp-benef-item destaque">
-            <div class="mp-benef-item-icon">🌍</div>
-            <div class="mp-benef-item-nome">+400 XP de Mundo</div>
-            <div class="mp-benef-item-desc">Creditado na aba Meu Mundo ao assinar</div>
           </div>
           <div class="mp-benef-item">
             <div class="mp-benef-item-icon">💸</div>
