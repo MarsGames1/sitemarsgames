@@ -3577,7 +3577,7 @@ async function pvpGerarPixReal(){
         'Content-Type':'application/json',
         'Authorization':'Bearer '+userSession.access_token
       },
-      body:JSON.stringify({itens:itens,tipo:'pvp',sala:pvpSalaAtual._tier})
+      body:JSON.stringify({itens:itens,tipo:'pvp',sala:pvpSalaAtual._tier||null})
     });
     var data=await response.json();
     if(!response.ok) throw new Error(data.error||'Erro ao gerar Pix');
