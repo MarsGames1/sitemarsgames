@@ -2721,7 +2721,7 @@ function spaGo(page){
   } else if(page === 'roda'){
     document.getElementById('pageRoda').classList.add('visible');
     document.getElementById('spaBtnRoda').classList.add('active');
-    rdInit();
+    rdCarregarConfigEInit();
     rdAtualizarMpDisplay();
   }
 }
@@ -2785,6 +2785,20 @@ var RD_SLICES = [
 ];
 
 var rdN = RD_SLICES.length, rdARC = (Math.PI*2)/rdN;
+
+/* ── Carrega porcentagens do Supabase antes de inicializar a roleta ── */
+async function rdCarregarConfigEInit(){
+  try{
+    var{data}=await sb.from('roleta_config').select('slice_id,pct');
+    if(data && data.length){
+      data.forEach(function(row){
+        var s=RD_SLICES.find(function(x){return x.id===row.slice_id;});
+        if(s) s.pct=row.pct;
+      });
+    }
+  }catch(e){ /* tabela não existe ainda, usa defaults do array */ }
+  rdInit();
+}
 var rdCtx = null, rdSize = 0, rdGlowT = 0;
 
 function rdInit(){
