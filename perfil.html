@@ -3036,7 +3036,7 @@ document.addEventListener('mouseout',function(e){
   wrap.querySelectorAll('.aval-estrela').forEach(function(s){s.classList.remove('hover');});
 });
 
-async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
+async function enviarAvaliacao(pedidoId, produtoNome, produtoImg, produtoId){
   var starsEl=document.getElementById('aval-stars-'+pedidoId);
   var txtEl=document.getElementById('aval-txt-'+pedidoId);
   var btnEl=document.getElementById('aval-btn-'+pedidoId);
@@ -3056,6 +3056,7 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
       pedido_id:pedidoId,
       produto_nome:produtoNome,
       produto_img:produtoImg,
+      produto_id:produtoId||null,
       user_email:user.email,
       user_nome:nome,
       estrelas:estrelas,
@@ -3106,7 +3107,7 @@ document.addEventListener('click',function(e){
   });
 });
 
-async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
+async function enviarAvaliacao(pedidoId, produtoNome, produtoImg, produtoId){
   var wrap=document.getElementById('aval-stars-'+pedidoId);
   var estrelas=parseInt(wrap?wrap.dataset.val:0);
   if(!estrelas){showToast('Selecione pelo menos 1 estrela!');return;}
@@ -3122,6 +3123,7 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg){
       pedido_id:pedidoId,
       produto_nome:produtoNome,
       produto_img:produtoImg,
+      produto_id:produtoId||null,
       user_email:userEmail,
       user_nome:userNome,
       estrelas:estrelas,
@@ -3793,7 +3795,7 @@ async function carregarPedidos(userId){
                 '<span class="aval-estrela" data-v="5">★</span>'+
               '</div>'+
               '<textarea class="aval-textarea" id="aval-txt-'+pedIdEsc+'" maxlength="200" placeholder="Deixe uma avaliação sobre o jogo (opcional)..."></textarea>'+
-              '<button class="aval-btn" id="aval-btn-'+pedIdEsc+'" onclick="enviarAvaliacao(\''+pedIdEsc+'\',\''+esc(p.produto_nome||'')+'\',\''+esc(img)+'\')">'+
+              '<button class="aval-btn" id="aval-btn-'+pedIdEsc+'" onclick="enviarAvaliacao(\''+pedIdEsc+'\',\''+esc(p.produto_nome||'')+'\',\''+esc(img)+'\',\''+esc(p.produto_id||'')+'\')">'+
                 '⭐ Enviar avaliação'+
               '</button>'+
             '</div>';
