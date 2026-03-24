@@ -3036,44 +3036,6 @@ document.addEventListener('mouseout',function(e){
   wrap.querySelectorAll('.aval-estrela').forEach(function(s){s.classList.remove('hover');});
 });
 
-async function enviarAvaliacao(pedidoId, produtoNome, produtoImg, produtoId){
-  var starsEl=document.getElementById('aval-stars-'+pedidoId);
-  var txtEl=document.getElementById('aval-txt-'+pedidoId);
-  var btnEl=document.getElementById('aval-btn-'+pedidoId);
-  var wrapEl=document.getElementById('aval-wrap-'+pedidoId);
-  if(!starsEl||!txtEl||!btnEl) return;
-  var estrelas=parseInt(starsEl.dataset.val||'0');
-  if(estrelas<1){showToast('Selecione pelo menos 1 estrela!');return;}
-  var comentario=(txtEl.value||'').trim().substring(0,200);
-  btnEl.disabled=true;
-  btnEl.textContent='Enviando...';
-  try{
-    var sessao=await sb.auth.getSession();
-    var user=sessao&&sessao.data&&sessao.data.session?sessao.data.session.user:null;
-    if(!user){showToast('Sessão expirada. Faça login novamente.');btnEl.disabled=false;btnEl.textContent='Enviar avaliação';return;}
-    var nome=user.user_metadata&&(user.user_metadata.full_name||user.user_metadata.name)||user.email||'';
-    var ins=await sb.from('avaliacoes').insert({
-      pedido_id:pedidoId,
-      produto_nome:produtoNome,
-      produto_img:produtoImg,
-      produto_id:produtoId||null,
-      user_email:user.email,
-      user_nome:nome,
-      estrelas:estrelas,
-      comentario:comentario||null
-    });
-    if(ins.error) throw ins.error;
-    /* Substitui o form pela mensagem de confirmação */
-    wrapEl.innerHTML='<div class="aval-enviada">⭐ Avaliação enviada — obrigado pelo feedback!</div>';
-    showToast('Avaliação enviada com sucesso! ⭐');
-  }catch(err){
-    console.error('[avaliacao]',err);
-    showToast('Erro ao enviar avaliação. Tente novamente.');
-    btnEl.disabled=false;
-    btnEl.textContent='Enviar avaliação';
-  }
-}
-
 /* ══ AVALIAÇÃO ══ */
 /* Delegação de eventos para estrelas (funciona após innerHTML) */
 document.addEventListener('mouseover',function(e){
