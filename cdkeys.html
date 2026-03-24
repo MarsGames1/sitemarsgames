@@ -322,6 +322,46 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(0,212,255,.22);border-radius:99px}
 *{scrollbar-width:thin;scrollbar-color:rgba(0,212,255,.18) transparent}
+
+/* HERO SIDE PANELS */
+.page-hero{position:relative}
+.hero-side-panel{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.hero-side-panel.left{left:0}
+.hero-side-panel.right{right:0}
+@media(max-width:900px){.hero-side-panel{display:none}}
+@keyframes floatY{0%,100%{transform:translateY(-50%) translateY(0)}50%{transform:translateY(-50%) translateY(-6px)}}
+@keyframes floatY2{0%,100%{transform:translateY(-50%) translateY(0)}50%{transform:translateY(-50%) translateY(5px)}}
+@keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:1}}
+.hsp-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:10px;border:1px solid rgba(0,212,255,.1);
+  background:rgba(8,8,16,.6);backdrop-filter:blur(10px);
+  width:170px;animation:floatY 4s ease-in-out infinite}
+.hsp-item:nth-child(2){animation:floatY2 4.5s ease-in-out infinite .4s}
+.hsp-item:nth-child(3){animation:floatY 5s ease-in-out infinite .8s}
+.hero-side-panel.right .hsp-item{flex-direction:row-reverse;text-align:right}
+.hsp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hsp-icon svg{width:14px;height:14px}
+.hsp-label{font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--sub);line-height:1.3}
+.hsp-val{font-size:13px;font-weight:900;font-family:'Orbitron',sans-serif;line-height:1;margin-top:2px}
+.hsp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:pulseGlow 2s ease-in-out infinite}
+
+/* PLATFORM CHIPS in hero */
+.hero-plat-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px;margin-bottom:0}
+.hero-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+  font-size:8px;font-weight:700;letter-spacing:.5px;color:var(--muted)}
+.hero-chip svg{width:10px;height:10px}
+
+/* PAGINATION */
+.pagination-wrap{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:28px;flex-wrap:wrap}
+.pg-btn{min-width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);
+  background:rgba(255,255,255,.02);color:var(--sub);font-family:'Montserrat',sans-serif;
+  font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;padding:0 8px}
+.pg-btn:hover:not(:disabled){border-color:rgba(0,212,255,.3);color:var(--cyan);background:rgba(0,212,255,.05)}
+.pg-btn.active{border-color:rgba(0,212,255,.4);color:var(--cyan);background:rgba(0,212,255,.1)}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed}
+.pg-dots{color:var(--muted);font-size:11px;padding:0 4px}
+.pg-info{font-size:10px;font-weight:700;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:.5px}
 </style>
 </head>
 <body>
@@ -341,16 +381,85 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 </nav>
 
 <div class="page-hero">
+
+  <!-- LEFT PANEL -->
+  <div class="hero-side-panel left">
+    <div class="hsp-item" style="border-color:rgba(0,255,85,.14)">
+      <div class="hsp-icon" style="background:rgba(0,255,85,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div class="hsp-label">Entrega</div>
+        <div class="hsp-val" style="color:var(--green)">Imediata</div>
+      </div>
+      <div class="hsp-dot" style="background:var(--green);margin-left:auto"></div>
+    </div>
+    <div class="hsp-item" style="border-color:rgba(0,212,255,.14)">
+      <div class="hsp-icon" style="background:rgba(0,212,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div class="hsp-label">Chaves</div>
+        <div class="hsp-val" style="color:var(--cyan)">Originais</div>
+      </div>
+      <div class="hsp-dot" style="background:var(--cyan);margin-left:auto"></div>
+    </div>
+    <div class="hsp-item" style="border-color:rgba(255,179,0,.14)">
+      <div class="hsp-icon" style="background:rgba(255,179,0,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div>
+        <div class="hsp-label">Suporte</div>
+        <div class="hsp-val" style="color:var(--amber)">24 / 7</div>
+      </div>
+      <div class="hsp-dot" style="background:var(--amber);margin-left:auto"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="hero-side-panel right">
+    <div class="hsp-item" style="border-color:rgba(91,168,245,.14)">
+      <div class="hsp-icon" style="background:rgba(91,168,245,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div>
+        <div class="hsp-label">Plataformas</div>
+        <div class="hsp-val" style="color:var(--blue)">8+</div>
+      </div>
+      <div class="hsp-dot" style="background:var(--blue);margin-left:auto"></div>
+    </div>
+    <div class="hsp-item" style="border-color:rgba(232,66,26,.14)">
+      <div class="hsp-icon" style="background:rgba(232,66,26,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--mars)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="hsp-label">Avaliação</div>
+        <div class="hsp-val" style="color:var(--mars)">5 / 5</div>
+      </div>
+      <div class="hsp-dot" style="background:var(--mars);margin-left:auto"></div>
+    </div>
+    <div class="hsp-item" style="border-color:rgba(171,157,232,.14)">
+      <div class="hsp-icon" style="background:rgba(171,157,232,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--gog-c)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      </div>
+      <div>
+        <div class="hsp-label">Ativação</div>
+        <div class="hsp-val" style="color:var(--gog-c)">Global</div>
+      </div>
+      <div class="hsp-dot" style="background:var(--gog-c);margin-left:auto"></div>
+    </div>
+  </div>
+
   <div class="hero-eyebrow">MarsGames — Chaves Digitais Originais</div>
   <div class="hero-title-wrap" data-text="CD KEYS">
     <h1 class="hero-title"><span class="word-cd">CD&nbsp;</span><span class="word-keys">KEYS</span></h1>
     <div class="hero-scan"></div>
   </div>
-  <p class="hero-desc">Chaves originais para Steam, PlayStation, Xbox, Nintendo, GOG e mais. Ativação garantida e entrega imediata após o pagamento.</p>
+  <p class="hero-desc">Jogue agora pelo preço certo. Chaves originais para Steam, PlayStation, Xbox, Nintendo, GOG e mais — ativação garantida, sem espera, sem complicação.</p>
   <div class="trust-row">
     <div class="trust-badge t-green">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      Entrega imediata
+      Receba na hora
     </div>
     <div class="trust-badge t-cyan">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -360,6 +469,14 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       Suporte 24h
     </div>
+  </div>
+  <div class="hero-plat-chips">
+    <div class="hero-chip"><svg viewBox="0 0 24 24" fill="var(--steam-c)"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.85c0-2.43 1.968-4.41 4.39-4.41 2.424 0 4.391 1.98 4.391 4.41 0 2.43-1.967 4.41-4.39 4.41h-.109l-4.076 2.901c0 .052.004.105.004.159 0 1.823-1.468 3.302-3.279 3.302-1.573 0-2.879-1.102-3.207-2.577L.022 14.184C1.667 19.812 6.367 24 11.979 24 18.626 24 24 18.617 24 11.999 24 5.381 18.626 0 11.979 0z"/></svg><span style="color:var(--steam-c)">Steam</span></div>
+    <div class="hero-chip"><svg viewBox="0 0 24 24" fill="var(--ps-c)"><path d="M8.984 2.596v16.547l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.096 4.362-3.29 0-3.333-1.15-4.824-4.919-6.092-1.133-.38-3.04-.913-4.912-1.1zM2 18.806l6.175 2.198V19.07l-4.559-1.625v-1.985l4.559 1.59v-1.935l-4.559-1.59V18.806zm14.684-5.859c-2.517-.23-4.057.84-4.057 3.34 0 2.3 1.33 3.517 4.057 2.858 2.518-.61 4.011-2.327 4.011-5.282-1.127.75-2.506 1.25-4.011 1.084z"/></svg><span style="color:var(--ps-c)">PlayStation</span></div>
+    <div class="hero-chip"><svg viewBox="0 0 24 24" fill="var(--xbox-c)"><path d="M4.102 7.912C3.412 8.859 3 10.008 3 11.257c0 3.072 1.89 5.71 4.604 6.888C6.01 16.265 4.8 12.41 4.102 7.912zm15.796 0C19.2 12.41 17.99 16.265 16.396 18.145 19.11 16.967 21 14.33 21 11.257c0-1.25-.412-2.398-1.102-3.345zM12 4c-1.42 0-2.73.444-3.795 1.192.547.5 1.5 1.448 2.625 3.05C11.47 9.13 11.754 9.5 12 9.5s.53-.37 1.17-1.258c1.124-1.602 2.078-2.55 2.625-3.05C14.73 4.444 13.42 4 12 4zm-6.2 1.52C4.69 6.6 4 7.857 4 9.27c0 .748.137 1.462.386 2.124C5 8.765 5.7 6.57 5.8 5.52zm12.4 0c.1 1.05.8 3.245 1.414 5.874.249-.662.386-1.376.386-2.124 0-1.413-.69-2.67-1.8-3.75z"/></svg><span style="color:var(--xbox-c)">Xbox</span></div>
+    <div class="hero-chip"><svg viewBox="0 0 24 24" fill="var(--nintendo-c)"><path d="M9.128 2H14.5a7.5 7.5 0 010 15H9.128A7.5 7.5 0 019.128 2zM7.17 5.75h2.5v5.5h-2.5v-5.5zm5.33 0a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"/></svg><span style="color:var(--nintendo-c)">Nintendo</span></div>
+    <div class="hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gog-c)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15 12h-3v-4"/></svg><span style="color:var(--gog-c)">GOG</span></div>
+    <div class="hero-chip"><svg viewBox="0 0 24 24" fill="none" stroke="var(--epic-c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span style="color:var(--epic-c)">Epic</span></div>
   </div>
 </div>
 
@@ -515,6 +632,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
     <div class="prods-grid" id="prodsGrid">
       <div class="loader-wrap"><div class="spinner"></div>&nbsp;Carregando chaves...</div>
     </div>
+    <div id="paginationWrap"></div>
   </div>
 </div>
 
@@ -542,6 +660,8 @@ var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}});
 var todosProdutos=[],buscaAtual='';
 var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
+var paginaAtual=1;
+var POR_PAGINA=30;
 
 var PLAT_SVG={
   Steam:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--steam-c)"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.85c0-2.43 1.968-4.41 4.39-4.41 2.424 0 4.391 1.98 4.391 4.41 0 2.43-1.967 4.41-4.39 4.41h-.109l-4.076 2.901c0 .052.004.105.004.159 0 1.823-1.468 3.302-3.279 3.302-1.573 0-2.879-1.102-3.207-2.577L.022 14.184C1.667 19.812 6.367 24 11.979 24 18.626 24 24 18.617 24 11.999 24 5.381 18.626 0 11.979 0z"/></svg>',
@@ -586,11 +706,12 @@ function getTipos(){
   var vals=Array.from(document.querySelectorAll('.tipo-cb:checked')).map(function(c){return c.value});
   return vals.includes('todos')||!vals.length?null:vals;
 }
-function filterChange(){renderProdutos()}
-function buscar(q){buscaAtual=q;renderProdutos()}
-function buscarMobile(q){buscaAtual=q;renderProdutos()}
+function filterChange(){paginaAtual=1;renderProdutos(false)}
+function buscar(q){buscaAtual=q;paginaAtual=1;renderProdutos(false)}
+function buscarMobile(q){buscaAtual=q;paginaAtual=1;renderProdutos(false)}
 
-function renderProdutos(){
+function renderProdutos(resetPagina){
+  if(resetPagina!==false)paginaAtual=1;
   var sortEl=window.innerWidth<=960?document.getElementById('sortSelectMobile'):document.getElementById('sortSelect');
   var sort=sortEl.value;
   var minP=Number(document.getElementById('precoMin').value)||0;
@@ -613,13 +734,19 @@ function renderProdutos(){
   else if(sort==='preco_desc')lista.sort(function(a,b){return Number(b.preco)-Number(a.preco)});
   else if(sort==='nome')lista.sort(function(a,b){return(a.nome||'').localeCompare(b.nome||'')});
 
+  var totalPags=Math.max(1,Math.ceil(lista.length/POR_PAGINA));
+  if(paginaAtual>totalPags)paginaAtual=totalPags;
+  var inicio=(paginaAtual-1)*POR_PAGINA;
+  var paginada=lista.slice(inicio,inicio+POR_PAGINA);
+
   document.getElementById('filterCount').textContent=lista.length;
   var grid=document.getElementById('prodsGrid');
   if(!lista.length){
     grid.innerHTML='<div class="empty-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Nenhuma chave encontrada.</div>';
+    document.getElementById('paginationWrap').innerHTML='';
     return;
   }
-  grid.innerHTML=lista.map(function(p,i){
+  grid.innerHTML=paginada.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
     var plat=p.plataforma||'Steam';
     var stockBadge=!ok?'<div class="stock-badge stock-out">Esgotado</div>':
@@ -653,6 +780,42 @@ function renderProdutos(){
         '</button>'+
       '</div></a>';
   }).join('');
+
+  renderPaginacao(totalPags,lista.length);
+}
+
+function renderPaginacao(totalPags,totalItens){
+  var wrap=document.getElementById('paginationWrap');
+  if(totalPags<=1){wrap.innerHTML='';return}
+  var inicio=(paginaAtual-1)*POR_PAGINA+1;
+  var fim=Math.min(paginaAtual*POR_PAGINA,totalItens);
+  var btns='';
+  // prev
+  btns+='<button class="pg-btn" '+(paginaAtual===1?'disabled':'')+' onclick="irPagina('+(paginaAtual-1)+')">&#8592;</button>';
+  // page numbers
+  var pages=[];
+  if(totalPags<=7){for(var i=1;i<=totalPags;i++)pages.push(i)}
+  else{
+    pages.push(1);
+    if(paginaAtual>3)pages.push('...');
+    for(var p=Math.max(2,paginaAtual-1);p<=Math.min(totalPags-1,paginaAtual+1);p++)pages.push(p);
+    if(paginaAtual<totalPags-2)pages.push('...');
+    pages.push(totalPags);
+  }
+  pages.forEach(function(p){
+    if(p==='...')btns+='<span class="pg-dots">…</span>';
+    else btns+='<button class="pg-btn'+(p===paginaAtual?' active':'')+'" onclick="irPagina('+p+')">'+p+'</button>';
+  });
+  // next
+  btns+='<button class="pg-btn" '+(paginaAtual===totalPags?'disabled':'')+' onclick="irPagina('+(paginaAtual+1)+')">&#8594;</button>';
+  wrap.innerHTML='<div class="pagination-wrap">'+btns+'</div>'+
+    '<div class="pg-info">Mostrando '+inicio+'–'+fim+' de '+totalItens+' chaves</div>';
+}
+
+function irPagina(p){
+  paginaAtual=p;
+  renderProdutos(false);
+  window.scrollTo({top:document.querySelector('.shop-layout').offsetTop-80,behavior:'smooth'});
 }
 
 function togglePanel(h){
@@ -665,7 +828,7 @@ function resetFiltros(){
   document.getElementById('precoMin').value=0;
   document.getElementById('precoMax').value=500;
   document.getElementById('searchInput').value='';
-  buscaAtual='';renderProdutos();
+  buscaAtual='';paginaAtual=1;renderProdutos(false);
 }
 
 function addCarrinho(id){
