@@ -103,11 +103,12 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
 
 /* HERO */
-.page-hero{position:relative;z-index:1;padding:48px 20px 36px;max-width:1320px;margin:0 auto}
+.page-hero{position:relative;z-index:1;padding:48px 20px 36px;max-width:1320px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center}
 @media(min-width:768px){.page-hero{padding:56px 32px 40px}}
 .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;
-  color:var(--cyan);opacity:.7;margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.hero-eyebrow::after{content:'';flex:1;max-width:60px;height:1px;background:linear-gradient(to right,rgba(0,212,255,.4),transparent)}
+  color:var(--cyan);opacity:.7;margin-bottom:14px;display:flex;align-items:center;gap:10px;justify-content:center}
+.hero-eyebrow::before{content:'';width:60px;height:1px;background:linear-gradient(to right,transparent,rgba(0,212,255,.4))}
+.hero-eyebrow::after{content:'';width:60px;height:1px;background:linear-gradient(to left,transparent,rgba(0,212,255,.4))}
 
 /* Animated title */
 .hero-title-wrap{position:relative;display:inline-block;margin-bottom:16px}
@@ -129,9 +130,9 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   background:linear-gradient(to right,transparent,rgba(0,212,255,.85),transparent);
   animation:scanLine 5.5s linear infinite 1s}
 
-.hero-desc{font-size:13px;font-weight:600;color:var(--sub);line-height:1.7;max-width:480px;margin-bottom:24px}
+.hero-desc{font-size:13px;font-weight:600;color:var(--sub);line-height:1.7;max-width:520px;margin-bottom:24px;text-align:center}
 
-.trust-row{display:flex;gap:10px;flex-wrap:wrap}
+.trust-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .trust-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;
   border:1px solid var(--border2);background:rgba(255,255,255,.02);
   font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--sub);white-space:nowrap}
