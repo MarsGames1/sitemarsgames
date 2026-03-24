@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="Compre CD Keys originais para Steam, PlayStation, Xbox, Nintendo, GOG e PC na MarsGames. Chaves digitais entregues na hora.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marsgames.com.br/cdkeys.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MarsGames">
+<meta property="og:title" content="CD Keys — MarsGames">
+<meta property="og:description" content="Chaves originais para Steam, PlayStation, Xbox, Nintendo e mais. Entrega imediata.">
+<meta property="og:url" content="https://marsgames.com.br/cdkeys.html">
+<meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsGames — CD Keys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080810;--card:#0f0f18;--surface:#16161f;--border:#1e1e2e;--border2:#2a2a3e;
+  --green:#00ff55;--green-glow:rgba(0,255,85,.18);--green-dim:rgba(0,255,85,.06);
+  --mars:#e8421a;--mars-dim:rgba(232,66,26,.1);--orange:#ff6b2b;--amber:#ffb300;
+  --blue:#5ba8f5;--cyan:#00d4ff;
+  --text:#f0f0fa;--sub:#9090b8;--muted:#4a4a6a;--dim:#12121a;
+  --radius:10px;--sidebar-w:260px;
+  --steam-c:#66c0f4;--ps-c:#6eb0f7;--xbox-c:#52b043;
+  --nintendo-c:#ff6b6b;--gog-c:#ab9de8;--pc-c:#ffd966;
+  --epic-c:#c8c8d0;--ubisoft-c:#5cb8ff;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes scanLine{
+  0%{transform:translateY(-100%);opacity:0}5%{opacity:1}95%{opacity:.7}100%{transform:translateY(1400%);opacity:0}
+}
+@keyframes glitch1{
+  0%,93%,100%{clip-path:inset(0 0 100% 0);transform:translateX(0)}
+  94%{clip-path:inset(28% 0 42% 0);transform:translateX(-5px)}
+  96%{clip-path:inset(62% 0 8% 0);transform:translateX(4px)}
+  98%{clip-path:inset(8% 0 72% 0);transform:translateX(-2px)}
+}
+@keyframes glitch2{
+  0%,91%,100%{clip-path:inset(0 0 100% 0);transform:translateX(0)}
+  92%{clip-path:inset(52% 0 18% 0);transform:translateX(4px)}
+  95%{clip-path:inset(12% 0 58% 0);transform:translateX(-4px)}
+  97%{clip-path:inset(78% 0 4% 0);transform:translateX(2px)}
+}
+@keyframes titleReveal{
+  0%{opacity:0;letter-spacing:14px;filter:blur(6px)}
+  60%{opacity:1;letter-spacing:3px;filter:blur(0)}
+  100%{letter-spacing:2px}
+}
+@keyframes panelBorder{
+  0%,100%{border-color:rgba(0,212,255,.1)}50%{border-color:rgba(0,212,255,.28)}
+}
+
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden}
+
+.stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.stars-bg::before{content:'';position:absolute;inset:0;background-image:
+  radial-gradient(1px 1px at 8% 12%,rgba(255,255,255,.7) 0%,transparent 100%),
+  radial-gradient(1px 1px at 22% 45%,rgba(255,255,255,.5) 0%,transparent 100%),
+  radial-gradient(1.5px 1.5px at 38% 8%,rgba(255,255,255,.6) 0%,transparent 100%),
+  radial-gradient(1px 1px at 55% 62%,rgba(255,255,255,.4) 0%,transparent 100%),
+  radial-gradient(1px 1px at 68% 28%,rgba(255,255,255,.55) 0%,transparent 100%),
+  radial-gradient(1.5px 1.5px at 80% 78%,rgba(255,255,255,.45) 0%,transparent 100%),
+  radial-gradient(1px 1px at 91% 15%,rgba(255,255,255,.6) 0%,transparent 100%),
+  radial-gradient(1px 1px at 14% 80%,rgba(255,255,255,.4) 0%,transparent 100%),
+  radial-gradient(1px 1px at 47% 90%,rgba(255,255,255,.35) 0%,transparent 100%),
+  radial-gradient(1px 1px at 75% 50%,rgba(255,255,255,.5) 0%,transparent 100%)}
+.stars-bg::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(0,212,255,.05) 0%,transparent 55%),
+             radial-gradient(ellipse at 85% 95%,rgba(232,66,26,.04) 0%,transparent 45%)}
+
+/* NAVBAR */
+.navbar{position:sticky;top:0;z-index:300;background:rgba(8,8,16,.96);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);padding:0 20px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.35) 30%,rgba(0,212,255,.2) 70%,transparent)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
+.nav-logo-text span{color:var(--mars)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.03);
+  font-size:10px;font-weight:700;color:var(--sub);letter-spacing:.5px;
+  cursor:pointer;text-decoration:none;transition:all .2s;white-space:nowrap}
+.nav-btn:hover{border-color:#444;color:var(--text)}
+.nav-btn.active-link{color:var(--cyan);border-color:rgba(0,212,255,.25);background:rgba(0,212,255,.04)}
+.nav-cart-btn{display:flex;align-items:center;justify-content:center;
+  min-width:44px;height:44px;border-radius:10px;
+  background:linear-gradient(135deg,#00e64d,#00c840);color:#000;
+  cursor:pointer;border:none;position:relative;
+  box-shadow:0 4px 16px rgba(0,255,85,.22);transition:box-shadow .2s,transform .15s}
+.nav-cart-btn:hover{box-shadow:0 6px 22px rgba(0,255,85,.38);transform:translateY(-1px)}
+.nav-cart-btn svg{width:18px;height:18px;fill:none;stroke:#000;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:#ff4444;color:#fff;
+  width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+
+/* HERO */
+.page-hero{position:relative;z-index:1;padding:48px 20px 36px;max-width:1320px;margin:0 auto}
+@media(min-width:768px){.page-hero{padding:56px 32px 40px}}
+.hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;
+  color:var(--cyan);opacity:.7;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.hero-eyebrow::after{content:'';flex:1;max-width:60px;height:1px;background:linear-gradient(to right,rgba(0,212,255,.4),transparent)}
+
+/* Animated title */
+.hero-title-wrap{position:relative;display:inline-block;margin-bottom:16px}
+.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(30px,5.5vw,60px);
+  font-weight:900;letter-spacing:2px;text-transform:uppercase;line-height:1;
+  animation:titleReveal .9s cubic-bezier(.16,1,.3,1) both;position:relative;z-index:2}
+.hero-title .word-cd{color:#ffffff}
+.hero-title .word-keys{
+  background:linear-gradient(135deg,var(--cyan) 0%,var(--blue) 50%,var(--green) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-title-wrap::before,.hero-title-wrap::after{
+  content:attr(data-text);position:absolute;top:0;left:0;
+  font-family:'Orbitron',sans-serif;font-size:clamp(30px,5.5vw,60px);
+  font-weight:900;letter-spacing:2px;text-transform:uppercase;pointer-events:none;z-index:1}
+.hero-title-wrap::before{color:var(--cyan);opacity:.55;animation:glitch1 9s infinite}
+.hero-title-wrap::after{color:var(--mars);opacity:.45;animation:glitch2 9s infinite 1.2s}
+.hero-scan{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none}
+.hero-scan::after{content:'';position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,rgba(0,212,255,.85),transparent);
+  animation:scanLine 5.5s linear infinite 1s}
+
+.hero-desc{font-size:13px;font-weight:600;color:var(--sub);line-height:1.7;max-width:480px;margin-bottom:24px}
+
+.trust-row{display:flex;gap:10px;flex-wrap:wrap}
+.trust-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;
+  border:1px solid var(--border2);background:rgba(255,255,255,.02);
+  font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--sub);white-space:nowrap}
+.trust-badge svg{width:12px;height:12px;flex-shrink:0}
+.trust-badge.t-green{border-color:rgba(0,255,85,.15);color:var(--green)}
+.trust-badge.t-cyan{border-color:rgba(0,212,255,.15);color:var(--cyan)}
+.trust-badge.t-amber{border-color:rgba(255,179,0,.15);color:var(--amber)}
+
+/* LAYOUT */
+.shop-layout{position:relative;z-index:1;display:flex;gap:24px;align-items:flex-start;
+  max-width:1320px;margin:0 auto;padding:0 20px 100px}
+@media(min-width:768px){.shop-layout{padding:0 32px 100px}}
+
+/* SIDEBAR */
+.filter-sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:80px;display:flex;flex-direction:column;gap:6px}
+@media(max-width:960px){.filter-sidebar{display:none}}
+
+.filter-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;animation:panelBorder 4s ease-in-out infinite}
+.filter-panel:nth-child(2){animation-delay:.8s}
+.filter-panel:nth-child(3){animation-delay:1.6s}
+.filter-panel:nth-child(4){animation-delay:2.4s}
+.filter-panel:nth-child(5){animation-delay:3.2s}
+
+.fp-header{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.fp-title{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--sub);
+  display:flex;align-items:center;gap:8px}
+.fp-title svg{width:13px;height:13px;color:var(--cyan);opacity:.8}
+.fp-chevron{width:14px;height:14px;color:var(--muted);transition:transform .25s}
+.fp-header.open .fp-chevron{transform:rotate(180deg)}
+.fp-body{padding:14px 16px}
+
+.search-wrap{display:flex;align-items:center;
+  border-radius:8px;border:1px solid var(--border2);background:rgba(255,255,255,.025);
+  overflow:hidden;transition:border-color .2s}
+.search-wrap:focus-within{border-color:rgba(0,212,255,.3)}
+.search-wrap svg{width:15px;height:15px;color:var(--muted);flex-shrink:0;margin-left:12px}
+.search-wrap input{flex:1;background:none;border:none;outline:none;
+  padding:11px 12px;font-size:12px;color:var(--text);font-family:'Montserrat',sans-serif}
+.search-wrap input::placeholder{color:var(--muted)}
+
+/* Platform checkboxes */
+.plat-list{display:flex;flex-direction:column;gap:2px}
+.plat-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;
+  cursor:pointer;transition:background .15s;user-select:none}
+.plat-item:hover{background:rgba(255,255,255,.03)}
+.plat-item input[type=checkbox]{display:none}
+.plat-check{width:16px;height:16px;border-radius:4px;flex-shrink:0;
+  border:1.5px solid var(--border2);background:transparent;
+  display:flex;align-items:center;justify-content:center;transition:all .15s}
+.plat-item input:checked~.plat-check{border-color:var(--cyan);background:rgba(0,212,255,.14)}
+.plat-check svg{width:9px;height:9px;color:var(--cyan);opacity:0;transition:opacity .15s}
+.plat-item input:checked~.plat-check svg{opacity:1}
+.plat-icon-svg{width:16px;height:16px;flex-shrink:0}
+.plat-label{font-size:11px;font-weight:700;color:#c0c0d8;flex:1}
+.plat-count{font-size:9px;font-weight:700;color:var(--muted)}
+
+/* Price */
+.price-inputs{display:flex;gap:8px;margin-bottom:12px}
+.price-field{flex:1;display:flex;flex-direction:column;gap:4px}
+.price-field label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.price-field input{background:rgba(255,255,255,.03);border:1px solid var(--border2);
+  border-radius:7px;padding:9px 10px;font-family:'Montserrat',sans-serif;
+  font-size:12px;font-weight:700;color:var(--text);outline:none;width:100%;transition:border-color .2s}
+.price-field input:focus{border-color:rgba(0,212,255,.3)}
+.price-preview{font-size:10px;font-weight:700;color:var(--sub);text-align:center}
+.price-preview span{color:var(--text)}
+
+/* Sort */
+.sort-wrap select{width:100%;background:rgba(255,255,255,.025);border:1px solid var(--border2);
+  border-radius:7px;padding:11px 12px;font-family:'Montserrat',sans-serif;
+  font-size:11px;font-weight:700;color:var(--text);outline:none;cursor:pointer;transition:border-color .2s;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a4a6a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.sort-wrap select:focus{border-color:rgba(0,212,255,.3)}
+.sort-wrap select option{background:#0f0f18;color:var(--text)}
+
+/* Type */
+.type-list{display:flex;flex-direction:column;gap:2px}
+.type-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;
+  cursor:pointer;transition:background .15s;user-select:none}
+.type-item:hover{background:rgba(255,255,255,.03)}
+.type-item input[type=checkbox]{display:none}
+.type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1.5px solid var(--border2);transition:all .15s}
+.type-item input:checked~.type-dot{border-width:4px}
+.type-label{font-size:11px;font-weight:700;color:#c0c0d8}
+
+.filter-reset{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border2);
+  background:transparent;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
+  cursor:pointer;transition:all .2s;margin-top:2px}
+.filter-reset:hover{border-color:rgba(255,80,80,.4);color:#ff8888;background:rgba(255,80,80,.05)}
+
+/* Content */
+.content-area{flex:1;min-width:0}
+.mobile-search{display:none;margin-bottom:14px}
+@media(max-width:960px){.mobile-search{display:block}}
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.results-count{font-size:11px;font-weight:700;color:var(--sub)}
+.results-count span{color:var(--text)}
+
+/* Grid */
+.prods-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:500px){.prods-grid{gap:12px}}
+@media(min-width:700px){.prods-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1100px){.prods-grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+@media(min-width:1350px){.prods-grid{grid-template-columns:repeat(4,1fr)}}
+
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .2s;
+  animation:fadeUp .4s ease both;display:flex;flex-direction:column;position:relative;text-decoration:none}
+@media(hover:hover){
+  .prod-card:hover{border-color:rgba(0,212,255,.2);
+    box-shadow:0 12px 48px rgba(0,0,0,.8),0 0 0 1px rgba(0,212,255,.06);transform:translateY(-4px)}
+  .prod-card:hover .prod-img{transform:scale(1.06)}
+}
+.prod-card:active{transform:scale(.98)}
+.prod-img-wrap{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--dim)}
+.prod-img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.prod-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#0d0d16,#141420)}
+.prod-img-placeholder svg{width:32px;height:32px;color:var(--border2)}
+
+.prod-plat-tag{position:absolute;top:7px;left:7px;z-index:2;
+  font-size:7px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.06);background:rgba(8,8,16,.78);
+  display:flex;align-items:center;gap:5px}
+.prod-plat-tag .plat-icon-svg{width:9px;height:9px}
+.tag-steam{color:var(--steam-c)}.tag-playstation{color:var(--ps-c)}.tag-xbox{color:var(--xbox-c)}
+.tag-nintendo{color:var(--nintendo-c)}.tag-gog{color:var(--gog-c)}.tag-pc{color:var(--pc-c)}
+.tag-epic{color:var(--epic-c)}.tag-ubisoft{color:var(--ubisoft-c)}
+
+.stock-badge{position:absolute;top:7px;right:7px;z-index:2;font-size:7px;font-weight:900;
+  letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:4px;backdrop-filter:blur(6px)}
+.stock-ok{background:rgba(0,255,85,.1);color:var(--green);border:1px solid rgba(0,255,85,.18)}
+.stock-low{background:rgba(255,179,0,.1);color:var(--amber);border:1px solid rgba(255,179,0,.2)}
+.stock-out{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+
+.prod-body{padding:11px;flex:1;display:flex;flex-direction:column;gap:5px}
+.prod-name{font-size:11px;font-weight:700;color:#e0e0f0;line-height:1.4;flex:1}
+.prod-meta{display:flex;align-items:center;gap:6px}
+.prod-type-badge{font-size:7px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+.type-key{background:rgba(0,212,255,.08);color:var(--cyan);border:1px solid rgba(0,212,255,.15)}
+.type-gift{background:rgba(255,179,0,.08);color:var(--amber);border:1px solid rgba(255,179,0,.15)}
+
+.prod-price-row{display:flex;align-items:baseline;gap:7px;margin-top:2px;flex-wrap:wrap}
+.prod-price{font-size:16px;font-weight:900;color:var(--green)}
+.prod-price.esgotado{color:#222230}
+.prod-price-old{font-size:10px;font-weight:700;color:var(--muted);text-decoration:line-through}
+.prod-discount{font-size:8px;font-weight:900;
+  background:rgba(232,66,26,.15);color:var(--orange);border:1px solid rgba(232,66,26,.2);border-radius:3px;padding:1px 5px}
+
+.prod-btn{width:100%;padding:10px;border-radius:8px;border:none;margin-top:4px;
+  font-family:'Montserrat',sans-serif;font-size:9px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  transition:all .2s;min-height:38px;display:flex;align-items:center;justify-content:center;gap:7px}
+.prod-btn svg{width:13px;height:13px;flex-shrink:0}
+.prod-btn-buy{background:rgba(0,212,255,.07);color:var(--cyan);border:1px solid rgba(0,212,255,.18)}
+.prod-btn-buy:hover{background:rgba(0,212,255,.13);box-shadow:0 4px 16px rgba(0,212,255,.12);transform:translateY(-1px)}
+.prod-btn-dis{background:rgba(255,255,255,.02);color:var(--muted);cursor:not-allowed;border:1px solid var(--border)}
+
+.loader-wrap{display:flex;align-items:center;justify-content:center;
+  padding:80px;gap:12px;color:var(--sub);font-size:11px;font-weight:700;letter-spacing:1px;grid-column:1/-1}
+.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite}
+.empty-grid{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);font-size:12px;font-weight:600}
+.empty-grid svg{width:40px;height:40px;margin:0 auto 14px;display:block;opacity:.2}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid rgba(0,212,255,.25);color:var(--cyan);
+  padding:12px 24px;border-radius:8px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:400;display:none}
+.cart-overlay.open{display:block}
+.cart-drawer{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:400px;
+  background:var(--card);border-left:1px solid var(--border);z-index:401;
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.23,1,.32,1)}
+.cart-drawer.open{transform:translateX(0)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,212,255,.22);border-radius:99px}
+*{scrollbar-width:thin;scrollbar-color:rgba(0,212,255,.18) transparent}
+</style>
+</head>
+<body>
+<div class="stars-bg"></div>
+
+<nav class="navbar">
+  <a class="nav-logo" href="index.html"><div class="nav-logo-text">Mars<span>Games</span></div></a>
+  <div class="nav-right">
+    <a class="nav-btn" href="index.html">Início</a>
+    <a class="nav-btn" href="promocoes.html">Promoções</a>
+    <a class="nav-btn active-link" href="cdkeys.html">CD Keys</a>
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <div class="cart-badge" id="cartBadge">0</div>
+    </button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="hero-eyebrow">MarsGames — Chaves Digitais Originais</div>
+  <div class="hero-title-wrap" data-text="CD KEYS">
+    <h1 class="hero-title"><span class="word-cd">CD&nbsp;</span><span class="word-keys">KEYS</span></h1>
+    <div class="hero-scan"></div>
+  </div>
+  <p class="hero-desc">Chaves originais para Steam, PlayStation, Xbox, Nintendo, GOG e mais. Ativação garantida e entrega imediata após o pagamento.</p>
+  <div class="trust-row">
+    <div class="trust-badge t-green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Entrega imediata
+    </div>
+    <div class="trust-badge t-cyan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      100% originais
+    </div>
+    <div class="trust-badge t-amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Suporte 24h
+    </div>
+  </div>
+</div>
+
+<div class="shop-layout">
+  <!-- SIDEBAR -->
+  <aside class="filter-sidebar">
+
+    <div class="filter-panel">
+      <div class="fp-body" style="padding-bottom:12px">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-panel">
+      <div class="fp-header open" onclick="togglePanel(this)">
+        <div class="fp-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+          Plataforma
+        </div>
+        <svg class="fp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fp-body" id="panel-plat">
+        <div class="plat-list">
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="todos" checked onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#9090b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+            <span class="plat-label">Todos</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="Steam" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--steam-c)"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.85c0-2.43 1.968-4.41 4.39-4.41 2.424 0 4.391 1.98 4.391 4.41 0 2.43-1.967 4.41-4.39 4.41h-.109l-4.076 2.901c0 .052.004.105.004.159 0 1.823-1.468 3.302-3.279 3.302-1.573 0-2.879-1.102-3.207-2.577L.022 14.184C1.667 19.812 6.367 24 11.979 24 18.626 24 24 18.617 24 11.999 24 5.381 18.626 0 11.979 0z"/></svg>
+            <span class="plat-label">Steam</span><span class="plat-count" id="cnt-Steam">—</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="PlayStation" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--ps-c)"><path d="M8.984 2.596v16.547l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.096 4.362-3.29 0-3.333-1.15-4.824-4.919-6.092-1.133-.38-3.04-.913-4.912-1.1zM2 18.806l6.175 2.198V19.07l-4.559-1.625v-1.985l4.559 1.59v-1.935l-4.559-1.59V18.806zm14.684-5.859c-2.517-.23-4.057.84-4.057 3.34 0 2.3 1.33 3.517 4.057 2.858 2.518-.61 4.011-2.327 4.011-5.282-1.127.75-2.506 1.25-4.011 1.084z"/></svg>
+            <span class="plat-label">PlayStation</span><span class="plat-count" id="cnt-PlayStation">—</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="Xbox" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--xbox-c)"><path d="M4.102 7.912C3.412 8.859 3 10.008 3 11.257c0 3.072 1.89 5.71 4.604 6.888C6.01 16.265 4.8 12.41 4.102 7.912zm15.796 0C19.2 12.41 17.99 16.265 16.396 18.145 19.11 16.967 21 14.33 21 11.257c0-1.25-.412-2.398-1.102-3.345zM12 4c-1.42 0-2.73.444-3.795 1.192.547.5 1.5 1.448 2.625 3.05C11.47 9.13 11.754 9.5 12 9.5s.53-.37 1.17-1.258c1.124-1.602 2.078-2.55 2.625-3.05C14.73 4.444 13.42 4 12 4zm-6.2 1.52C4.69 6.6 4 7.857 4 9.27c0 .748.137 1.462.386 2.124C5 8.765 5.7 6.57 5.8 5.52zm12.4 0c.1 1.05.8 3.245 1.414 5.874.249-.662.386-1.376.386-2.124 0-1.413-.69-2.67-1.8-3.75z"/></svg>
+            <span class="plat-label">Xbox</span><span class="plat-count" id="cnt-Xbox">—</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="Nintendo" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--nintendo-c)"><path d="M9.128 2H14.5a7.5 7.5 0 010 15H9.128A7.5 7.5 0 019.128 2zM7.17 5.75h2.5v5.5h-2.5v-5.5zm5.33 0a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"/></svg>
+            <span class="plat-label">Nintendo Switch</span><span class="plat-count" id="cnt-Nintendo">—</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="GOG" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--gog-c)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15 12h-3v-4"/></svg>
+            <span class="plat-label">GOG</span><span class="plat-count" id="cnt-GOG">—</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="Epic" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--epic-c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span class="plat-label">Epic Games</span><span class="plat-count" id="cnt-Epic">—</span>
+          </label>
+          <label class="plat-item">
+            <input type="checkbox" class="plat-cb" value="PC" onchange="filterChange()">
+            <div class="plat-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 6 4.5 9.5 11 2"/></svg></div>
+            <svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--pc-c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span class="plat-label">PC (Outros)</span><span class="plat-count" id="cnt-PC">—</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-panel">
+      <div class="fp-header open" onclick="togglePanel(this)">
+        <div class="fp-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Faixa de Preço
+        </div>
+        <svg class="fp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fp-body" id="panel-preco">
+        <div class="price-inputs">
+          <div class="price-field"><label>Mín. (R$)</label><input type="number" id="precoMin" value="0" min="0" oninput="filterChange()"></div>
+          <div class="price-field"><label>Máx. (R$)</label><input type="number" id="precoMax" value="500" min="0" oninput="filterChange()"></div>
+        </div>
+        <div class="price-preview">R$ <span id="pvMin">0</span> — R$ <span id="pvMax">500</span></div>
+      </div>
+    </div>
+
+    <div class="filter-panel">
+      <div class="fp-header open" onclick="togglePanel(this)">
+        <div class="fp-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          Tipo de Produto
+        </div>
+        <svg class="fp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fp-body" id="panel-tipo">
+        <div class="type-list">
+          <label class="type-item"><input type="checkbox" class="tipo-cb" value="todos" checked onchange="filterChange()"><div class="type-dot" style="border-color:var(--sub)"></div><span class="type-label">Todos os tipos</span></label>
+          <label class="type-item"><input type="checkbox" class="tipo-cb" value="key" onchange="filterChange()"><div class="type-dot" style="border-color:var(--cyan)"></div><span class="type-label">CD Key</span></label>
+          <label class="type-item"><input type="checkbox" class="tipo-cb" value="gift" onchange="filterChange()"><div class="type-dot" style="border-color:var(--amber)"></div><span class="type-label">Bundle / Gift</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-panel">
+      <div class="fp-header open" onclick="togglePanel(this)">
+        <div class="fp-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+          Ordenar por
+        </div>
+        <svg class="fp-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="fp-body" id="panel-sort">
+        <div class="sort-wrap">
+          <select id="sortSelect" onchange="renderProdutos()">
+            <option value="recentes">Mais recentes</option>
+            <option value="preco_asc">Menor preço</option>
+            <option value="preco_desc">Maior preço</option>
+            <option value="nome">A → Z</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="filter-reset" onclick="resetFiltros()">Limpar filtros</button>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content-area">
+    <div class="mobile-search">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Buscar jogo..." oninput="buscarMobile(this.value)">
+      </div>
+    </div>
+    <div class="results-bar">
+      <div class="results-count"><span id="filterCount">—</span> chaves encontradas</div>
+      <select id="sortSelectMobile" onchange="renderProdutos()" style="display:none;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;padding:8px 12px;outline:none">
+        <option value="recentes">Mais recentes</option>
+        <option value="preco_asc">Menor preço</option>
+        <option value="preco_desc">Maior preço</option>
+        <option value="nome">A → Z</option>
+      </select>
+    </div>
+    <div class="prods-grid" id="prodsGrid">
+      <div class="loader-wrap"><div class="spinner"></div>&nbsp;Carregando chaves...</div>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)">
+    <span style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900">Carrinho</span>
+    <button onclick="toggleCart()" style="width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+  <div id="cartItems" style="flex:1;overflow-y:auto;padding:14px 20px"></div>
+  <div style="padding:16px 20px;border-top:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">Total</span>
+      <span id="cartTotal" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--green)">R$ 0,00</span>
+    </div>
+    <button id="checkoutBtn" onclick="checkout()" disabled style="width:100%;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--mars),var(--orange));color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.3">Finalizar compra</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+var SUPABASE_URL='https://rzjtlghpsygxkivgwgws.supabase.co';
+var SUPABASE_KEY='sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'mg_auth'}});
+var todosProdutos=[],buscaAtual='';
+var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
+
+var PLAT_SVG={
+  Steam:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--steam-c)"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.85c0-2.43 1.968-4.41 4.39-4.41 2.424 0 4.391 1.98 4.391 4.41 0 2.43-1.967 4.41-4.39 4.41h-.109l-4.076 2.901c0 .052.004.105.004.159 0 1.823-1.468 3.302-3.279 3.302-1.573 0-2.879-1.102-3.207-2.577L.022 14.184C1.667 19.812 6.367 24 11.979 24 18.626 24 24 18.617 24 11.999 24 5.381 18.626 0 11.979 0z"/></svg>',
+  PlayStation:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--ps-c)"><path d="M8.984 2.596v16.547l3.915 1.261V6.688c0-.69.304-1.151.794-.991.636.181.76.814.76 1.505v5.876c2.441 1.193 4.362-.096 4.362-3.29 0-3.333-1.15-4.824-4.919-6.092-1.133-.38-3.04-.913-4.912-1.1zM2 18.806l6.175 2.198V19.07l-4.559-1.625v-1.985l4.559 1.59v-1.935l-4.559-1.59V18.806zm14.684-5.859c-2.517-.23-4.057.84-4.057 3.34 0 2.3 1.33 3.517 4.057 2.858 2.518-.61 4.011-2.327 4.011-5.282-1.127.75-2.506 1.25-4.011 1.084z"/></svg>',
+  Xbox:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--xbox-c)"><path d="M4.102 7.912C3.412 8.859 3 10.008 3 11.257c0 3.072 1.89 5.71 4.604 6.888C6.01 16.265 4.8 12.41 4.102 7.912zm15.796 0C19.2 12.41 17.99 16.265 16.396 18.145 19.11 16.967 21 14.33 21 11.257c0-1.25-.412-2.398-1.102-3.345zM12 4c-1.42 0-2.73.444-3.795 1.192.547.5 1.5 1.448 2.625 3.05C11.47 9.13 11.754 9.5 12 9.5s.53-.37 1.17-1.258c1.124-1.602 2.078-2.55 2.625-3.05C14.73 4.444 13.42 4 12 4zm-6.2 1.52C4.69 6.6 4 7.857 4 9.27c0 .748.137 1.462.386 2.124C5 8.765 5.7 6.57 5.8 5.52zm12.4 0c.1 1.05.8 3.245 1.414 5.874.249-.662.386-1.376.386-2.124 0-1.413-.69-2.67-1.8-3.75z"/></svg>',
+  Nintendo:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="var(--nintendo-c)"><path d="M9.128 2H14.5a7.5 7.5 0 010 15H9.128A7.5 7.5 0 019.128 2zM7.17 5.75h2.5v5.5h-2.5v-5.5zm5.33 0a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"/></svg>',
+  GOG:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--gog-c)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15 12h-3v-4"/></svg>',
+  PC:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--pc-c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  Epic:'<svg class="plat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="var(--epic-c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+};
+var PLAT_TAG={'Steam':'tag-steam','PlayStation':'tag-playstation','PS4':'tag-playstation','PS5':'tag-playstation',
+  'Xbox':'tag-xbox','Xbox One':'tag-xbox','Xbox Series':'tag-xbox',
+  'Nintendo':'tag-nintendo','Nintendo Switch':'tag-nintendo',
+  'GOG':'tag-gog','PC':'tag-pc','Epic':'tag-epic','Epic Games':'tag-epic'};
+
+function getPlatTag(p){return PLAT_TAG[p]||'tag-pc'}
+function getPlatSvg(p){
+  var k=Object.keys(PLAT_SVG).find(function(k){return p&&p.toLowerCase().includes(k.toLowerCase())});
+  return k?PLAT_SVG[k]:PLAT_SVG['PC'];
+}
+
+async function init(){
+  var{data,error}=await sb.from('produtos').select('*').eq('ativo',true).eq('tipo_key','key').order('created_at',{ascending:false});
+  if(error||!data){document.getElementById('prodsGrid').innerHTML='<div class="empty-grid">Erro ao carregar.</div>';return}
+  todosProdutos=data;
+  atualizarContadores();renderProdutos();atualizarCarrinho();
+}
+
+function atualizarContadores(){
+  ['Steam','PlayStation','Xbox','Nintendo','GOG','Epic','PC'].forEach(function(p){
+    var el=document.getElementById('cnt-'+p);if(!el)return;
+    var c=todosProdutos.filter(function(x){return(x.plataforma||'').toLowerCase().includes(p.toLowerCase())}).length;
+    el.textContent=c||'';
+  });
+}
+
+function getPlats(){
+  var vals=Array.from(document.querySelectorAll('.plat-cb:checked')).map(function(c){return c.value});
+  return vals.includes('todos')||!vals.length?null:vals;
+}
+function getTipos(){
+  var vals=Array.from(document.querySelectorAll('.tipo-cb:checked')).map(function(c){return c.value});
+  return vals.includes('todos')||!vals.length?null:vals;
+}
+function filterChange(){renderProdutos()}
+function buscar(q){buscaAtual=q;renderProdutos()}
+function buscarMobile(q){buscaAtual=q;renderProdutos()}
+
+function renderProdutos(){
+  var sortEl=window.innerWidth<=960?document.getElementById('sortSelectMobile'):document.getElementById('sortSelect');
+  var sort=sortEl.value;
+  var minP=Number(document.getElementById('precoMin').value)||0;
+  var maxP=Number(document.getElementById('precoMax').value)||999999;
+  document.getElementById('pvMin').textContent=minP.toFixed(0);
+  document.getElementById('pvMax').textContent=maxP.toFixed(0);
+  var plats=getPlats(),tipos=getTipos();
+
+  var lista=todosProdutos.filter(function(p){
+    var plat=p.plataforma||'Steam';
+    var platOk=!plats||plats.some(function(pv){return plat.toLowerCase().includes(pv.toLowerCase())});
+    var precoOk=Number(p.preco)>=minP&&Number(p.preco)<=maxP;
+    var tipo=p.categoria==='Combos e Bundles'?'gift':'key';
+    var tipoOk=!tipos||tipos.includes(tipo);
+    var buscaOk=!buscaAtual||(p.nome||'').toLowerCase().includes(buscaAtual.toLowerCase())||(plat).toLowerCase().includes(buscaAtual.toLowerCase());
+    return platOk&&precoOk&&tipoOk&&buscaOk;
+  });
+
+  if(sort==='preco_asc')lista.sort(function(a,b){return Number(a.preco)-Number(b.preco)});
+  else if(sort==='preco_desc')lista.sort(function(a,b){return Number(b.preco)-Number(a.preco)});
+  else if(sort==='nome')lista.sort(function(a,b){return(a.nome||'').localeCompare(b.nome||'')});
+
+  document.getElementById('filterCount').textContent=lista.length;
+  var grid=document.getElementById('prodsGrid');
+  if(!lista.length){
+    grid.innerHTML='<div class="empty-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Nenhuma chave encontrada.</div>';
+    return;
+  }
+  grid.innerHTML=lista.map(function(p,i){
+    var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
+    var plat=p.plataforma||'Steam';
+    var stockBadge=!ok?'<div class="stock-badge stock-out">Esgotado</div>':
+      (p.estoque!==null&&p.estoque<=3?'<div class="stock-badge stock-low">Últimas</div>':
+      '<div class="stock-badge stock-ok">Disponível</div>');
+    var imgContent=p.imagem
+      ?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">'
+      :'<div class="prod-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>';
+    var tipo=p.categoria==='Combos e Bundles'?'gift':'key';
+    var tipoLabel=tipo==='gift'?'Bundle':'CD Key';
+    var discountBadge='',precoOld='';
+    if(p.preco_original&&Number(p.preco_original)>Number(p.preco)){
+      var pct=Math.round((1-Number(p.preco)/Number(p.preco_original))*100);
+      discountBadge='<span class="prod-discount">-'+pct+'%</span>';
+      precoOld='<span class="prod-price-old">R$ '+Number(p.preco_original).toFixed(2).replace('.',',')+'</span>';
+    }
+    return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s">'+
+      '<div class="prod-img-wrap">'+imgContent+
+      '<div class="prod-plat-tag '+getPlatTag(plat)+'">'+getPlatSvg(plat)+esc(plat)+'</div>'+stockBadge+'</div>'+
+      '<div class="prod-body">'+
+        '<div class="prod-name">'+esc(p.nome)+'</div>'+
+        '<div class="prod-meta"><span class="prod-type-badge type-'+tipo+'">'+tipoLabel+'</span></div>'+
+        '<div class="prod-price-row">'+
+          '<div class="prod-price'+(ok?'':' esgotado')+'">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+          precoOld+discountBadge+
+        '</div>'+
+        '<button class="prod-btn '+(ok?'prod-btn-buy':'prod-btn-dis')+'" '+(ok?'':'disabled')+
+          ' onclick="event.preventDefault();event.stopPropagation();addCarrinho(\''+p.id+'\')">'+(ok
+            ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>Comprar chave'
+            :'Esgotado')+
+        '</button>'+
+      '</div></a>';
+  }).join('');
+}
+
+function togglePanel(h){
+  h.classList.toggle('open');
+  var b=h.nextElementSibling;if(b)b.style.display=h.classList.contains('open')?'':'none';
+}
+function resetFiltros(){
+  document.querySelectorAll('.plat-cb').forEach(function(c){c.checked=c.value==='todos'});
+  document.querySelectorAll('.tipo-cb').forEach(function(c){c.checked=c.value==='todos'});
+  document.getElementById('precoMin').value=0;
+  document.getElementById('precoMax').value=500;
+  document.getElementById('searchInput').value='';
+  buscaAtual='';renderProdutos();
+}
+
+function addCarrinho(id){
+  var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
+  if(carrinho.find(function(x){return x.id===id})){showToast('Já está no carrinho!');return}
+  carrinho.push(p);salvarCarrinho();atualizarCarrinho();
+  showToast(p.nome.substring(0,26)+' adicionado!');
+}
+function removerCarrinho(id){carrinho=carrinho.filter(function(x){return x.id!==id});salvarCarrinho();atualizarCarrinho()}
+function salvarCarrinho(){localStorage.setItem('mg_cart',JSON.stringify(carrinho))}
+function atualizarCarrinho(){
+  document.getElementById('cartBadge').textContent=carrinho.length;
+  var total=carrinho.reduce(function(s,p){return s+Number(p.preco)},0);
+  document.getElementById('cartTotal').textContent='R$ '+total.toFixed(2).replace('.',',');
+  var btn=document.getElementById('checkoutBtn');
+  btn.disabled=carrinho.length===0;btn.style.opacity=carrinho.length===0?'.3':'1';
+  var items=document.getElementById('cartItems');
+  if(!carrinho.length){items.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:11px">Carrinho vazio</div>';return}
+  items.innerHTML=carrinho.map(function(p){
+    return '<div style="display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--dim);align-items:center">'+
+      '<img loading="lazy" src="'+esc(p.imagem||'')+'" style="width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--dim)">'+
+      '<div style="flex:1;min-width:0"><div style="font-size:10px;font-weight:700;color:#e0e0f0;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(p.nome)+'</div>'+
+      '<div style="font-size:12px;font-weight:900;color:var(--green)">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div></div>'+
+      '<button onclick="removerCarrinho(\''+p.id+'\')" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;min-width:28px">✕</button></div>';
+  }).join('');
+}
+function toggleCart(){
+  var o=document.getElementById('cartOverlay'),d=document.getElementById('cartDrawer');
+  var open=d.classList.contains('open');
+  if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow=''}
+  else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden'}
+}
+async function checkout(){
+  if(!carrinho.length)return;
+  var btn=document.getElementById('checkoutBtn');if(btn){btn.disabled=true;btn.textContent='Aguarde...'}
+  try{
+    var r=await sb.auth.getSession();var session=r.data.session;
+    if(!session){showToast('Faça login para finalizar!');setTimeout(function(){window.location.href='perfil.html'},1200);if(btn){btn.disabled=false;btn.textContent='Finalizar compra'}return}
+    sessionStorage.setItem('mg_itens_pendentes',JSON.stringify(carrinho.map(function(p){return{id:p.id,nome:p.nome,preco:Number(p.preco),quantidade:1,imagem:p.imagem||''}})));
+    sessionStorage.setItem('mg_user_email',session.user.email);
+    sessionStorage.setItem('mg_user_id',session.user.id);
+    sessionStorage.setItem('mg_access_token',session.access_token);
+    sessionStorage.setItem('mg_refresh_token',session.refresh_token||'');
+    window.location.href='checkout.html';
+  }catch(err){showToast('Erro: '+(err.message||'Tente novamente'));if(btn){btn.disabled=false;btn.textContent='Finalizar compra'}}
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2800)}
+
+(function(){
+  var mq=window.matchMedia('(max-width:960px)');
+  function ck(e){document.getElementById('sortSelectMobile').style.display=e.matches?'block':'none'}
+  if(mq.addEventListener)mq.addEventListener('change',ck);else mq.addListener(ck);ck(mq);
+})();
+
+init();
+</script>
+<script>
+(function(){
+  var _pc=null,_pi=null,_t=0;
+  function _ini(){
+    if(typeof sb==='undefined'){if(_t++<20)setTimeout(_ini,500);return}
+    sb.auth.getSession().then(function(r){
+      var em=(r.data&&r.data.session&&r.data.session.user&&r.data.session.user.email)||'anon_'+Math.random().toString(36).slice(2,8);
+      _pc=sb.channel('site-visitors');
+      _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:em,pagina:'cdkeys',online_at:new Date().toISOString()})});
+      _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:em,pagina:'cdkeys',online_at:new Date().toISOString()})},25000);
+      window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack()});
+    }).catch(function(){});
+  }
+  setTimeout(_ini,1500);
+})();
+</script>
+</body>
+</html>
