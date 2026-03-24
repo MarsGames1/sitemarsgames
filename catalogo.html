@@ -819,9 +819,14 @@ async function atualizarNavbar(session){
       if(fallback){fallback.style.display='flex';fallback.textContent=inicial;}
     }
     try{
-      var mp=await sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle();
-      var pts=(mp.data&&mp.data.pontos)||0;
-      wrap.className='nav-avatar-wrap nav-nivel-'+getNavNivel(pts);
+      var [mpRes, perfilRes] = await Promise.all([
+        sb.from('marspoints').select('pontos').eq('user_email',session.user.email).maybeSingle(),
+        sb.from('perfis').select('anel_escolhido').eq('email',session.user.email).maybeSingle()
+      ]);
+      var pts=(mpRes.data&&mpRes.data.pontos)||0;
+      var anelEscolhido=(perfilRes.data&&perfilRes.data.anel_escolhido)||null;
+      var nivel=anelEscolhido||getNavNivel(pts);
+      wrap.className='nav-avatar-wrap nav-nivel-'+nivel;
     }catch(e){wrap.className='nav-avatar-wrap nav-nivel-bronze';}
   } else {
     if(btnLogin) btnLogin.style.display='flex';
