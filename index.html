@@ -1995,7 +1995,181 @@ footer::before{
 
 
 /* ══════════════════════════════════
-   CHAVES ALEATÓRIAS STEAM
+   CD KEYS — CARROSSEL
+══════════════════════════════════ */
+@keyframes cdkRgbR{0%,100%{transform:translateX(2px)}50%{transform:translateX(5px)}}
+@keyframes cdkRgbC{0%,100%{transform:translateX(-2px)}50%{transform:translateX(-5px)}}
+@keyframes cdkShine{0%{transform:translateX(-220%)}55%{transform:translateX(320%)}100%{transform:translateX(320%)}}
+@keyframes cdkBlink{0%,100%{opacity:1}50%{opacity:.15}}
+@keyframes cdkBadgePop{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
+.cdk-section{
+  position:relative;z-index:1;
+  padding:48px 0 16px;
+  overflow:hidden;
+}
+
+.cdk-title{
+  text-align:center;padding:0 16px 10px;
+  font-size:clamp(20px,3.5vw,36px);
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;text-transform:uppercase;letter-spacing:4px;
+  position:relative;user-select:none;
+}
+.cdk-title-wrap{display:inline-block;position:relative}
+.cdk-title-base{position:relative;color:#fff}
+.cdk-title-r{position:absolute;inset:0;color:#ff2200;opacity:.7;mix-blend-mode:screen;animation:cdkRgbR 4s ease-in-out infinite;will-change:transform;pointer-events:none}
+.cdk-title-c{position:absolute;inset:0;color:#00ffff;opacity:.7;mix-blend-mode:screen;animation:cdkRgbC 4s ease-in-out infinite;will-change:transform;pointer-events:none}
+
+.cdk-trust{display:flex;justify-content:center;align-items:center;gap:10px;margin:10px 16px 20px;flex-wrap:wrap}
+.cdk-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:20px;padding:6px 14px;
+  font-size:11px;font-weight:700;color:#666;letter-spacing:.4px;
+}
+.cdk-pill.green {border-color:rgba(0,255,85,.2);color:var(--green)}
+.cdk-pill.yellow{border-color:rgba(255,179,0,.2);color:var(--amber)}
+.cdk-pill.blue  {border-color:rgba(91,154,246,.25);color:#7ab5ff}
+.cdk-pill.purple{border-color:rgba(168,85,247,.2);color:#cc88ff}
+
+.cdk-outer{position:relative;width:100%;padding:8px 0 24px}
+.cdk-viewport{overflow:hidden;width:100%;padding:16px 0}
+.cdk-track{display:flex;gap:14px;will-change:transform}
+
+.cdk-card{
+  flex:0 0 216px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;overflow:visible;
+  position:relative;
+  transition:transform .38s cubic-bezier(.23,1,.32,1),border-color .38s,box-shadow .38s;
+  cursor:pointer;display:flex;flex-direction:column;
+}
+@media(min-width:768px){.cdk-card{flex:0 0 252px}}
+@media(min-width:1024px){.cdk-card{flex:0 0 270px}}
+@media(max-width:480px){.cdk-card{flex:0 0 200px}}
+
+.cdk-card-inner{border-radius:16px;overflow:hidden;display:flex;flex-direction:column;flex:1}
+
+@media(hover:hover){
+  .cdk-card:not(.cdk-esg):hover{
+    transform:translateY(-10px);border-color:#00d4ff;
+    box-shadow:0 0 24px rgba(0,212,255,.18),0 16px 40px rgba(0,0,0,.7);
+  }
+  .cdk-card.cdk-esg:hover{transform:translateY(-4px);border-color:var(--border2)}
+  .cdk-card:not(.cdk-esg):hover .cdk-img{transform:scale(1.06)}
+  .cdk-card:not(.cdk-esg):hover .cdk-name{text-shadow:-2px 0 0 rgba(0,255,255,.5),2px 0 0 rgba(255,0,0,.5)}
+  .cdk-card:not(.cdk-esg):hover .cdk-buy{
+    background:linear-gradient(160deg,#0099ff,#00d4ff);
+    box-shadow:0 0 20px rgba(0,180,255,.5),0 5px 16px rgba(0,180,255,.3);
+    transform:scale(1.03);
+  }
+}
+.cdk-card:active{transform:scale(.97)}
+
+.cdk-img-wrap{position:relative;width:100%;aspect-ratio:3/3.2;background:var(--dim);overflow:hidden}
+.cdk-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease,opacity .4s;will-change:transform}
+.cdk-card.cdk-esg .cdk-img{opacity:.28;filter:grayscale(80%)}
+
+.cdk-plat-badge{
+  position:absolute;bottom:8px;left:8px;
+  background:rgba(0,0,0,.88);color:#fff;
+  font-size:8px;font-weight:900;padding:4px 9px;border-radius:4px;z-index:2;
+  border-left:3px solid #00d4ff;letter-spacing:.5px;
+}
+
+.cdk-ribbon-wrap{
+  position:absolute;top:-1px;right:-1px;
+  width:80px;height:80px;overflow:hidden;z-index:10;
+  pointer-events:none;border-radius:0 16px 0 0;
+}
+.cdk-ribbon{
+  position:absolute;top:14px;right:-22px;
+  width:95px;padding:4px 0;
+  text-align:center;font-size:7px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;transform:rotate(45deg);
+}
+.cdk-ribbon.key    {background:linear-gradient(135deg,#0088cc,#00d4ff);color:#fff;box-shadow:0 0 10px rgba(0,180,255,.4)}
+.cdk-ribbon.xbox   {background:linear-gradient(135deg,#107c10,#52b043);color:#fff;box-shadow:0 0 10px rgba(80,180,60,.4)}
+.cdk-ribbon.ps     {background:linear-gradient(135deg,#003087,#0070d1);color:#fff;box-shadow:0 0 10px rgba(0,100,200,.4)}
+.cdk-ribbon.nintendo{background:linear-gradient(135deg,#cc0000,#ff3333);color:#fff;box-shadow:0 0 10px rgba(200,0,0,.4)}
+.cdk-ribbon.esgotado{background:#1e1e1e;color:#444}
+
+.cdk-wish{
+  position:absolute;top:9px;left:9px;z-index:9;
+  background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.08);
+  border-radius:50%;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;
+}
+.cdk-wish:hover{background:rgba(220,30,70,.85);transform:scale(1.2);box-shadow:0 0 10px rgba(220,30,70,.5)}
+.cdk-wish svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:fill .2s}
+.cdk-wish:hover svg{fill:rgba(255,255,255,.9)}
+.cdk-wish.fav-ativo{background:rgba(220,30,70,.85);box-shadow:0 0 10px rgba(220,30,70,.5)}
+.cdk-wish.fav-ativo svg{fill:#fff}
+
+.cdk-info{
+  padding:14px 13px 16px;text-align:center;
+  flex:1;display:flex;flex-direction:column;justify-content:space-between;
+  background:var(--card);
+}
+.cdk-name{
+  font-size:12px;font-weight:900;text-transform:uppercase;color:#eee;
+  min-height:32px;line-height:1.35;margin-bottom:8px;transition:text-shadow .3s;
+}
+.cdk-card.cdk-esg .cdk-name{color:#444}
+
+.cdk-disc-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--mars),#cc3300);
+  color:#fff;font-size:10px;font-weight:900;
+  padding:2px 7px;border-radius:4px;margin-bottom:3px;letter-spacing:.4px;
+  box-shadow:0 2px 8px rgba(232,66,26,.4);
+  animation:cdkBadgePop 2s ease-in-out infinite;
+}
+.cdk-old-price{font-size:11px;color:#333;text-decoration:line-through;font-weight:700;margin-bottom:2px}
+.cdk-price{font-size:26px;color:#00d4ff;font-weight:900;text-shadow:0 0 10px rgba(0,212,255,.3);line-height:1}
+.cdk-card.cdk-esg .cdk-price{color:#333;text-shadow:none}
+.cdk-price-area{margin-bottom:6px}
+
+.cdk-urgency{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:6px}
+.cdk-urgency-dot{width:5px;height:5px;background:#00aaff;border-radius:50%;animation:cdkBlink 1.1s ease-in-out infinite;flex-shrink:0}
+.cdk-urgency-txt{font-size:9px;color:#00aaff;font-weight:700;letter-spacing:.2px}
+
+.cdk-buy{
+  background:linear-gradient(160deg,#0077cc,#00aaff);
+  border:none;color:#fff;padding:12px 8px;
+  font-weight:900;text-transform:uppercase;border-radius:8px;
+  cursor:pointer;width:100%;
+  transition:background .22s,box-shadow .22s,transform .22s;
+  letter-spacing:1px;font-family:'Montserrat',sans-serif;font-size:11px;
+  box-shadow:0 3px 12px rgba(0,150,220,.3);position:relative;overflow:hidden;
+  min-height:40px;
+}
+.cdk-buy::before{
+  content:'';position:absolute;top:0;left:0;width:55%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  transform:translateX(-220%);
+  animation:cdkShine 2.8s ease-in-out infinite;will-change:transform;pointer-events:none;
+}
+.cdk-buy.cdk-dis{background:var(--dim);border:1px solid var(--border);color:#333;cursor:default;box-shadow:none}
+.cdk-buy.cdk-dis::before{display:none}
+
+.cdk-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,.9);border:2px solid #00d4ff;color:#00d4ff;
+  width:46px;height:46px;border-radius:50%;cursor:pointer;z-index:20;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .25s,color .25s,box-shadow .25s,transform .25s;
+  box-shadow:0 0 12px rgba(0,212,255,.1);
+}
+.cdk-nav-l{left:4px}.cdk-nav-r{right:4px}
+@media(min-width:768px){.cdk-nav-l{left:8px}.cdk-nav-r{right:8px}}
+.cdk-nav:hover{background:#00d4ff;color:#000;box-shadow:0 0 24px rgba(0,212,255,.35);transform:translateY(-50%) scale(1.1)}
+.cdk-nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ══════════════════════════════════
+      CHAVES ALEATÓRIAS STEAM
 ══════════════════════════════════ */
 @keyframes chvRgbR{0%,100%{transform:translateX(2px)}50%{transform:translateX(5px)}}
 @keyframes chvRgbC{0%,100%{transform:translateX(-2px)}50%{transform:translateX(-5px)}}
@@ -4118,6 +4292,202 @@ function aplicarFavs(){
   </div>
 </section>
 
+
+<!-- ══ CD KEYS — CARROSSEL ══ -->
+<section class="cdk-section" id="cdk-section">
+  <div class="cdk-title">
+    <span class="cdk-title-wrap">
+      <span class="cdk-title-base">🔑 CD Keys Originais</span>
+      <span class="cdk-title-r" aria-hidden="true">🔑 CD Keys Originais</span>
+      <span class="cdk-title-c" aria-hidden="true">🔑 CD Keys Originais</span>
+    </span>
+  </div>
+
+  <div class="cdk-trust">
+    <div class="cdk-pill green">Chave original</div>
+    <div class="cdk-pill green">Entrega imediata</div>
+    <div class="cdk-pill blue">Xbox · PlayStation · PC · Nintendo</div>
+    <div class="cdk-pill yellow">Resgate direto na conta</div>
+  </div>
+
+  <div class="cdk-outer">
+    <button class="cdk-nav cdk-nav-l" id="cdkBtnL" aria-label="Anterior">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cdk-viewport">
+      <div class="cdk-track" id="cdkTrack">
+        <div style="padding:60px;color:#555;font-size:12px;text-align:center;width:100%">Carregando chaves...</div>
+      </div>
+    </div>
+    <button class="cdk-nav cdk-nav-r" id="cdkBtnR" aria-label="Próximo">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</section>
+
+<script>
+(function(){
+  var GAP=14, CLONES=4;
+  var CARD_W, STEP, pos, offsetPx, N;
+  var animating=false;
+  var cdkAutoId;
+  var cdkTouchX=null;
+  var track=document.getElementById('cdkTrack');
+  var btnL=document.getElementById('cdkBtnL');
+  var btnR=document.getElementById('cdkBtnR');
+
+  function getW(){return window.innerWidth>=1024?270:window.innerWidth>=768?252:window.innerWidth<=480?200:216}
+
+  function platRibbon(plat){
+    if(!plat)return 'key';
+    var p=plat.toLowerCase();
+    if(p.indexOf('xbox')>-1)return 'xbox';
+    if(p.indexOf('playstation')>-1||p.indexOf('ps4')>-1||p.indexOf('ps5')>-1)return 'ps';
+    if(p.indexOf('nintendo')>-1||p.indexOf('switch')>-1)return 'nintendo';
+    return 'key';
+  }
+  function platLabel(plat){
+    if(!plat)return 'PC / STEAM';
+    var p=plat.toLowerCase();
+    if(p.indexOf('xbox')>-1)return 'XBOX';
+    if(p.indexOf('playstation')>-1||p.indexOf('ps4')>-1||p.indexOf('ps5')>-1)return 'PLAYSTATION';
+    if(p.indexOf('nintendo')>-1||p.indexOf('switch')>-1)return 'NINTENDO';
+    if(p.indexOf('steam')>-1)return 'STEAM';
+    return plat.toUpperCase();
+  }
+  function ribbonLabel(plat){
+    var r=platRibbon(plat);
+    if(r==='xbox')return 'XBOX';
+    if(r==='ps')return 'PS';
+    if(r==='nintendo')return 'SWITCH';
+    return 'CD KEY';
+  }
+
+  function buildCard(p){
+    var ok=p.estoque>0&&p.ativo;
+    var prc='R$ '+Number(p.preco).toFixed(2).replace('.',',');
+    var oldPrc=p.preco_original&&p.preco_original>p.preco?'R$ '+Number(p.preco_original).toFixed(2).replace('.',','):null;
+    var disc=p.preco_original&&p.preco_original>p.preco?Math.round((1-p.preco/p.preco_original)*100):0;
+    var rib=platRibbon(p.plataforma);
+    var ribLbl=ribbonLabel(p.plataforma);
+    var platLbl=platLabel(p.plataforma);
+    var link='produto.html?id='+p.id;
+    return '<div class="cdk-card'+(ok?'':' cdk-esg')+'" data-cdklink="'+link+'">'+
+      '<div class="cdk-ribbon-wrap"><div class="cdk-ribbon '+(ok?rib:'esgotado')+'">'+(ok?ribLbl:'Esgotado')+'</div></div>'+
+      '<button class="cdk-wish" data-cdkwl="1" data-pid="'+p.nome+'" title="Favoritar">'+
+        '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
+      '</button>'+
+      '<div class="cdk-card-inner">'+
+        '<div class="cdk-img-wrap">'+
+          (p.imagem?'<img class="cdk-img" src="'+p.imagem+'" alt="'+p.nome+'" loading="lazy" decoding="async">':
+            '<div class="cdk-img" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:var(--dim)">🔑</div>')+
+          '<div class="cdk-plat-badge">'+platLbl+'</div>'+
+        '</div>'+
+        '<div class="cdk-info">'+
+          '<h3 class="cdk-name">'+p.nome+'</h3>'+
+          '<div class="cdk-price-area">'+
+            (disc>0?'<div class="cdk-disc-badge">-'+disc+'%</div><div class="cdk-old-price">'+oldPrc+'</div>':'')+
+            '<div class="cdk-price">'+prc+'</div>'+
+          '</div>'+
+          (ok?'<div class="cdk-urgency"><div class="cdk-urgency-dot"></div><span class="cdk-urgency-txt">Disponível agora</span></div>':'')+
+          '<button class="cdk-buy'+(ok?'':' cdk-dis')+'" data-cdkbuy="'+link+'">'+(ok?'🔑 COMPRAR AGORA':'ESGOTADO')+'</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function iniciarCarrossel(produtos){
+    var N_local=produtos.length;
+    if(N_local===0){
+      track.innerHTML='<div style="padding:60px;color:#555;font-size:12px;text-align:center;width:100%">Nenhuma chave disponível no momento.</div>';
+      return;
+    }
+    N=N_local;
+    pos=CLONES;
+    CARD_W=getW();STEP=CARD_W+GAP;
+    offsetPx=pos*STEP;
+    var h='';
+    for(var i=N-CLONES;i<N;i++) h+=buildCard(produtos[i%N]);
+    for(var j=0;j<N;j++)        h+=buildCard(produtos[j]);
+    for(var k=0;k<CLONES;k++)   h+=buildCard(produtos[k%N]);
+    track.innerHTML=h;
+    resizeCards();
+    applyT(false);
+    setTimeout(aplicarFavs,50);
+
+    track.addEventListener('click',function(e){
+      var buy=e.target.closest('[data-cdkbuy]');
+      var wl=e.target.closest('[data-cdkwl]');
+      var card=e.target.closest('[data-cdklink]');
+      if(buy&&!buy.classList.contains('cdk-dis')){e.stopPropagation();window.location.href=buy.dataset.cdkbuy;return}
+      if(wl){e.stopPropagation();toggleWish(wl);return}
+      if(card){window.location.href=card.dataset.cdklink}
+    });
+
+    cdkSchedule();
+    track.addEventListener('mouseenter',function(){clearTimeout(cdkAutoId)},{passive:true});
+    track.addEventListener('mouseleave',cdkSchedule,{passive:true});
+    track.addEventListener('touchstart',function(e){cdkTouchX=e.touches[0].clientX;clearTimeout(cdkAutoId)},{passive:true});
+    track.addEventListener('touchend',function(e){
+      if(cdkTouchX===null)return;
+      var dx=e.changedTouches[0].clientX-cdkTouchX;
+      if(Math.abs(dx)>40)cdkSlide(dx<0?1:-1);
+      cdkTouchX=null;cdkSchedule();
+    },{passive:true});
+  }
+
+  function resizeCards(){
+    CARD_W=getW();STEP=CARD_W+GAP;
+    track.querySelectorAll('.cdk-card').forEach(function(c){c.style.flexBasis=CARD_W+'px';c.style.minWidth=CARD_W+'px'});
+    if(pos!==undefined)offsetPx=pos*STEP;
+    applyT(false);
+  }
+  window.addEventListener('resize',resizeCards,{passive:true});
+
+  function applyT(anim){
+    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
+    track.style.transform='translateX(-'+offsetPx+'px)';
+  }
+
+  function cdkSlide(dir){
+    if(animating||N===undefined)return;
+    animating=true;pos+=dir;offsetPx+=dir*STEP;
+    applyT(true);
+    setTimeout(function(){
+      if(pos>=N+CLONES){pos-=N;offsetPx-=N*STEP;applyT(false)}
+      if(pos<CLONES)   {pos+=N;offsetPx+=N*STEP;applyT(false)}
+      animating=false;
+    },420);
+  }
+
+  btnL.addEventListener('click',function(){cdkSlide(-1)});
+  btnR.addEventListener('click',function(){cdkSlide(1)});
+
+  function cdkSchedule(){
+    if('requestIdleCallback' in window){
+      requestIdleCallback(function(){cdkAutoId=setTimeout(function(){cdkSlide(1);cdkSchedule()},4200)},{timeout:5000});
+    } else {
+      cdkAutoId=setTimeout(function(){cdkSlide(1);cdkSchedule()},4200);
+    }
+  }
+
+  function tryCarregar(){
+    if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
+    sb.from('produtos')
+      .select('id,nome,preco,preco_original,desconto,imagem,plataforma,categoria,estoque,ativo')
+      .eq('ativo',true)
+      .in('categoria',['Steam Key / Outros','CD Key','Xbox','PlayStation','Nintendo','PC Key'])
+      .order('estoque',{ascending:false})
+      .limit(20)
+      .then(function(res){
+        iniciarCarrossel(res.data||[]);
+      }).catch(function(){
+        iniciarCarrossel([]);
+      });
+  }
+  tryCarregar();
+})();
+</script>
 
 <!-- ══ CHAVES ALEATÓRIAS STEAM ══ -->
 <section class="chv-section" id="chv-section">
