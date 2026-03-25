@@ -17,11 +17,19 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MarsGames — Jogos Steam com até 90% OFF">
   <meta name="twitter:description" content="MarsGames — Jogos Steam offline com até 90% de desconto. Entrega imediata via Pix ou cartão. Loja 100% digital, segura e brasileira.">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MarsGames — Jogos PC com até 90% OFF</title>
 <meta name="description" content="Loja virtual de jogos para PC. Chaves Steam com até 90% de desconto. Entrega imediata 24h.">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<script>
+/* ── Safari scroll helper — evita trava de scroll após scrollIntoView ── */
+function safeScrollTo(el){
+  if(!el)return;
+  var top=el.getBoundingClientRect().top+window.pageYOffset-64;
+  try{window.scrollTo({top:top,behavior:'smooth'});}catch(e){window.scrollTo(0,top);}
+}
+</script>
 <script>
 (function(){
   var _tentativas = 0;
@@ -62,14 +70,15 @@
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 body{
   background:#0a0a0e;
   font-family:'Montserrat',sans-serif;
   color:#fff;
   min-height:100vh;
   overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -301,7 +310,7 @@ body.tema-claro .exit-sub{color:#666}
 
 /* ══ NAVBAR ══ */
 .navbar{
-  position:sticky;top:0;z-index:200;
+  position:-webkit-sticky;position:sticky;top:0;z-index:200;
   background:rgba(6,6,8,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid rgba(232,66,26,.15);
   padding:0 16px;height:64px;
@@ -427,6 +436,7 @@ body.tema-claro .exit-sub{color:#666}
 /* Menu mobile drawer */
 .nav-mobile-menu{
   position:fixed;top:72px;left:0;right:0;bottom:0;
+  padding-bottom:env(safe-area-inset-bottom,0px);
   background:rgba(6,6,8,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   z-index:199;
   transform:translateX(-100%);transition:transform .3s cubic-bezier(.23,1,.32,1);
@@ -455,6 +465,7 @@ body.tema-claro .exit-sub{color:#666}
 }
 .nav-mobile-search:focus-within{border-color:rgba(232,66,26,.4)}
 .nav-mobile-search input{
+  font-size:16px;-webkit-appearance:none;
   flex:1;background:none;border:none;outline:none;
   padding:13px 16px;font-size:13px;color:#ccc;
   font-family:'Montserrat',sans-serif;
@@ -782,7 +793,7 @@ body.tema-claro .exit-sub{color:#666}
    HERO — mobile-first
 ══════════════════════════════════ */
 .hero{
-  position:relative;min-height:100svh;display:flex;align-items:flex-end;
+  position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;
   overflow:hidden;
 }
 @media(min-width:768px){.hero{align-items:center;min-height:100vh}}
@@ -796,6 +807,7 @@ body.tema-claro .exit-sub{color:#666}
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;object-position:center;
   will-change:transform;opacity:0;transition:opacity .8s ease;
+  -webkit-transform:translateZ(0);transform:translateZ(0);
 }
 .hero-video-wrap video.ready{opacity:1}
 .hero-video-overlay{
@@ -1063,6 +1075,7 @@ body.tema-claro .exit-sub{color:#666}
   background:var(--card);border-left:none;
   z-index:201;display:flex;flex-direction:column;
   transform:translateX(100%);transition:transform .35s cubic-bezier(.23,1,.32,1);
+  padding-bottom:env(safe-area-inset-bottom,0);
 }
 @media(min-width:480px){
   .cart-drawer{width:400px;max-width:100vw;border-left:1px solid var(--border)}
@@ -1252,7 +1265,7 @@ body.tema-claro .exit-sub{color:#666}
 
 /* ══ TOAST ══ */
 #toast{
-  position:fixed;bottom:80px;left:50%;
+  position:fixed;bottom:max(80px,calc(80px + env(safe-area-inset-bottom)));left:50%;
   transform:translateX(-50%) translateY(16px);
   background:var(--card);border:1px solid rgba(0,255,85,.3);color:var(--green);
   padding:12px 22px;border-radius:8px;font-size:10px;font-weight:700;
@@ -1349,8 +1362,8 @@ footer::before{
 
 /* Carrossel */
 .mv-outer{position:relative;width:100%;padding:8px 0 24px}
-.mv-viewport{overflow:hidden;width:100%;padding:16px 0}
-.mv-track{display:flex;gap:14px;will-change:transform}
+.mv-viewport{overflow:hidden;width:100%;padding:16px 0;touch-action:pan-y;-webkit-overflow-scrolling:auto;isolation:isolate}
+.mv-track{display:flex;gap:14px;will-change:transform;overscroll-behavior:none;-webkit-transform:translateZ(0)}
 
 /* Card */
 .mv-card{
@@ -2034,8 +2047,8 @@ footer::before{
 .cdk-pill.purple{border-color:rgba(168,85,247,.2);color:#cc88ff}
 
 .cdk-outer{position:relative;width:100%;padding:8px 0 24px}
-.cdk-viewport{overflow:hidden;width:100%;padding:16px 0}
-.cdk-track{display:flex;gap:14px;will-change:transform}
+.cdk-viewport{overflow:hidden;width:100%;padding:16px 0;touch-action:pan-y;-webkit-overflow-scrolling:auto;isolation:isolate}
+.cdk-track{display:flex;gap:14px;will-change:transform;overscroll-behavior:none;-webkit-transform:translateZ(0)}
 
 .cdk-card{
   flex:0 0 216px;
@@ -2214,8 +2227,8 @@ footer::before{
 
 /* Carrossel */
 .chv-outer{position:relative;width:100%;padding:8px 0 24px}
-.chv-viewport{overflow:hidden;width:100%;padding:16px 0}
-.chv-track{display:flex;gap:14px;will-change:transform}
+.chv-viewport{overflow:hidden;width:100%;padding:16px 0;touch-action:pan-y;-webkit-overflow-scrolling:auto;isolation:isolate}
+.chv-track{display:flex;gap:14px;will-change:transform;overscroll-behavior:none;-webkit-transform:translateZ(0)}
 
 /* Card */
 .chv-card{
@@ -3462,6 +3475,65 @@ footer::before{
   letter-spacing:2px;text-transform:uppercase;
   color:rgba(255,255,255,.2);
 }
+
+/* ══════════════════════════════════
+   SAFARI / iOS — OTIMIZAÇÕES GLOBAIS
+══════════════════════════════════ */
+
+/* Evita flash de tap highlight em todos os elementos clicáveis */
+a,button,[onclick]{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-touch-callout:none}
+
+/* Inputs: evita zoom automático no iOS (font-size < 16px dispara zoom) */
+input,textarea,select{font-size:max(16px,1em);-webkit-appearance:none}
+
+/* Safe area para conteúdo fixo no bottom (iPhone com notch/home indicator) */
+.nav-mobile-menu{padding-bottom:env(safe-area-inset-bottom,16px)}
+
+/* Carrosseis: forçar GPU layer para suavizar animações no Safari */
+.mv-card,.cdk-card,.chv-card{-webkit-transform:translateZ(0);transform:translateZ(0)}
+
+/* Evitar que scroll-behavior smooth trave no Safari em âncoras */
+@supports not (scroll-behavior:smooth){
+  html{scroll-behavior:auto}
+}
+
+/* Blur/backdrop no Safari — fallback quando não suportado */
+@supports not (backdrop-filter:blur(1px)){
+  .navbar{background:rgba(6,6,8,.99)!important}
+  .nav-mobile-menu{background:rgba(6,6,8,.99)!important}
+  .mob-search-overlay{background:rgba(6,6,8,.99)!important}
+}
+
+/* Prevent momentum scroll pressionando carrossel no iOS */
+.mv-outer,.cdk-outer,.chv-outer{-webkit-user-select:none;user-select:none}
+
+/* Image rendering no Safari mobile */
+img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+
+/* Fix de 100vh no Safari Mobile (barra de endereço reduz altura) */
+@supports (height:100dvh){
+  .hero{min-height:100dvh}
+  body{min-height:100dvh}
+}
+
+/* Smooth scrolling: desativar em iOS < 15 para evitar travamento */
+@media screen and (-webkit-min-device-pixel-ratio:0) and (max-width:767px){
+  html{scroll-behavior:auto}
+}
+
+/* Touch targets mínimos em mobile (WCAG 2.5.5) */
+@media(max-width:767px){
+  .mv-nav,.cdk-nav,.chv-nav{width:40px;height:40px;min-width:40px;min-height:40px}
+  .nav-cart,.nav-login,.nav-hamburger{min-width:44px;min-height:44px}
+  .btn-mars{min-height:48px;padding:14px 20px}
+  .mv-buy,.cdk-buy,.chv-btn{min-height:48px}
+}
+
+/* Overflow horizontal: garantir que nada vaze em mobile */
+.mv-section,.cdk-section,.chv-section,.boa-section,.rk-section{max-width:100vw;overflow-x:hidden}
+
+/* Fix z-index stacking context Safari para position:sticky */
+.navbar{-webkit-transform:translateZ(0)}
 </style>
 
 <script>
@@ -3608,7 +3680,7 @@ footer::before{
         <a class="nav-dropdown-item" href="cdkeys.html">🔑 CD Keys Originais</a>
         <a class="nav-dropdown-item" href="sorteio.html">🎲 Sorteios</a>
         <a class="nav-dropdown-item" href="marspass.html">🌌 MarsPass</a>
-        <a class="nav-dropdown-item" href="#chv-section" onclick="toggleMobileMenu&&toggleMobileMenu();setTimeout(function(){var s=document.getElementById('chv-section');if(s)s.scrollIntoView({behavior:'smooth'})},300);return false;">Chaves Aleatórias</a>
+        <a class="nav-dropdown-item" href="cdkeys.html">CD Keys Originais</a>
       </div>
     </div>
   </div>
@@ -5380,7 +5452,7 @@ function setCat(cat, el){
   if(el) el.classList.add('active');
   renderProdutos();
   var store = document.querySelector('.store-wrap');
-  if(store) store.scrollIntoView({behavior:'smooth', block:'start'});
+  if(store) safeScrollTo(store);
 }
 
 function renderProdutos(){
@@ -5445,7 +5517,7 @@ function filtrarCat(cat,el){
   document.querySelectorAll('.nav-link').forEach(function(n){n.classList.remove('active')});
   if(el){el.classList.add('active')}
   renderProdutos();
-  document.querySelector('.store-wrap').scrollIntoView({behavior:'smooth'});
+  safeScrollTo(document.querySelector('.store-wrap'));
 }
 function buscar(q){
   buscaAtual=q;
@@ -5453,7 +5525,7 @@ function buscar(q){
   if(grid) renderProdutos();
   if(q&&q.length>0){
     var store=document.querySelector('.store-wrap');
-    if(store) store.scrollIntoView({behavior:'smooth',block:'start'});
+    if(store) safeScrollTo(store);
   }
 }
 
@@ -5919,7 +5991,7 @@ function closeMobileMenu(){
   document.getElementById('navMobileMenu').classList.remove('open');
   document.getElementById('navHamburger').classList.remove('open');
   document.body.style.overflow='';
-  document.querySelector('.store-wrap').scrollIntoView({behavior:'smooth'});
+  safeScrollTo(document.querySelector('.store-wrap'));
 }
 // Fechar menu ao redimensionar para desktop
 window.addEventListener('resize',function(){
