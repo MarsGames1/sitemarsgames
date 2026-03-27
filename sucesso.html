@@ -303,6 +303,24 @@ function mostrarSucesso(pedido){
     badge.style.display='inline-flex';
     document.getElementById('ptsGanhos').textContent=pts.toLocaleString('pt-BR');
   }
+  /* ── Rastreamento: registra conversão na tabela site_pageviews ── */
+  _registrarSucesso(pedido);
+}
+
+function _registrarSucesso(pedido){
+  try{
+    var sid=sessionStorage.getItem('mg_sid');
+    if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}
+    var em=sessionStorage.getItem('mg_user_email')||null;
+    var sb2=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    /* Registra como página "sucesso" para aparecer na jornada */
+    sb2.from('site_pageviews').insert({
+      pagina:'sucesso',
+      email:em,
+      session_id:sid,
+      referrer:'checkout'
+    }).then(function(r){if(r.error)console.warn('[pageview sucesso]',r.error.message);});
+  }catch(e){console.warn('[track sucesso]',e);}
 }
 
 function mostrarErro(){
