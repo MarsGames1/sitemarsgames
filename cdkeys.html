@@ -892,30 +892,17 @@ init();
   function _ini(){
     if(typeof sb==='undefined'){if(_t++<20)setTimeout(_ini,500);return}
     sb.auth.getSession().then(function(r){
-      var em=(r.data&&r.data.session&&r.data.session.user&&r.data.session.user.email)||'anon_'+Math.random().toString(36).slice(2,8);
-      _pc=sb.channel('site-visitors');
-      _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:em,pagina:'cdkeys',online_at:new Date().toISOString()})});
-      _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:em,pagina:'cdkeys',online_at:new Date().toISOString()})},25000);
+      var em=(r.data&&r.data.session&&r.data.session.user&&r.data.session.user.email)||null;
+      var visKey=sessionStorage.getItem('mg_vis_key');
+      if(!visKey){visKey='vis_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);sessionStorage.setItem('mg_vis_key',visKey);}
+      var displayEmail=em||('anon_'+visKey.slice(-6));
+      _pc=sb.channel('site-visitors',{config:{presence:{key:visKey}}});
+      _pc.subscribe(function(s){if(s==='SUBSCRIBED')_pc.track({tipo:'visitante',email:displayEmail,pagina:'cdkeys',online_at:new Date().toISOString()})});
+      _pi=setInterval(function(){if(_pc)_pc.track({tipo:'visitante',email:displayEmail,pagina:'cdkeys',online_at:new Date().toISOString()})},25000);
       window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack()});
     }).catch(function(){});
   }
   setTimeout(_ini,1500);
-})();
-</script>
-<script>
-/* ── Rastreamento de pageviews ── */
-(function(){
-  var _t=0;
-  function _reg(){
-    if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_reg,500);return;}
-    var sid=sessionStorage.getItem('mg_sid');
-    if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}
-    var em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||null;
-    var pg=window.location.pathname.replace(/^\//,'').replace('.html','').replace(/\/$/,'')||'index';
-    sb.from('site_pageviews').insert({pagina:pg,email:em,session_id:sid,referrer:document.referrer||null})
-      .then(function(r){if(r.error)console.warn('[pageview]',r.error.message);});
-  }
-  setTimeout(_reg,1200);
 })();
 </script>
 </body>
