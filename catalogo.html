@@ -853,5 +853,21 @@ setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.da
   setTimeout(_ini,1500);
 })();
 </script>
+<script>
+/* ── Rastreamento de pageviews ── */
+(function(){
+  var _t=0;
+  function _reg(){
+    if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_reg,500);return;}
+    var sid=sessionStorage.getItem('mg_sid');
+    if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}
+    var em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||null;
+    var pg=window.location.pathname.replace(/^\//,'').replace('.html','').replace(/\/$/,'')||'index';
+    sb.from('site_pageviews').insert({pagina:pg,email:em,session_id:sid,referrer:document.referrer||null})
+      .then(function(r){if(r.error)console.warn('[pageview]',r.error.message);});
+  }
+  setTimeout(_reg,1200);
+})();
+</script>
 </body>
 </html>

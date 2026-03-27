@@ -162,3 +162,26 @@ footer a:hover{color:#888}
   <br style="display:none">
   <a href="termos.html">Termos</a>
   <a href="reembolso.html">Reem
+<script>
+/* ── Rastreamento de pageviews ── */
+(function(){
+  var _t=0;
+  function _reg(){
+    if(typeof window.supabase==='undefined'){if(_t++<30)setTimeout(_reg,500);return;}
+    var _sb=window._mgSbStatic||(window._mgSbStatic=window.supabase.createClient('https://rzjtlghpsygxkivgwgws.supabase.co','sb_publishable_sDCnL56QQzg976Pt9if_GA_2mZn2Wzm'));
+    var sid=sessionStorage.getItem('mg_sid');
+    if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}
+    var pg=window.location.pathname.replace(/^\/+/,'').replace('.html','').split('/').pop()||'index';
+    _sb.from('site_pageviews').insert({pagina:pg,email:null,session_id:sid,referrer:document.referrer||null})
+      .then(function(r){if(r.error)console.warn('[pageview]',r.error.message);});
+  }
+  if(typeof window.supabase==='undefined'){
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    s.onload=function(){setTimeout(_reg,300);};
+    document.head.appendChild(s);
+  } else { setTimeout(_reg,400); }
+})();
+</script>
+</body>
+</html>
