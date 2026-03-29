@@ -54,7 +54,7 @@ body{
 }
 
 /* ── PREMIUM STARS ── */
-.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;isolation:isolate;contain:strict;will-change:transform}
 @keyframes starDrift{0%{transform:translateY(0) translateX(0);opacity:var(--so)}50%{transform:translateY(var(--sy,-8px)) translateX(var(--sx,4px));opacity:1}100%{transform:translateY(0) translateX(0);opacity:var(--so)}}
 @keyframes starShoot{0%{transform:translateX(0) translateY(0) scaleX(1);opacity:0}5%{opacity:1}100%{transform:translateX(var(--tx,200px)) translateY(var(--ty,100px)) scaleX(4);opacity:0}}
 @keyframes starPulse{0%,100%{transform:scale(1);opacity:var(--so,.3)}50%{transform:scale(2.2);opacity:1}}
@@ -65,7 +65,7 @@ body{
 }
 
 /* Estrelas de warp */
-.warp-container{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;perspective:400px;perspective-origin:50% 50%}
+.warp-container{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;perspective:400px;perspective-origin:50% 50%;isolation:isolate;contain:strict}
 .warp-star{
   position:absolute;border-radius:50%;background:#fff;
   width:2px;height:2px;
@@ -101,6 +101,7 @@ body{
     radial-gradient(ellipse at 80% 80%,rgba(255,60,110,.07) 0%,transparent 50%),
     radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.05) 0%,transparent 60%),
     radial-gradient(ellipse at 10% 70%,rgba(255,179,0,.04) 0%,transparent 40%);
+  isolation:isolate;contain:strict;will-change:transform;
   animation:nebulaDrift 8s ease-in-out infinite;
 }
 
@@ -160,6 +161,7 @@ body{
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;
   animation:gradMove 6s ease infinite;
+  will-change:background-position;
 }
 .hero-title-sub{
   font-family:'Orbitron',sans-serif;
@@ -184,6 +186,7 @@ body{
   content:'';position:absolute;inset:-16px;border-radius:50%;
   border:1px solid rgba(124,106,247,.2);
   animation:pulse 3s ease-in-out infinite;
+  will-change:opacity;
 }
 .hero-planet::after{
   content:'';position:absolute;inset:-32px;border-radius:50%;
@@ -292,6 +295,7 @@ body{
   background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);
   background-size:200% 100%;
   animation:shimmer 2.5s linear infinite;
+  transform:translateZ(0);will-change:background-position;
 }
 
 /* Divisor */
@@ -602,6 +606,23 @@ body{
   .hero-planet{width:200px;height:200px}
   .navbar{height:84px}
   .nav-logo-text{font-size:20px}
+}
+
+/* ── ALTA TAXA DE ATUALIZAÇÃO / ALTA DENSIDADE (4K, 120hz+) ──
+   Desativa animações que causam repaint de camada inteira.
+   O visual continua bonito — só para de piscar. ── */
+@media (min-resolution: 1.5dppx), (min-device-pixel-ratio: 1.5) {
+  .nebula{animation:none!important;will-change:auto}
+  .star.bright{animation:none!important}
+  .plan-btn::after{animation:none!important;background-position:0 center}
+}
+@media (prefers-reduced-motion: reduce) {
+  .nebula{animation:none!important;will-change:auto}
+  .plan-btn::after{animation:none!important}
+  .hero-planet{animation:none!important}
+  .planet-orb,.planet-orb-2{animation:none!important}
+  .hero-title{animation:none!important;background-size:100% 100%}
+  .star{animation:none!important}
 }
 </style>
 </head>
