@@ -518,6 +518,91 @@ body{
 .hero-planet{will-change:transform}
 .plan-card{will-change:transform,box-shadow}
 .hero-title{will-change:background-position}
+
+/* ── TELAS GRANDES: 1600px+ (4K, ultrawide, alta densidade) ── */
+@media(min-width:1600px){
+  .plans-section{max-width:1600px;padding-left:40px;padding-right:40px}
+  .compare-section{max-width:1200px}
+  .faq-section{max-width:900px}
+  .cta-section{padding:80px 40px 120px}
+  .cta-box{max-width:780px;padding:60px 56px}
+
+  /* Grid: força sempre 4 colunas em telas largas */
+  .plans-grid{
+    grid-template-columns:repeat(4,1fr);
+    gap:28px;
+  }
+
+  /* Cards maiores */
+  .plan-card{border-radius:24px}
+  .plan-header{padding:36px 36px 24px}
+  .plan-benefits{padding:24px 36px 36px}
+  .plan-icon{font-size:48px;margin-bottom:16px}
+  .plan-name{font-size:22px;letter-spacing:3px}
+  .plan-price{font-size:46px}
+  .plan-price-cur{font-size:16px}
+  .plan-price-per{font-size:13px}
+  .plan-price-anual{font-size:12px;margin-bottom:28px}
+  .plan-btn{padding:18px;font-size:13px;border-radius:14px}
+  .benefit-item{font-size:13px;padding:9px 0}
+  .benefit-check{width:20px;height:20px;font-size:10px}
+  .benefits-label{font-size:9px;margin-bottom:18px}
+  .plan-divider{margin:0 36px}
+
+  /* Hero */
+  .hero{padding:120px 40px 90px}
+  .hero-title{font-size:clamp(60px,6vw,110px)}
+  .hero-title-sub{font-size:clamp(24px,2.5vw,44px);letter-spacing:6px}
+  .hero-desc{font-size:16px;max-width:720px}
+  .hero-planet{width:160px;height:160px;margin-bottom:60px}
+  .hero-eyebrow{font-size:12px;letter-spacing:5px}
+  .hero-eyebrow::before,.hero-eyebrow::after{width:60px}
+
+  /* Seções */
+  .plans-title{font-size:13px;letter-spacing:5px;margin-bottom:60px}
+  .section-title{font-size:28px}
+  .section-sub{font-size:15px;margin-bottom:52px}
+
+  /* Tabela de comparação */
+  .compare-table th{padding:18px 20px;font-size:11px}
+  .compare-table td{padding:16px 20px;font-size:13px}
+  .ct,.cx{font-size:16px}
+
+  /* FAQ */
+  .faq-q{font-size:15px;padding:20px 24px}
+  .faq-a-inner{font-size:14px;padding:0 24px 20px}
+  .faq-item{margin-bottom:12px}
+
+  /* CTA */
+  .cta-title{font-size:clamp(24px,3vw,40px)}
+  .cta-sub{font-size:15px;margin-bottom:40px}
+  .cta-btn{padding:20px 52px;font-size:14px;border-radius:14px}
+
+  /* Navbar */
+  .navbar{height:72px;padding:0 40px}
+  .nav-logo-text{font-size:17px}
+  .nav-btn{font-size:11px;padding:10px 20px}
+  .nav-pass-badge{font-size:9px}
+}
+
+/* ── TELAS MUITO GRANDES: 2400px+ (4K nativo sem scaling) ── */
+@media(min-width:2400px){
+  .plans-section{max-width:2200px}
+  .compare-section{max-width:1600px}
+  .faq-section{max-width:1200px}
+  .plans-grid{gap:36px}
+  .plan-header{padding:44px 44px 28px}
+  .plan-benefits{padding:28px 44px 44px}
+  .plan-name{font-size:26px}
+  .plan-price{font-size:56px}
+  .plan-btn{padding:22px;font-size:15px}
+  .benefit-item{font-size:15px;padding:11px 0}
+  .hero-title{font-size:clamp(80px,5vw,140px)}
+  .hero-title-sub{font-size:clamp(30px,2vw,56px)}
+  .hero-planet{width:200px;height:200px}
+  .navbar{height:84px}
+  .nav-logo-text{font-size:20px}
+}
 </style>
 </head>
 <body>
