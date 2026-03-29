@@ -229,7 +229,8 @@ body{
   background:var(--card);
   border:1px solid var(--border);
   transition:transform .3s,box-shadow .3s;
-  animation:cardIn .6s ease both;
+  opacity:1;
+  animation:cardIn .6s ease forwards;
 }
 .plan-card:hover{transform:translateY(-8px)}
 
@@ -465,7 +466,7 @@ body{
 .modal-box{
   background:var(--card);border:1px solid var(--border);border-radius:20px;
   padding:40px;max-width:400px;width:100%;text-align:center;
-  animation:cardIn .3s ease both;
+  animation:cardIn .3s ease forwards;
 }
 .modal-title{
   font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;
@@ -557,7 +558,7 @@ body{
   <div class="plans-grid">
 
     <!-- ANDRÔMEDA -->
-    <div class="plan-card plan-andromeda" style="animation-delay:.05s">
+    <div class="plan-card plan-andromeda">
       <div class="plan-header">
         <span class="plan-icon">🌀</span>
         <div class="plan-name">Andrômeda</div>
@@ -588,7 +589,7 @@ body{
     </div>
 
     <!-- TRIÂNGULO -->
-    <div class="plan-card plan-triangulo" style="animation-delay:.1s">
+    <div class="plan-card plan-triangulo">
       <div class="plan-header">
         <span class="plan-icon">🔺</span>
         <div class="plan-name">Triângulo</div>
@@ -620,7 +621,7 @@ body{
     </div>
 
     <!-- CENTAURUS -->
-    <div class="plan-card plan-centaurus popular" style="animation-delay:.15s">
+    <div class="plan-card plan-centaurus popular">
       <span class="popular-tag">⭐ Mais popular</span>
       <div class="plan-header">
         <span class="plan-icon">⚡</span>
@@ -652,7 +653,7 @@ body{
     </div>
 
     <!-- SOMBRERO -->
-    <div class="plan-card plan-sombrero top" style="animation-delay:.2s">
+    <div class="plan-card plan-sombrero top">
       <span class="top-tag">👑 Lendário</span>
       <div class="plan-header">
         <span class="plan-icon">🌐</span>
