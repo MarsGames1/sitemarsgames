@@ -885,8 +885,8 @@ function renderProduto(p){
   // Badge
   var badge=document.getElementById('prodBadge');
   var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
-  var cat=(p.categoria||'').toLowerCase();
-  var plat=(p.plataforma||'').toLowerCase();
+  var cat=(p.categoria||'').toLowerCase().trim();
+  var plat=(p.plataforma||'').toLowerCase().trim();
   var isCDKey=cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
   var isAleatorio=cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1;
   var isBundle=cat.indexOf('bundle')!==-1||cat.indexOf('combo')!==-1;
@@ -961,8 +961,8 @@ function renderProduto(p){
 
   // O que você recebe
   var recebeText = document.getElementById('recebeText');
-  var cat = (p.categoria||'').toLowerCase();
-  var plat = (p.plataforma||'').toLowerCase();
+  var cat = (p.categoria||'').toLowerCase().trim();
+  var plat = (p.plataforma||'').toLowerCase().trim();
   var isCDKey2 = cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
   var isAleatorio2 = cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1;
 
