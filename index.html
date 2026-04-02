@@ -3979,19 +3979,22 @@ function aplicarFavs(){
     var link='produto.html?id='+p.id;
     var ribbon,ribbonLabel;
     var _mvCat=(p.categoria||'').toLowerCase().trim();
-    var _mvCDKey=_mvCat.indexOf('cd key')!==-1||_mvCat==='pc key';
-    var _mvXbox=_mvCat==='xbox';
-    var _mvPS=_mvCat==='playstation';
-    var _mvNin=_mvCat==='nintendo';
+    var _mvPlat=(p.plataforma||'').toLowerCase().trim();
+    var _mvTipoKey=(p.tipo_key||'').toLowerCase().trim();
+    /* Detecção primária: tipo_key='key' OU plataforma indica console/original */
+    var _mvIsCDKey=_mvTipoKey==='key'||_mvPlat==='steam original'||_mvCat.indexOf('cd key')!==-1||_mvCat==='pc key';
+    var _mvXbox=_mvPlat==='xbox'||_mvCat==='xbox';
+    var _mvPS=_mvPlat==='playstation'||_mvCat==='playstation';
+    var _mvNin=_mvPlat==='nintendo'||_mvCat==='nintendo';
     var _mvBundle=_mvCat.indexOf('bundle')!==-1||_mvCat.indexOf('combo')!==-1;
     var _mvAleatorio=_mvCat.indexOf('steam key')!==-1||_mvCat.indexOf('aleat')!==-1||_mvCat.indexOf('outros')!==-1;
     if(!ok){ribbon='esgotado-r';ribbonLabel='Esgotado';}
     else if(_mvBundle){ribbon='bundle';ribbonLabel='Bundle';}
-    else if(_mvAleatorio){ribbon='novidade';ribbonLabel='🎰 Chave Aleatória';}
-    else if(_mvCDKey){ribbon='cdkey';ribbonLabel='🔑 CD Key Original';}
+    else if(_mvAleatorio&&!_mvIsCDKey){ribbon='novidade';ribbonLabel='🎰 Chave Aleatória';}
     else if(_mvXbox){ribbon='cdkey';ribbonLabel='🎮 Xbox Key';}
     else if(_mvPS){ribbon='cdkey';ribbonLabel='🎮 PlayStation Key';}
     else if(_mvNin){ribbon='cdkey';ribbonLabel='🎮 Nintendo Key';}
+    else if(_mvIsCDKey){ribbon='cdkey';ribbonLabel='🔑 CD Key Original';}
     else{ribbon='steamoff';ribbonLabel='💻 Steam Offline';}
     var ribbonHtml='<div class="mv-ribbon-wrap"><div class="mv-ribbon '+ribbon+'">'+ribbonLabel+'</div></div>';
     var discHtml=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
@@ -4112,7 +4115,7 @@ function aplicarFavs(){
   /* Carrega do Supabase quando disponível */
   function tryCarregar(){
     if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
-    sb.from('produtos').select('id,nome,preco,preco_original,imagem,categoria,estoque,ativo')
+    sb.from('produtos').select('id,nome,preco,preco_original,imagem,categoria,plataforma,tipo_key,estoque,ativo')
       .eq('ativo',true).order('created_at',{ascending:false}).limit(20)
       .then(function(res){
         iniciarCarrossel(res.data||[]);
@@ -4565,9 +4568,9 @@ function aplicarFavs(){
   function tryCarregar(){
     if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
     sb.from('produtos')
-      .select('id,nome,preco,preco_original,desconto,imagem,plataforma,categoria,estoque,ativo')
+      .select('id,nome,preco,preco_original,desconto,imagem,plataforma,tipo_key,categoria,estoque,ativo')
       .eq('ativo',true)
-      .or('categoria.ilike.%cd key%,categoria.ilike.%cdkey%,categoria.ilike.%pc key%,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo,categoria.ilike.%steam key%,categoria.ilike.%aleat%,categoria.eq.Steam Key / Outros')
+      .or('tipo_key.eq.key,plataforma.eq.Steam Original,categoria.ilike.%cd key%,categoria.ilike.%cdkey%,categoria.ilike.%pc key%,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo')
       .order('estoque',{ascending:false})
       .limit(20)
       .then(function(res){
@@ -5419,7 +5422,7 @@ function _renderNavSugg(sugg,resultados,q){
 
 /* ── PRODUTOS ── */
 async function carregarProdutos(){
-  var{data,error}=await sb.from('produtos').select('id,nome,preco,preco_original,desconto,imagem,plataforma,categoria,estoque,ativo,created_at').eq('ativo',true).order('created_at',{ascending:false});
+  var{data,error}=await sb.from('produtos').select('id,nome,preco,preco_original,desconto,imagem,plataforma,tipo_key,categoria,estoque,ativo,created_at').eq('ativo',true).order('created_at',{ascending:false});
   if(error||!data){
     document.getElementById('prodsGrid').innerHTML='<div class="loader-wrap">Erro ao carregar. Tente novamente.</div>';
     return;

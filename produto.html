@@ -887,8 +887,10 @@ function renderProduto(p){
   var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
   var cat=(p.categoria||'').toLowerCase().trim();
   var plat=(p.plataforma||'').toLowerCase().trim();
-  var isCDKey=cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
-  var isAleatorio=cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1;
+  var tipoKey=(p.tipo_key||'').toLowerCase().trim();
+  /* tipo_key='key' ou plataforma='steam original' → CD Key Original */
+  var isCDKey=tipoKey==='key'||plat==='steam original'||cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
+  var isAleatorio=!isCDKey&&(cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1);
   var isBundle=cat.indexOf('bundle')!==-1||cat.indexOf('combo')!==-1;
 
   if(!ok){
@@ -906,7 +908,7 @@ function renderProduto(p){
   // Tag de plataforma no canto inferior da imagem
   var platTag=document.getElementById('prodPlatTag');
   if(isCDKey){
-    var platNome=cat==='xbox'?'XBOX':cat==='playstation'?'PLAYSTATION':cat==='nintendo'?'NINTENDO':'PC';
+    var platNome=plat==='xbox'||cat==='xbox'?'XBOX':plat==='playstation'||cat==='playstation'?'PLAYSTATION':plat==='nintendo'||cat==='nintendo'?'NINTENDO':'PC';
     platTag.textContent=platNome+' — CD KEY ORIGINAL';
     platTag.style.borderLeftColor='#00c853';
   } else if(isAleatorio){
@@ -963,8 +965,9 @@ function renderProduto(p){
   var recebeText = document.getElementById('recebeText');
   var cat = (p.categoria||'').toLowerCase().trim();
   var plat = (p.plataforma||'').toLowerCase().trim();
-  var isCDKey2 = cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
-  var isAleatorio2 = cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1;
+  var tipoKey2 = (p.tipo_key||'').toLowerCase().trim();
+  var isCDKey2 = tipoKey2==='key'||plat==='steam original'||cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
+  var isAleatorio2 = !isCDKey2&&(cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1);
 
   if(isCDKey2){
     recebeText.textContent='Você receberá uma chave de ativação (CD Key) original para ativar o jogo diretamente na sua conta. Basta inserir o código na plataforma correspondente e o jogo ficará vinculado à sua conta para sempre.';
@@ -983,7 +986,7 @@ function renderProduto(p){
   var svgCheck='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>';
 
   if(isCDKey2){
-    var platNomeB=cat==='xbox'?'Xbox':cat==='playstation'?'PlayStation':cat==='nintendo'?'Nintendo':'Steam';
+    var platNomeB=plat==='xbox'||cat==='xbox'?'Xbox':plat==='playstation'||cat==='playstation'?'PlayStation':plat==='nintendo'||cat==='nintendo'?'Nintendo':'Steam';
     compatBadges.innerHTML=
       '<div class="compat-badge steam">'+svgKey+' CD Key Original</div>'+
       '<div class="compat-badge brasil">'+svgGlobe+' Ativa no Brasil</div>'+
