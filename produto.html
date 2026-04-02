@@ -695,7 +695,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
         </div>
         <div class="detail-row">
           <span class="detail-key">Modalidade</span>
-          <span class="detail-val">Steam Offline</span>
+          <span class="detail-val" id="detModalidade">Steam Offline</span>
         </div>
         <div class="detail-row">
           <span class="detail-key">Entrega</span>
@@ -707,21 +707,8 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
         </div>
       </div>
 
-      <!-- Badges de compatibilidade -->
-      <div class="compat-badges" id="compatBadges">
-        <div class="compat-badge steam">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-          Steam
-        </div>
-        <div class="compat-badge brasil">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-          Ativa no Brasil
-        </div>
-        <div class="compat-badge offline">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg>
-          Steam Offline
-        </div>
-      </div>
+      <!-- Badges de compatibilidade — preenchido via JS -->
+      <div class="compat-badges" id="compatBadges"></div>
 
       <!-- Requisitos do sistema -->
       <div class="req-section" id="reqSection" style="display:none">
@@ -898,12 +885,37 @@ function renderProduto(p){
   // Badge
   var badge=document.getElementById('prodBadge');
   var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
-  if(!ok){badge.textContent='Esgotado';badge.className='prod-img-badge esgotado'}
-  else if(p.categoria==='Combos e Bundles'){badge.textContent='Bundle';badge.style.background='#f5c842';badge.style.color='#000'}
-  else if(p.categoria==='Steam Key / Outros'){badge.textContent='Key';badge.style.background='#5865f2'}
-  else{badge.textContent='Oferta'}
+  var cat=(p.categoria||'').toLowerCase();
+  var plat=(p.plataforma||'').toLowerCase();
+  var isCDKey=cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
+  var isAleatorio=cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1;
+  var isBundle=cat.indexOf('bundle')!==-1||cat.indexOf('combo')!==-1;
 
-  document.getElementById('prodPlatTag').textContent=(p.plataforma||'Steam').toUpperCase()+' OFFLINE';
+  if(!ok){
+    badge.textContent='Esgotado';badge.className='prod-img-badge esgotado';
+  } else if(isBundle){
+    badge.textContent='Bundle';badge.style.background='#f5c842';badge.style.color='#000';
+  } else if(isCDKey){
+    badge.textContent='CD Key Original';badge.style.background='#00c853';badge.style.color='#fff';
+  } else if(isAleatorio){
+    badge.textContent='Chave Aleatória';badge.style.background='#5865f2';badge.style.color='#fff';
+  } else {
+    badge.textContent='Steam Offline';badge.style.background='#1b2838';badge.style.color='#c7d5e0';badge.style.borderLeft='2px solid #66c0f4';
+  }
+
+  // Tag de plataforma no canto inferior da imagem
+  var platTag=document.getElementById('prodPlatTag');
+  if(isCDKey){
+    var platNome=cat==='xbox'?'XBOX':cat==='playstation'?'PLAYSTATION':cat==='nintendo'?'NINTENDO':'PC';
+    platTag.textContent=platNome+' — CD KEY ORIGINAL';
+    platTag.style.borderLeftColor='#00c853';
+  } else if(isAleatorio){
+    platTag.textContent='STEAM — CHAVE ALEATÓRIA';
+    platTag.style.borderLeftColor='#5865f2';
+  } else {
+    platTag.textContent='STEAM OFFLINE';
+    platTag.style.borderLeftColor='var(--green)';
+  }
 
   // Info
   document.getElementById('prodCat').textContent=p.categoria||'—';
@@ -951,11 +963,49 @@ function renderProduto(p){
   var recebeText = document.getElementById('recebeText');
   var cat = (p.categoria||'').toLowerCase();
   var plat = (p.plataforma||'').toLowerCase();
-  var isKey = cat.indexOf('key')!==-1 || cat.indexOf('chave')!==-1 || plat.indexOf('key')!==-1;
-  if(isKey){
-    recebeText.textContent='Você receberá uma chave de ativação (CD Key) para ativar o jogo diretamente na sua conta Steam. Basta inserir a chave na Steam e o jogo ficará vinculado à sua conta para sempre.';
+  var isCDKey2 = cat.indexOf('cd key')!==-1||cat==='pc key'||cat==='xbox'||cat==='playstation'||cat==='nintendo';
+  var isAleatorio2 = cat.indexOf('steam key')!==-1||cat.indexOf('aleat')!==-1||cat.indexOf('outros')!==-1;
+
+  if(isCDKey2){
+    recebeText.textContent='Você receberá uma chave de ativação (CD Key) original para ativar o jogo diretamente na sua conta. Basta inserir o código na plataforma correspondente e o jogo ficará vinculado à sua conta para sempre.';
+  } else if(isAleatorio2){
+    recebeText.textContent='Você receberá uma chave Steam aleatória surpresa. O jogo é revelado após a ativação. Todas as chaves são originais e ativam na Steam.';
   } else {
     recebeText.textContent='Você receberá os dados de acesso de uma conta Steam já com o jogo instalado e pronto para jogar. É só fazer login e aproveitar o jogo em modo offline.';
+  }
+
+  // Badges de compatibilidade — dinâmicos por tipo
+  var compatBadges = document.getElementById('compatBadges');
+  var svgSteam='<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>';
+  var svgGlobe='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>';
+  var svgKey='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>';
+  var svgWifi='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg>';
+  var svgCheck='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  if(isCDKey2){
+    var platNomeB=cat==='xbox'?'Xbox':cat==='playstation'?'PlayStation':cat==='nintendo'?'Nintendo':'Steam';
+    compatBadges.innerHTML=
+      '<div class="compat-badge steam">'+svgKey+' CD Key Original</div>'+
+      '<div class="compat-badge brasil">'+svgGlobe+' Ativa no Brasil</div>'+
+      '<div class="compat-badge" style="background:rgba(0,200,83,.08);border-color:rgba(0,200,83,.25);color:#00c853">'+svgCheck+' '+platNomeB+'</div>';
+  } else if(isAleatorio2){
+    compatBadges.innerHTML=
+      '<div class="compat-badge steam">'+svgSteam+' Steam</div>'+
+      '<div class="compat-badge brasil">'+svgGlobe+' Ativa no Brasil</div>'+
+      '<div class="compat-badge" style="background:rgba(88,101,242,.08);border-color:rgba(88,101,242,.3);color:#7289da">'+svgKey+' Chave Aleatória</div>';
+  } else {
+    compatBadges.innerHTML=
+      '<div class="compat-badge steam">'+svgSteam+' Steam</div>'+
+      '<div class="compat-badge brasil">'+svgGlobe+' Ativa no Brasil</div>'+
+      '<div class="compat-badge offline">'+svgWifi+' Steam Offline</div>';
+  }
+
+  // Modalidade no bloco de detalhes
+  var detMod = document.getElementById('detModalidade');
+  if(detMod){
+    if(isCDKey2) detMod.textContent='CD Key Original';
+    else if(isAleatorio2) detMod.textContent='Chave Aleatória Steam';
+    else detMod.textContent='Steam Offline';
   }
 
   // Favorito
