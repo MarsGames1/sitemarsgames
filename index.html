@@ -1428,6 +1428,9 @@ footer::before{
 .mv-ribbon.bundle    {background:linear-gradient(135deg,#f5c842,#c89b00);color:#1a1000;animation:glowGold 2s ease-in-out infinite}
 .mv-ribbon.novidade  {background:linear-gradient(135deg,#00e5ff,#0099cc);color:#001a22;animation:glowCyan 2s ease-in-out infinite}
 .mv-ribbon.esgotado-r{background:#1e1e1e;color:#444}
+.mv-ribbon.cdkey    {background:linear-gradient(135deg,#00c853,#00a040);color:#fff;animation:glowGreen 2s ease-in-out infinite}
+.mv-ribbon.steamoff {background:linear-gradient(135deg,#1b2838,#2a475e);color:#c7d5e0;border:1px solid rgba(102,192,244,.4)}
+@keyframes glowGreen{0%,100%{box-shadow:0 0 6px rgba(0,200,83,.4)}50%{box-shadow:0 0 14px rgba(0,200,83,.8)}}
 
 /* Wishlist */
 .mv-wish{
@@ -3974,9 +3977,16 @@ function aplicarFavs(){
     var precoOrig=p.preco_original?'R$ '+Number(p.preco_original).toFixed(2).replace('.',','):'';
     var pct=mvCalcDesc(p.preco_original,p.preco);
     var link='produto.html?id='+p.id;
-    var ribbon=!ok?'esgotado-r':p.categoria==='Combos e Bundles'?'bundle':p.categoria==='Steam Key / Outros'?'novidade':null;
-    var ribbonLabel=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Combo':p.categoria==='Steam Key / Outros'?'Key':'';
-    var ribbonHtml=ribbon?'<div class="mv-ribbon-wrap"><div class="mv-ribbon '+ribbon+'">'+ribbonLabel+'</div></div>':'';
+    var ribbon,ribbonLabel;
+    if(!ok){ribbon='esgotado-r';ribbonLabel='Esgotado';}
+    else if(p.categoria==='Combos e Bundles'){ribbon='bundle';ribbonLabel='Bundle';}
+    else if(p.categoria==='Steam Key / Outros'){ribbon='novidade';ribbonLabel='🎰 Chave Aleatória';}
+    else if(p.categoria==='CD Key'||p.categoria==='PC Key'){ribbon='cdkey';ribbonLabel='🔑 CD Key Original';}
+    else if(p.categoria==='Xbox'){ribbon='cdkey';ribbonLabel='🎮 Xbox Key';}
+    else if(p.categoria==='PlayStation'){ribbon='cdkey';ribbonLabel='🎮 PlayStation Key';}
+    else if(p.categoria==='Nintendo'){ribbon='cdkey';ribbonLabel='🎮 Nintendo Key';}
+    else{ribbon='steamoff';ribbonLabel='💻 Steam Offline';}
+    var ribbonHtml='<div class="mv-ribbon-wrap"><div class="mv-ribbon '+ribbon+'">'+ribbonLabel+'</div></div>';
     var discHtml=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
     var baseHtml=precoOrig?'<div class="mv-old-price">'+precoOrig+'</div>':'';
     var urgHtml=ok?'<div class="mv-urgency"><div class="mv-urgency-dot"></div><span class="mv-urgency-txt">'+MV_URGENCY[idx%MV_URGENCY.length]+'</span></div>':'';
@@ -4550,7 +4560,7 @@ function aplicarFavs(){
     sb.from('produtos')
       .select('id,nome,preco,preco_original,desconto,imagem,plataforma,categoria,estoque,ativo')
       .eq('ativo',true)
-      .in('categoria',['Steam Key / Outros','CD Key','Xbox','PlayStation','Nintendo','PC Key'])
+      .or('categoria.eq.Steam Key / Outros,categoria.eq.CD Key,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo,categoria.eq.PC Key,categoria.ilike.%cdkey%,categoria.ilike.%cd key%,categoria.ilike.%chave%')
       .order('estoque',{ascending:false})
       .limit(20)
       .then(function(res){
