@@ -3978,13 +3978,20 @@ function aplicarFavs(){
     var pct=mvCalcDesc(p.preco_original,p.preco);
     var link='produto.html?id='+p.id;
     var ribbon,ribbonLabel;
+    var _mvCat=(p.categoria||'').toLowerCase().trim();
+    var _mvCDKey=_mvCat.indexOf('cd key')!==-1||_mvCat==='pc key';
+    var _mvXbox=_mvCat==='xbox';
+    var _mvPS=_mvCat==='playstation';
+    var _mvNin=_mvCat==='nintendo';
+    var _mvBundle=_mvCat.indexOf('bundle')!==-1||_mvCat.indexOf('combo')!==-1;
+    var _mvAleatorio=_mvCat.indexOf('steam key')!==-1||_mvCat.indexOf('aleat')!==-1||_mvCat.indexOf('outros')!==-1;
     if(!ok){ribbon='esgotado-r';ribbonLabel='Esgotado';}
-    else if(p.categoria==='Combos e Bundles'){ribbon='bundle';ribbonLabel='Bundle';}
-    else if(p.categoria==='Steam Key / Outros'){ribbon='novidade';ribbonLabel='🎰 Chave Aleatória';}
-    else if(p.categoria==='CD Key'||p.categoria==='PC Key'){ribbon='cdkey';ribbonLabel='🔑 CD Key Original';}
-    else if(p.categoria==='Xbox'){ribbon='cdkey';ribbonLabel='🎮 Xbox Key';}
-    else if(p.categoria==='PlayStation'){ribbon='cdkey';ribbonLabel='🎮 PlayStation Key';}
-    else if(p.categoria==='Nintendo'){ribbon='cdkey';ribbonLabel='🎮 Nintendo Key';}
+    else if(_mvBundle){ribbon='bundle';ribbonLabel='Bundle';}
+    else if(_mvAleatorio){ribbon='novidade';ribbonLabel='🎰 Chave Aleatória';}
+    else if(_mvCDKey){ribbon='cdkey';ribbonLabel='🔑 CD Key Original';}
+    else if(_mvXbox){ribbon='cdkey';ribbonLabel='🎮 Xbox Key';}
+    else if(_mvPS){ribbon='cdkey';ribbonLabel='🎮 PlayStation Key';}
+    else if(_mvNin){ribbon='cdkey';ribbonLabel='🎮 Nintendo Key';}
     else{ribbon='steamoff';ribbonLabel='💻 Steam Offline';}
     var ribbonHtml='<div class="mv-ribbon-wrap"><div class="mv-ribbon '+ribbon+'">'+ribbonLabel+'</div></div>';
     var discHtml=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
@@ -4560,7 +4567,7 @@ function aplicarFavs(){
     sb.from('produtos')
       .select('id,nome,preco,preco_original,desconto,imagem,plataforma,categoria,estoque,ativo')
       .eq('ativo',true)
-      .or('categoria.eq.Steam Key / Outros,categoria.eq.CD Key,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo,categoria.eq.PC Key,categoria.ilike.%cdkey%,categoria.ilike.%cd key%,categoria.ilike.%chave%')
+      .or('categoria.ilike.%cd key%,categoria.ilike.%cdkey%,categoria.ilike.%pc key%,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo,categoria.ilike.%steam key%,categoria.ilike.%aleat%,categoria.eq.Steam Key / Outros')
       .order('estoque',{ascending:false})
       .limit(20)
       .then(function(res){
