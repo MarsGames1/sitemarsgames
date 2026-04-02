@@ -4420,10 +4420,8 @@ function aplicarAnelAvatar(anelId){
     };
     navWrap.className='nav-avatar-wrap '+(mapaNav[anelId]||'nav-nivel-bronze');
   }
-  /* Invalida cache para forçar reload na próxima visita */
-  if(userSession&&userSession.user&&typeof window._invalidarCacheAnel==='function'){
-    window._invalidarCacheAnel(userSession.user.email);
-    /* Atualiza cache com novo anel imediatamente */
+  /* Atualiza cache com novo anel imediatamente — garante que index.html use o anel correto ao voltar */
+  if(userSession&&userSession.user){
     try{localStorage.setItem('mg_nav_'+userSession.user.email,JSON.stringify({anel:anelId,ts:Date.now()}));}catch(e){}
   }
 }
