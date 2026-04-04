@@ -3652,6 +3652,154 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
 <canvas id="mars-canvas"></canvas>
 
 
+<!-- ══ BANNER PROMOÇÃO 04/04 ══ -->
+<style>
+@keyframes bannerShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes bannerPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.15)}}
+@keyframes bannerSlide{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+@keyframes bannerCountdown{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.08)}}
+#promo0404{
+  position:relative;
+  width:100%;
+  height:36px;
+  background:linear-gradient(90deg,#0a0a0e 0%,#1a0008 15%,#3d0010 28%,#6b0020 38%,#e8421a 48%,#ff6b00 50%,#e8421a 52%,#6b0020 62%,#3d0010 72%,#1a0008 85%,#0a0a0e 100%);
+  background-size:200% 100%;
+  animation:bannerShimmer 3.5s linear infinite;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  cursor:pointer;
+  z-index:201;
+  border-bottom:1px solid rgba(255,107,0,.3);
+  flex-shrink:0;
+}
+#promo0404::after{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);
+  animation:bannerSlide 2.8s ease-in-out infinite;
+  pointer-events:none;
+}
+.banner0404-inner{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;
+  position:relative;z-index:1;
+  width:100%;max-width:900px;
+  padding:0 36px 0 12px;
+}
+.banner0404-fire{
+  font-size:15px;
+  animation:bannerPulse 1s ease-in-out infinite;
+  flex-shrink:0;
+}
+.banner0404-text{
+  font-family:'Orbitron',sans-serif;
+  font-size:10.5px;
+  font-weight:900;
+  letter-spacing:2.5px;
+  color:#fff;
+  text-transform:uppercase;
+  white-space:nowrap;
+  text-shadow:0 0 12px rgba(255,107,0,.8),0 0 24px rgba(232,66,26,.5);
+}
+.banner0404-text .b04hl{
+  color:#ffb300;
+  text-shadow:0 0 10px rgba(255,179,0,.9),0 0 22px rgba(255,107,0,.6);
+}
+.banner0404-badge{
+  display:inline-flex;align-items:center;
+  padding:3px 10px;border-radius:99px;
+  background:rgba(255,179,0,.15);border:1px solid rgba(255,179,0,.4);
+  font-family:'Montserrat',sans-serif;
+  font-size:9px;font-weight:900;letter-spacing:1.5px;
+  color:#ffb300;text-transform:uppercase;white-space:nowrap;flex-shrink:0;
+}
+.banner0404-cta{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 12px;border-radius:99px;
+  background:rgba(232,66,26,.25);border:1px solid rgba(232,66,26,.5);
+  font-family:'Montserrat',sans-serif;
+  font-size:9px;font-weight:900;letter-spacing:1px;color:#ff9070;
+  text-transform:uppercase;white-space:nowrap;flex-shrink:0;
+  transition:background .2s,border-color .2s;
+}
+#promo0404:hover .banner0404-cta{background:rgba(232,66,26,.4);border-color:rgba(232,66,26,.8);}
+.banner0404-divider{width:1px;height:16px;background:rgba(255,255,255,.15);flex-shrink:0}
+.banner0404-timer{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;
+  color:#fff;flex-shrink:0;
+}
+.banner0404-timer-seg{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;height:18px;
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,107,0,.3);border-radius:4px;
+  font-size:10px;font-weight:900;color:#ff9070;
+  animation:bannerCountdown 1s ease-in-out infinite;
+}
+.banner0404-timer-sep{color:rgba(255,255,255,.4);font-size:11px;margin:0 1px}
+.banner0404-close{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.3);font-size:14px;line-height:1;
+  padding:4px 6px;border-radius:4px;transition:color .2s;z-index:2;
+}
+.banner0404-close:hover{color:rgba(255,255,255,.7);}
+@media(max-width:600px){
+  .banner0404-badge,.banner0404-cta{display:none}
+  .banner0404-divider:last-of-type{display:none}
+  .banner0404-text{font-size:9px;letter-spacing:1.5px;}
+}
+body.tema-claro #promo0404{
+  background:linear-gradient(90deg,#fff0ea 0%,#ffd0b0 30%,#e8421a 48%,#ff6b00 50%,#e8421a 52%,#ffd0b0 70%,#fff0ea 100%);
+  border-bottom-color:rgba(232,66,26,.25);
+}
+body.tema-claro .banner0404-text{color:#1a0a00;text-shadow:none}
+body.tema-claro .banner0404-timer-seg{background:rgba(0,0,0,.07);border-color:rgba(232,66,26,.3);color:#c03010}
+</style>
+
+<div id="promo0404" onclick="document.querySelector('[data-cat=promo]')&&safeScrollTo(document.querySelector('[data-cat=promo]'));try{document.querySelectorAll('.cat-pill').forEach(function(el){if(el.dataset.cat==='promo'){el.click();}});}catch(e){}">
+  <div class="banner0404-inner">
+    <span class="banner0404-fire">&#128293;</span>
+    <span class="banner0404-text">PROMO&#199;&#195;O&nbsp;<span class="b04hl">04/04</span>&nbsp;&#8212; AT&#201; 90% OFF</span>
+    <div class="banner0404-divider"></div>
+    <span class="banner0404-badge">&#9889; Rel&#226;mpago</span>
+    <div class="banner0404-divider"></div>
+    <div class="banner0404-timer">
+      <span id="b404h" class="banner0404-timer-seg">00</span>
+      <span class="banner0404-timer-sep">:</span>
+      <span id="b404m" class="banner0404-timer-seg">00</span>
+      <span class="banner0404-timer-sep">:</span>
+      <span id="b404s" class="banner0404-timer-seg">00</span>
+    </div>
+    <div class="banner0404-divider"></div>
+    <span class="banner0404-cta">Ver ofertas &#8594;</span>
+  </div>
+  <button class="banner0404-close" onclick="event.stopPropagation();document.getElementById('promo0404').style.display='none'" title="Fechar">&#10005;</button>
+</div>
+
+<script>
+(function(){
+  var fim=new Date('2026-04-05T00:00:00');
+  function tick(){
+    var agora=new Date();
+    var diff=Math.max(0,fim-agora);
+    if(diff===0){var el=document.getElementById('promo0404');if(el)el.style.display='none';return;}
+    var h=Math.floor(diff/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var s=Math.floor((diff%60000)/1000);
+    var pad=function(n){return String(n).padStart(2,'0');};
+    var eh=document.getElementById('b404h');
+    var em=document.getElementById('b404m');
+    var es=document.getElementById('b404s');
+    if(eh)eh.textContent=pad(h);
+    if(em)em.textContent=pad(m);
+    if(es)es.textContent=pad(s);
+  }
+  tick();setInterval(tick,1000);
+})();
+</script>
+
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">
   <!-- Logo -->
