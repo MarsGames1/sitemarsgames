@@ -3081,16 +3081,30 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg, produtoId){
     var sess=sessD&&sessD.data&&sessD.data.session?sessD.data.session:null;
     var userEmail=sess?sess.user.email:(sessionStorage.getItem('mg_user_email')||'');
     var userNome=sess?(sess.user.user_metadata&&(sess.user.user_metadata.full_name||sess.user.user_metadata.name)||userEmail):userEmail;
-    var{error}=await sb.from('avaliacoes').insert({
+    /* Monta payload base — sem produto_id */
+    var avalPayload={
       pedido_id:pedidoId,
       produto_nome:produtoNome,
       produto_img:produtoImg,
-      produto_id:produtoId||null,
       user_email:userEmail,
       user_nome:userNome,
       estrelas:estrelas,
       comentario:comentario.trim()||null
-    });
+    };
+    /* Tenta incluir produto_id se disponível */
+    if(produtoId) avalPayload.produto_id=produtoId;
+
+    var insRes=await sb.from('avaliacoes').insert(avalPayload);
+    var error=insRes.error;
+
+    /* PGRST204 = coluna produto_id não existe no schema cache do Supabase.
+       Nesse caso refaz o insert SEM produto_id — o produto.html já tem
+       fallback por nome (ilike) então as avaliações aparecem normalmente. */
+    if(error&&error.code==='PGRST204'&&produtoId){
+      delete avalPayload.produto_id;
+      insRes=await sb.from('avaliacoes').insert(avalPayload);
+      error=insRes.error;
+    }
     if(error)throw error;
 
     /* ── Credita +100 MP e +50 XP pela avaliação ── */
