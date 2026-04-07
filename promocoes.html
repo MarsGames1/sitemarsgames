@@ -25,7 +25,7 @@
   --bg:#0a0a0e;--card:#131318;--surface:#1a1a20;--border:#252530;--border2:#323240;
   --green:#00ff55;--green-glow:rgba(0,255,85,.2);--green-dim:rgba(0,255,85,.07);
   --mars:#e8421a;--mars-dim:rgba(232,66,26,.12);--orange:#ff6b2b;--amber:#ffb300;
-  --text:#ffffff;--muted:#888;--muted2:#aaa;--dim:#1a1a22;--radius:12px;--touch:44px;
+  --text:#ffffff;--muted:#b0b0c8;--muted2:#ccccdd;--dim:#1a1a22;--radius:12px;--touch:44px;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -115,7 +115,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 }
 .filter-cat-item:hover{background:rgba(255,255,255,.04);color:#fff;border-color:var(--border)}
 .filter-cat-item.active{background:var(--mars-dim);color:#fff;border-color:rgba(232,66,26,.3)}
-.filter-cat-count{font-size:9px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:99px}
+.filter-cat-count{font-size:9px;font-weight:700;color:#ccc;background:rgba(255,255,255,.1);padding:2px 6px;border-radius:99px}
 .filter-cat-item.active .filter-cat-count{background:rgba(232,66,26,.2);color:var(--orange)}
 
 /* Plataforma */
@@ -136,9 +136,9 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   border-radius:8px;padding:8px 10px;font-size:12px;font-weight:700;color:#fff;
   font-family:'Montserrat',sans-serif;outline:none;transition:border-color .2s;width:0;
 }
-.price-input::placeholder{color:#444}
+.price-input::placeholder{color:#666}
 .price-input:focus{border-color:rgba(232,66,26,.4)}
-.price-sep{color:var(--muted);font-size:11px;font-weight:700;flex-shrink:0}
+.price-sep{color:#ccc;font-size:11px;font-weight:700;flex-shrink:0}
 .price-apply{
   width:100%;margin-top:10px;padding:8px;border-radius:8px;
   background:var(--mars-dim);border:1px solid rgba(232,66,26,.3);
@@ -194,8 +194,8 @@ input[type=range]{position:absolute;top:-8px;left:0;width:100%;opacity:0;cursor:
   padding:12px 14px;font-size:13px;color:#fff;
   font-family:'Montserrat',sans-serif;
 }
-.filter-search input::placeholder{color:#555}
-.filter-search svg{width:16px;height:16px;flex-shrink:0;color:#555;margin-right:12px}
+.filter-search input::placeholder{color:#666}
+.filter-search svg{width:16px;height:16px;flex-shrink:0;color:#888;margin-right:12px}
 .filter-count{font-size:11px;font-weight:700;color:#ccc;white-space:nowrap;align-self:center}
 
 /* Filtros mobile (pills) */
@@ -238,14 +238,24 @@ input[type=range]{position:absolute;top:-8px;left:0;width:100%;opacity:0;cursor:
 .prod-img-wrap{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--dim)}
 .prod-img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
 .prod-tag{position:absolute;top:6px;left:6px;z-index:2;
-  font-size:7px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px}
-.tag-oferta{background:var(--mars);color:#fff}
-.tag-key{background:#5865f2;color:#fff}
-.tag-combo{background:var(--amber);color:#000}
-.tag-esgotado{background:rgba(255,255,255,.08);color:#bbb;border:1px solid #222}
+  font-size:8px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px;white-space:nowrap;
+  display:flex;align-items:center;gap:3px;line-height:1.4}
+/* Tags de categoria — por tipo de produto */
+.tag-oferta   {background:linear-gradient(135deg,#e8421a,#ff6b2b);color:#fff;box-shadow:0 2px 8px rgba(232,66,26,.4)}
+.tag-steamoff {background:linear-gradient(135deg,#1b2838,#2a475e);color:#c7d5e0;border:1px solid rgba(102,192,244,.5);box-shadow:0 2px 8px rgba(0,100,180,.3)}
+.tag-key      {background:linear-gradient(135deg,#0088cc,#00d4ff);color:#fff;box-shadow:0 2px 8px rgba(0,180,255,.4)}
+.tag-cdkey    {background:linear-gradient(135deg,#00c853,#00a040);color:#fff;box-shadow:0 2px 8px rgba(0,180,80,.35)}
+.tag-combo    {background:linear-gradient(135deg,#f5c842,#c89b00);color:#1a1000;box-shadow:0 2px 8px rgba(200,155,0,.35)}
+.tag-bundle   {background:linear-gradient(135deg,#7b2ff7,#5b0fe0);color:#fff;box-shadow:0 2px 8px rgba(123,47,247,.4)}
+.tag-xbox     {background:linear-gradient(135deg,#107c10,#52b043);color:#fff;box-shadow:0 2px 8px rgba(80,180,60,.35)}
+.tag-ps       {background:linear-gradient(135deg,#003087,#0070d1);color:#fff;box-shadow:0 2px 8px rgba(0,100,200,.35)}
+.tag-nintendo {background:linear-gradient(135deg,#cc0000,#ff3333);color:#fff;box-shadow:0 2px 8px rgba(200,0,0,.35)}
+.tag-aleatorio{background:linear-gradient(135deg,#9f3fff,#6010c0);color:#fff;box-shadow:0 2px 8px rgba(159,63,255,.35)}
+.tag-esgotado {background:rgba(255,255,255,.06);color:#888;border:1px solid #2a2a2a}
 .prod-body{padding:10px;flex:1;display:flex;flex-direction:column;gap:4px}
 .prod-name{font-size:11px;font-weight:700;color:#ffffff;line-height:1.35;flex:1}
-.prod-plat{font-size:8px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase}
+.prod-plat{font-size:8px;font-weight:700;color:#ccc;letter-spacing:1px;text-transform:uppercase}
 .prod-price{font-size:16px;font-weight:900;color:var(--green);margin-top:2px}
 .prod-price.esgotado{color:#555}
 .prod-btn{
@@ -258,9 +268,9 @@ input[type=range]{position:absolute;top:-8px;left:0;width:100%;opacity:0;cursor:
 .prod-btn-buy:hover{background:rgba(232,66,26,.25);color:#fff}
 .prod-btn-dis{background:#111;color:#555;cursor:not-allowed;border:1px solid #1a1a1a}
 .loader-wrap{display:flex;align-items:center;justify-content:center;
-  padding:80px;gap:12px;color:#aaa;font-size:11px;font-weight:700;letter-spacing:1px;grid-column:1/-1}
+  padding:80px;gap:12px;color:#ccc;font-size:11px;font-weight:700;letter-spacing:1px;grid-column:1/-1}
 .spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--mars);border-radius:50%;animation:spin .7s linear infinite}
-.empty-grid{grid-column:1/-1;text-align:center;padding:60px 20px;color:#aaa;font-size:12px;font-weight:600}
+.empty-grid{grid-column:1/-1;text-align:center;padding:60px 20px;color:#ccc;font-size:12px;font-weight:600}
 
 /* PAGINAÇÃO */
 .pagination{
@@ -276,8 +286,8 @@ input[type=range]{position:absolute;top:-8px;left:0;width:100%;opacity:0;cursor:
 .pag-btn:hover:not(:disabled){border-color:#555;color:#fff;background:rgba(255,255,255,.06)}
 .pag-btn.active{background:var(--mars-dim);border-color:rgba(232,66,26,.4);color:#fff}
 .pag-btn:disabled{opacity:.3;cursor:not-allowed}
-.pag-btn.pag-arrow{font-size:14px;color:#bbb}
-.pag-info{font-size:10px;font-weight:700;color:#aaa;letter-spacing:.5px;white-space:nowrap}
+.pag-btn.pag-arrow{font-size:14px;color:#ddd}
+.pag-info{font-size:10px;font-weight:700;color:#ccc;letter-spacing:.5px;white-space:nowrap}
 
 /* Tags dos filtros ativos */
 .active-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:0}
@@ -579,8 +589,25 @@ function renderProdutos(){
   }
   grid.innerHTML=pagina.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
-    var tagClass=!ok?'tag-esgotado':p.categoria==='Combos e Bundles'?'tag-combo':p.categoria==='Steam Key / Outros'?'tag-key':'tag-oferta';
-    var tagTxt=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Bundle':p.categoria==='Steam Key / Outros'?'Key':'Oferta';
+    // Detecção de tipo igual ao index.html
+    var _cat=(p.categoria||'').toLowerCase().trim();
+    var _plat=(p.plataforma||'').toLowerCase().trim();
+    var _tk=(p.tipo_key||'').toLowerCase().trim();
+    var _isCDKey=_tk==='key'||_plat==='steam original'||_cat.indexOf('cd key')!==-1||_cat==='pc key';
+    var _isXbox=_plat==='xbox'||_cat==='xbox';
+    var _isPS=_plat==='playstation'||_cat==='playstation';
+    var _isNin=_plat==='nintendo'||_cat==='nintendo';
+    var _isBundle=_cat.indexOf('bundle')!==-1||_cat.indexOf('combo')!==-1;
+    var _isAleatorio=_cat.indexOf('steam key')!==-1||_cat.indexOf('aleat')!==-1||_cat.indexOf('outros')!==-1;
+    var tagClass,tagTxt;
+    if(!ok)                          {tagClass='tag-esgotado';tagTxt='Esgotado';}
+    else if(_isBundle)               {tagClass='tag-bundle';  tagTxt='📦 Bundle';}
+    else if(_isXbox)                 {tagClass='tag-xbox';    tagTxt='🎮 Xbox Key';}
+    else if(_isPS)                   {tagClass='tag-ps';      tagTxt='🎮 PlayStation';}
+    else if(_isNin)                  {tagClass='tag-nintendo';tagTxt='🎮 Nintendo';}
+    else if(_isAleatorio&&!_isCDKey) {tagClass='tag-aleatorio';tagTxt='🎰 Chave Aleatória';}
+    else if(_isCDKey)                {tagClass='tag-cdkey';   tagTxt='🔑 CD Key';}
+    else                             {tagClass='tag-steamoff';tagTxt='💻 Steam Offline';}
     return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%POR_PAGINA*.03)+'s">'
       +'<div class="prod-img-wrap">'
         +(p.imagem?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">':'')
