@@ -3081,30 +3081,16 @@ async function enviarAvaliacao(pedidoId, produtoNome, produtoImg, produtoId){
     var sess=sessD&&sessD.data&&sessD.data.session?sessD.data.session:null;
     var userEmail=sess?sess.user.email:(sessionStorage.getItem('mg_user_email')||'');
     var userNome=sess?(sess.user.user_metadata&&(sess.user.user_metadata.full_name||sess.user.user_metadata.name)||userEmail):userEmail;
-    /* Monta payload base — sem produto_id */
-    var avalPayload={
+    var{error}=await sb.from('avaliacoes').insert({
       pedido_id:pedidoId,
       produto_nome:produtoNome,
       produto_img:produtoImg,
+      produto_id:produtoId||null,
       user_email:userEmail,
       user_nome:userNome,
       estrelas:estrelas,
       comentario:comentario.trim()||null
-    };
-    /* Tenta incluir produto_id se disponível */
-    if(produtoId) avalPayload.produto_id=produtoId;
-
-    var insRes=await sb.from('avaliacoes').insert(avalPayload);
-    var error=insRes.error;
-
-    /* PGRST204 = coluna produto_id não existe no schema cache do Supabase.
-       Nesse caso refaz o insert SEM produto_id — o produto.html já tem
-       fallback por nome (ilike) então as avaliações aparecem normalmente. */
-    if(error&&error.code==='PGRST204'&&produtoId){
-      delete avalPayload.produto_id;
-      insRes=await sb.from('avaliacoes').insert(avalPayload);
-      error=insRes.error;
-    }
+    });
     if(error)throw error;
 
     /* ── Credita +100 MP e +50 XP pela avaliação ── */
@@ -3966,35 +3952,150 @@ async function carregarFavoritos(userId){
 }
 
 async function carregarHistoricoPontosEmail(userEmail){
-  document.getElementById('ptsLoader').style.display='flex';
-  document.getElementById('ptsList').style.display='none';
-  /* Busca histórico do marspoints — mesma tabela do admin */
+  var ptsLoader=document.getElementById('ptsLoader');
+  var ptsList=document.getElementById('ptsList');
+  if(ptsLoader)ptsLoader.style.display='flex';
+  if(ptsList)ptsList.style.display='none';
+
   try{
     var email=userSession?userSession.user.email:'';
-    var mp=await sb.from('marspoints').select('historico,pontos').eq('user_email',email).maybeSingle();
-    var ptsLoader=document.getElementById('ptsLoader');
-    var ptsList=document.getElementById('ptsList');
+
+    /* Busca em paralelo: MarsPoints + MarsTickets(sorteios) + XP Planeta */
+    var results=await Promise.allSettled([
+      sb.from('marspoints').select('historico,pontos').eq('user_email',email).maybeSingle(),
+      sb.from('sorteios_participacoes').select('created_at,tickets_usados,sorteio_nome').eq('user_email',email).order('created_at',{ascending:false}).limit(30),
+      sb.from('planetas').select('log,xp').eq('user_email',email).maybeSingle()
+    ]);
+
+    var mpData   = results[0].status==='fulfilled'&&results[0].value.data  ? results[0].value.data  : null;
+    var tktRows  = results[1].status==='fulfilled'&&results[1].value.data  ? results[1].value.data  : [];
+    var plData   = results[2].status==='fulfilled'&&results[2].value.data  ? results[2].value.data  : null;
+
+    /* ── Normaliza cada fonte para {tipo, icon, cor, desc, val, valLabel, data} ── */
+    var timeline=[];
+
+    /* MarsPoints */
+    var mpHist=(mpData&&mpData.historico)||[];
+    mpHist.forEach(function(h){
+      var ganho=(h.pontos||0)>0;
+      timeline.push({
+        tipo:'mp',
+        icon:'⭐',
+        cor:ganho?'var(--green)':'var(--mars)',
+        desc:h.descricao||'MarsPoints',
+        val:(ganho?'+':'')+h.pontos,
+        valLabel:'MP',
+        data:h.data||h.created_at||null
+      });
+    });
+
+    /* MarsTickets — participações em sorteios */
+    tktRows.forEach(function(r){
+      timeline.push({
+        tipo:'ticket',
+        icon:'🎟️',
+        cor:'var(--amber)',
+        desc:'Participou: '+(r.sorteio_nome||'Sorteio'),
+        val:'-'+(r.tickets_usados||1),
+        valLabel:'tickets',
+        data:r.created_at||null
+      });
+    });
+
+    /* XP do Planeta */
+    var plLog=(plData&&plData.log)||[];
+    /* log do planeta tem formato {label, xp, icon, t} — t é HH:MM sem data completa,
+       então usamos apenas como complemento descritivo */
+    plLog.forEach(function(l){
+      if(!l||!(l.xp>0)) return;
+      timeline.push({
+        tipo:'xp',
+        icon:l.icon||'🪐',
+        cor:'#a78bfa',
+        desc:l.label||'XP do Planeta',
+        val:'+'+l.xp,
+        valLabel:'XP',
+        data:null /* log do planeta não tem ISO date — exibe hora se disponível */,
+        hora:l.t||null
+      });
+    });
+
+    /* Ordena: itens com data primeiro (mais recentes), depois os sem data (XP local) */
+    timeline.sort(function(a,b){
+      if(a.data&&b.data) return new Date(b.data)-new Date(a.data);
+      if(a.data&&!b.data) return -1;
+      if(!a.data&&b.data) return 1;
+      return 0;
+    });
+
     if(ptsLoader)ptsLoader.style.display='none';
     if(ptsList)ptsList.style.display='flex';
-    var hist=(mp&&mp.data&&mp.data.historico)||[];
-    if(!hist.length){
-      document.getElementById('ptsList').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
+
+    if(!timeline.length){
+      if(ptsList)ptsList.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
       return;
     }
-    document.getElementById('ptsList').innerHTML=hist.slice(0,30).map(function(h){
-      var ganho=h.pontos>0;
-      return '<div class="pts-item">'+
-        '<div class="pts-item-info">'+
-          '<div class="pts-item-desc">'+esc(h.descricao||'Pontos')+'</div>'+
-          '<div class="pts-item-date">'+fmtDate(h.data||h.created_at)+'</div>'+
-        '</div>'+
-        '<div class="pts-item-val '+(ganho?'ganho':'gasto')+'">'+(ganho?'+':'')+h.pontos+' pts</div>'+
-      '</div>';
-    }).join('');
+
+    /* Filtro por tipo ativo */
+    var _filtroAtivo='todos';
+    function renderTimeline(){
+      var itens=_filtroAtivo==='todos'?timeline:timeline.filter(function(i){return i.tipo===_filtroAtivo;});
+      if(!itens.length){
+        ptsList.querySelector('#histListWrap').innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;font-weight:600">Nenhum item nesta categoria.</div>';
+        return;
+      }
+      ptsList.querySelector('#histListWrap').innerHTML=itens.slice(0,50).map(function(h){
+        var dtStr=h.data?new Date(h.data).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):(h.hora||'—');
+        return '<div class="pts-item" style="gap:10px">'+
+          '<div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">'+h.icon+'</div>'+
+          '<div class="pts-item-info">'+
+            '<div class="pts-item-desc">'+esc(h.desc)+'</div>'+
+            '<div class="pts-item-date" style="display:flex;align-items:center;gap:6px">'+
+              dtStr+
+              '<span style="font-size:8px;font-weight:700;letter-spacing:1px;padding:1px 6px;border-radius:20px;background:rgba(255,255,255,.05);color:'+h.cor+';border:1px solid '+h.cor.replace('var(--','rgba(').replace(')',',0.3)')+'">'+
+                (h.tipo==='mp'?'MP':h.tipo==='ticket'?'TICKET':'XP')+
+              '</span>'+
+            '</div>'+
+          '</div>'+
+          '<div style="font-size:13px;font-weight:900;white-space:nowrap;color:'+h.cor+'">'+esc(h.val)+' <span style="font-size:8px;font-weight:700;opacity:.7">'+esc(h.valLabel)+'</span></div>'+
+        '</div>';
+      }).join('');
+    }
+
+    /* Conta por tipo para mostrar nos filtros */
+    var cMP=timeline.filter(function(i){return i.tipo==='mp';}).length;
+    var cTkt=timeline.filter(function(i){return i.tipo==='ticket';}).length;
+    var cXP=timeline.filter(function(i){return i.tipo==='xp';}).length;
+
+    ptsList.innerHTML=
+      /* Filtros */
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="histFiltros">'+
+        '<button id="hf-todos"  onclick="window._histFiltro(\'todos\')"  style="'+_btnStyle(true )+'">Todos <span style="opacity:.6">('+timeline.length+')</span></button>'+
+        '<button id="hf-mp"     onclick="window._histFiltro(\'mp\')"     style="'+_btnStyle(false)+'">⭐ MarsPoints <span style="opacity:.6">('+cMP+')</span></button>'+
+        '<button id="hf-ticket" onclick="window._histFiltro(\'ticket\')" style="'+_btnStyle(false)+'">🎟️ Tickets <span style="opacity:.6">('+cTkt+')</span></button>'+
+        '<button id="hf-xp"    onclick="window._histFiltro(\'xp\')"     style="'+_btnStyle(false)+'">🪐 XP <span style="opacity:.6">('+cXP+')</span></button>'+
+      '</div>'+
+      '<div id="histListWrap"></div>';
+
+    function _btnStyle(ativo){
+      return 'font-size:10px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid '+(ativo?'var(--green)':'var(--border2)')+';background:'+(ativo?'rgba(0,255,85,.08)':'rgba(255,255,255,.03)')+';color:'+(ativo?'var(--green)':'var(--muted)')+';cursor:pointer;transition:all .2s';
+    }
+    window._histFiltro=function(tipo){
+      _filtroAtivo=tipo;
+      ['todos','mp','ticket','xp'].forEach(function(k){
+        var b=document.getElementById('hf-'+k);
+        if(b) b.style.cssText=_btnStyle(k===tipo);
+      });
+      renderTimeline();
+    };
+
+    renderTimeline();
+
   }catch(e){
+    console.warn('[historico unified]',e);
     var pl=document.getElementById('ptsLoader');var ptl=document.getElementById('ptsList');
     if(pl)pl.style.display='none';
-    if(ptl)ptl.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Nenhum histórico ainda.</div>';
+    if(ptl){ptl.style.display='flex';ptl.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;font-weight:600">Erro ao carregar histórico.</div>';}
   }
 }
 
