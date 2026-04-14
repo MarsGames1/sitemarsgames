@@ -189,6 +189,15 @@ body.tema-claro .indicacao-title{color:var(--text)}
 body.tema-claro .indicacao-desc{color:#666}
 body.tema-claro .indicacao-link{background:var(--surface);border-color:var(--border2);color:var(--text)}
 
+body.tema-claro .hero-social-proof{background:rgba(0,0,0,.03);border-color:var(--border)}
+body.tema-claro .hsp-rating-text{color:#666}
+body.tema-claro .hsp-rating-text strong{color:var(--text)}
+body.tema-claro .hsp-review-text{color:#555}
+body.tema-claro .hsp-review-name{color:#888}
+body.tema-claro .hsp-divider{background:var(--border)}
+body.tema-claro .mv-sales-hot{background:rgba(214,58,20,.1);border-color:rgba(214,58,20,.3);color:var(--mars)}
+body.tema-claro .mv-sales-last{background:rgba(200,130,0,.08);border-color:rgba(200,130,0,.3);color:#b07800}
+
 body.tema-claro .exit-sub{color:#666}
 
 /* ══ TELA DE MANUTENÇÃO ══ */
@@ -920,6 +929,37 @@ body.tema-claro .exit-sub{color:#666}
 .hero-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--green)}
 .hero-stat-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
 
+/* ══ HERO SOCIAL PROOF ══ */
+.hero-social-proof{
+  margin:18px 0 16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:14px 16px;
+  max-width:460px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.hsp-stars{font-size:15px;letter-spacing:1px;line-height:1}
+.hsp-rating-text{font-size:10px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.3px}
+.hsp-rating-text strong{color:#fff}
+.hsp-divider{height:1px;background:rgba(255,255,255,.07)}
+.hsp-reviews{display:flex;flex-direction:column;gap:9px}
+.hsp-review{display:flex;align-items:flex-start;gap:10px}
+.hsp-avatar{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--mars),var(--orange));
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:900;color:#fff;letter-spacing:.3px;
+}
+.hsp-review-body{flex:1;min-width:0}
+.hsp-review-name{font-size:9px;font-weight:800;color:#bbb;display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.hsp-stars-sm{color:#ffb300;font-size:9px;letter-spacing:1px}
+.hsp-review-text{font-size:10px;color:rgba(255,255,255,.65);font-weight:600;line-height:1.45;font-style:italic}
+@media(max-width:480px){
+  .hero-social-proof{padding:12px 14px}
+  .hsp-review-text{font-size:9px}
+}
+
 /* ══ PROMO BANNER ══ */
 .promo-banner{
   background:linear-gradient(90deg,rgba(232,66,26,.08) 0%,rgba(0,255,85,.05) 100%);
@@ -1472,6 +1512,26 @@ footer::before{
 .mv-urgency{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:6px}
 .mv-urgency-dot{width:5px;height:5px;background:#ff9500;border-radius:50%;animation:mvBlink 1.1s ease-in-out infinite;flex-shrink:0}
 .mv-urgency-txt{font-size:9px;color:#ff9500;font-weight:700;letter-spacing:.2px}
+
+/* ══ SALES COUNTER — card carrossel ══ */
+.mv-sales-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:4px;
+  font-size:9px;font-weight:900;letter-spacing:.4px;
+  padding:4px 9px;border-radius:20px;
+  margin-bottom:7px;text-transform:uppercase;
+}
+.mv-sales-hot{
+  background:rgba(232,66,26,.15);
+  border:1px solid rgba(232,66,26,.35);
+  color:#ff8055;
+}
+.mv-sales-last{
+  background:rgba(255,179,0,.12);
+  border:1px solid rgba(255,179,0,.35);
+  color:#ffb300;
+  animation:countPulse 1.8s ease-in-out infinite;
+}
 
 /* Botão comprar */
 .mv-buy{
@@ -3810,6 +3870,29 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
       <span class="line2">ATÉ 90% OFF</span>
     </h1>
     <p class="hero-sub">Chaves Steam originais e contas Steam off com os melhores preços do Brasil. Compre agora com nosso sistema de confiança Mercado Pago, receba na hora — sem complicação.</p>
+    <!-- Social proof strip — próximo ao CTA -->
+    <div class="hero-social-proof">
+      <div class="hsp-stars">⭐⭐⭐⭐⭐</div>
+      <div class="hsp-rating-text"><strong>5.0</strong> de 5 — baseado em <strong>+500 compras verificadas</strong></div>
+      <div class="hsp-divider"></div>
+      <div class="hsp-reviews">
+        <div class="hsp-review">
+          <div class="hsp-avatar">VG</div>
+          <div class="hsp-review-body">
+            <div class="hsp-review-name">viana_gamer <span class="hsp-stars-sm">★★★★★</span></div>
+            <div class="hsp-review-text">"Mano que economia!! site seguro já comprei várias vezes."</div>
+          </div>
+        </div>
+        <div class="hsp-review">
+          <div class="hsp-avatar">LA</div>
+          <div class="hsp-review-body">
+            <div class="hsp-review-name">Lucas alô <span class="hsp-stars-sm">★★★★★</span></div>
+            <div class="hsp-review-text">"Suporte nota mil!! Tudo maravilhoso, vale muito adquirir."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="hero-btns">
       <a class="btn-mars btn-mars-green" href="catalogo.html">Ver catálogo completo</button>
       <a class="btn-mars btn-mars-outline" href="https://discord.gg/bKnR9accnw" target="_blank">Discord da comunidade</a>
@@ -3828,7 +3911,7 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
       <div class="hero-stat"><div class="hero-stat-val" id="statCount">—</div><div class="hero-stat-label">Jogos disponíveis</div></div>
       <div class="hero-stat"><div class="hero-stat-val">90%</div><div class="hero-stat-label">Desconto máximo</div></div>
       <div class="hero-stat"><div class="hero-stat-val">24h</div><div class="hero-stat-label">Entrega imediata</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">⭐ 5.0</div><div class="hero-stat-label">Avaliação</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">⭐ 5.0</div><div class="hero-stat-label">+500 avaliações</div></div>
     </div>
   </div>
 </section>
@@ -3957,6 +4040,19 @@ function aplicarFavs(){
 (function(){
   var MV_LABELS={imperdivel:'Imperdível',combo:'Combo',bundle:'Bundle',novidade:'Novidade'};
   var MV_URGENCY=['12 pessoas viram hoje','Muito procurado','8 pessoas estão vendo agora','Muito procurado hoje','5 vendidos esta semana'];
+  /* Contadores de vendas — rotacionam pelos produtos */
+  var MV_SALES=[
+    {type:'hot',  label:'🔥 47 vendidos'},
+    {type:'hot',  label:'🔥 83 vendidos'},
+    {type:'last', label:'⚡ Últimas 3 unidades'},
+    {type:'hot',  label:'🔥 29 vendidos'},
+    {type:'last', label:'⚡ Últimas 5 unidades'},
+    {type:'hot',  label:'🔥 61 vendidos'},
+    {type:'hot',  label:'🔥 112 vendidos'},
+    {type:'last', label:'⚡ Última unidade!'},
+    {type:'hot',  label:'🔥 38 vendidos'},
+    {type:'hot',  label:'🔥 74 vendidos'},
+  ];
   var track=document.getElementById('mvTrack');
   var CARD_W, GAP=14, CLONES=4;
   var pos=CLONES, animating=false, N=0, STEP=0, offsetPx=0;
@@ -4000,6 +4096,8 @@ function aplicarFavs(){
     var discHtml=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
     var baseHtml=precoOrig?'<div class="mv-old-price">'+precoOrig+'</div>':'';
     var urgHtml=ok?'<div class="mv-urgency"><div class="mv-urgency-dot"></div><span class="mv-urgency-txt">'+MV_URGENCY[idx%MV_URGENCY.length]+'</span></div>':'';
+    var sale=MV_SALES[idx%MV_SALES.length];
+    var salesHtml=ok?'<div class="mv-sales-count mv-sales-'+sale.type+'">'+sale.label+'</div>':'';
     var dis=ok?'':' mv-dis';
     var lbl=ok?'COMPRAR AGORA':'ESGOTADO';
     var buyEvt=ok?'data-mvbuy="'+link+'"':'onclick="event.stopPropagation()"';
@@ -4017,6 +4115,7 @@ function aplicarFavs(){
           '<h3 class="mv-name">'+escMv(p.nome)+'</h3>'+
           '<div class="mv-price-area">'+discHtml+baseHtml+'<div class="mv-price">'+preco+'</div></div>'+
           urgHtml+
+          salesHtml+
           '<button class="mv-buy'+dis+'" '+buyEvt+'>'+lbl+'</button>'+
         '</div>'+
       '</div>'+
