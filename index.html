@@ -320,22 +320,24 @@ body.tema-claro .exit-sub{color:#666}
 /* ══ PROMO TOP BANNER — Feriado ══ */
 @keyframes bannerSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes bannerShimmerWhite{0%{background-position:-200% 0}100%{background-position:200% 0}}
 #promoTopBanner{
   position:relative;z-index:201;
-  background:linear-gradient(90deg,#1a0a00 0%,#2d0d00 20%,#1a0000 40%,#001a04 60%,#0a1500 80%,#1a0a00 100%);
-  border-bottom:1px solid rgba(232,66,26,.3);
+  background:linear-gradient(90deg,#ffffff 0%,#f8f8f8 25%,#ffffff 50%,#f5f5f5 75%,#ffffff 100%);
+  border-bottom:1px solid rgba(0,0,0,.08);
+  box-shadow:0 1px 12px rgba(0,0,0,.08);
   overflow:hidden;
   animation:bannerSlide .4s ease-out;
 }
 #promoTopBanner::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(232,66,26,.07) 25%,rgba(0,255,85,.05) 50%,rgba(232,66,26,.07) 75%,transparent 100%);
+  background:linear-gradient(90deg,transparent 0%,rgba(232,66,26,.04) 25%,rgba(255,255,255,.8) 50%,rgba(232,66,26,.04) 75%,transparent 100%);
   background-size:200% 100%;
-  animation:shimmer 3s linear infinite;
+  animation:bannerShimmerWhite 4s linear infinite;
 }
 .ptb-inner{
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 12px;height:32px;gap:8px;position:relative;z-index:1;
+  padding:0 12px;height:34px;gap:8px;position:relative;z-index:1;
 }
 .ptb-marquee-wrap{
   flex:1;overflow:hidden;min-width:0;display:flex;align-items:center;position:relative;
@@ -343,8 +345,8 @@ body.tema-claro .exit-sub{color:#666}
 .ptb-marquee-wrap::before,.ptb-marquee-wrap::after{
   content:'';position:absolute;top:0;bottom:0;width:32px;z-index:2;pointer-events:none;
 }
-.ptb-marquee-wrap::before{left:0;background:linear-gradient(to right,rgba(26,10,0,1),transparent)}
-.ptb-marquee-wrap::after{right:0;background:linear-gradient(to left,rgba(26,10,0,1),transparent)}
+.ptb-marquee-wrap::before{left:0;background:linear-gradient(to right,rgba(255,255,255,1),transparent)}
+.ptb-marquee-wrap::after{right:0;background:linear-gradient(to left,rgba(255,255,255,1),transparent)}
 .ptb-track{
   display:flex;align-items:center;gap:0;
   white-space:nowrap;
@@ -356,29 +358,29 @@ body.tema-claro .exit-sub{color:#666}
   display:inline-flex;align-items:center;gap:7px;
   padding:0 20px;
   font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  color:rgba(255,255,255,.85);
+  color:rgba(30,30,40,.75);
 }
 .ptb-item .ptb-fire{font-size:11px}
-.ptb-item .ptb-hi{color:var(--green);font-weight:900}
-.ptb-item .ptb-sep{color:rgba(232,66,26,.6);margin:0 2px;font-size:10px}
+.ptb-item .ptb-hi{color:#c0320e;font-weight:900}
+.ptb-item .ptb-sep{color:rgba(180,60,20,.45);margin:0 2px;font-size:10px}
 .ptb-badge{
   flex-shrink:0;display:inline-flex;align-items:center;gap:5px;
-  background:linear-gradient(135deg,rgba(232,66,26,.25),rgba(232,66,26,.1));
-  border:1px solid rgba(232,66,26,.45);
-  color:#ff7d52;
+  background:linear-gradient(135deg,rgba(232,66,26,.12),rgba(232,66,26,.05));
+  border:1px solid rgba(232,66,26,.35);
+  color:#c0320e;
   font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
   padding:3px 10px;border-radius:99px;white-space:nowrap;
 }
-.ptb-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--mars);animation:pulse 1.2s ease-in-out infinite;flex-shrink:0}
+.ptb-badge-dot{width:5px;height:5px;border-radius:50%;background:#c0320e;animation:pulse 1.2s ease-in-out infinite;flex-shrink:0}
 .ptb-close{
   flex-shrink:0;width:22px;height:22px;border-radius:6px;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.4);cursor:pointer;
+  background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);
+  color:rgba(0,0,0,.35);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   font-size:14px;line-height:1;transition:background .15s,color .15s;
   padding:0;font-family:monospace;
 }
-.ptb-close:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+.ptb-close:hover{background:rgba(0,0,0,.09);color:rgba(0,0,0,.7)}
 /* Quando o banner é fechado, o sticky da navbar precisa ser recalculado */
 .ptb-hidden{display:none!important}
 
