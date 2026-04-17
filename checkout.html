@@ -519,11 +519,18 @@ async function pagarCartao(cardData){
     if(!resp.ok){console.error('[mp-criar-cartao]',data);throw new Error(data.error||data.message||JSON.stringify(data).slice(0,120));}
     if(data.status==='approved'){
       await marcarCupomUsado(session.user.email);
-      sessionStorage.setItem('mg_pedido_id',data.pedido_id||'');
-      sessionStorage.setItem('mg_user_email',session.user.email||'');
+      /* Salva todos os dados necessários para o sucesso.html entregar a chave corretamente */
+      sessionStorage.setItem('mg_pedido_id',    data.pedido_id    || '');
+      sessionStorage.setItem('mg_user_email',   session.user.email|| '');
+      sessionStorage.setItem('mg_user_id',      session.user.id   || '');
+      sessionStorage.setItem('mg_access_token', session.access_token || '');
+      sessionStorage.setItem('mg_card_payment_id', String(data.payment_id || data.id || ''));
+      sessionStorage.setItem('mg_external_ref', data.reference    || '');
+      /* Garante que mg_itens_pendentes reflita os itens DESTE pedido (com desconto aplicado) */
+      sessionStorage.setItem('mg_itens_pendentes', JSON.stringify(itensDesc));
       const _ch=JSON.parse(sessionStorage.getItem('mg_itens_pendentes')||'[]');
       if(_ch.length&&_ch[0].tipo==='marspoints'){
-        showToast('✅ Aprovado! Creditando...');
+        showToast('\u2705 Aprovado! Creditando...');
         await creditarPacoteMPCartao(session).catch(e=>{sessionStorage.setItem('mg_loja_pago','sim');});
         window.location.href='perfil.html#loja-mp';
       }else{window.location.href='sucesso.html';}
