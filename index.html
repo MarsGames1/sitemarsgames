@@ -893,14 +893,14 @@ body.tema-claro .exit-sub{color:#666}
   position:absolute;inset:0;z-index:2;
   /* Mobile: escurece base para legibilidade */
   background:
-    linear-gradient(to top, rgba(6,6,8,.88) 0%, rgba(6,6,8,.4) 40%, rgba(6,6,8,.08) 75%, transparent 100%);
+    linear-gradient(to top, rgba(6,6,8,.95) 0%, rgba(6,6,8,.65) 40%, rgba(6,6,8,.25) 75%, transparent 100%);
 }
 @media(min-width:768px){
   .hero-video-overlay{
-    /* Desktop: escurece só a esquerda onde fica o texto, deixa direita aberta */
+    /* Desktop: escurece mais a esquerda onde fica o texto */
     background:
-      linear-gradient(to right, rgba(6,6,8,.82) 0%, rgba(6,6,8,.55) 35%, rgba(6,6,8,.1) 62%, transparent 100%),
-      linear-gradient(to top, rgba(6,6,8,.35) 0%, transparent 40%);
+      linear-gradient(to right, rgba(6,6,8,.92) 0%, rgba(6,6,8,.72) 38%, rgba(6,6,8,.2) 62%, transparent 100%),
+      linear-gradient(to top, rgba(6,6,8,.5) 0%, transparent 40%);
   }
 }
 .hero-scan{
@@ -965,10 +965,11 @@ body.tema-claro .exit-sub{color:#666}
 
 .hero-badge{
   display:inline-flex;align-items:center;gap:7px;
-  background:rgba(232,66,26,.07);border:1px solid rgba(232,66,26,.2);
-  color:rgba(255,130,80,.85);padding:5px 14px;border-radius:99px;
+  background:rgba(20,5,0,.6);border:1px solid rgba(232,66,26,.35);
+  color:rgba(255,160,100,.95);padding:5px 14px;border-radius:99px;
   font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
   margin-bottom:20px;
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
   animation:fadeUp .5s ease both;
 }
 .hero-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--mars);animation:pulse 2s ease-in-out infinite}
@@ -977,7 +978,7 @@ body.tema-claro .exit-sub{color:#666}
   font-size:clamp(34px,8.5vw,74px);
   font-weight:900;letter-spacing:1px;
   line-height:1.0;margin-bottom:0;
-  text-shadow:0 2px 48px rgba(0,0,0,.9);
+  text-shadow:0 2px 48px rgba(0,0,0,1),0 4px 20px rgba(0,0,0,.9),0 0 60px rgba(0,0,0,.8);
   animation:fadeUp .5s .1s ease both;
 }
 .hero-title .line2{
@@ -986,9 +987,9 @@ body.tema-claro .exit-sub{color:#666}
   display:block;
 }
 .hero-sub{
-  font-size:14px;color:rgba(255,255,255,.72);font-weight:400;
+  font-size:14px;color:rgba(255,255,255,.92);font-weight:500;
   max-width:500px;margin:18px 0 0;line-height:1.8;
-  text-shadow:0 1px 12px rgba(0,0,0,.95);
+  text-shadow:0 1px 16px rgba(0,0,0,1),0 2px 32px rgba(0,0,0,.9);
   animation:fadeUp .5s .18s ease both;
 }
 .hero-sub strong{color:#fff;font-weight:700}
@@ -1001,16 +1002,17 @@ body.tema-claro .exit-sub{color:#666}
 }
 .hero-trust-pill{
   display:inline-flex;align-items:center;gap:5px;
-  font-size:10px;font-weight:600;
-  color:rgba(255,255,255,.6);
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);
+  font-size:10px;font-weight:700;
+  color:rgba(255,255,255,.92);
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.18);
   border-radius:6px;padding:6px 12px;
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
 }
-.hero-trust-pill svg{flex-shrink:0;opacity:.7}
-.hero-trust-pill.pill-green{color:rgba(0,255,85,.85);background:rgba(0,255,85,.05);border-color:rgba(0,255,85,.15)}
+.hero-trust-pill svg{flex-shrink:0;opacity:.9}
+.hero-trust-pill.pill-green{color:#fff;background:rgba(0,80,30,.55);border-color:rgba(0,255,85,.3)}
 .hero-trust-pill.pill-green svg{opacity:1}
-.hero-trust-pill.pill-mars{color:rgba(255,140,80,.85);background:rgba(232,66,26,.06);border-color:rgba(232,66,26,.18)}
+.hero-trust-pill.pill-mars{color:#fff;background:rgba(80,20,5,.55);border-color:rgba(232,66,26,.4)}
 
 /* ── CTAs ── */
 .hero-btns{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;animation:fadeUp .5s .33s ease both;}
@@ -1060,8 +1062,8 @@ body.tema-claro .exit-sub{color:#666}
 }
 .hero-stat:nth-child(2n){border-right:none}
 .hero-stat:nth-last-child(-n+2){border-bottom:none}
-.hero-stat-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;color:var(--green);line-height:1}
-.hero-stat-label{font-size:8px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.8px;text-transform:uppercase;margin-top:5px}
+.hero-stat-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;color:var(--green);line-height:1;text-shadow:0 0 12px rgba(0,255,85,.4)}
+.hero-stat-label{font-size:8px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.8px;text-transform:uppercase;margin-top:5px;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 /* No mobile, stats ficam abaixo dos btns */
 @media(max-width:899px){
   .hero-stats{max-width:360px;margin-top:20px;}
