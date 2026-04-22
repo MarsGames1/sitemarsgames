@@ -891,16 +891,14 @@ body.tema-claro .exit-sub{color:#666}
 .hero-video-wrap video.ready{opacity:1}
 .hero-video-overlay{
   position:absolute;inset:0;z-index:2;
-  /* Mobile: escurece base para legibilidade */
   background:
-    linear-gradient(to top, rgba(6,6,8,.95) 0%, rgba(6,6,8,.65) 40%, rgba(6,6,8,.25) 75%, transparent 100%);
+    linear-gradient(to top, rgba(6,6,8,.80) 0%, rgba(6,6,8,.2) 30%, transparent 60%);
 }
 @media(min-width:768px){
   .hero-video-overlay{
-    /* Desktop: escurece mais a esquerda onde fica o texto */
     background:
-      linear-gradient(to right, rgba(6,6,8,.92) 0%, rgba(6,6,8,.72) 38%, rgba(6,6,8,.2) 62%, transparent 100%),
-      linear-gradient(to top, rgba(6,6,8,.5) 0%, transparent 40%);
+      linear-gradient(to right, rgba(6,6,8,.82) 0%, rgba(6,6,8,.55) 32%, rgba(6,6,8,.05) 55%, transparent 100%),
+      linear-gradient(to top, rgba(6,6,8,.55) 0%, transparent 30%);
   }
 }
 .hero-scan{
@@ -1112,10 +1110,103 @@ body.tema-claro .exit-sub{color:#666}
   .hsp-review-text{font-size:10.5px}
 }
 
-/* Mobile stats: escondidos em desktop (aparece só no hero-right) */
-@media(min-width:900px){
-  .hero-stats-mobile{display:none!important}
+/* ══ REVIEWS FLUTUANTES ══ */
+@keyframes floatCard1{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-10px) rotate(-1.5deg)}}
+@keyframes floatCard2{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
+@keyframes floatCard3{0%,100%{transform:translateY(0) rotate(-0.5deg)}50%{transform:translateY(-8px) rotate(-0.5deg)}}
+@keyframes floatScore{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.03)}}
+
+.hsp-floating-reviews{
+  position:relative;width:100%;height:260px;
 }
+.hsp-float-card{
+  position:absolute;
+  display:flex;align-items:flex-start;gap:10px;
+  background:rgba(8,8,12,.72);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:12px 14px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04);
+  max-width:290px;
+}
+.hsp-float-1{top:0;left:0;animation:floatCard1 5s ease-in-out infinite}
+.hsp-float-2{top:70px;right:0;animation:floatCard2 6.5s ease-in-out infinite .8s}
+.hsp-float-3{top:155px;left:20px;animation:floatCard3 5.8s ease-in-out infinite 1.4s}
+.hsp-float-body{flex:1;min-width:0}
+.hsp-float-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:8px}
+.hsp-score-float{
+  position:absolute;bottom:-10px;right:10px;
+  background:rgba(255,179,0,.12);
+  border:1px solid rgba(255,179,0,.25);
+  border-radius:12px;padding:10px 16px;text-align:center;
+  backdrop-filter:blur(12px);
+  animation:floatScore 4s ease-in-out infinite 2s;
+  box-shadow:0 4px 20px rgba(255,179,0,.15);
+}
+.hsp-score-float .hsp-score-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#ffb300;line-height:1}
+.hsp-score-float .hsp-stars{font-size:12px;margin:3px 0 2px}
+.hsp-score-float .hsp-score-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,179,0,.6)}
+
+/* ══ POPUP SORTEIO ══ */
+@keyframes popupIn{from{opacity:0;transform:translate(-50%,-50%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes popupBg{from{opacity:0}to{opacity:1}}
+@keyframes sorteioGlow{0%,100%{box-shadow:0 0 30px rgba(124,106,247,.3),0 24px 60px rgba(0,0,0,.8)}50%{box-shadow:0 0 60px rgba(124,106,247,.5),0 24px 60px rgba(0,0,0,.8)}}
+#sorteio-popup-bg{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(4px);
+  animation:popupBg .3s ease both;
+  display:none;
+}
+#sorteio-popup-bg.show{display:block}
+#sorteio-popup{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:9001;
+  background:linear-gradient(145deg,#0d0d1a,#12101e);
+  border:1px solid rgba(124,106,247,.3);
+  border-radius:24px;
+  padding:36px 32px 32px;
+  width:min(92vw,440px);
+  text-align:center;
+  animation:popupIn .35s cubic-bezier(.34,1.56,.64,1) both, sorteioGlow 3s ease-in-out infinite;
+  display:none;
+}
+#sorteio-popup.show{display:block}
+#sorteio-popup::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:24px 24px 0 0;
+  background:linear-gradient(to right,transparent,#7c6af7,#ff3c6e,#7c6af7,transparent);
+}
+.sp-close{
+  position:absolute;top:14px;right:16px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:rgba(255,255,255,.5);cursor:pointer;
+  transition:background .2s,color .2s;
+}
+.sp-close:hover{background:rgba(255,255,255,.14);color:#fff}
+.sp-icon{font-size:48px;line-height:1;margin-bottom:12px;filter:drop-shadow(0 0 20px rgba(124,106,247,.6))}
+.sp-title{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:#fff;margin-bottom:6px;
+  letter-spacing:1px;line-height:1.2}
+.sp-title span{color:#7c6af7}
+.sp-sub{font-size:12px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;font-weight:500}
+.sp-perks{display:flex;justify-content:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.sp-perk{background:rgba(124,106,247,.08);border:1px solid rgba(124,106,247,.2);border-radius:8px;
+  padding:8px 14px;font-size:10px;font-weight:700;color:rgba(255,255,255,.8);display:flex;flex-direction:column;gap:3px;align-items:center}
+.sp-perk-icon{font-size:18px}
+.sp-btn{
+  display:block;width:100%;padding:15px;border-radius:12px;
+  background:linear-gradient(135deg,#5a4fd4,#7c6af7,#ff3c6e);
+  color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:900;
+  letter-spacing:1px;text-transform:uppercase;text-decoration:none;
+  box-shadow:0 4px 20px rgba(124,106,247,.4);
+  transition:transform .15s,box-shadow .2s;
+}
+.sp-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,106,247,.55)}
+.sp-skip{margin-top:12px;font-size:10px;color:rgba(255,255,255,.28);cursor:pointer;
+  font-weight:600;letter-spacing:.5px;transition:color .2s}
+.sp-skip:hover{color:rgba(255,255,255,.6)}
 
 /* ══ PROMO BANNER ══ */
 .promo-banner{
@@ -4040,8 +4131,8 @@ function fecharPromoBanner(){
   <div class="hero-video-wrap" id="heroVideoWrap">
     <div id="heroYTWrap" style="position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;">
       <iframe id="heroYTFrame"
-        src="https://www.youtube.com/embed/iw-CkZGA6Zw?start=80&autoplay=1&mute=1&loop=1&playlist=iw-CkZGA6Zw&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&vq=hd1080"
-        title="Diablo Background"
+        src="https://www.youtube.com/embed/oncaa_fMsyw?autoplay=1&mute=1&loop=1&playlist=oncaa_fMsyw&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&vq=hd2160"
+        title="Hero Background"
         frameborder="0"
         allow="autoplay; encrypted-media"
         allowfullscreen
@@ -4050,6 +4141,7 @@ function fecharPromoBanner(){
       ></iframe>
     </div>
     <div id="heroImgFallback" style="position:absolute;inset:0;z-index:0;background-image:url('https://images5.alphacoders.com/133/thumb-1920-1336376.jpg');background-size:cover;background-position:center top;"></div>
+    <!-- overlay mínimo só para garantir legibilidade do texto à esquerda -->
     <div class="hero-video-overlay" style="z-index:3"></div>
   </div>
   <div class="hero-scan"></div>
@@ -4141,52 +4233,46 @@ function fecharPromoBanner(){
         </div>
       </div>
 
-      <div class="hero-social-proof">
-        <div class="hsp-top-row">
-          <div class="hsp-score-block">
-            <div class="hsp-score-val">5.0</div>
-            <div class="hsp-score-label">Nota</div>
-          </div>
-          <div class="hsp-meta">
-            <div class="hsp-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-            <div class="hsp-rating-text">Mais de <strong>500 compras verificadas</strong> — 100% positivas</div>
-            <div class="hsp-badges">
-              <span class="hsp-badge">&#x2713; Mercado Pago</span>
-              <span class="hsp-badge">&#x2713; Chave oficial</span>
-              <span class="hsp-badge">&#x2713; Anti-fraude</span>
+      <!-- Reviews flutuantes — sem container, cada card flutua individualmente -->
+      <div class="hsp-floating-reviews">
+        <div class="hsp-float-card hsp-float-1">
+          <div class="hsp-avatar av1">RC</div>
+          <div class="hsp-float-body">
+            <div class="hsp-float-header">
+              <span class="hsp-review-name">rodrigo_c</span>
+              <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
             </div>
+            <div class="hsp-review-text">Comprei Diablo IV pela metade do preço. Chave funcionou na hora!</div>
+            <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
           </div>
         </div>
-        <div class="hsp-divider"></div>
-        <div class="hsp-reviews">
-          <div class="hsp-review">
-            <div class="hsp-avatar av1">RC</div>
-            <div class="hsp-review-body">
-              <div class="hsp-review-header">
-                <div class="hsp-review-name">rodrigo_c</div>
-                <div class="hsp-review-meta">
-                  <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
-                  <span class="hsp-review-date">há 1 dia</span>
-                </div>
-              </div>
-              <div class="hsp-review-text">Comprei Diablo IV pela metade do preço. Chave funcionou na hora. Recomendo!</div>
-              <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
+        <div class="hsp-float-card hsp-float-2">
+          <div class="hsp-avatar av2">MA</div>
+          <div class="hsp-float-body">
+            <div class="hsp-float-header">
+              <span class="hsp-review-name">mari_a</span>
+              <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
             </div>
+            <div class="hsp-review-text">Entrega instantânea, preço justo. Já é minha loja favorita!</div>
+            <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
           </div>
-          <div class="hsp-review">
-            <div class="hsp-avatar av2">MA</div>
-            <div class="hsp-review-body">
-              <div class="hsp-review-header">
-                <div class="hsp-review-name">mari_a</div>
-                <div class="hsp-review-meta">
-                  <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
-                  <span class="hsp-review-date">há 3 dias</span>
-                </div>
-              </div>
-              <div class="hsp-review-text">Entrega instantânea, preço justo. Já é minha loja favorita!</div>
-              <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
+        </div>
+        <div class="hsp-float-card hsp-float-3">
+          <div class="hsp-avatar av3">LP</div>
+          <div class="hsp-float-body">
+            <div class="hsp-float-header">
+              <span class="hsp-review-name">lucas_p</span>
+              <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
             </div>
+            <div class="hsp-review-text">Melhor loja de keys do Brasil. Atendimento top! ✅</div>
+            <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
           </div>
+        </div>
+        <!-- Score badge flutuante -->
+        <div class="hsp-score-float">
+          <div class="hsp-score-val">5.0</div>
+          <div class="hsp-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
+          <div class="hsp-score-label">+500 compras</div>
         </div>
       </div>
     </div>
@@ -6712,5 +6798,44 @@ window.addEventListener('resize',function(){
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
   else start();
+})();
+</script>
+
+<!-- ══ POPUP SORTEIO GRÁTIS ══ -->
+<div id="sorteio-popup-bg" onclick="fecharPopupSorteio()"></div>
+<div id="sorteio-popup">
+  <button class="sp-close" onclick="fecharPopupSorteio()" aria-label="Fechar">✕</button>
+  <div class="sp-icon">🎰</div>
+  <div class="sp-title">Sorteio <span>Grátis</span></div>
+  <div class="sp-sub">Participe agora do sorteio gratuito da MarsGames.<br>Ganhe jogos, MarsPoints e muito mais toda semana!</div>
+  <div class="sp-perks">
+    <div class="sp-perk"><div class="sp-perk-icon">🎮</div><div>Jogos</div></div>
+    <div class="sp-perk"><div class="sp-perk-icon">⭐</div><div>MarsPoints</div></div>
+    <div class="sp-perk"><div class="sp-perk-icon">🎟️</div><div>Tickets</div></div>
+    <div class="sp-perk"><div class="sp-perk-icon">💎</div><div>Prêmios</div></div>
+  </div>
+  <a class="sp-btn" href="https://marsgames.com.br/sorteio" target="_blank" onclick="fecharPopupSorteio()">🚀 Participar do Sorteio Grátis</a>
+  <div class="sp-skip" onclick="fecharPopupSorteio()">Agora não, obrigado</div>
+</div>
+
+<script>
+(function(){
+  var POPUP_KEY='mg_sorteio_popup_v1';
+  function fecharPopupSorteio(){
+    document.getElementById('sorteio-popup-bg').classList.remove('show');
+    document.getElementById('sorteio-popup').classList.remove('show');
+  }
+  window.fecharPopupSorteio=fecharPopupSorteio;
+  /* Mostrar uma única vez por sessão de navegação */
+  if(!sessionStorage.getItem(POPUP_KEY)){
+    sessionStorage.setItem(POPUP_KEY,'1');
+    setTimeout(function(){
+      var bg=document.getElementById('sorteio-popup-bg');
+      var popup=document.getElementById('sorteio-popup');
+      if(bg&&popup){bg.classList.add('show');popup.classList.add('show');}
+    }, 3500);
+  }
+  /* Fechar com ESC */
+  document.addEventListener('keydown',function(e){if(e.key==='Escape') fecharPopupSorteio();});
 })();
 </script>
