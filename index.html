@@ -889,14 +889,14 @@ body.tema-claro .exit-sub{color:#666}
 .hero-video-overlay{
   position:absolute;inset:0;z-index:1;
   background:
-    linear-gradient(to top, rgba(6,6,8,.75) 0%, rgba(6,6,8,.45) 40%, rgba(6,6,8,.1) 75%, transparent 100%),
-    rgba(6,6,8,.05);
+    linear-gradient(to top, rgba(6,6,8,.95) 0%, rgba(6,6,8,.65) 35%, rgba(6,6,8,.2) 70%, transparent 100%),
+    rgba(6,6,8,.1);
 }
 @media(min-width:768px){
   .hero-video-overlay{
     background:
-      linear-gradient(to right, rgba(6,6,8,.72) 0%, rgba(6,6,8,.45) 45%, rgba(6,6,8,.08) 75%, transparent 100%),
-      linear-gradient(to top, rgba(6,6,8,.3) 0%, transparent 40%),
+      linear-gradient(to right, rgba(6,6,8,.88) 0%, rgba(6,6,8,.65) 40%, rgba(6,6,8,.15) 70%, transparent 100%),
+      linear-gradient(to top, rgba(6,6,8,.5) 0%, transparent 45%),
       rgba(6,6,8,.05);
   }
 }
@@ -918,35 +918,62 @@ body.tema-claro .exit-sub{color:#666}
   width:100%;
 }
 @media(min-width:768px){
-  .hero-content{padding:80px 32px 80px;max-width:1280px;margin:0 auto;}
+  .hero-content{padding:80px 40px 80px;max-width:1280px;margin:0 auto;}
+}
+@media(min-width:1024px){
+  .hero-content{max-width:680px;} /* limita largura no desktop para não esticar demais */
 }
 .hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(232,66,26,.1);border:1px solid rgba(232,66,26,.3);
-  color:var(--orange);padding:6px 14px;border-radius:99px;
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(232,66,26,.07);border:1px solid rgba(232,66,26,.2);
+  color:rgba(255,130,80,.85);padding:5px 14px;border-radius:99px;
   font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  margin-bottom:16px;
+  margin-bottom:20px;
+  animation:fadeUp .5s ease both;
 }
-.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--mars);animation:pulse 1.5s ease-in-out infinite}
-.hero-eyebrow{
-  font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
-  color:rgba(255,120,80,1);margin-bottom:10px;text-shadow:0 1px 8px rgba(0,0,0,.8);
-}
+.hero-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--mars);animation:pulse 2s ease-in-out infinite}
 .hero-title{
   font-family:'Orbitron',sans-serif;
-  font-size:clamp(28px,8vw,70px);
-  font-weight:900;letter-spacing:2px;
-  line-height:1.05;margin-bottom:8px;
-  text-shadow:0 0 60px rgba(232,66,26,.15);
+  font-size:clamp(34px,8.5vw,74px);
+  font-weight:900;letter-spacing:1px;
+  line-height:1.0;margin-bottom:0;
+  text-shadow:0 2px 48px rgba(0,0,0,.9);
+  animation:fadeUp .5s .1s ease both;
 }
-.hero-title .line2{color:var(--green);text-shadow:0 0 40px rgba(0,255,85,.3)}
+.hero-title .line2{
+  color:var(--green);
+  text-shadow:0 0 40px rgba(0,255,85,.4), 0 0 80px rgba(0,255,85,.15);
+  display:block;
+}
 .hero-sub{
-  font-size:12px;color:rgba(255,255,255,.88);font-weight:600;
-  letter-spacing:.3px;max-width:500px;margin:10px 0 20px;line-height:1.7;
-  text-shadow:0 1px 10px rgba(0,0,0,.9),0 0 30px rgba(0,0,0,.6);
+  font-size:14px;color:rgba(255,255,255,.72);font-weight:400;
+  max-width:500px;margin:18px 0 0;line-height:1.8;
+  text-shadow:0 1px 12px rgba(0,0,0,.95);
+  animation:fadeUp .5s .18s ease both;
 }
-@media(min-width:480px){.hero-sub{font-size:13px}}
-.hero-btns{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+.hero-sub strong{color:#fff;font-weight:700}
+@media(min-width:480px){.hero-sub{font-size:15px}}
+
+/* ── Trust pills inline ── */
+.hero-trust-pills{
+  display:flex;flex-wrap:wrap;gap:6px;margin:20px 0 24px;
+  animation:fadeUp .5s .26s ease both;
+}
+.hero-trust-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;
+  color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;padding:6px 12px;
+}
+.hero-trust-pill svg{flex-shrink:0;opacity:.7}
+.hero-trust-pill.pill-green{color:rgba(0,255,85,.85);background:rgba(0,255,85,.05);border-color:rgba(0,255,85,.15)}
+.hero-trust-pill.pill-green svg{opacity:1}
+.hero-trust-pill.pill-mars{color:rgba(255,140,80,.85);background:rgba(232,66,26,.06);border-color:rgba(232,66,26,.18)}
+
+/* ── CTAs ── */
+.hero-btns{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;animation:fadeUp .5s .33s ease both;}
 @media(max-width:400px){.hero-btns{flex-direction:column}.hero-btns .btn-mars{width:100%;justify-content:center}}
 .btn-mars{
   display:inline-flex;align-items:center;gap:8px;
@@ -956,97 +983,92 @@ body.tema-claro .exit-sub{color:#666}
   transition:box-shadow .2s,transform .15s;text-decoration:none;
   min-height:var(--touch);
 }
-.btn-mars-green{background:var(--green);color:#000}
-.btn-mars-green:hover{box-shadow:0 0 28px var(--green-glow);transform:translateY(-2px)}
-.btn-mars-outline{background:transparent;color:#888;border:1px solid var(--border2)}
-.btn-mars-outline:hover{color:#fff;border-color:#444;transform:translateY(-1px)}
-
-/* Countdown */
-.countdown{display:flex;align-items:center;gap:5px;margin-top:20px;flex-wrap:nowrap}
-.countdown-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-right:2px;display:none;text-shadow:0 1px 8px rgba(0,0,0,.8)}
-@media(min-width:400px){.countdown-label{display:block}}
-.count-block{
-  background:rgba(232,66,26,.1);border:1px solid rgba(232,66,26,.25);
-  border-radius:8px;padding:6px 8px;text-align:center;min-width:44px;flex:1;max-width:60px;
-  animation:countPulse 2s ease-in-out infinite;
+.btn-mars-green{
+  background:linear-gradient(135deg,#00ff55 0%,#00e84a 100%);
+  color:#000;
+  box-shadow:0 4px 24px rgba(0,255,85,.3), 0 0 0 0 rgba(0,255,85,.4);
 }
-.count-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--mars);line-height:1}
-@media(min-width:400px){.count-val{font-size:18px}}
-.count-lbl{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:3px}
-.count-sep{font-family:'Orbitron',sans-serif;font-size:16px;color:rgba(232,66,26,.85);font-weight:900;align-self:flex-start;padding-top:6px;text-shadow:0 0 10px rgba(232,66,26,.5)}
+.btn-mars-green:hover{
+  box-shadow:0 6px 32px rgba(0,255,85,.5), 0 0 0 4px rgba(0,255,85,.12);
+  transform:translateY(-2px);
+}
+.btn-mars-green:active{transform:scale(.97)}
+.btn-mars-outline{background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1)}
+.btn-mars-outline:hover{color:#fff;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07);transform:translateY(-1px)}
 
-/* Hero stats — visível em todos os tamanhos */
+/* ── CTA Arrow icon ── */
+.btn-arrow{
+  display:inline-block;transition:transform .2s;
+}
+.btn-mars-green:hover .btn-arrow{transform:translateX(3px)}
+
+/* countdown removed */
+
+/* Hero stats */
 .hero-stats{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:8px;margin-top:28px;width:100%;max-width:420px;
-}
-@media(min-width:768px){
-  .hero-stats{
-    display:flex;align-items:center;gap:0;margin-top:40px;
-    border:1px solid var(--border);border-radius:12px;
-    background:rgba(255,255,255,.02);width:fit-content;max-width:none;overflow:hidden;
-  }
-  .hero-stat{padding:14px 24px;text-align:center;border-right:1px solid var(--border);background:none;border-radius:0}
-  .hero-stat:last-child{border-right:none}
+  display:flex;align-items:center;gap:0;
+  margin-top:28px;
+  border:1px solid rgba(255,255,255,.07);border-radius:10px;
+  background:rgba(255,255,255,.02);width:fit-content;max-width:100%;overflow:hidden;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  animation:fadeUp .5s .38s ease both;
 }
 .hero-stat{
-  background:rgba(255,255,255,.03);border:1px solid var(--border);
-  border-radius:10px;padding:12px 8px;text-align:center;
+  padding:11px 18px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.06);
 }
-.hero-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--green)}
-.hero-stat-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.hero-stat:last-child{border-right:none}
+.hero-stat-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:var(--green);line-height:1}
+.hero-stat-label{font-size:8px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.8px;text-transform:uppercase;margin-top:5px}
+@media(max-width:480px){
+  .hero-stats{display:grid;grid-template-columns:repeat(2,1fr);width:100%;max-width:320px}
+  .hero-stat{border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+  .hero-stat:nth-child(2n){border-right:none}
+  .hero-stat:nth-last-child(-n+2){border-bottom:none}
+}
 
 /* ══ HERO SOCIAL PROOF ══ */
 .hero-social-proof{
-  margin:18px 0 16px;
-  background:rgba(10,10,14,.75);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;
-  padding:14px 16px 12px;
-  max-width:440px;
-  display:flex;flex-direction:column;gap:11px;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 8px 32px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04);
+  margin:22px 0 0;
+  background:rgba(7,7,10,.82);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  padding:16px;
+  max-width:420px;
+  display:flex;flex-direction:column;gap:12px;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 12px 40px rgba(0,0,0,.55);
+  animation:fadeUp .5s .44s ease both;
 }
-.hsp-top-row{display:flex;align-items:center;gap:10px}
-.hsp-score-block{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.18);border-radius:10px;padding:7px 12px;flex-shrink:0}
-.hsp-score-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#ffb300;line-height:1}
-.hsp-score-label{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,179,0,.6);margin-top:2px}
-.hsp-meta{display:flex;flex-direction:column;gap:4px;min-width:0}
-.hsp-stars{font-size:13px;letter-spacing:2px;line-height:1}
-.hsp-rating-text{font-size:9px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.2px}
-.hsp-rating-text strong{color:rgba(255,255,255,.9);font-weight:800}
+.hsp-top-row{display:flex;align-items:center;gap:12px}
+.hsp-score-block{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,179,0,.07);border:1px solid rgba(255,179,0,.14);border-radius:8px;padding:8px 14px;flex-shrink:0}
+.hsp-score-val{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:#ffb300;line-height:1}
+.hsp-score-label{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,179,0,.45);margin-top:3px}
+.hsp-meta{display:flex;flex-direction:column;gap:5px;min-width:0}
+.hsp-stars{font-size:14px;letter-spacing:1px;line-height:1}
+.hsp-rating-text{font-size:10px;font-weight:400;color:rgba(255,255,255,.45);line-height:1.4}
+.hsp-rating-text strong{color:rgba(255,255,255,.85);font-weight:700}
 .hsp-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
-.hsp-badge{font-size:7.5px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:99px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);color:rgba(0,255,85,.85)}
-.hsp-divider{height:1px;background:rgba(255,255,255,.06)}
+.hsp-badge{font-size:8px;font-weight:700;letter-spacing:.3px;padding:3px 9px;border-radius:5px;background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.14);color:rgba(0,255,85,.8)}
+.hsp-divider{height:1px;background:rgba(255,255,255,.05)}
 .hsp-reviews{display:flex;flex-direction:column;gap:10px}
 .hsp-review{display:flex;align-items:flex-start;gap:10px}
-.hsp-avatar{
-  width:32px;height:32px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;font-weight:900;color:#fff;letter-spacing:.3px;
-  position:relative;
-}
-.hsp-avatar::after{
-  content:'';position:absolute;inset:0;border-radius:50%;
-  border:1.5px solid rgba(255,255,255,.12);
-}
-.hsp-avatar.av1{background:linear-gradient(135deg,#e8421a,#ff6b2b)}
-.hsp-avatar.av2{background:linear-gradient(135deg,#1a78e8,#2bc5ff)}
-.hsp-avatar.av3{background:linear-gradient(135deg,#8b5cf6,#c084fc)}
-.hsp-review-body{flex:1;min-width:0;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:9px 11px}
-.hsp-review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
-.hsp-review-name{font-size:10px;font-weight:800;color:rgba(255,255,255,.9)}
-.hsp-review-meta{display:flex;align-items:center;gap:5px}
-.hsp-stars-sm{color:#ffb300;font-size:9px;letter-spacing:.5px}
-.hsp-review-date{font-size:8px;font-weight:600;color:rgba(255,255,255,.3)}
-.hsp-review-text{font-size:10.5px;color:rgba(255,255,255,.62);font-weight:500;line-height:1.5;margin-bottom:5px}
-.hsp-review-tag{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:700;letter-spacing:.3px;color:rgba(0,255,85,.7);background:rgba(0,255,85,.06);border:1px solid rgba(0,255,85,.15);border-radius:99px;padding:2px 8px}
-.hsp-verified-icon{width:9px;height:9px;fill:none;stroke:rgba(0,255,85,.8);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.hsp-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
+.hsp-avatar.av1{background:linear-gradient(135deg,#b02808,#d84020)}
+.hsp-avatar.av2{background:linear-gradient(135deg,#0850b0,#1888d8)}
+.hsp-avatar.av3{background:linear-gradient(135deg,#6030b0,#9050d8)}
+.hsp-review-body{flex:1;min-width:0;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:9px 12px}
+.hsp-review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.hsp-review-name{font-size:11px;font-weight:700;color:rgba(255,255,255,.88)}
+.hsp-review-meta{display:flex;align-items:center;gap:6px}
+.hsp-stars-sm{color:#ffb300;font-size:10px;letter-spacing:.5px}
+.hsp-review-date{font-size:8px;font-weight:500;color:rgba(255,255,255,.28)}
+.hsp-review-text{font-size:11px;color:rgba(255,255,255,.56);font-weight:400;line-height:1.55;margin-bottom:6px}
+.hsp-review-tag{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:700;letter-spacing:.3px;color:rgba(0,255,85,.65);background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.12);border-radius:4px;padding:2px 7px}
+.hsp-verified-icon{width:8px;height:8px;fill:none;stroke:rgba(0,255,85,.7);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:480px){
-  .hero-social-proof{padding:12px 13px 11px}
-  .hsp-review-text{font-size:9.5px}
-  .hsp-score-val{font-size:16px}
+  .hero-social-proof{padding:13px 12px}
+  .hsp-review-text{font-size:10.5px}
 }
 
 /* ══ PROMO BANNER ══ */
@@ -3080,9 +3102,10 @@ footer::before{
   position:fixed;inset:0;
   z-index:0;
   pointer-events:none;
-  opacity:0;transition:opacity 3s ease;
+  opacity:0;transition:opacity 4s ease;
+  will-change:transform;
 }
-#mars-canvas.ready{opacity:0.85}
+#mars-canvas.ready{opacity:1}
 
 /* ══ ANÉIS DE NÍVEL NAVBAR ══ */
 
@@ -3277,13 +3300,10 @@ footer::before{
   .hero{min-height:96svh;align-items:flex-end}
   .hero-content{padding:24px 16px 40px}
   .hero-badge{font-size:8px;padding:5px 12px}
-  .hero-eyebrow{font-size:8px;letter-spacing:3px;margin-bottom:8px}
   .hero-title{font-size:clamp(30px,10vw,52px);letter-spacing:1px;margin-bottom:6px}
   .hero-sub{font-size:12px;margin:8px 0 16px;line-height:1.65}
   .hero-btns{gap:8px}
   .btn-mars{padding:13px 20px;font-size:10px;min-height:42px}
-  .countdown{gap:4px;margin-top:16px}
-  .count-block{min-width:38px;padding:5px 6px;border-radius:7px}
   .count-val{font-size:15px}
   .count-lbl{font-size:6px}
   .count-sep{font-size:14px;padding-top:5px}
@@ -3798,7 +3818,6 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
 </div>
 
 <canvas id="mars-canvas"></canvas>
-<canvas id="mars-canvas"></canvas>
 
 
 <!-- ══ PROMO TOP BANNER — Feriado 17 a 27 ══ -->
@@ -3973,91 +3992,133 @@ function fecharPromoBanner(){
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-video-wrap" id="heroVideoWrap">
-    <!-- Vídeo Forza Horizon 6 -->
-    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
-      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.2s ease;z-index:1">
-      <source src="/forza.webm" type="video/webm">
-    </video>
-    <div class="hero-video-overlay" style="z-index:2"></div>
+    <div id="heroYTWrap" style="position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;">
+      <iframe id="heroYTFrame"
+        src="https://www.youtube.com/embed/iw-CkZGA6Zw?start=120&autoplay=1&mute=1&loop=1&playlist=iw-CkZGA6Zw&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&vq=hd1080"
+        title="Diablo Background"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+        style="position:absolute;top:50%;left:50%;width:177.78vh;height:100vh;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);pointer-events:none;border:none;opacity:0;transition:opacity 1.6s ease;"
+        onload="setTimeout(function(){var f=document.getElementById('heroYTFrame');if(f)f.style.opacity='1'},900)"
+      ></iframe>
+    </div>
+    <div id="heroImgFallback" style="position:absolute;inset:0;z-index:0;background-image:url('https://images5.alphacoders.com/133/thumb-1920-1336376.jpg');background-size:cover;background-position:center top;"></div>
+    <div class="hero-video-overlay" style="z-index:3"></div>
   </div>
   <div class="hero-scan"></div>
   <div class="hero-content">
-    <div class="hero-badge"><div class="hero-badge-dot"></div> Entrega imediata • 24h por dia</div>
-    <div class="hero-eyebrow">Missão: economizar no seu setup</div>
+
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Loja Brasileira &nbsp;·&nbsp; Chaves Oficiais</div>
+
     <h1 class="hero-title">
-      JOGOS PC<br>
+      JOGOS STEAM
       <span class="line2">ATÉ 90% OFF</span>
     </h1>
-    <p class="hero-sub">Chaves Steam originais e contas Steam off com os melhores preços do Brasil. Compre agora com nosso sistema de confiança Mercado Pago, receba na hora — sem complicação.</p>
-    <!-- Social proof strip — próximo ao CTA -->
+
+    <p class="hero-sub">
+      Chave Steam original entregue <strong>na hora</strong>, qualquer hora do dia.
+      Pague com Pix ou cartão — sem assinatura, sem surpresa no bolso.
+    </p>
+
+    <div class="hero-trust-pills">
+      <span class="hero-trust-pill pill-green">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Entrega em segundos
+      </span>
+      <span class="hero-trust-pill pill-green">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Pix &amp; Cartão
+      </span>
+      <span class="hero-trust-pill pill-green">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        +500 clientes felizes
+      </span>
+      <span class="hero-trust-pill pill-mars">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Nota 5.0 garantida
+      </span>
+    </div>
+
+    <div class="hero-btns">
+      <a class="btn-mars btn-mars-green" href="catalogo.html">
+        Ver ofertas agora
+        <span class="btn-arrow">&#x2192;</span>
+      </a>
+      <a class="btn-mars btn-mars-outline" href="https://discord.gg/bKnR9accnw" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="opacity:.6"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        Comunidade Discord
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val" id="statCount">500+</div>
+        <div class="hero-stat-label">Jogos</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">90%</div>
+        <div class="hero-stat-label">Desconto</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">&#x26A1; Imediata</div>
+        <div class="hero-stat-label">Entrega</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">&#x2605; 5.0</div>
+        <div class="hero-stat-label">Avaliação</div>
+      </div>
+    </div>
+
     <div class="hero-social-proof">
       <div class="hsp-top-row">
         <div class="hsp-score-block">
           <div class="hsp-score-val">5.0</div>
-          <div class="hsp-score-label">Score</div>
+          <div class="hsp-score-label">Nota</div>
         </div>
         <div class="hsp-meta">
-          <div class="hsp-stars">⭐⭐⭐⭐⭐</div>
-          <div class="hsp-rating-text">Baseado em <strong>+500 compras verificadas</strong></div>
+          <div class="hsp-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
+          <div class="hsp-rating-text">Mais de <strong>500 compras verificadas</strong> — 100% positivas</div>
           <div class="hsp-badges">
-            <span class="hsp-badge">✓ Mercado Pago</span>
-            <span class="hsp-badge">✓ Entrega imediata</span>
+            <span class="hsp-badge">&#x2713; Mercado Pago</span>
+            <span class="hsp-badge">&#x2713; Chave oficial</span>
+            <span class="hsp-badge">&#x2713; Anti-fraude</span>
           </div>
         </div>
       </div>
       <div class="hsp-divider"></div>
       <div class="hsp-reviews">
         <div class="hsp-review">
-          <div class="hsp-avatar av1">VG</div>
+          <div class="hsp-avatar av1">RC</div>
           <div class="hsp-review-body">
             <div class="hsp-review-header">
-              <div class="hsp-review-name">viana_gamer</div>
+              <div class="hsp-review-name">rodrigo_c</div>
               <div class="hsp-review-meta">
-                <span class="hsp-stars-sm">★★★★★</span>
-                <span class="hsp-review-date">há 2 dias</span>
+                <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
+                <span class="hsp-review-date">há 1 dia</span>
               </div>
             </div>
-            <div class="hsp-review-text">Já comprei várias vezes e nunca tive problema. Site seguro, preço imbatível e a chave chegou na hora. Recomendo demais!</div>
+            <div class="hsp-review-text">Comprei Diablo IV pela metade do preço da Steam. Chave funcionou na hora, sem dor de cabeça. Recomendo!</div>
             <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
           </div>
         </div>
         <div class="hsp-review">
-          <div class="hsp-avatar av2">LA</div>
+          <div class="hsp-avatar av2">MA</div>
           <div class="hsp-review-body">
             <div class="hsp-review-header">
-              <div class="hsp-review-name">Lucas Alô</div>
+              <div class="hsp-review-name">mari_a</div>
               <div class="hsp-review-meta">
-                <span class="hsp-stars-sm">★★★★★</span>
-                <span class="hsp-review-date">há 5 dias</span>
+                <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
+                <span class="hsp-review-date">há 3 dias</span>
               </div>
             </div>
-            <div class="hsp-review-text">Suporte nota 10, resolveram minha dúvida em minutos. Produto funcionou perfeitamente, vale muito adquirir.</div>
+            <div class="hsp-review-text">Entrega instantânea, preço justo. Já é minha loja favorita para jogos PC.</div>
             <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="hero-btns">
-      <a class="btn-mars btn-mars-green" href="catalogo.html">Ver catálogo completo</button>
-      <a class="btn-mars btn-mars-outline" href="https://discord.gg/bKnR9accnw" target="_blank">Discord da comunidade</a>
-    </div>
-    <div class="countdown">
-      <span class="countdown-label">Forza Horizon 6 lança em</span>
-      <div class="count-block"><div class="count-val" id="cDias">00</div><div class="count-lbl">Dias</div></div>
-      <span class="count-sep">:</span>
-      <div class="count-block"><div class="count-val" id="cHrs">00</div><div class="count-lbl">Hrs</div></div>
-      <span class="count-sep">:</span>
-      <div class="count-block"><div class="count-val" id="cMin">00</div><div class="count-lbl">Min</div></div>
-      <span class="count-sep">:</span>
-      <div class="count-block"><div class="count-val" id="cSec">00</div><div class="count-lbl">Seg</div></div>
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-val" id="statCount">—</div><div class="hero-stat-label">Jogos disponíveis</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">90%</div><div class="hero-stat-label">Desconto máximo</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">24h</div><div class="hero-stat-label">Entrega imediata</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">⭐ 5.0</div><div class="hero-stat-label">+500 avaliações</div></div>
-    </div>
   </div>
 </section>
 
@@ -5638,31 +5699,7 @@ function _renderNavSugg(sugg,resultados,q){
   sugg.classList.add('open');
 }
 
-/* ── COUNTDOWN — Forza Horizon 6 ── */
-(function(){
-  /* Data estimada de lançamento: 1 de junho de 2026 */
-  var target=new Date('2026-06-01T00:00:00');
-  function tick(){
-    var diff=target-new Date();
-    if(diff<0){
-      ['cDias','cHrs','cMin','cSec'].forEach(function(id){
-        var el=document.getElementById(id);if(el)el.textContent='00';
-      });
-      var lbl=document.querySelector('.countdown-label');
-      if(lbl)lbl.textContent='Forza Horizon 6 — Disponível agora!';
-      return;
-    }
-    var d=Math.floor(diff/86400000);
-    var h=Math.floor((diff%86400000)/3600000);
-    var m=Math.floor((diff%3600000)/60000);
-    var s=Math.floor((diff%60000)/1000);
-    document.getElementById('cDias').textContent=String(d).padStart(2,'0');
-    document.getElementById('cHrs').textContent=String(h).padStart(2,'0');
-    document.getElementById('cMin').textContent=String(m).padStart(2,'0');
-    document.getElementById('cSec').textContent=String(s).padStart(2,'0');
-  }
-  tick();setInterval(tick,1000);
-})();
+
 
 /* ── PRODUTOS ── */
 async function carregarProdutos(){
@@ -6293,164 +6330,6 @@ window.addEventListener('resize',function(){
 
 
 
-/* ══ GALÁXIA — UNIVERSO REALISTA ══ */
-function loadScript(src, cb) {
-  var s = document.createElement('script');
-  s.src = src; s.onload = cb;
-  s.onerror = function(){ if(cb) cb(true); }; /* passa erro para o callback */
-  document.head.appendChild(s);
-}
-
-function initThree() {
-  if (typeof THREE === 'undefined') return;
-  var canvas = document.getElementById('mars-canvas');
-  if (!canvas) return;
-
-  var W = window.innerWidth, H = window.innerHeight;
-  var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: false});
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-  renderer.setSize(W, H);
-  var scene = new THREE.Scene();
-  var cam = new THREE.PerspectiveCamera(75, W / H, 0.1, 200);
-  cam.position.z = 3;
-
-  function rnd(a, b){ return a + Math.random() * (b - a); }
-
-  /* Sprite suave com halo */
-  function makeSprite(r, g, b) {
-    var c = document.createElement('canvas'); c.width = c.height = 32;
-    var ctx = c.getContext('2d'), h = 16;
-    var gr = ctx.createRadialGradient(h,h,0,h,h,h);
-    gr.addColorStop(0,   'rgba('+r+','+g+','+b+',1)');
-    gr.addColorStop(0.3, 'rgba('+r+','+g+','+b+',.7)');
-    gr.addColorStop(0.7, 'rgba('+r+','+g+','+b+',.15)');
-    gr.addColorStop(1,   'rgba('+r+','+g+','+b+',0)');
-    ctx.fillStyle = gr; ctx.fillRect(0,0,32,32);
-    return new THREE.CanvasTexture(c);
-  }
-  var spW = makeSprite(255,255,255);
-  var spB = makeSprite(180,210,255);
-  var spY = makeSprite(255,240,180);
-  var spR = makeSprite(255,190,140);
-
-  /* Gera camada de estrelas distribuídas esfericamente */
-  function makeLayer(N, rMin, rMax, sMin, sMax) {
-    var pos = new Float32Array(N*3);
-    for (var i=0; i<N; i++) {
-      var th = Math.random()*Math.PI*2;
-      var ph = Math.acos(2*Math.random()-1);
-      var rd = rnd(rMin, rMax);
-      pos[i*3]   = rd*Math.sin(ph)*Math.cos(th);
-      pos[i*3+1] = rd*Math.sin(ph)*Math.sin(th);
-      pos[i*3+2] = rd*Math.cos(ph);
-    }
-    var geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-    var mat = new THREE.PointsMaterial({
-      size: rnd(sMin, sMax),
-      map: spW, transparent:true, opacity:1,
-      sizeAttenuation:true, depthWrite:false,
-      blending: THREE.AdditiveBlending
-    });
-    return new THREE.Points(geo, mat);
-  }
-
-  var l1 = makeLayer(2600, 9, 22, 0.020, 0.032); l1.material.opacity = 0.50;
-  var l2 = makeLayer(800,  4,  9, 0.035, 0.055); l2.material.opacity = 0.70;
-  var l3 = makeLayer(100,  2,  4, 0.065, 0.110); l3.material.opacity = 0.88;
-  var lB = makeLayer(180, 3, 18, 0.030, 0.060); lB.material.map = spB; lB.material.opacity = 0.30;
-  var lY = makeLayer(100, 3, 14, 0.028, 0.055); lY.material.map = spY; lY.material.opacity = 0.28;
-  var lR = makeLayer(60,  3, 12, 0.022, 0.045); lR.material.map = spR; lR.material.opacity = 0.22;
-
-  var galaxy = new THREE.Group();
-  galaxy.add(l1, l2, l3, lB, lY, lR);
-  scene.add(galaxy);
-
-  /* Nebulosa difusa */
-  (function(){
-    var nc = document.createElement('canvas'); nc.width = nc.height = 512;
-    var nx = nc.getContext('2d');
-    var g1 = nx.createRadialGradient(160,200,0,160,200,220);
-    g1.addColorStop(0,'rgba(70,90,190,.20)'); g1.addColorStop(.5,'rgba(50,70,160,.08)'); g1.addColorStop(1,'rgba(0,0,0,0)');
-    nx.fillStyle=g1; nx.fillRect(0,0,512,512);
-    var g2 = nx.createRadialGradient(340,140,0,340,140,160);
-    g2.addColorStop(0,'rgba(150,35,55,.16)'); g2.addColorStop(.5,'rgba(110,25,45,.06)'); g2.addColorStop(1,'rgba(0,0,0,0)');
-    nx.fillStyle=g2; nx.fillRect(0,0,512,512);
-    var g3 = nx.createRadialGradient(290,360,0,290,360,130);
-    g3.addColorStop(0,'rgba(0,150,170,.11)'); g3.addColorStop(.6,'rgba(0,110,130,.04)'); g3.addColorStop(1,'rgba(0,0,0,0)');
-    nx.fillStyle=g3; nx.fillRect(0,0,512,512);
-    var nMat = new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(nc),transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
-    var n1 = new THREE.Mesh(new THREE.PlaneGeometry(26,26), nMat);
-    n1.rotation.set(0.3, 0, 0.6); n1.position.set(0,-1,-8); scene.add(n1);
-    var n2 = new THREE.Mesh(new THREE.PlaneGeometry(22,22), nMat.clone());
-    n2.material.opacity=.09; n2.rotation.set(-0.2,0,-0.8); n2.position.set(2,1,-12); scene.add(n2);
-  })();
-
-  /* Via Láctea */
-  (function(){
-    var mc = document.createElement('canvas'); mc.width=1024; mc.height=256;
-    var mx = mc.getContext('2d');
-    var mg = mx.createLinearGradient(0,0,1024,0);
-    mg.addColorStop(0,'rgba(0,0,0,0)'); mg.addColorStop(.15,'rgba(175,185,215,.05)');
-    mg.addColorStop(.35,'rgba(205,215,250,.12)'); mg.addColorStop(.5,'rgba(220,228,255,.16)');
-    mg.addColorStop(.65,'rgba(205,215,250,.12)'); mg.addColorStop(.85,'rgba(175,185,215,.05)');
-    mg.addColorStop(1,'rgba(0,0,0,0)');
-    mx.fillStyle=mg; mx.fillRect(0,0,1024,256);
-    var mg2 = mx.createLinearGradient(0,0,0,256);
-    mg2.addColorStop(0,'rgba(0,0,0,.65)'); mg2.addColorStop(.3,'rgba(0,0,0,0)');
-    mg2.addColorStop(.7,'rgba(0,0,0,0)'); mg2.addColorStop(1,'rgba(0,0,0,.65)');
-    mx.fillStyle=mg2; mx.fillRect(0,0,1024,256);
-    var mw = new THREE.Mesh(new THREE.PlaneGeometry(38,9),
-      new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(mc),transparent:true,opacity:.26,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));
-    mw.rotation.set(Math.PI*.5,0,0.45); mw.position.set(0,-2,-6); scene.add(mw);
-  })();
-
-  window.addEventListener('resize', function(){
-    W=window.innerWidth; H=window.innerHeight;
-    cam.aspect=W/H; cam.updateProjectionMatrix(); renderer.setSize(W,H);
-  });
-
-  var clock = new THREE.Clock();
-  (function animate(){
-    requestAnimationFrame(animate);
-    var t = clock.getElapsedTime();
-    galaxy.rotation.y =  t * 0.01296;
-    galaxy.rotation.x =  Math.sin(t * 0.00378) * 0.1944;
-    galaxy.rotation.z =  Math.sin(t * 0.002376) * 0.1296;
-    l1.material.opacity = 0.48 + 0.07 * Math.sin(t * 0.27 + 0.8);
-    l3.material.opacity = 0.85 + 0.06 * Math.sin(t * 0.18 + 1.5);
-    renderer.render(scene, cam);
-  })();
-  canvas.classList.add('ready');
-}
-
-function dispararThree(){
-  /* Pula em mobile (economiza bateria) e em conexões lentas */
-  var isMobile = window.innerWidth < 768;
-  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  var isSlow = conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g');
-  if(isMobile || isSlow) return;
-
-  /* CDN principal: jsDelivr (sem rate limit, rápido no BR) */
-  var CDN1 = 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';
-  /* Fallback: cdnjs */
-  var CDN2 = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-
-  loadScript(CDN1, function(err){
-    if(!err && typeof THREE !== 'undefined'){
-      initThree();
-    } else {
-      /* Tenta o fallback silenciosamente */
-      loadScript(CDN2, function(err2){
-        if(!err2 && typeof THREE !== 'undefined') initThree();
-        /* Se falhar, simplesmente não exibe a galáxia — sem warning no console */
-      });
-    }
-  });
-}
-
-if(document.readyState==='complete') dispararThree();
-else window.addEventListener('load', dispararThree);
 </script>
 
 <!-- BOTÃO SORTEIO MOBILE -->
@@ -6526,93 +6405,237 @@ else window.addEventListener('load', dispararThree);
 </script>
 
 <script>
-/* ══ FUNDO ESPACIAL THREE.JS — igual ao perfil/sorteio ══ */
+/* ══ ESPAÇO PROFUNDO — sistema realista com parallax e cintilação ══ */
 (function(){
-  function loadScript(src,cb){
-    var s=document.createElement('script');
-    s.src=src;s.async=true;
-    s.onload=function(){cb&&cb()};
-    s.onerror=function(){cb&&cb(new Error('fail'))};
-    document.head.appendChild(s);
+  /* ─── Vídeo hero ─── */
+  function initVideo(){
+    /* YouTube iframe faz fade-in via atributo onload — sem ação extra necessária */
   }
 
-  function initThree(){
-    if(typeof THREE==='undefined') return;
+  /* ─── Canvas 2D ultra-realista (sem Three.js — mais leve e mais bonito) ─── */
+  function initSpace(){
     var canvas=document.getElementById('mars-canvas');
     if(!canvas) return;
-    var W=window.innerWidth, H=window.innerHeight;
-    var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:false});
-    renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-    renderer.setSize(W,H);
-    var scene=new THREE.Scene();
-    var cam=new THREE.PerspectiveCamera(75,W/H,.1,1000);
-    cam.position.z=5;
-    var N=W<768?700:1400;
-    var pos=new Float32Array(N*3), col=new Float32Array(N*3);
-    for(var i=0;i<N;i++){
-      pos[i*3]  =(Math.random()-.5)*28;
-      pos[i*3+1]=(Math.random()-.5)*28;
-      pos[i*3+2]=(Math.random()-.5)*16;
-      var r=Math.random();
-      if     (r<.04){col[i*3]=.91;col[i*3+1]=.26;col[i*3+2]=.10;} /* mars */
-      else if(r<.08){col[i*3]=0;  col[i*3+1]=1;  col[i*3+2]=.33;} /* green */
-      else if(r<.11){col[i*3]=.7; col[i*3+1]=.82;col[i*3+2]=1;  } /* blue */
-      else{var v=Math.random()*.5+.5;col[i*3]=v;col[i*3+1]=v;col[i*3+2]=v;}
-    }
-    var geo=new THREE.BufferGeometry();
-    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    geo.setAttribute('color',  new THREE.BufferAttribute(col,3));
-    /* Sprite circular suave */
-    var sp=document.createElement('canvas'); sp.width=sp.height=32;
-    var sx=sp.getContext('2d');
-    var sg=sx.createRadialGradient(16,16,0,16,16,16);
-    sg.addColorStop(0,'rgba(255,255,255,1)');
-    sg.addColorStop(.4,'rgba(255,255,255,.8)');
-    sg.addColorStop(1,'rgba(255,255,255,0)');
-    sx.fillStyle=sg; sx.fillRect(0,0,32,32);
-    var mat=new THREE.PointsMaterial({
-      size:.14,map:new THREE.CanvasTexture(sp),
-      vertexColors:true,transparent:true,opacity:1.0,
-      sizeAttenuation:true,depthWrite:false
-    });
-    var pts=new THREE.Points(geo,mat);
-    scene.add(pts);
-    window.addEventListener('resize',function(){
-      W=window.innerWidth;H=window.innerHeight;
-      cam.aspect=W/H;cam.updateProjectionMatrix();renderer.setSize(W,H);
-    });
-    var clock=new THREE.Clock();
-    (function animate(){
-      requestAnimationFrame(animate);
-      var t=clock.getElapsedTime();
-      pts.rotation.y= t*.012;
-      pts.rotation.x= t*.004;
-      pts.rotation.z= t*.002;
-      renderer.render(scene,cam);
-    })();
-    canvas.classList.add('ready');
-  }
 
-  /* Fade-in do vídeo Forza */
-  function initVideo(){
-    var video=document.getElementById('heroVideo');
-    if(!video) return;
-    function show(){ video.style.opacity='1'; }
-    video.addEventListener('canplay',show,{once:true});
-    video.addEventListener('playing',show,{once:true});
-    if(video.readyState>=2) show();
-    /* Força play (alguns browsers bloqueiam autoplay) */
-    video.play().catch(function(){});
+    var ctx=canvas.getContext('2d');
+    var W,H,mx=0,my=0,txMx=0,txMy=0;
+
+    /* ── Parallax via mouse ── */
+    document.addEventListener('mousemove',function(e){
+      mx=(e.clientX/window.innerWidth-.5)*2;   /* -1 a 1 */
+      my=(e.clientY/window.innerHeight-.5)*2;
+    });
+
+    function resize(){
+      W=canvas.width=window.innerWidth;
+      H=canvas.height=window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize',resize);
+
+    /* ─── Paletas de cor para estrelas reais ───
+       O cosmos tem estrelas de tipos espectrais O(azul), B(azulado), A(branco),
+       F(amarelo-branco), G(amarelo/sol), K(laranja), M(vermelho-laranja).
+       Pesos de frequência realistas.
+    */
+    var SPECTRAL=[
+      {r:155,g:176,b:255, w:3},  /* O/B — azul brilhante */
+      {r:185,g:205,b:255, w:7},  /* B   — azul-branco */
+      {r:230,g:235,b:255, w:12}, /* A   — branco-azul */
+      {r:255,g:250,b:230, w:20}, /* F   — branco-amarelado */
+      {r:255,g:245,b:200, w:25}, /* G   — amarelo (tipo Sol) */
+      {r:255,g:225,b:160, w:18}, /* K   — laranja */
+      {r:255,g:190,b:120, w:10}, /* M   — vermelho-laranja */
+      {r:255,g:255,b:255, w:25}  /* puro branco */
+    ];
+    var totalW=SPECTRAL.reduce(function(s,x){return s+x.w},0);
+
+    function pickColor(){
+      var r=Math.random()*totalW, cum=0;
+      for(var i=0;i<SPECTRAL.length;i++){
+        cum+=SPECTRAL[i].w;
+        if(r<cum) return SPECTRAL[i];
+      }
+      return SPECTRAL[SPECTRAL.length-1];
+    }
+
+    /* ─── Geração de estrelas em 4 camadas de profundidade ───
+       Cada camada tem velocidade de parallax diferente = profundidade real
+       Camada 0 = mais próxima (mais rápido), camada 3 = mais distante (quase estático)
+    */
+    var LAYERS=[
+      {n:60,  sMin:.8, sMax:2.4, alpha:.85, pSpeed:.010, twinkleSpeed:1.2}, /* perto */
+      {n:160, sMin:.4, sMax:1.4, alpha:.65, pSpeed:.006, twinkleSpeed:.8},
+      {n:350, sMin:.2, sMax:.9,  alpha:.45, pSpeed:.003, twinkleSpeed:.5},
+      {n:700, sMin:.1, sMax:.5,  alpha:.25, pSpeed:.001, twinkleSpeed:.3}   /* longe */
+    ];
+
+    var stars=[];
+    LAYERS.forEach(function(L,li){
+      for(var i=0;i<L.n;i++){
+        var col=pickColor();
+        var size=L.sMin+Math.random()*(L.sMax-L.sMin);
+        /* algumas estrelas são bem brilhantes — Sirius, Vega, etc. */
+        var isBright=Math.random()<.04;
+        stars.push({
+          bx:Math.random()*1.2-.1, /* posição base 0..1 (com margem) */
+          by:Math.random()*1.2-.1,
+          size: isBright ? size*2.2 : size,
+          r:col.r, g:col.g, b:col.b,
+          alpha: isBright ? Math.min(1,L.alpha*1.4) : L.alpha,
+          pSpeed:L.pSpeed,
+          /* cintilação: fase aleatória, amplitude proporcional ao tamanho */
+          twinkPhase:Math.random()*Math.PI*2,
+          twinkFreq:L.twinkleSpeed*(0.6+Math.random()*.8),
+          twinkAmp: isBright ? .35 : (.05+Math.random()*.25),
+          isBright:isBright,
+          layer:li
+        });
+      }
+    });
+
+    /* ── Nebulosa — pintada uma vez em offscreen canvas ── */
+    var nebOff=document.createElement('canvas');
+    nebOff.width=1024; nebOff.height=768;
+    var nebCtx=nebOff.getContext('2d');
+
+    function drawNebula(nx,ny,rx,ry,r,g,b,a){
+      var grd=nebCtx.createRadialGradient(nx,ny,0,nx,ny,Math.max(rx,ry));
+      grd.addColorStop(0,'rgba('+r+','+g+','+b+','+a+')');
+      grd.addColorStop(.4,'rgba('+r+','+g+','+b+','+(a*.4)+')');
+      grd.addColorStop(.75,'rgba('+r+','+g+','+b+','+(a*.1)+')');
+      grd.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
+      nebCtx.save();
+      nebCtx.scale(rx/Math.max(rx,ry),ry/Math.max(rx,ry));
+      nebCtx.fillStyle=grd;
+      nebCtx.beginPath();
+      nebCtx.arc(nx*(Math.max(rx,ry)/rx),ny*(Math.max(rx,ry)/ry),Math.max(rx,ry),0,Math.PI*2);
+      nebCtx.fill();
+      nebCtx.restore();
+    }
+
+    nebCtx.clearRect(0,0,1024,768);
+    /* nebulosa azul profunda */
+    drawNebula(180,280, 320,180, 40,60,140, .13);
+    /* nebulosa vermelha/mars */
+    drawNebula(750,160, 260,160, 140,30,20, .10);
+    /* via láctea difusa — banda central */
+    var mwGrd=nebCtx.createLinearGradient(0,300,1024,460);
+    mwGrd.addColorStop(0,'rgba(0,0,0,0)');
+    mwGrd.addColorStop(.2,'rgba(180,185,220,.04)');
+    mwGrd.addColorStop(.5,'rgba(200,205,240,.09)');
+    mwGrd.addColorStop(.8,'rgba(180,185,220,.04)');
+    mwGrd.addColorStop(1,'rgba(0,0,0,0)');
+    nebCtx.fillStyle=mwGrd;
+    nebCtx.fillRect(0,0,1024,768);
+    /* nebulosa verde-esmeralda tênue */
+    drawNebula(500,560, 280,200, 0,120,60, .07);
+
+    /* ── Sprite de halo para estrelas brilhantes ── */
+    function makeHalo(size,r,g,b){
+      var sc=document.createElement('canvas');
+      var d=Math.ceil(size*8+2); sc.width=sc.height=d;
+      var sx=sc.getContext('2d');
+      var gr=sx.createRadialGradient(d/2,d/2,0,d/2,d/2,d/2);
+      gr.addColorStop(0,'rgba('+r+','+g+','+b+',.9)');
+      gr.addColorStop(.15,'rgba('+r+','+g+','+b+',.4)');
+      gr.addColorStop(.4,'rgba('+r+','+g+','+b+',.1)');
+      gr.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
+      sx.fillStyle=gr; sx.fillRect(0,0,d,d);
+      return sc;
+    }
+
+    var raf;
+    function draw(t){
+      raf=requestAnimationFrame(draw);
+
+      /* lerp suave no mouse para parallax fluido */
+      txMx+=(mx-txMx)*.04;
+      txMy+=(my-txMy)*.04;
+
+      ctx.clearRect(0,0,W,H);
+
+      /* nebulosa de fundo — esticada ao tamanho da tela */
+      ctx.globalAlpha=1;
+      ctx.drawImage(nebOff,0,0,W,H);
+
+      /* estrelas por layer */
+      for(var i=0;i<stars.length;i++){
+        var s=stars[i];
+        var twink=1-s.twinkAmp*(.5+.5*Math.sin(t*s.twinkFreq+s.twinkPhase));
+        var a=s.alpha*twink;
+
+        /* parallax: camadas mais próximas se movem mais */
+        var ox=txMx*s.pSpeed*W*12;
+        var oy=txMy*s.pSpeed*H*12;
+
+        var px=(s.bx*W+ox)%W;
+        var py=(s.by*H+oy)%H;
+        if(px<0) px+=W;
+        if(py<0) py+=H;
+
+        if(s.isBright){
+          /* halo difuso para estrelas brilhantes */
+          var hal=s.size*4;
+          var grd=ctx.createRadialGradient(px,py,0,px,py,hal);
+          grd.addColorStop(0,'rgba('+s.r+','+s.g+','+s.b+','+(.6*a)+')');
+          grd.addColorStop(.3,'rgba('+s.r+','+s.g+','+s.b+','+(.15*a)+')');
+          grd.addColorStop(1,'rgba('+s.r+','+s.g+','+s.b+',0)');
+          ctx.globalAlpha=1;
+          ctx.fillStyle=grd;
+          ctx.beginPath();
+          ctx.arc(px,py,hal,0,Math.PI*2);
+          ctx.fill();
+
+          /* pico central brilhante */
+          ctx.globalAlpha=a;
+          ctx.fillStyle='rgba(255,255,255,'+a+')';
+          ctx.beginPath();
+          ctx.arc(px,py,s.size*.6,0,Math.PI*2);
+          ctx.fill();
+
+          /* cruz de difração (lentes realistas) */
+          if(s.size>1.5){
+            ctx.globalAlpha=a*.25;
+            ctx.strokeStyle='rgba('+s.r+','+s.g+','+s.b+',1)';
+            ctx.lineWidth=.5;
+            var len=s.size*5;
+            ctx.beginPath(); ctx.moveTo(px-len,py); ctx.lineTo(px+len,py); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px,py-len); ctx.lineTo(px,py+len); ctx.stroke();
+          }
+        } else {
+          /* estrela comum — círculo suave com halo mínimo */
+          ctx.globalAlpha=a*.5;
+          var grd2=ctx.createRadialGradient(px,py,0,px,py,s.size*2.5);
+          grd2.addColorStop(0,'rgba('+s.r+','+s.g+','+s.b+','+(a*.4)+')');
+          grd2.addColorStop(1,'rgba('+s.r+','+s.g+','+s.b+',0)');
+          ctx.fillStyle=grd2;
+          ctx.beginPath(); ctx.arc(px,py,s.size*2.5,0,Math.PI*2); ctx.fill();
+
+          ctx.globalAlpha=a;
+          ctx.fillStyle='rgba('+s.r+','+s.g+','+s.b+',1)';
+          ctx.beginPath(); ctx.arc(px,py,s.size*.5,0,Math.PI*2); ctx.fill();
+        }
+      }
+
+      ctx.globalAlpha=1;
+    }
+
+    var startT=null;
+    function loop(ts){
+      if(!startT) startT=ts;
+      draw((ts-startT)/1000);
+    }
+    requestAnimationFrame(loop);
+    canvas.classList.add('ready');
   }
 
   function start(){
     initVideo();
-    if(document.getElementById('mars-canvas')){
-      loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
-        if(window.requestIdleCallback) requestIdleCallback(initThree,{timeout:3000});
-        else setTimeout(initThree,800);
-      });
-    }
+    /* Canvas 2D não precisa de Three.js — roda direto */
+    var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    var slow=conn&&(conn.saveData||conn.effectiveType==='2g'||conn.effectiveType==='slow-2g');
+    if(!slow) initSpace();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
