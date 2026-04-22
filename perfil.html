@@ -48,7 +48,7 @@
   --bg:#0a0a0e;--card:#131318;--surface:#1a1a20;--border:#252530;--border2:#323240;
   --green:#00ff55;--green-glow:rgba(0,255,85,.2);--green-dim:rgba(0,255,85,.07);
   --mars:#e8421a;--orange:#ff6b2b;--amber:#ffb300;
-  --text:#fff;--muted:#888;--dim:#1a1a22;--radius:12px;
+  --text:#fff;--muted:rgba(255,255,255,.65);--dim:#1a1a22;--radius:12px;
   --bronze:#cd9f6a;--prata:#e8e8e8;--ouro:#FFD700;--esm:#50c878;--dia:#b9f2ff;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -960,8 +960,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 /* Barra de progresso */
 .progresso-wrap{margin-top:14px}
 .progresso-labels{display:flex;justify-content:space-between;font-size:9px;
-  font-weight:700;color:rgba(255,255,255,.8);margin-bottom:6px;letter-spacing:.5px;
-  text-shadow:0 1px 6px rgba(0,0,0,.9)}
+  font-weight:700;color:rgba(255,255,255,.8);margin-bottom:6px;letter-spacing:.5px}
 .progresso-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
 .progresso-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.23,1,.32,1)}
 
@@ -1019,7 +1018,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   cursor:pointer;white-space:nowrap;
   background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.18);
-  color:#c8c8e0;
+  color:#ffffff;
   transition:all .2s;
   position:relative;overflow:hidden;
 }
@@ -1834,8 +1833,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 .conquista-card.desbloqueada:hover{transform:translateY(-3px);border-color:rgba(0,255,85,.4)}
 .conquista-card.bloqueada{opacity:.35;filter:grayscale(1)}
 .conquista-icon{font-size:28px;margin-bottom:6px;display:block}
-.conquista-nome{font-size:10px;font-weight:900;color:#eee;margin-bottom:3px;letter-spacing:.5px}
-.conquista-desc{font-size:9px;color:var(--muted);font-weight:600;line-height:1.4;margin-bottom:6px}
+.conquista-nome{font-size:10px;font-weight:900;color:#fff;margin-bottom:3px;letter-spacing:.5px}
+.conquista-desc{font-size:9px;color:rgba(255,255,255,.7);font-weight:600;line-height:1.4;margin-bottom:6px}
 .conquista-titulo{font-size:8px;font-weight:700;color:var(--green);letter-spacing:1px}
 .conquista-pts{
   position:absolute;top:8px;right:8px;
@@ -1846,7 +1845,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* Seletor de título */
 .titulo-seletor{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:16px}
-.titulo-seletor-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.titulo-seletor-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:12px}
 .titulo-opcoes{display:flex;flex-direction:column;gap:8px}
 .titulo-opcao{
   display:flex;align-items:center;justify-content:space-between;
@@ -1855,8 +1854,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 }
 .titulo-opcao:hover{border-color:var(--border);background:rgba(255,255,255,.02)}
 .titulo-opcao.selecionado{border-color:var(--green);background:rgba(0,255,85,.04)}
-.titulo-opcao-nome{font-size:11px;font-weight:700;color:#eee}
-.titulo-opcao-fonte{font-size:9px;color:var(--muted);font-weight:600;margin-top:2px}
+.titulo-opcao-nome{font-size:11px;font-weight:700;color:#fff}
+.titulo-opcao-fonte{font-size:9px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px}
 .titulo-opcao-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s,background .2s}
 .titulo-opcao.selecionado .titulo-opcao-check{border-color:var(--green);background:var(--green)}
@@ -7757,6 +7756,7 @@ window.planetaAddXPSilent=function(xp,label,icon,bg,color){
 
 </script>
 
+<script>
 /* ── Presença de visitante para o admin ── */
 (function(){
   var _pc=null,_pi=null,_t=0;
