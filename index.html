@@ -405,19 +405,19 @@ body.tema-claro .exit-sub{color:#666}
   display:inline-flex;align-items:center;gap:9px;
   padding:0 28px;
   font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
-  color:rgba(255,255,255,.65);
+  color:rgba(255,255,255,.92);
 }
-.ptb-sep{color:rgba(255,255,255,.18);margin:0 2px;font-size:12px;}
+.ptb-sep{color:rgba(255,255,255,.35);margin:0 4px;font-size:12px;}
 .ptb-hi{color:#00ff55;font-weight:900;text-shadow:0 0 10px rgba(0,255,85,.6);}
 .ptb-hi-red{color:#ff7040;font-weight:900;text-shadow:0 0 10px rgba(255,112,64,.5);}
 .ptb-badge{
   flex-shrink:0;display:inline-flex;align-items:center;gap:7px;
   background:linear-gradient(135deg,rgba(232,66,26,.16),rgba(255,90,30,.08));
-  border:1px solid rgba(232,66,26,.4);color:#ff7040;
+  border:1px solid rgba(232,66,26,.4);color:#ffaa77;
   font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
   padding:5px 13px;border-radius:99px;white-space:nowrap;
   animation:ptbBadgePop 2.8s ease-in-out infinite;
-  box-shadow:0 0 12px rgba(232,66,26,.18),inset 0 1px 0 rgba(255,255,255,.06);
+  box-shadow:0 0 14px rgba(232,66,26,.25),inset 0 1px 0 rgba(255,255,255,.1);
 }
 .ptb-badge-dot{
   width:5px;height:5px;border-radius:50%;
@@ -1117,6 +1117,7 @@ body.tema-claro .exit-sub{color:#666}
 /* No mobile, stats ficam abaixo dos btns */
 @media(max-width:899px){
   .hero-stats{max-width:360px;margin-top:20px;}
+  .hero-stats-mobile{display:none!important;}
 }
 
 /* ══ HERO SOCIAL PROOF ══ */
