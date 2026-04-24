@@ -6638,13 +6638,14 @@ async function atualizarNavbar(session){
   window.onSupabaseReady = function(){
 sb.auth.getSession().then(function(r){
     if(r.data && r.data.session){
+      window.userSession=r.data.session;
       navComDebounce(r.data.session);
       carregarFavsDoSupabase(r.data.session);
     }
   });
   sb.auth.onAuthStateChange(function(event, session){
-    if(event==='SIGNED_OUT'){ _navUltimaChave=''; atualizarNavbar(null); }
-    else if(session){ navComDebounce(session); carregarFavsDoSupabase(session); }
+    if(event==='SIGNED_OUT'){ window.userSession=null; _navUltimaChave=''; atualizarNavbar(null); }
+    else if(session){ window.userSession=session; navComDebounce(session); carregarFavsDoSupabase(session); }
   });
   var mpBanner=document.getElementById('marspassBannerWrap');
   if(mpBanner) mpBanner.style.display='block';
