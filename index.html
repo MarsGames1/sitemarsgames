@@ -362,28 +362,38 @@ body.tema-claro .exit-sub{color:#666}
 .manu-link.discord{border-color:rgba(114,137,218,.25);color:#7289da}
 .manu-link.discord:hover{border-color:rgba(114,137,218,.6);background:rgba(114,137,218,.07)}
 
-/* ══ PROMO TOP BANNER — Canvas Neon Dark ══ */
+/* ══ PROMO TOP BANNER — Dia do Trabalhador ══ */
 @keyframes bannerSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @keyframes ptbPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(1.7)}}
-@keyframes ptbBadgePop{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes ptbBadgePop{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes ptbShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes ptbGlow{0%,100%{box-shadow:0 2px 18px rgba(220,38,38,.18)}50%{box-shadow:0 2px 28px rgba(220,38,38,.35)}}
 
 #promoTopBanner{
   position:relative;z-index:201;
-  height:42px;min-height:42px;
+  height:54px;min-height:54px;
   overflow:hidden;
-  border-bottom:1px solid rgba(0,255,85,.12);
-  animation:bannerSlide .5s cubic-bezier(.23,1,.32,1);
+  background:linear-gradient(135deg,#ffffff 0%,#fef2f2 40%,#fff7ed 70%,#ffffff 100%);
+  border-bottom:2px solid rgba(220,38,38,.18);
+  box-shadow:0 2px 20px rgba(220,38,38,.12),0 1px 0 rgba(255,255,255,.8);
+  animation:bannerSlide .5s cubic-bezier(.23,1,.32,1),ptbGlow 3s ease-in-out infinite;
+}
+/* Linha decorativa vermelha no topo */
+#promoTopBanner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#dc2626,#f97316,#dc2626,#ef4444,#f97316,#dc2626);
+  background-size:200% 100%;
+  animation:ptbShimmer 3s linear infinite;
 }
 #ptbCanvas{
   position:absolute;inset:0;
   width:100%;height:100%;
   display:block;pointer-events:none;
-  image-rendering:pixelated;
 }
 .ptb-inner{
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;height:42px;gap:12px;
+  padding:0 16px;height:54px;gap:12px;
   position:relative;z-index:2;
 }
 .ptb-marquee-wrap{
@@ -391,49 +401,53 @@ body.tema-claro .exit-sub{color:#666}
   display:flex;align-items:center;position:relative;
 }
 .ptb-marquee-wrap::before,.ptb-marquee-wrap::after{
-  content:'';position:absolute;top:0;bottom:0;width:48px;z-index:3;pointer-events:none;
+  content:'';position:absolute;top:0;bottom:0;width:40px;z-index:3;pointer-events:none;
 }
-.ptb-marquee-wrap::before{left:0;background:linear-gradient(to right,rgba(4,4,12,1),rgba(4,4,12,0))}
-.ptb-marquee-wrap::after{right:0;background:linear-gradient(to left,rgba(4,4,12,1),rgba(4,4,12,0))}
+.ptb-marquee-wrap::before{left:0;background:linear-gradient(to right,rgba(255,255,255,1),rgba(255,255,255,0))}
+.ptb-marquee-wrap::after{right:0;background:linear-gradient(to left,rgba(255,255,255,1),rgba(255,255,255,0))}
 .ptb-track{
   display:flex;align-items:center;
   white-space:nowrap;width:max-content;
-  animation:marqueeScroll 30s linear infinite;
+  animation:marqueeScroll 34s linear infinite;
 }
 .ptb-track:hover{animation-play-state:paused}
 .ptb-item{
   display:inline-flex;align-items:center;gap:9px;
   padding:0 28px;
-  font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
-  color:rgba(255,255,255,.92);
+  font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#7f1d1d;
 }
-.ptb-sep{color:rgba(255,255,255,.35);margin:0 4px;font-size:12px;}
-.ptb-hi{color:#00ff55;font-weight:900;text-shadow:0 0 10px rgba(0,255,85,.6);}
-.ptb-hi-red{color:#ff7040;font-weight:900;text-shadow:0 0 10px rgba(255,112,64,.5);}
+.ptb-sep{color:rgba(220,38,38,.35);margin:0 4px;font-size:12px;}
+.ptb-hi{
+  color:#dc2626;font-weight:900;
+  background:linear-gradient(90deg,#dc2626,#f97316);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.ptb-hi-red{color:#dc2626;font-weight:900;}
 .ptb-badge{
   flex-shrink:0;display:inline-flex;align-items:center;gap:7px;
-  background:linear-gradient(135deg,rgba(232,66,26,.16),rgba(255,90,30,.08));
-  border:1px solid rgba(232,66,26,.4);color:#ffaa77;
-  font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
-  padding:5px 13px;border-radius:99px;white-space:nowrap;
+  background:linear-gradient(135deg,#dc2626,#c41a1a);
+  border:none;color:#fff;
+  font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  padding:6px 14px;border-radius:99px;white-space:nowrap;
   animation:ptbBadgePop 2.8s ease-in-out infinite;
-  box-shadow:0 0 14px rgba(232,66,26,.25),inset 0 1px 0 rgba(255,255,255,.1);
+  box-shadow:0 3px 14px rgba(220,38,38,.4),0 1px 0 rgba(255,255,255,.25) inset;
 }
 .ptb-badge-dot{
   width:5px;height:5px;border-radius:50%;
-  background:#ff5533;box-shadow:0 0 8px #ff4422;
+  background:#fca5a5;box-shadow:0 0 6px #fca5a5;
   animation:ptbPulse 1.3s ease-in-out infinite;flex-shrink:0;
 }
 .ptb-close{
-  flex-shrink:0;width:24px;height:24px;border-radius:7px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.28);cursor:pointer;
+  flex-shrink:0;width:26px;height:26px;border-radius:7px;
+  background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);
+  color:rgba(220,38,38,.45);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   font-size:14px;line-height:1;
   transition:background .15s,color .15s,border-color .15s;
   padding:0;
 }
-.ptb-close:hover{background:rgba(232,66,26,.18);color:rgba(255,255,255,.85);border-color:rgba(232,66,26,.35)}
+.ptb-close:hover{background:rgba(220,38,38,.15);color:#dc2626;border-color:rgba(220,38,38,.5)}
 .ptb-hidden{display:none!important}
 
 /* ══ NAVBAR ══ */
@@ -4005,22 +4019,22 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
 <div id="promoTopBanner">
   <canvas id="ptbCanvas"></canvas>
   <div class="ptb-inner">
-    <div class="ptb-badge"><div class="ptb-badge-dot"></div>🔥 Feriado</div>
+    <div class="ptb-badge"><div class="ptb-badge-dot"></div>⚒️ Dia do Trabalhador</div>
     <div class="ptb-marquee-wrap">
       <div class="ptb-track" id="ptbTrack">
-        <span class="ptb-item">🔥 Feriado <span class="ptb-hi-red">17–27</span> <span class="ptb-sep">·</span> Tudo com desconto <span class="ptb-sep">·</span> Até <span class="ptb-hi">90% OFF</span> em jogos PC</span>
-        <span class="ptb-item">⚡ Chaves Steam originais <span class="ptb-sep">·</span> Entrega na hora <span class="ptb-sep">·</span> <span class="ptb-hi">Pix &amp; Cartão</span> aceitos</span>
-        <span class="ptb-item">🎮 <span class="ptb-hi">+500 clientes</span> satisfeitos <span class="ptb-sep">·</span> Nota <span class="ptb-hi">5.0</span> <span class="ptb-sep">·</span> Aproveite antes de acabar!</span>
-        <span class="ptb-item">🔥 Feriado <span class="ptb-hi-red">17–27</span> <span class="ptb-sep">·</span> Tudo com desconto <span class="ptb-sep">·</span> Até <span class="ptb-hi">90% OFF</span> em jogos PC</span>
-        <span class="ptb-item">⚡ Chaves Steam originais <span class="ptb-sep">·</span> Entrega na hora <span class="ptb-sep">·</span> <span class="ptb-hi">Pix &amp; Cartão</span> aceitos</span>
-        <span class="ptb-item">🎮 <span class="ptb-hi">+500 clientes</span> satisfeitos <span class="ptb-sep">·</span> Nota <span class="ptb-hi">5.0</span> <span class="ptb-sep">·</span> Aproveite antes de acabar!</span>
+        <span class="ptb-item">⚒️ Dia do Trabalhador <span class="ptb-hi">1–10 de Maio</span> <span class="ptb-sep">·</span> Até <span class="ptb-hi">90% OFF</span> em jogos PC</span>
+        <span class="ptb-item">🎮 Chaves Steam originais <span class="ptb-sep">·</span> Entrega na hora <span class="ptb-sep">·</span> <span class="ptb-hi-red">Pix &amp; Cartão</span> aceitos</span>
+        <span class="ptb-item">⭐ <span class="ptb-hi-red">+500 clientes</span> satisfeitos <span class="ptb-sep">·</span> Nota <span class="ptb-hi">5.0</span> <span class="ptb-sep">·</span> Promoção válida até dia 10!</span>
+        <span class="ptb-item">⚒️ Dia do Trabalhador <span class="ptb-hi">1–10 de Maio</span> <span class="ptb-sep">·</span> Até <span class="ptb-hi">90% OFF</span> em jogos PC</span>
+        <span class="ptb-item">🎮 Chaves Steam originais <span class="ptb-sep">·</span> Entrega na hora <span class="ptb-sep">·</span> <span class="ptb-hi-red">Pix &amp; Cartão</span> aceitos</span>
+        <span class="ptb-item">⭐ <span class="ptb-hi-red">+500 clientes</span> satisfeitos <span class="ptb-sep">·</span> Nota <span class="ptb-hi">5.0</span> <span class="ptb-sep">·</span> Promoção válida até dia 10!</span>
       </div>
     </div>
     <button class="ptb-close" onclick="fecharPromoBanner()" aria-label="Fechar">×</button>
   </div>
 </div>
 <script>
-/* ── Canvas neon engine — promo banner ── */
+/* ── Canvas light engine — Dia do Trabalhador banner ── */
 (function(){
   var banner=document.getElementById('promoTopBanner');
   var canvas=document.getElementById('ptbCanvas');
@@ -4028,29 +4042,29 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
   var ctx=canvas.getContext('2d');
   function resize(){
     canvas.width=banner.offsetWidth||window.innerWidth;
-    canvas.height=banner.offsetHeight||42;
+    canvas.height=banner.offsetHeight||54;
   }
   resize();
   window.addEventListener('resize',function(){resize();},{passive:true});
 
-  /* Partículas neon */
-  var COLS=['0,255,85','232,66,26','255,180,0','0,200,255','200,100,255'];
+  /* Confetti leves vermelhos/laranja/dourados para tema claro */
+  var COLS=['220,38,38','249,115,22','234,88,12','185,28,28','252,165,165'];
   var pts=[];
-  for(var i=0;i<32;i++){
+  for(var i=0;i<24;i++){
     var c=COLS[i%COLS.length];
-    pts.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.00022,vy:-(Math.random()*.00014+.00004),
-      sz:Math.random()*.9+.25,al:Math.random()*.45+.1,col:c,ph:Math.random()*Math.PI*2,spd:Math.random()*.018+.006});
+    pts.push({x:Math.random(),y:Math.random(),
+      vx:(Math.random()-.5)*.00016,vy:-(Math.random()*.00010+.00003),
+      sz:Math.random()*.7+.2,al:Math.random()*.18+.04,
+      col:c,ph:Math.random()*Math.PI*2,spd:Math.random()*.014+.005});
   }
-  /* Estrelinhas estáticas */
-  var stars=[];
-  for(var j=0;j<20;j++) stars.push({x:Math.random(),y:Math.random(),r:Math.random()*.55+.15,a:Math.random()*.28+.06,ph:Math.random()*Math.PI*2});
-  /* Laser beams */
-  var beams=[
-    {x:.08,sp:.00082,col:'0,255,85',al:.14},
-    {x:.42,sp:.00058,col:'232,66,26',al:.12},
-    {x:.72,sp:.00070,col:'255,160,0',al:.10},
-    {x:.91,sp:.00064,col:'0,180,255',al:.09}
-  ];
+  /* Brilhinhos brancos */
+  var sparks=[];
+  for(var j=0;j<14;j++) sparks.push({
+    x:Math.random(),y:Math.random(),
+    r:Math.random()*.4+.1,
+    a:Math.random()*.12+.04,
+    ph:Math.random()*Math.PI*2
+  });
 
   var t=0;
   function draw(){
@@ -4060,88 +4074,35 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
     if(!W||!H)return;
     ctx.clearRect(0,0,W,H);
 
-    /* ── BG: escuro quase preto com leve tint roxo/verde ── */
-    var bg=ctx.createLinearGradient(0,0,W,0);
-    bg.addColorStop(0,'#03030a');
-    bg.addColorStop(.25,'#05030e');
-    bg.addColorStop(.5,'#040908');
-    bg.addColorStop(.75,'#07030a');
-    bg.addColorStop(1,'#040408');
-    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    /* Brilho sutil vermelho no centro */
+    var gc=ctx.createRadialGradient(W*.5,H*2,0,W*.5,H*2,W*.6);
+    gc.addColorStop(0,'rgba(220,38,38,.06)');gc.addColorStop(1,'rgba(220,38,38,0)');
+    ctx.fillStyle=gc;ctx.fillRect(0,0,W,H);
 
-    /* ── Brilho central vermelho-escuro ── */
-    var gc=ctx.createRadialGradient(W*.5,H*1.5,0,W*.5,H*1.5,W*.55);
-    gc.addColorStop(0,'rgba(232,66,26,.10)'); gc.addColorStop(1,'rgba(232,66,26,0)');
-    ctx.fillStyle=gc; ctx.fillRect(0,0,W,H);
+    /* Brilho laranja esquerda */
+    var gl=ctx.createRadialGradient(0,H*.5,0,0,H*.5,W*.2);
+    gl.addColorStop(0,'rgba(249,115,22,.06)');gl.addColorStop(1,'rgba(249,115,22,0)');
+    ctx.fillStyle=gl;ctx.fillRect(0,0,W,H);
 
-    /* ── Verde esquerda ── */
-    var gl=ctx.createRadialGradient(W*.06,H*.5,0,W*.06,H*.5,W*.14);
-    gl.addColorStop(0,'rgba(0,255,85,.08)'); gl.addColorStop(1,'rgba(0,255,85,0)');
-    ctx.fillStyle=gl; ctx.fillRect(0,0,W,H);
-
-    /* ── Azul/roxo direita ── */
-    var gr=ctx.createRadialGradient(W*.94,H*.5,0,W*.94,H*.5,W*.12);
-    gr.addColorStop(0,'rgba(120,80,255,.07)'); gr.addColorStop(1,'rgba(120,80,255,0)');
-    ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
-
-    /* ── Grade de pontos ── */
-    var GCOLS=Math.ceil(W/22)+2;
-    var GROWS=3;
-    var gdx=W/(GCOLS-1), gdy=H/(GROWS+1);
-    for(var gr2=0;gr2<GROWS;gr2++){
-      for(var gc2=0;gc2<GCOLS;gc2++){
-        var da=.028+.018*Math.sin(t*.35+gc2*.22+gr2*.9);
-        ctx.globalAlpha=da;
-        ctx.fillStyle='rgba(255,255,255,1)';
-        ctx.beginPath(); ctx.arc(gc2*gdx,(gr2+1)*gdy,.65,0,Math.PI*2); ctx.fill();
-      }
+    /* Faíscas/sparkles */
+    for(var si=0;si<sparks.length;si++){
+      var s=sparks[si];
+      var sa=s.a*(0.4+0.6*Math.sin(t*1.4+s.ph));
+      ctx.globalAlpha=sa;ctx.fillStyle='rgba(220,38,38,1)';
+      ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);ctx.fill();
     }
 
-    /* ── Laser beams ── */
-    for(var bi=0;bi<beams.length;bi++){
-      var b=beams[bi];
-      b.x=(b.x+b.sp)%1.2; if(b.x<0)b.x=1.15;
-      var bx=b.x*W;
-      var blg=ctx.createLinearGradient(bx-16,0,bx+16,0);
-      blg.addColorStop(0,'rgba('+b.col+',0)');
-      blg.addColorStop(.5,'rgba('+b.col+','+b.al+')');
-      blg.addColorStop(1,'rgba('+b.col+',0)');
-      ctx.globalAlpha=1; ctx.fillStyle=blg; ctx.fillRect(bx-16,0,32,H);
-    }
-
-    /* ── Neon lines top & bottom ── */
-    var lt=ctx.createLinearGradient(0,0,W,0);
-    lt.addColorStop(0,'rgba(0,255,85,0)'); lt.addColorStop(.3,'rgba(0,255,85,.3)');
-    lt.addColorStop(.6,'rgba(232,66,26,.2)'); lt.addColorStop(1,'rgba(232,66,26,0)');
-    ctx.globalAlpha=.55+.2*Math.sin(t*.6); ctx.fillStyle=lt; ctx.fillRect(0,0,W,1);
-
-    var lb=ctx.createLinearGradient(0,0,W,0);
-    lb.addColorStop(0,'rgba(232,66,26,0)'); lb.addColorStop(.25,'rgba(232,66,26,.55)');
-    lb.addColorStop(.55,'rgba(0,255,85,.4)'); lb.addColorStop(.8,'rgba(255,180,0,.35)');
-    lb.addColorStop(1,'rgba(255,180,0,0)');
-    ctx.globalAlpha=.65+.18*Math.sin(t*.7+1); ctx.fillStyle=lb; ctx.fillRect(0,H-1,W,1);
-
-    /* ── Estrelas ── */
-    for(var si=0;si<stars.length;si++){
-      var s=stars[si];
-      var sa=s.a*(0.45+0.55*Math.sin(t*1.2+s.ph));
-      ctx.globalAlpha=sa; ctx.fillStyle='rgba(255,255,230,1)';
-      ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2); ctx.fill();
-    }
-
-    /* ── Partículas ── */
+    /* Partículas flutuantes */
     for(var pi=0;pi<pts.length;pi++){
       var p=pts[pi];
-      p.x+=p.vx; p.y+=p.vy; p.ph+=p.spd;
+      p.x+=p.vx;p.y+=p.vy;p.ph+=p.spd;
       if(p.y<-.06){p.y=1.06;p.x=Math.random();}
-      if(p.x<-.02)p.x=1.02; if(p.x>1.02)p.x=-.02;
-      var pa=p.al*(0.45+0.55*Math.sin(p.ph));
-      var pr=ctx.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,p.sz*2.2);
-      pr.addColorStop(0,'rgba('+p.col+','+pa+')'); pr.addColorStop(1,'rgba('+p.col+',0)');
-      ctx.globalAlpha=1; ctx.fillStyle=pr;
-      ctx.beginPath(); ctx.arc(p.x*W,p.y*H,p.sz*2.2,0,Math.PI*2); ctx.fill();
-      ctx.globalAlpha=pa; ctx.fillStyle='rgba('+p.col+',1)';
-      ctx.beginPath(); ctx.arc(p.x*W,p.y*H,p.sz*.4,0,Math.PI*2); ctx.fill();
+      if(p.x<-.02)p.x=1.02;if(p.x>1.02)p.x=-.02;
+      var pa=p.al*(0.5+0.5*Math.sin(p.ph));
+      var pr=ctx.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,p.sz*2);
+      pr.addColorStop(0,'rgba('+p.col+','+pa+')');pr.addColorStop(1,'rgba('+p.col+',0)');
+      ctx.globalAlpha=1;ctx.fillStyle=pr;
+      ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.sz*2,0,Math.PI*2);ctx.fill();
     }
     ctx.globalAlpha=1;
   }
