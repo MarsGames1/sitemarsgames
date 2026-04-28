@@ -8,8 +8,6 @@ Disallow: /marspass-checkout.html
 Disallow: /aguardando-pagamento.html
 Disallow: /sucesso.html
 Disallow: /marspass-sucesso.html
-Disallow: /perfil.html
-Disallow: /chaves.html
 Disallow: /admin.html
 
 Sitemap: https://marsgames.com.br/sitemap.xml
