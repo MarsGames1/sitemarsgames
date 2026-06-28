@@ -2,211 +2,445 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-  <!-- SEO -->
-  <meta name="description" content="Perguntas Frequentes — MarsGames. Tire suas dúvidas sobre jogos Steam offline, pagamentos e entregas.">
-  <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://marsgames.com.br/faq.html">
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="MarsGames">
-  <meta property="og:title" content="Perguntas Frequentes — MarsGames">
-  <meta property="og:description" content="Perguntas Frequentes — MarsGames. Tire suas dúvidas sobre jogos Steam offline, pagamentos e entregas.">
-  <meta property="og:url" content="https://marsgames.com.br/faq.html">
-  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Perguntas Frequentes — MarsGames">
-  <meta name="twitter:description" content="Perguntas Frequentes — MarsGames. Tire suas dúvidas sobre jogos Steam offline, pagamentos e entregas.">
+<meta name="description" content="Perguntas Frequentes — MarsGames. Tire suas dúvidas sobre jogos Steam offline, pagamentos e entregas.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://marsgames.com.br/faq.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MarsGames">
+<meta property="og:title" content="Perguntas Frequentes — MarsGames">
+<meta property="og:description" content="Perguntas Frequentes — MarsGames. Tire suas dúvidas sobre jogos Steam offline, pagamentos e entregas.">
+<meta property="og:url" content="https://marsgames.com.br/faq.html">
+<meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Perguntas Frequentes — MarsGames">
+<meta name="twitter:description" content="Perguntas Frequentes — MarsGames. Tire suas dúvidas sobre jogos Steam offline, pagamentos e entregas.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarsGames — Perguntas Frequentes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
-<style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style id="mg-system">
+/* ============================================================
+   MarsGames — Design System  v2.0
+   "Terminal de Marte": dark, preciso, acento cirúrgico.
+   Mantém identidade: verde #00ff55 + Mars #e8421a.
+   ============================================================ */
+
+/* ---------- Tokens ---------- */
+:root{
+  /* superfícies (planas, sem gradiente) */
+  --bg:        #0a0a0e;
+  --bg-2:      #0c0c11;          /* seção levemente elevada   */
+  --card:      #121218;
+  --card-2:    #16161d;          /* hover / aninhado          */
+  --line:      #20202b;          /* hairline padrão           */
+  --line-2:    #2b2b38;          /* borda mais forte / hover  */
+
+  /* acentos (os ÚNICOS da marca) */
+  --green:     #00ff55;
+  --green-ink: #3bff7e;          /* verde seguro p/ texto     */
+  --green-soft:rgba(0,255,85,.08);
+  --green-line:rgba(0,255,85,.22);
+  --mars:      #e8421a;
+  --mars-ink:  #ff7a52;
+  --mars-soft: rgba(232,66,26,.10);
+  --mars-line: rgba(232,66,26,.24);
+
+  /* texto (hierarquia de 3 níveis, sem #fff puro) */
+  --text:      #f3f3f6;
+  --text-2:    #a2a2af;
+  --text-3:    #6b6b79;
+
+  /* estado */
+  --ok:        #2fe783;
+  --warn:      #ffb84d;
+  --danger:    #ff5066;
+
+  /* forma */
+  --r:         14px;
+  --r-sm:      10px;
+  --r-lg:      20px;
+  --r-pill:    999px;
+
+  /* elevação (neutra e discreta — substitui os glows) */
+  --e1: 0 1px 2px rgba(0,0,0,.4);
+  --e2: 0 8px 24px rgba(0,0,0,.45);
+  --e3: 0 24px 60px rgba(0,0,0,.55);
+
+  /* tipografia */
+  --f-display: 'Orbitron', system-ui, sans-serif;
+  --f-body:    'Montserrat', system-ui, sans-serif;
+  --f-mono:    ui-monospace,'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+
+  --touch: 44px;
+  --nav-h: 64px;
+  --maxw:  1180px;
+}
+
+/* ---------- Reset ---------- */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0a0e;font-family:'Montserrat',sans-serif;color:#fff;min-height:100vh}
-.navbar{position:sticky;top:0;z-index:200;background:rgba(10,10,14,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,66,26,.15);padding:0 16px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
-.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
-.nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
-.nav-logo-text span{color:#e8421a}
-.nav-back{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid #323240;background:rgba(255,255,255,.04);font-size:10px;font-weight:700;color:#aaa;text-decoration:none;transition:border-color .2s,color .2s}
-.nav-back:hover{border-color:#555;color:#fff}
-.pol-wrap{max-width:800px;margin:0 auto;padding:48px 20px 80px}
-.pol-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#e8421a;margin-bottom:10px}
-.pol-title{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,34px);font-weight:900;letter-spacing:2px;margin-bottom:8px}
-.pol-updated{font-size:10px;color:#555;font-weight:600;margin-bottom:40px}
-.faq-cat{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#00ff55;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #1a1a22}
-.faq-item{background:#131318;border:1px solid #252530;border-radius:12px;margin-bottom:8px;overflow:hidden}
-.faq-q{padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:background .2s}
-.faq-q:hover{background:rgba(255,255,255,.03)}
-.faq-q-text{font-size:13px;font-weight:700;color:#ddd;line-height:1.4}
-.faq-arrow{font-size:12px;color:#555;transition:transform .25s;flex-shrink:0}
-.faq-item.open .faq-arrow{transform:rotate(180deg);color:#00ff55}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.23,1,.32,1)}
-.faq-item.open .faq-a{max-height:400px}
-.faq-a-inner{padding:0 20px 18px;font-size:13px;color:#888;font-weight:600;line-height:1.8;border-top:1px solid #1a1a22}
-.faq-a-inner strong{color:#ccc}
-.faq-a-inner a{color:#00ff55;text-decoration:none}
-.pol-contact{background:rgba(232,66,26,.06);border:1px solid rgba(232,66,26,.2);border-radius:12px;padding:20px;margin-top:40px;text-align:center}
-.pol-contact p{color:#888;font-size:12px;margin-bottom:8px}
-.pol-contact a{color:#00ff55;text-decoration:none;font-weight:700}
-footer{border-top:1px solid #1a1a22;padding:24px 20px;text-align:center;font-size:10px;color:#333;font-weight:600}
-footer a{color:#555;text-decoration:none;margin:0 8px}
-footer a:hover{color:#888}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--f-body);
+  font-weight:600;
+  line-height:1.6;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+::selection{background:var(--green);color:#04130a}
+
+/* assinatura: grid de pontos sutil, fixo no fundo */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:32px 32px;mask-image:linear-gradient(to bottom,#000,transparent 80%);
+}
+body>*{position:relative;z-index:1}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+/* ---------- Tipografia utilitária ---------- */
+.eyebrow{
+  font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--mars-ink);display:inline-flex;gap:.5em;align-items:center;
+}
+.eyebrow::before{content:'//';color:var(--mars);opacity:.7}
+.h-display{font-family:var(--f-display);font-weight:900;letter-spacing:.04em;line-height:1.08}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--text-2)}
+.dim{color:var(--text-3)}
+
+/* ---------- Container ---------- */
+.container{max-width:var(--maxw);margin-inline:auto;padding-inline:20px;width:100%}
+.container--narrow{max-width:820px}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.nav{
+  position:sticky;top:0;z-index:200;height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-inline:18px;
+  background:rgba(10,10,14,.72);
+  backdrop-filter:saturate(160%) blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-logo img{width:34px;height:34px;object-fit:contain}
+.nav-logo-text{font-family:var(--f-display);font-size:17px;font-weight:900;letter-spacing:.14em}
+.nav-logo-text span{color:var(--mars)}
+.nav-links{display:none;gap:4px}
+@media(min-width:880px){.nav-links{display:flex}}
+.nav-link{
+  font-size:13px;font-weight:700;color:var(--text-2);
+  padding:9px 14px;border-radius:var(--r-sm);transition:color .15s,background .15s;
+}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--green-ink)}
+.nav-back{
+  display:inline-flex;align-items:center;gap:7px;min-height:var(--touch);
+  padding:0 16px;border-radius:var(--r-sm);border:1px solid var(--line-2);
+  background:rgba(255,255,255,.02);font-size:12px;font-weight:700;color:var(--text-2);
+  transition:border-color .15s,color .15s;
+}
+.nav-back:hover{border-color:var(--line-2);color:var(--text)}
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:var(--touch);padding:0 22px;border:1px solid transparent;
+  border-radius:var(--r-sm);font-family:var(--f-body);font-weight:800;
+  font-size:13px;letter-spacing:.04em;transition:transform .12s,box-shadow .15s,background .15s,border-color .15s;
+}
+.btn:active{transform:translateY(1px)}
+/* primário: o ÚNICO gradiente permitido na UI */
+.btn--primary{
+  background:linear-gradient(135deg,var(--green),#00c944);
+  color:#04130a;box-shadow:var(--e1);
+}
+.btn--primary:hover{box-shadow:0 8px 28px rgba(0,255,85,.22)}
+.btn--mars{background:var(--mars);color:#fff}
+.btn--mars:hover{background:#ff4f24}
+.btn--ghost{background:transparent;border-color:var(--line-2);color:var(--text)}
+.btn--ghost:hover{border-color:var(--green-line);color:var(--green-ink)}
+.btn--block{width:100%}
+
+/* ============================================================
+   CARDS / SUPERFÍCIES
+   ============================================================ */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px;transition:border-color .18s,background .18s;
+}
+.card:hover{border-color:var(--line-2)}
+/* variante com fio de acento no topo (uso pontual) */
+.card--accent{position:relative;overflow:hidden}
+.card--accent::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,var(--green),transparent);
+}
+
+/* ============================================================
+   BADGES / PILLS
+   ============================================================ */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 10px;border-radius:var(--r-pill);
+  font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+  border:1px solid var(--line-2);color:var(--text-2);text-transform:uppercase;
+}
+.badge--ok{color:var(--ok);border-color:rgba(47,231,131,.3);background:rgba(47,231,131,.07)}
+.badge--warn{color:var(--warn);border-color:rgba(255,184,77,.3);background:rgba(255,184,77,.07)}
+.badge--mars{color:var(--mars-ink);border-color:var(--mars-line);background:var(--mars-soft)}
+.badge--dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ============================================================
+   PÁGINAS DE CONTEÚDO (políticas, faq, etc.)
+   ============================================================ */
+.page{max-width:820px;margin-inline:auto;padding:56px 20px 88px}
+.page-eyebrow{margin-bottom:14px}
+.page-title{font-family:var(--f-display);font-weight:900;letter-spacing:.03em;
+  font-size:clamp(26px,5vw,40px);line-height:1.05;margin-bottom:10px}
+.page-sub{color:var(--text-3);font-size:12px;font-family:var(--f-mono);letter-spacing:.03em;margin-bottom:48px}
+
+.section{margin-bottom:40px}
+.section > h2{
+  font-family:var(--f-display);font-size:14px;font-weight:700;letter-spacing:.06em;
+  color:var(--text);margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:10px;
+}
+.section > h2::before{content:'';width:6px;height:6px;border-radius:1px;background:var(--green);transform:translateY(-1px)}
+.section p{color:var(--text-2);font-size:14px;line-height:1.85;margin-bottom:12px}
+.section strong{color:var(--text);font-weight:700}
+.list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.list li{position:relative;padding-left:22px;color:var(--text-2);font-size:14px;line-height:1.7}
+.list li::before{content:'▸';position:absolute;left:2px;top:1px;color:var(--mars);font-size:11px}
+
+/* tabela */
+.table{width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;font-size:13px}
+.table th{
+  background:var(--bg-2);text-align:left;padding:13px 16px;
+  font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--line)}
+.table td{padding:13px 16px;color:var(--text-2);font-weight:600;border-bottom:1px solid var(--line)}
+.table tr:last-child td{border-bottom:none}
+.table tbody tr{transition:background .15s}
+.table tbody tr:hover td{background:rgba(255,255,255,.015)}
+
+/* ============================================================
+   FAQ (accordion)
+   ============================================================ */
+.faq-cat{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--green-ink);margin:38px 0 14px;
+  display:flex;align-items:center;gap:12px}
+.faq-cat::after{content:'';flex:1;height:1px;background:var(--line)}
+.faq-item{border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:8px;
+  background:var(--card);transition:border-color .18s}
+.faq-item.open{border-color:var(--green-line)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:16px 18px;min-height:var(--touch);cursor:pointer}
+.faq-q-text{font-size:14px;font-weight:700;color:var(--text);line-height:1.4}
+.faq-item.open .faq-q-text{color:var(--green-ink)}
+.faq-arrow{flex-shrink:0;width:18px;height:18px;position:relative;transition:transform .25s}
+.faq-arrow::before,.faq-arrow::after{content:'';position:absolute;top:50%;width:9px;height:1.5px;
+  background:var(--text-3);transition:background .2s}
+.faq-arrow::before{left:1px;transform:rotate(45deg)}
+.faq-arrow::after{right:1px;transform:rotate(-45deg)}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-item.open .faq-arrow::before,.faq-item.open .faq-arrow::after{background:var(--green)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+.faq-a > div{overflow:hidden}
+.faq-a-inner{padding:0 18px 18px;font-size:13.5px;color:var(--text-2);line-height:1.8}
+.faq-a-inner strong{color:var(--text)}
+.faq-a-inner a{color:var(--green-ink);border-bottom:1px solid var(--green-line)}
+
+/* ============================================================
+   BLOCO DE CONTATO / CTA
+   ============================================================ */
+.contact{
+  border:1px solid var(--mars-line);background:var(--mars-soft);
+  border-radius:var(--r);padding:24px;margin-top:40px;text-align:center;
+}
+.contact p{color:var(--text-2);font-size:13px;margin-bottom:14px}
+.contact-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer{border-top:1px solid var(--line);padding:28px 20px;margin-top:40px;
+  text-align:center;color:var(--text-3);font-size:11px;font-family:var(--f-mono);letter-spacing:.04em}
+.footer a{color:var(--text-3);margin:0 9px;transition:color .15s}
+.footer a:hover{color:var(--green-ink)}
+
+/* foco visível — acessibilidade */
+:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:4px}
+
 </style>
 </head>
 <body>
-<nav class="navbar">
+<nav class="nav">
   <a class="nav-logo" href="index.html">
     <div class="nav-logo-text">Mars<span>Games</span></div>
   </a>
-  <a class="nav-back" href="index.html">← Voltar à Loja</a>
+  <a class="nav-back" href="index.html">← Voltar à loja</a>
 </nav>
 
-<div class="pol-wrap">
-  <div class="pol-eyebrow">MarsGames — Suporte</div>
-  <h1 class="pol-title">Perguntas Frequentes</h1>
-  <div class="pol-updated">Encontre respostas rápidas para as dúvidas mais comuns</div>
+<main class="page">
+  <div class="eyebrow page-eyebrow">Suporte</div>
+  <h1 class="page-title">Perguntas frequentes</h1>
+  <p class="page-sub">Respostas rápidas para as dúvidas mais comuns</p>
 
-  <div class="faq-cat">Sobre os Produtos</div>
+  <div class="faq-cat">Sobre os produtos</div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">O que são os jogos Steam Offline vendidos na MarsGames?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       São jogos para PC que podem ser jogados <strong>sem conexão permanente com a internet</strong>. Você ativa a chave na Steam, configura o modo offline e joga à vontade — mesmo sem internet. São jogos originais e legítimos, apenas com a diferença de não precisarem de conexão constante.
-    </div></div>
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Preciso ter uma conta Steam para usar os produtos?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
-      Sim. Você precisa de uma conta Steam (gratuita) para ativar a chave. A conta pode ser nova ou já existente. Basta acessar <a href="https://store.steampowered.com" target="_blank">store.steampowered.com</a>, criar uma conta e ativar a chave recebida.
-    </div></div>
+    <div class="faq-a"><div><div class="faq-a-inner">
+      Sim. Você precisa de uma conta Steam (gratuita) para ativar a chave. A conta pode ser nova ou já existente. Basta acessar <a href="https://store.steampowered.com" target="_blank" rel="noopener">store.steampowered.com</a>, criar uma conta e ativar a chave recebida.
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Os jogos funcionam no meu computador?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       Cada jogo tem seus próprios requisitos mínimos de hardware. Antes de comprar, verifique os <strong>requisitos do sistema</strong> na página do produto. A MarsGames não se responsabiliza por incompatibilidades de hardware. Em caso de dúvida, consulte nossa equipe no Discord antes de comprar.
-    </div></div>
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Posso usar a chave em mais de um computador?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       A chave é ativada uma única vez na conta Steam. Após ativada, o jogo fica vinculado à sua conta e pode ser acessado em qualquer computador usando seu login Steam. <strong>Não é possível ativar a mesma chave em duas contas diferentes.</strong>
-    </div></div>
+    </div></div></div>
   </div>
 
-  <div class="faq-cat">Compra e Pagamento</div>
+  <div class="faq-cat">Compra e pagamento</div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Quais formas de pagamento são aceitas?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       Aceitamos <strong>PIX, cartão de crédito/débito, boleto bancário e PayPal</strong>, todos processados com segurança pelo Mercado Pago. O PIX é a forma mais rápida — a entrega é imediata após o pagamento.
-    </div></div>
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">O site é seguro? Como funciona o pagamento?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       Sim, totalmente seguro. O pagamento é processado pelo <strong>Mercado Pago</strong>, uma das maiores plataformas de pagamento da América Latina. A MarsGames <strong>nunca tem acesso aos dados do seu cartão</strong> — tudo é criptografado e processado diretamente pelo Mercado Pago.
-    </div></div>
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Em quanto tempo recebo minha chave após o pagamento?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       Para <strong>PIX e cartão</strong>: entrega imediata, geralmente em menos de 5 minutos.<br>
       Para <strong>boleto</strong>: após a compensação bancária, que leva de 1 a 3 dias úteis.<br>
       Você recebe a chave por e-mail e também pode acessá-la no seu perfil em "Meus Pedidos".
-    </div></div>
+    </div></div></div>
   </div>
 
-  <div class="faq-cat">MarsPoints e Conta</div>
+  <div class="faq-cat">MarsPoints e conta</div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">O que são MarsPoints e como ganho?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       MarsPoints são o sistema de fidelidade da MarsGames. Você acumula pontos ao fazer compras, participar de sorteios e completar conquistas. Os pontos avançam seu nível (Bronze → Prata → Ouro → Esmeralda → Diamante) e desbloqueiam benefícios exclusivos como cupons de desconto e tickets para sorteios.
-    </div></div>
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Como funcionam os sorteios?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       Os sorteios são realizados semanalmente com prêmios em jogos e créditos. Para participar, você usa <strong>MarsTickets</strong> — que são ganhos automaticamente a cada compra realizada. Quanto maior seu nível, mais tickets você recebe por compra. Os ganhadores são anunciados no Discord.
-    </div></div>
+    </div></div></div>
   </div>
 
-  <div class="faq-cat">Problemas e Suporte</div>
+  <div class="faq-cat">Problemas e suporte</div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Minha chave não funcionou — o que fazer?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
-      Entre em contato com nossa equipe pelo <a href="https://discord.gg/bKnR9accnw" target="_blank">Discord</a> e abra um ticket de suporte. Envie uma <strong>print do erro</strong> que apareceu ao tentar ativar a chave. Nossa equipe responde em até 24h e providencia reposição imediata para chaves com defeito comprovado.
-    </div></div>
+    <div class="faq-a"><div><div class="faq-a-inner">
+      Entre em contato com nossa equipe pelo <a href="https://discord.gg/bKnR9accnw" target="_blank" rel="noopener">Discord</a> e abra um ticket de suporte. Envie uma <strong>print do erro</strong> que apareceu ao tentar ativar a chave. Nossa equipe responde em até 24h e providencia reposição imediata para chaves com defeito comprovado.
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Posso pedir reembolso?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
+    <div class="faq-a"><div><div class="faq-a-inner">
       Sim, em casos de chave inválida, produto diferente do anunciado ou falha técnica comprovada. Por se tratar de produto digital entregue imediatamente, não aceitamos reembolso por arrependimento após a ativação. Consulte nossa <a href="reembolso.html">Política de Reembolso completa</a>.
-    </div></div>
+    </div></div></div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q" onclick="toggleFaq(this)">
       <span class="faq-q-text">Onde encontro suporte da MarsGames?</span>
-      <span class="faq-arrow">▼</span>
+      <span class="faq-arrow"></span>
     </div>
-    <div class="faq-a"><div class="faq-a-inner">
-      O suporte principal é pelo <a href="https://discord.gg/bKnR9accnw" target="_blank"><strong>Discord da MarsGames</strong></a> — é o canal mais rápido, com resposta em até 2 horas. Você também pode enviar e-mail para <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b1c2c4c1dec3c5d4f1dcd0c3c2d6d0dcd4c29fd2dedc9fd3c3">[email&#160;protected]</a></strong>. Funcionamos 24h por dia, 7 dias por semana.
-    </div></div>
+    <div class="faq-a"><div><div class="faq-a-inner">
+      O suporte principal é pelo <a href="https://discord.gg/bKnR9accnw" target="_blank" rel="noopener"><strong>Discord da MarsGames</strong></a> — é o canal mais rápido, com resposta em até 2 horas. Você também pode enviar e-mail para <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b1c2c4c1dec3c5d4f1dcd0c3c2d6d0dcd4c29fd2dedc9fd3c3">[email&#160;protected]</a></strong>. Funcionamos 24h por dia, 7 dias por semana.
+    </div></div></div>
   </div>
 
-  <div class="pol-contact">
-    <p>Não encontrou o que procurava? Fale diretamente com a nossa equipe:</p>
-    <a href="https://discord.gg/bKnR9accnw" target="_blank">💬 Abrir ticket no Discord</a>
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="/cdn-cgi/l/email-protection#087b7d78677a7c6d4865697a7b6f69656d7b266b6765266a7a">📧 <span class="__cf_email__" data-cfemail="116264617e636574517c70636276707c74623f727e7c3f7363">[email&#160;protected]</span></a>
+  <div class="contact">
+    <p>Não encontrou o que procurava? Fale diretamente com a nossa equipe.</p>
+    <div class="contact-actions">
+      <a class="btn btn--primary" href="https://discord.gg/bKnR9accnw" target="_blank" rel="noopener">💬 Abrir ticket no Discord</a>
+      <a class="btn btn--ghost" href="/cdn-cgi/l/email-protection#087b7d78677a7c6d4865697a7b6f69656d7b266b6765266a7a">📧 <span class="__cf_email__" data-cfemail="116264617e636574517c70636276707c74623f727e7c3f7363">[email&#160;protected]</span></a>
+    </div>
   </div>
-</div>
+</main>
 
-<footer>
+<footer class="footer">
   © 2026 MarsGames — Brasil &nbsp;|&nbsp;
   <a href="termos.html">Termos</a>
   <a href="reembolso.html">Reembolso</a>
@@ -215,4 +449,11 @@ footer a:hover{color:#888}
   <a href="faq.html">FAQ</a>
 </footer>
 
-<scr
+<script>
+function toggleFaq(el){
+  var item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>

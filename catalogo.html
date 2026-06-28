@@ -309,6 +309,104 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
 /* ══ ANÉIS DE NÍVEL NA NAVBAR ══ */
 
 </style>
+  <style id="mg-v2">
+/* ════════════════════════════════════════════════════════
+   MarsGames — Reskin v2.1  (camada de refino compartilhada)
+   Mantém HTML/JS. Clareia o texto, achata gradientes de
+   superfície, troca glows neon por efeitos com profundidade
+   e adiciona assinatura Mars. Escopo: NÃO afeta tema claro.
+   Reverter: remover o <link>.
+   ════════════════════════════════════════════════════════ */
+
+/* — Tokens: superfícies planas + TEXTO MAIS CLARO — */
+body:not(.tema-claro){
+  --card:#13131a;--surface:#181820;
+  --border:#23232f;--border2:#30303e;
+  --green-glow:rgba(0,255,85,.14);--green-dim:rgba(0,255,85,.08);
+  --mars-glow:rgba(232,66,26,.18);--mars-dim:rgba(232,66,26,.12);
+  --text:#f6f6fa;            /* antes apagado → branco quente claro   */
+  --muted:#a8a8b6;           /* legível de verdade (era ~#555/#8a)    */
+  --dim:#16161e;--radius:14px;
+  color:var(--text,#f6f6fa);
+}
+
+/* clareia rótulos/legendas comuns que ficavam "apagados" */
+body:not(.tema-claro) .store-title-main,
+body:not(.tema-claro) .prod-plat,
+body:not(.tema-claro) .store-count-text,
+body:not(.tema-claro) .hero-stat-label{color:#b6b6c4}
+body:not(.tema-claro) .prod-name{color:var(--text)}
+
+/* — Cards: superfície plana, hover com PROFUNDIDADE + fio Mars — */
+body:not(.tema-claro) .prod-card{
+  box-shadow:0 1px 2px rgba(0,0,0,.35);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),border-color .22s,box-shadow .22s;
+}
+body:not(.tema-claro) .prod-card::before{   /* assinatura: fio laranja no topo, surge no hover */
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;z-index:3;
+  background:linear-gradient(to right,transparent,var(--mars),transparent);
+  opacity:0;transition:opacity .25s;
+}
+@media(hover:hover){
+  body:not(.tema-claro) .prod-card:hover{
+    border-color:var(--border2);
+    box-shadow:0 14px 34px rgba(0,0,0,.5);
+    transform:translateY(-4px);
+  }
+  body:not(.tema-claro) .prod-card:hover::before{opacity:.9}
+  body:not(.tema-claro) .prod-btn-buy:hover{background:rgba(232,66,26,.18);box-shadow:none}
+}
+
+/* — Preço: verde vivo, tabular — */
+body:not(.tema-claro) .prod-price{
+  color:#1aff66;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+
+/* — Stats do hero: número limpo com leve brilho (devolve o "pop") — */
+.hero-stat-val{text-shadow:0 0 18px rgba(0,255,85,.28)}
+.hero-title .line2{text-shadow:0 0 26px rgba(0,255,85,.22)}
+
+/* — Categoria ativa: profundidade sutil, sem halo neon — */
+body:not(.tema-claro) .cat-pill{box-shadow:none;transition:border-color .2s,color .2s,background .2s,transform .15s}
+body:not(.tema-claro) .cat-pill.active{
+  background:var(--mars-dim);border-color:var(--mars);color:#ff8a5c;
+  box-shadow:0 2px 12px rgba(232,66,26,.18);
+}
+@media(hover:hover){body:not(.tema-claro) .cat-pill:hover{transform:translateY(-1px)}}
+
+/* — CTA primário: gradiente sutil + brilho controlado no hover — */
+.btn-mars-green{background:linear-gradient(135deg,#00ff55,#00c944);box-shadow:0 2px 10px rgba(0,255,85,.14)}
+.btn-mars-green:hover{box-shadow:0 10px 30px rgba(0,255,85,.28);transform:translateY(-2px)}
+
+/* — Outros componentes: tira glow neon, mantém legibilidade — */
+body:not(.tema-claro) .modal-box,
+body:not(.tema-claro) .cart-drawer,
+body:not(.tema-claro) .benef-card,
+body:not(.tema-claro) .conquista-card,
+body:not(.tema-claro) .fav-card,
+body:not(.tema-claro) .search-input{box-shadow:none}
+
+.tag-novo-badge{background:#0094e0;color:#fff}
+
+/* — Navbar: hairline limpo — */
+body:not(.tema-claro) .navbar{
+  background:rgba(10,10,14,.74);
+  -webkit-backdrop-filter:saturate(170%) blur(18px);
+  backdrop-filter:saturate(170%) blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+/* — Busca: foco verde — */
+body:not(.tema-claro) .search-input:focus{
+  border-color:rgba(0,255,85,.4);box-shadow:0 0 0 3px rgba(0,255,85,.08);
+}
+
+.prod-estoque-baixo{animation:none;background:rgba(232,66,26,.92)}
+
+/* — Foco visível por teclado (acessibilidade) — */
+body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>

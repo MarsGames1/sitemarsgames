@@ -362,93 +362,6 @@ body.tema-claro .exit-sub{color:#666}
 .manu-link.discord{border-color:rgba(114,137,218,.25);color:#7289da}
 .manu-link.discord:hover{border-color:rgba(114,137,218,.6);background:rgba(114,137,218,.07)}
 
-/* ══ PROMO TOP BANNER — Dia do Trabalhador ══ */
-@keyframes bannerSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@keyframes ptbPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(1.7)}}
-@keyframes ptbBadgePop{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@keyframes ptbShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-@keyframes ptbGlow{0%,100%{box-shadow:0 2px 18px rgba(220,38,38,.18)}50%{box-shadow:0 2px 28px rgba(220,38,38,.35)}}
-
-#promoTopBanner{
-  position:relative;z-index:201;
-  height:54px;min-height:54px;
-  overflow:hidden;
-  background:linear-gradient(135deg,#ffffff 0%,#fef2f2 40%,#fff7ed 70%,#ffffff 100%);
-  border-bottom:2px solid rgba(220,38,38,.18);
-  box-shadow:0 2px 20px rgba(220,38,38,.12),0 1px 0 rgba(255,255,255,.8);
-  animation:bannerSlide .5s cubic-bezier(.23,1,.32,1),ptbGlow 3s ease-in-out infinite;
-}
-/* Linha decorativa vermelha no topo */
-#promoTopBanner::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,#dc2626,#f97316,#dc2626,#ef4444,#f97316,#dc2626);
-  background-size:200% 100%;
-  animation:ptbShimmer 3s linear infinite;
-}
-#ptbCanvas{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  display:block;pointer-events:none;
-}
-.ptb-inner{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;height:54px;gap:12px;
-  position:relative;z-index:2;
-}
-.ptb-marquee-wrap{
-  flex:1;overflow:hidden;min-width:0;
-  display:flex;align-items:center;position:relative;
-}
-.ptb-marquee-wrap::before,.ptb-marquee-wrap::after{
-  content:'';position:absolute;top:0;bottom:0;width:40px;z-index:3;pointer-events:none;
-}
-.ptb-marquee-wrap::before{left:0;background:linear-gradient(to right,rgba(255,255,255,1),rgba(255,255,255,0))}
-.ptb-marquee-wrap::after{right:0;background:linear-gradient(to left,rgba(255,255,255,1),rgba(255,255,255,0))}
-.ptb-track{
-  display:flex;align-items:center;
-  white-space:nowrap;width:max-content;
-  animation:marqueeScroll 34s linear infinite;
-}
-.ptb-track:hover{animation-play-state:paused}
-.ptb-item{
-  display:inline-flex;align-items:center;gap:9px;
-  padding:0 28px;
-  font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
-  color:#7f1d1d;
-}
-.ptb-sep{color:rgba(220,38,38,.35);margin:0 4px;font-size:12px;}
-.ptb-hi{
-  color:#dc2626;font-weight:900;
-  background:linear-gradient(90deg,#dc2626,#f97316);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.ptb-hi-red{color:#dc2626;font-weight:900;}
-.ptb-badge{
-  flex-shrink:0;display:inline-flex;align-items:center;gap:7px;
-  background:linear-gradient(135deg,#dc2626,#c41a1a);
-  border:none;color:#fff;
-  font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
-  padding:6px 14px;border-radius:99px;white-space:nowrap;
-  animation:ptbBadgePop 2.8s ease-in-out infinite;
-  box-shadow:0 3px 14px rgba(220,38,38,.4),0 1px 0 rgba(255,255,255,.25) inset;
-}
-.ptb-badge-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:#fca5a5;box-shadow:0 0 6px #fca5a5;
-  animation:ptbPulse 1.3s ease-in-out infinite;flex-shrink:0;
-}
-.ptb-close{
-  flex-shrink:0;width:26px;height:26px;border-radius:7px;
-  background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);
-  color:rgba(220,38,38,.45);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;line-height:1;
-  transition:background .15s,color .15s,border-color .15s;
-  padding:0;
-}
-.ptb-close:hover{background:rgba(220,38,38,.15);color:#dc2626;border-color:rgba(220,38,38,.5)}
-.ptb-hidden{display:none!important}
 
 /* ══ NAVBAR ══ */
 .navbar{
@@ -3905,6 +3818,105 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .navbar{-webkit-transform:translateZ(0)}
 </style>
 
+<style id="mg-v2">
+/* ════════════════════════════════════════════════════════
+   MarsGames — Reskin v2.1  (camada de refino compartilhada)
+   Mantém HTML/JS. Clareia o texto, achata gradientes de
+   superfície, troca glows neon por efeitos com profundidade
+   e adiciona assinatura Mars. Escopo: NÃO afeta tema claro.
+   Reverter: remover o <link>.
+   ════════════════════════════════════════════════════════ */
+
+/* — Tokens: superfícies planas + TEXTO MAIS CLARO — */
+body:not(.tema-claro){
+  --card:#13131a;--surface:#181820;
+  --border:#23232f;--border2:#30303e;
+  --green-glow:rgba(0,255,85,.14);--green-dim:rgba(0,255,85,.08);
+  --mars-glow:rgba(232,66,26,.18);--mars-dim:rgba(232,66,26,.12);
+  --text:#f6f6fa;            /* antes apagado → branco quente claro   */
+  --muted:#a8a8b6;           /* legível de verdade (era ~#555/#8a)    */
+  --dim:#16161e;--radius:14px;
+  color:var(--text,#f6f6fa);
+}
+
+/* clareia rótulos/legendas comuns que ficavam "apagados" */
+body:not(.tema-claro) .store-title-main,
+body:not(.tema-claro) .prod-plat,
+body:not(.tema-claro) .store-count-text,
+body:not(.tema-claro) .hero-stat-label{color:#b6b6c4}
+body:not(.tema-claro) .prod-name{color:var(--text)}
+
+/* — Cards: superfície plana, hover com PROFUNDIDADE + fio Mars — */
+body:not(.tema-claro) .prod-card{
+  box-shadow:0 1px 2px rgba(0,0,0,.35);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),border-color .22s,box-shadow .22s;
+}
+body:not(.tema-claro) .prod-card::before{   /* assinatura: fio laranja no topo, surge no hover */
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;z-index:3;
+  background:linear-gradient(to right,transparent,var(--mars),transparent);
+  opacity:0;transition:opacity .25s;
+}
+@media(hover:hover){
+  body:not(.tema-claro) .prod-card:hover{
+    border-color:var(--border2);
+    box-shadow:0 14px 34px rgba(0,0,0,.5);
+    transform:translateY(-4px);
+  }
+  body:not(.tema-claro) .prod-card:hover::before{opacity:.9}
+  body:not(.tema-claro) .prod-btn-buy:hover{background:rgba(232,66,26,.18);box-shadow:none}
+}
+
+/* — Preço: verde vivo, tabular — */
+body:not(.tema-claro) .prod-price{
+  color:#1aff66;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+
+/* — Stats do hero: número limpo com leve brilho (devolve o "pop") — */
+.hero-stat-val{text-shadow:0 0 18px rgba(0,255,85,.28)}
+.hero-title .line2{text-shadow:0 0 26px rgba(0,255,85,.22)}
+
+/* — Categoria ativa: profundidade sutil, sem halo neon — */
+body:not(.tema-claro) .cat-pill{box-shadow:none;transition:border-color .2s,color .2s,background .2s,transform .15s}
+body:not(.tema-claro) .cat-pill.active{
+  background:var(--mars-dim);border-color:var(--mars);color:#ff8a5c;
+  box-shadow:0 2px 12px rgba(232,66,26,.18);
+}
+@media(hover:hover){body:not(.tema-claro) .cat-pill:hover{transform:translateY(-1px)}}
+
+/* — CTA primário: gradiente sutil + brilho controlado no hover — */
+.btn-mars-green{background:linear-gradient(135deg,#00ff55,#00c944);box-shadow:0 2px 10px rgba(0,255,85,.14)}
+.btn-mars-green:hover{box-shadow:0 10px 30px rgba(0,255,85,.28);transform:translateY(-2px)}
+
+/* — Outros componentes: tira glow neon, mantém legibilidade — */
+body:not(.tema-claro) .modal-box,
+body:not(.tema-claro) .cart-drawer,
+body:not(.tema-claro) .benef-card,
+body:not(.tema-claro) .conquista-card,
+body:not(.tema-claro) .fav-card,
+body:not(.tema-claro) .search-input{box-shadow:none}
+
+.tag-novo-badge{background:#0094e0;color:#fff}
+
+/* — Navbar: hairline limpo — */
+body:not(.tema-claro) .navbar{
+  background:rgba(10,10,14,.74);
+  -webkit-backdrop-filter:saturate(170%) blur(18px);
+  backdrop-filter:saturate(170%) blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+/* — Busca: foco verde — */
+body:not(.tema-claro) .search-input:focus{
+  border-color:rgba(0,255,85,.4);box-shadow:0 0 0 3px rgba(0,255,85,.08);
+}
+
+.prod-estoque-baixo{animation:none;background:rgba(232,66,26,.92)}
+
+/* — Foco visível por teclado (acessibilidade) — */
+body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+
+</style>
+
 <script>
 /* ══ SPLASH CONTROLLER ══ */
 (function(){
@@ -4014,116 +4026,6 @@ img{-webkit-backface-visibility:hidden;backface-visibility:hidden}
 
 <canvas id="mars-canvas"></canvas>
 
-
-<!-- ══ PROMO TOP BANNER — Canvas Neon ══ -->
-<div id="promoTopBanner">
-  <canvas id="ptbCanvas"></canvas>
-  <div class="ptb-inner">
-    <div class="ptb-badge"><div class="ptb-badge-dot"></div>⚒️ Dia do Trabalhador</div>
-    <div class="ptb-marquee-wrap">
-      <div class="ptb-track" id="ptbTrack">
-        <span class="ptb-item">⚒️ Dia do Trabalhador <span class="ptb-hi">1–10 de Maio</span> <span class="ptb-sep">·</span> Até <span class="ptb-hi">90% OFF</span> em jogos PC</span>
-        <span class="ptb-item">🎮 Chaves Steam originais <span class="ptb-sep">·</span> Entrega na hora <span class="ptb-sep">·</span> <span class="ptb-hi-red">Pix &amp; Cartão</span> aceitos</span>
-        <span class="ptb-item">⭐ <span class="ptb-hi-red">+500 clientes</span> satisfeitos <span class="ptb-sep">·</span> Nota <span class="ptb-hi">5.0</span> <span class="ptb-sep">·</span> Promoção válida até dia 10!</span>
-        <span class="ptb-item">⚒️ Dia do Trabalhador <span class="ptb-hi">1–10 de Maio</span> <span class="ptb-sep">·</span> Até <span class="ptb-hi">90% OFF</span> em jogos PC</span>
-        <span class="ptb-item">🎮 Chaves Steam originais <span class="ptb-sep">·</span> Entrega na hora <span class="ptb-sep">·</span> <span class="ptb-hi-red">Pix &amp; Cartão</span> aceitos</span>
-        <span class="ptb-item">⭐ <span class="ptb-hi-red">+500 clientes</span> satisfeitos <span class="ptb-sep">·</span> Nota <span class="ptb-hi">5.0</span> <span class="ptb-sep">·</span> Promoção válida até dia 10!</span>
-      </div>
-    </div>
-    <button class="ptb-close" onclick="fecharPromoBanner()" aria-label="Fechar">×</button>
-  </div>
-</div>
-<script>
-/* ── Canvas light engine — Dia do Trabalhador banner ── */
-(function(){
-  var banner=document.getElementById('promoTopBanner');
-  var canvas=document.getElementById('ptbCanvas');
-  if(!banner||!canvas)return;
-  var ctx=canvas.getContext('2d');
-  function resize(){
-    canvas.width=banner.offsetWidth||window.innerWidth;
-    canvas.height=banner.offsetHeight||54;
-  }
-  resize();
-  window.addEventListener('resize',function(){resize();},{passive:true});
-
-  /* Confetti leves vermelhos/laranja/dourados para tema claro */
-  var COLS=['220,38,38','249,115,22','234,88,12','185,28,28','252,165,165'];
-  var pts=[];
-  for(var i=0;i<24;i++){
-    var c=COLS[i%COLS.length];
-    pts.push({x:Math.random(),y:Math.random(),
-      vx:(Math.random()-.5)*.00016,vy:-(Math.random()*.00010+.00003),
-      sz:Math.random()*.7+.2,al:Math.random()*.18+.04,
-      col:c,ph:Math.random()*Math.PI*2,spd:Math.random()*.014+.005});
-  }
-  /* Brilhinhos brancos */
-  var sparks=[];
-  for(var j=0;j<14;j++) sparks.push({
-    x:Math.random(),y:Math.random(),
-    r:Math.random()*.4+.1,
-    a:Math.random()*.12+.04,
-    ph:Math.random()*Math.PI*2
-  });
-
-  var t=0;
-  function draw(){
-    requestAnimationFrame(draw);
-    t+=.016;
-    var W=canvas.width,H=canvas.height;
-    if(!W||!H)return;
-    ctx.clearRect(0,0,W,H);
-
-    /* Brilho sutil vermelho no centro */
-    var gc=ctx.createRadialGradient(W*.5,H*2,0,W*.5,H*2,W*.6);
-    gc.addColorStop(0,'rgba(220,38,38,.06)');gc.addColorStop(1,'rgba(220,38,38,0)');
-    ctx.fillStyle=gc;ctx.fillRect(0,0,W,H);
-
-    /* Brilho laranja esquerda */
-    var gl=ctx.createRadialGradient(0,H*.5,0,0,H*.5,W*.2);
-    gl.addColorStop(0,'rgba(249,115,22,.06)');gl.addColorStop(1,'rgba(249,115,22,0)');
-    ctx.fillStyle=gl;ctx.fillRect(0,0,W,H);
-
-    /* Faíscas/sparkles */
-    for(var si=0;si<sparks.length;si++){
-      var s=sparks[si];
-      var sa=s.a*(0.4+0.6*Math.sin(t*1.4+s.ph));
-      ctx.globalAlpha=sa;ctx.fillStyle='rgba(220,38,38,1)';
-      ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);ctx.fill();
-    }
-
-    /* Partículas flutuantes */
-    for(var pi=0;pi<pts.length;pi++){
-      var p=pts[pi];
-      p.x+=p.vx;p.y+=p.vy;p.ph+=p.spd;
-      if(p.y<-.06){p.y=1.06;p.x=Math.random();}
-      if(p.x<-.02)p.x=1.02;if(p.x>1.02)p.x=-.02;
-      var pa=p.al*(0.5+0.5*Math.sin(p.ph));
-      var pr=ctx.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,p.sz*2);
-      pr.addColorStop(0,'rgba('+p.col+','+pa+')');pr.addColorStop(1,'rgba('+p.col+',0)');
-      ctx.globalAlpha=1;ctx.fillStyle=pr;
-      ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.sz*2,0,Math.PI*2);ctx.fill();
-    }
-    ctx.globalAlpha=1;
-  }
-  draw();
-})();
-
-function fecharPromoBanner(){
-  var b=document.getElementById('promoTopBanner');
-  if(!b)return;
-  try{sessionStorage.setItem('mg_promo_closed','1');}catch(e){}
-  b.style.transition='height .32s cubic-bezier(.23,1,.32,1),opacity .28s ease';
-  b.style.height=b.offsetHeight+'px'; b.style.overflow='hidden';
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      b.style.height='0'; b.style.opacity='0';
-      setTimeout(function(){b.classList.add('ptb-hidden');},340);
-    });
-  });
-}
-(function(){try{if(sessionStorage.getItem('mg_promo_closed')==='1'){var b=document.getElementById('promoTopBanner');if(b)b.classList.add('ptb-hidden');}}catch(e){}})();
-</script>
 
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar">

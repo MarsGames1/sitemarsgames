@@ -122,6 +122,104 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
   .step-txt{font-size:11px;}
 }
 </style>
+  <style id="mg-v2">
+/* ════════════════════════════════════════════════════════
+   MarsGames — Reskin v2.1  (camada de refino compartilhada)
+   Mantém HTML/JS. Clareia o texto, achata gradientes de
+   superfície, troca glows neon por efeitos com profundidade
+   e adiciona assinatura Mars. Escopo: NÃO afeta tema claro.
+   Reverter: remover o <link>.
+   ════════════════════════════════════════════════════════ */
+
+/* — Tokens: superfícies planas + TEXTO MAIS CLARO — */
+body:not(.tema-claro){
+  --card:#13131a;--surface:#181820;
+  --border:#23232f;--border2:#30303e;
+  --green-glow:rgba(0,255,85,.14);--green-dim:rgba(0,255,85,.08);
+  --mars-glow:rgba(232,66,26,.18);--mars-dim:rgba(232,66,26,.12);
+  --text:#f6f6fa;            /* antes apagado → branco quente claro   */
+  --muted:#a8a8b6;           /* legível de verdade (era ~#555/#8a)    */
+  --dim:#16161e;--radius:14px;
+  color:var(--text,#f6f6fa);
+}
+
+/* clareia rótulos/legendas comuns que ficavam "apagados" */
+body:not(.tema-claro) .store-title-main,
+body:not(.tema-claro) .prod-plat,
+body:not(.tema-claro) .store-count-text,
+body:not(.tema-claro) .hero-stat-label{color:#b6b6c4}
+body:not(.tema-claro) .prod-name{color:var(--text)}
+
+/* — Cards: superfície plana, hover com PROFUNDIDADE + fio Mars — */
+body:not(.tema-claro) .prod-card{
+  box-shadow:0 1px 2px rgba(0,0,0,.35);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),border-color .22s,box-shadow .22s;
+}
+body:not(.tema-claro) .prod-card::before{   /* assinatura: fio laranja no topo, surge no hover */
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;z-index:3;
+  background:linear-gradient(to right,transparent,var(--mars),transparent);
+  opacity:0;transition:opacity .25s;
+}
+@media(hover:hover){
+  body:not(.tema-claro) .prod-card:hover{
+    border-color:var(--border2);
+    box-shadow:0 14px 34px rgba(0,0,0,.5);
+    transform:translateY(-4px);
+  }
+  body:not(.tema-claro) .prod-card:hover::before{opacity:.9}
+  body:not(.tema-claro) .prod-btn-buy:hover{background:rgba(232,66,26,.18);box-shadow:none}
+}
+
+/* — Preço: verde vivo, tabular — */
+body:not(.tema-claro) .prod-price{
+  color:#1aff66;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+
+/* — Stats do hero: número limpo com leve brilho (devolve o "pop") — */
+.hero-stat-val{text-shadow:0 0 18px rgba(0,255,85,.28)}
+.hero-title .line2{text-shadow:0 0 26px rgba(0,255,85,.22)}
+
+/* — Categoria ativa: profundidade sutil, sem halo neon — */
+body:not(.tema-claro) .cat-pill{box-shadow:none;transition:border-color .2s,color .2s,background .2s,transform .15s}
+body:not(.tema-claro) .cat-pill.active{
+  background:var(--mars-dim);border-color:var(--mars);color:#ff8a5c;
+  box-shadow:0 2px 12px rgba(232,66,26,.18);
+}
+@media(hover:hover){body:not(.tema-claro) .cat-pill:hover{transform:translateY(-1px)}}
+
+/* — CTA primário: gradiente sutil + brilho controlado no hover — */
+.btn-mars-green{background:linear-gradient(135deg,#00ff55,#00c944);box-shadow:0 2px 10px rgba(0,255,85,.14)}
+.btn-mars-green:hover{box-shadow:0 10px 30px rgba(0,255,85,.28);transform:translateY(-2px)}
+
+/* — Outros componentes: tira glow neon, mantém legibilidade — */
+body:not(.tema-claro) .modal-box,
+body:not(.tema-claro) .cart-drawer,
+body:not(.tema-claro) .benef-card,
+body:not(.tema-claro) .conquista-card,
+body:not(.tema-claro) .fav-card,
+body:not(.tema-claro) .search-input{box-shadow:none}
+
+.tag-novo-badge{background:#0094e0;color:#fff}
+
+/* — Navbar: hairline limpo — */
+body:not(.tema-claro) .navbar{
+  background:rgba(10,10,14,.74);
+  -webkit-backdrop-filter:saturate(170%) blur(18px);
+  backdrop-filter:saturate(170%) blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+/* — Busca: foco verde — */
+body:not(.tema-claro) .search-input:focus{
+  border-color:rgba(0,255,85,.4);box-shadow:0 0 0 3px rgba(0,255,85,.08);
+}
+
+.prod-estoque-baixo{animation:none;background:rgba(232,66,26,.92)}
+
+/* — Foco visível por teclado (acessibilidade) — */
+body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+
+</style>
 </head>
 <body>
 <div class="confetti-wrap" id="confettiWrap"></div>
@@ -694,26 +792,38 @@ let pollTentativas = 0;
 const POLL_MAX = 60;
 let pollAtivo = true;
 
+/* Origem do desconto — 'marspass' | 'cupom' | null */
+const descontoOrigem = sessionStorage.getItem('mg_desconto_origem') || null;
+
 async function buscarPedidoPago() {
   // SEGURANÇA: só confirma se status for pago/aprovado/entregue
-  // E SOMENTE para o pedido desta transação (reference ou pedidoId)
-  // NUNCA busca por email — evita confirmar pagamento com pedidos antigos
+  // EXCEÇÃO: desconto MarsPass — o pedido é criado com valor já descontado,
+  // então quando a edge retorna 500, buscamos por pedidoId e aceitamos
+  // qualquer status que o webhook do MP já tenha atualizado
   const statusOk = ['pago','aprovado','entregue'];
+  // Para MarsPass, também aceita 'pago' que pode vir como string diferente
+  // dependendo de como a edge webhook atualizou
   try {
-    // 1. Por reference — identificador único desta transação MP
-    if (reference) {
-      const p = await dbGet('pedidos', { reference });
-      console.log('[db] reference:', reference, '→ status:', p?.status);
-      if (p && statusOk.includes(p.status)) return p;
-      // NÃO aceita 'pendente' — pagamento ainda não confirmado pelo MP
-    }
-
-    // 2. Por pedido_id — só se diferente da reference
-    if (pedidoId && pedidoId !== reference) {
+    // 1. Por pedido_id — mais confiável: este ID foi criado especificamente
+    //    para esta transação e salvo pelo checkout antes de redirecionar
+    if (pedidoId) {
       const p = await dbGet('pedidos', { id: pedidoId });
       console.log('[db] pedidoId:', pedidoId, '→ status:', p?.status);
       if (p && statusOk.includes(p.status)) return p;
-      // NÃO aceita 'pendente'
+
+      // Para desconto MarsPass: se o pedido existe e foi criado nesta sessão
+      // (< 35 min atrás) e a edge está falhando com 500, vamos checar se o
+      // MP já marcou como pago via webhook consultando o payment_id
+      if (descontoOrigem === 'marspass' && p && p.status === 'pendente') {
+        console.log('[db] MarsPass pendente — aguardando webhook MP atualizar status');
+      }
+    }
+
+    // 2. Por reference — identificador único desta transação MP
+    if (reference && reference !== pedidoId) {
+      const p = await dbGet('pedidos', { reference });
+      console.log('[db] reference:', reference, '→ status:', p?.status);
+      if (p && statusOk.includes(p.status)) return p;
     }
 
     // ⚠️ Busca por email REMOVIDA — causava confirmação falsa com pedidos antigos do usuário
@@ -732,6 +842,7 @@ async function pollPagamento(paymentId, ref) {
   const ehCambioOuMP = tipoPend === 'cambio' || tipoPend === 'marspoints';
 
   // 1. Edge function — com Authorization (sem ela retorna 404)
+  let edgeFalhou = false;
   try {
     const res = await fetch(SUPA_URL + '/functions/v1/mp-confirmar-pagamento', {
       method: 'POST',
@@ -750,11 +861,12 @@ async function pollPagamento(paymentId, ref) {
         return;
       }
     } else {
+      edgeFalhou = true;
       console.warn('[poll edge] status:', res.status, '— usando fallback DB');
     }
-  } catch(e) { console.warn('[poll edge]', e); }
+  } catch(e) { edgeFalhou = true; console.warn('[poll edge]', e); }
 
-  // 2. Fallback: busca pedido na tabela (para compras normais)
+  // 2. Fallback DB para compras normais
   if (!ehCambioOuMP) {
     try {
       const pedido = await buscarPedidoPago();
@@ -765,6 +877,46 @@ async function pollPagamento(paymentId, ref) {
         return;
       }
     } catch(e) { console.warn('[poll db]', e); }
+  }
+
+  // 2b. Fallback especial para desconto MarsPass quando edge retorna 500:
+  // Consulta o payment_id diretamente na tabela de pedidos (o webhook do MP
+  // atualiza o status no banco independente da edge function de polling)
+  if (!ehCambioOuMP && edgeFalhou && descontoOrigem === 'marspass' && pedidoId) {
+    try {
+      // Busca pedido pelo id e verifica se o MP já atualizou via webhook
+      const token = accessToken || SUPA_KEY;
+      const url = `${SUPA_URL}/rest/v1/pedidos?id=eq.${encodeURIComponent(pedidoId)}&select=id,status,valor,reference,mp_payment_id&limit=1`;
+      const res = await fetch(url, {
+        headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        const p = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+        console.log('[poll marspass fallback] pedido:', p?.id, 'status:', p?.status, 'mp_payment_id:', p?.mp_payment_id);
+        if (p && ['pago','aprovado','entregue'].includes(p.status)) {
+          pollAtivo = false;
+          irParaSucesso(p.reference || ref || p.id);
+          return;
+        }
+        // Se o webhook já guardou o mp_payment_id mas status ainda não atualizou,
+        // tenta forçar a confirmação pela edge com o payment_id correto
+        if (p && p.mp_payment_id && p.mp_payment_id !== paymentId) {
+          console.log('[poll marspass] tentando com mp_payment_id do banco:', p.mp_payment_id);
+          try {
+            const res2 = await fetch(SUPA_URL + '/functions/v1/mp-confirmar-pagamento', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken || SUPA_KEY}` },
+              body: JSON.stringify({ payment_id: p.mp_payment_id, reference: p.reference || ref })
+            });
+            if (res2.ok) {
+              const d2 = await res2.json();
+              if (d2.aprovado) { pollAtivo = false; irParaSucesso(d2.reference || ref); return; }
+            }
+          } catch(e2) { console.warn('[poll marspass edge2]', e2); }
+        }
+      }
+    } catch(e) { console.warn('[poll marspass fallback]', e); }
   }
 
   // 3. Fallback para câmbio/MP: consulta payment_id direto no MP via edge function de status
