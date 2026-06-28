@@ -3919,6 +3919,10 @@ body:not(.tema-claro) .search-input:focus{
 
 /* — Foco visível por teclado (acessibilidade) — */
 body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+/* perf mobile: backdrop-filter na navbar fixa trava o scroll — desliga em telas pequenas/touch */
+@media (max-width:820px),(pointer:coarse){
+  .navbar{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(10,10,14,.96)!important}
+}
 
 </style>
 
@@ -6822,8 +6826,9 @@ window.addEventListener('resize',function(){
       return sc;
     }
 
-    var raf;
+    var raf=null, onscreen=true, visible=true;
     function draw(t){
+      if(!visible){ raf=null; return; }
       raf=requestAnimationFrame(draw);
 
       /* lerp suave no mouse para parallax fluido */
@@ -6903,7 +6908,13 @@ window.addEventListener('resize',function(){
       if(!startT) startT=ts;
       draw((ts-startT)/1000);
     }
-    requestAnimationFrame(loop);
+    function play(){ if(raf==null && visible){ raf=requestAnimationFrame(loop); } }
+    function recompute(){ visible = onscreen && !document.hidden; play(); }
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){ onscreen=es[0].isIntersecting; recompute(); },{threshold:0}).observe(canvas);
+    }
+    document.addEventListener('visibilitychange',recompute,{passive:true});
+    raf=requestAnimationFrame(loop);
     canvas.classList.add('ready');
   }
 
@@ -6912,7 +6923,9 @@ window.addEventListener('resize',function(){
     /* Canvas 2D não precisa de Three.js — roda direto */
     var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
     var slow=conn&&(conn.saveData||conn.effectiveType==='2g'||conn.effectiveType==='slow-2g');
-    if(!slow) initSpace();
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var lowPower=window.matchMedia&&matchMedia('(max-width: 820px), (pointer: coarse)').matches;
+    if(!slow && !reduce && !lowPower) initSpace();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
