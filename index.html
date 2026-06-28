@@ -66,6 +66,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MarsGames — Jogos Steam com até 90% OFF | Entrega Imediata no Brasil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://rzjtlghpsygxkivgwgws.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="dns-prefetch" href="https://i.ytimg.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
 <script>
 /* ── Safari scroll helper — evita trava de scroll após scrollIntoView ── */
@@ -4098,7 +4103,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
     <div class="nav-avatar-wrap" id="navAvatarWrap" style="display:none">
       <div class="nav-avatar-ring" id="navAvatarRing"></div>
       <a class="nav-user-avatar" href="perfil.html" id="navUserAvatar" title="Meu perfil">
-        <img id="navAvatarImg" src="" alt="" style="display:none">
+        <img id="navAvatarImg" src="" alt="" loading="lazy" decoding="async" style="display:none">
         <div id="navAvatarFallback"></div>
       </a>
     </div>
@@ -4171,7 +4176,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   <div class="hero-video-wrap" id="heroVideoWrap">
     <div id="heroYTWrap" style="position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;">
       <iframe id="heroYTFrame"
-        src="https://www.youtube.com/embed/oncaa_fMsyw?autoplay=1&mute=1&loop=1&playlist=oncaa_fMsyw&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&vq=hd2160&start=18"
+        data-src="https://www.youtube.com/embed/9lrThxCoznw?autoplay=1&mute=1&loop=1&playlist=9lrThxCoznw&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&vq=hd2160&start=10"
         title="Hero Background"
         frameborder="0"
         allow="autoplay; encrypted-media"
@@ -4180,7 +4185,8 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
         onload="setTimeout(function(){var f=document.getElementById('heroYTFrame');if(f)f.style.opacity='1'},900)"
       ></iframe>
     </div>
-    <div id="heroImgFallback" style="position:absolute;inset:0;z-index:0;background-image:url('https://images5.alphacoders.com/133/thumb-1920-1336376.jpg');background-size:cover;background-position:center top;"></div>
+    <!-- Poster enquanto o trailer carrega. Troque a URL pela key art de Resident Evil Requiem (ou suba um .jpg local). -->
+    <div id="heroImgFallback" style="position:absolute;inset:0;z-index:0;background:radial-gradient(130% 110% at 72% 28%,#3a0c0c 0%,#140708 50%,#060608 100%);background-size:cover;background-position:center;"></div>
     <!-- overlay mínimo só para garantir legibilidade do texto à esquerda -->
     <div class="hero-video-overlay" style="z-index:3"></div>
   </div>
@@ -4189,16 +4195,17 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 
     <!-- COLUNA ESQUERDA: copy + CTAs -->
     <div class="hero-left">
-      <div class="hero-badge"><div class="hero-badge-dot"></div>Loja Brasileira &nbsp;·&nbsp; Chaves Oficiais</div>
+      <div class="hero-badge"><div class="hero-badge-dot"></div>Em alta agora &nbsp;·&nbsp; Lançamento 2026</div>
 
       <h1 class="hero-title">
-        JOGOS STEAM
-        <span class="line2">ATÉ 90% OFF</span>
+        RESIDENT EVIL
+        <span class="line2">REQUIEM</span>
       </h1>
 
       <p class="hero-sub">
-        Chave Steam original entregue <strong>na hora</strong>, qualquer hora do dia.
-        Pague com Pix ou cartão — sem assinatura, sem surpresa no bolso.
+        O survival horror mais vendido de 2026. Na MarsGames você garante chave Steam
+        original entregue <strong>na hora</strong> pelo Pix — com mais de 500 jogos e
+        até <strong>90% OFF</strong>.
       </p>
 
       <div class="hero-trust-pills">
@@ -4264,7 +4271,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
               <span class="hsp-review-name">rodrigo_c</span>
               <span class="hsp-stars-sm">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
             </div>
-            <div class="hsp-review-text">Comprei Diablo IV pela metade do preço. Chave funcionou na hora!</div>
+            <div class="hsp-review-text">Comprei Resident Evil Requiem com desconto. Chave funcionou na hora!</div>
             <span class="hsp-review-tag"><svg class="hsp-verified-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compra verificada</span>
           </div>
         </div>
@@ -7019,3 +7026,19 @@ window.addEventListener('resize',function(){
   document.addEventListener('keydown',function(e){if(e.key==='Escape') fecharPopupSorteio();});
 })();
 </script>
+
+<script>
+/* Hero trailer — carrega após o primeiro paint (idle). Em data-saver ou reduced-motion mantém só o poster (não baixa vídeo). */
+(function(){
+  var f=document.getElementById('heroYTFrame'); if(!f||!f.dataset.src) return;
+  var conn=navigator.connection||{}, saveData=conn.saveData===true;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(saveData||reduce) return;
+  function load(){ if(!f.src) f.src=f.dataset.src; }
+  var ric=window.requestIdleCallback||function(cb){return setTimeout(cb,1200)};
+  if(document.readyState==='complete') ric(load,{timeout:2500});
+  else window.addEventListener('load',function(){ric(load,{timeout:2500})},{once:true});
+})();
+</script>
+</body>
+</html>
