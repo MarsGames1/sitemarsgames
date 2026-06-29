@@ -2267,6 +2267,107 @@ body:not(.tema-claro) .search-input:focus{
 body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
 
 </style>
+<style id="mg-perfil">
+/* texto claro */
+body:not(.tema-claro){--muted:#a8a8b6;--text:#f6f6fa}
+/* TAB BAR: grade uniforme -> grupos rotulados (bem dividido, intuitivo) */
+.tabs-wrap{display:flex!important;flex-wrap:wrap;gap:8px;align-items:center;grid-template-columns:none!important;
+  background:rgba(255,255,255,.02);border:1px solid var(--border,#23232f);border-radius:16px;padding:14px 16px}
+.tab-group-label{flex-basis:100%;width:100%;margin:14px 0 4px;display:flex;align-items:center;gap:10px;
+  font-family:ui-monospace,'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:#8f8f9d}
+.tab-group-label::after{content:'';flex:1;height:1px;background:var(--border,#23232f)}
+.tab-group-label:first-child{margin-top:0}
+/* abas: pílulas auto, identidade de cor mantida, SEM glow neon */
+.tab{flex:0 0 auto;box-shadow:none!important}
+.tab:hover{box-shadow:none!important;transform:translateY(-1px)}
+.tab.active{box-shadow:none!important;transform:none}
+.tab-editar-btn{flex:0 0 auto;box-shadow:none!important;margin-left:auto}
+.tab-editar-btn:hover,.tab-editar-btn.active{box-shadow:none!important;transform:none}
+/* foco visível */
+body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+</style>
+<style id="mg-mp">
+/* ═══ MarsPass — a CAPA do perfil: vitrine premium + texto claro ═══ */
+/* títulos das seções de descoberta (estavam quase invisíveis em #444) */
+.anel-selector-title,.titulo-seletor-label{color:#cfcaf0!important;font-size:10px;letter-spacing:.16em}
+.anel-name{color:#b8b8c6!important}
+.anel-lock{color:#8f8f9d!important}
+.anel-option.ativo .anel-name{color:var(--green)!important}
+.mp-inativo-card div[style*="#555570"]{color:#aaaab8!important}
+
+/* seletor de anéis: cada anel apresentado com orgulho (é a identidade do cliente) */
+.anel-selector-wrap{background:rgba(124,106,247,.05);border-color:rgba(124,106,247,.18)}
+.anel-grid{gap:14px}
+.anel-option{padding:14px 8px;transition:transform .16s,border-color .16s,background .16s,box-shadow .16s}
+.anel-option:not(.bloqueado):hover{transform:translateY(-3px);border-color:rgba(124,106,247,.45);background:rgba(124,106,247,.08);box-shadow:0 10px 26px rgba(0,0,0,.4)}
+.anel-preview{width:46px;height:46px}
+.anel-option.ativo{border-color:var(--green);background:rgba(0,255,85,.06);box-shadow:0 0 0 1px rgba(0,255,85,.18)}
+/* bloqueados: menos apagados — convidam à descoberta em vez de sumir */
+.anel-option.bloqueado{opacity:.5;filter:grayscale(.55)}
+.anel-option.bloqueado:hover{opacity:.64;cursor:not-allowed}
+
+/* card de não-assinante: mais vivo, CTA continua sendo o destaque roxo da marca */
+.mp-inativo-card{border-color:rgba(124,106,247,.32)}
+.titulo-seletor{background:rgba(124,106,247,.04);border-color:rgba(124,106,247,.16)}
+</style>
+<style id="mg-perfil-final">
+/* ═══════════════════════════════════════════════════════════
+   PERFIL — camada final: clareza + cards planos + MOBILE
+   Melhora todas as abas de uma vez. Só CSS, vence a cascata.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Clareza: texto secundário menos apagado em todas as abas ── */
+.tab-content [class$="-sub"],.tab-content [class$="-desc"],
+.tab-content [class$="-hint"],.tab-content [class$="-meta"]{color:#a8a8b6}
+
+/* ── Cards das abas: superfície plana, profundidade real no hover ── */
+.benef-card,.conquista-card,.cambio-card,.fav-card,.pedido-card,
+.dna-card,.loja-pkg-card,.ticket-card{box-shadow:none!important}
+@media(hover:hover){
+  .benef-card:hover,.conquista-card:hover,.fav-card:hover,
+  .pedido-card:hover,.loja-pkg-card:hover{
+    box-shadow:0 12px 28px rgba(0,0,0,.45)!important;transform:translateY(-3px);
+  }
+}
+
+/* ══════════════ MOBILE (≤600px) ══════════════ */
+@media(max-width:600px){
+  /* barra de abas: toque confortável, agrupamento mantido */
+  .tabs-wrap{padding:12px 10px;gap:6px;border-radius:14px}
+  .tab,.tab-editar-btn{min-height:42px;font-size:10px;padding:10px 12px;border-radius:10px}
+  .tab-editar-btn{margin-left:0;width:100%;justify-content:center}
+  .tab-group-label{margin:12px 0 2px;font-size:9px}
+
+  /* universo MarsPass: menos volume, mais respiro */
+  .marspass-tab-universe{padding:18px 14px;min-height:auto;border-radius:16px}
+
+  /* todos os grids colapsam para 1 coluna (sem corte horizontal) */
+  .beneficios-grid,.conquistas-grid,.cambio-grid,.favs-grid,.loja-pkg-grid,
+  .mp-benef-grid,.planeta-ms-grid,.planeta-sim-grid,.tickets-info-grid,
+  .dna-lib-grid{grid-template-columns:1fr!important}
+  /* anéis: 3 por linha (cabem bem e ficam bonitos) */
+  .anel-grid{grid-template-columns:repeat(3,1fr)!important;gap:10px}
+
+  /* alvos de toque mínimos */
+  .anel-option{min-height:84px}
+}
+
+/* tablet: 2 colunas onde fica melhor que 1 */
+@media(min-width:601px) and (max-width:920px){
+  .beneficios-grid,.conquistas-grid,.favs-grid,.loja-pkg-grid,
+  .dna-lib-grid{grid-template-columns:repeat(2,1fr)!important}
+}
+
+/* ── Performance/mobile: anima só onde vale; respeita preferências ── */
+@media(max-width:600px){
+  .marspass-tab-universe::before{animation:none}
+  .mp-star{animation:none!important;opacity:.5}
+}
+@media(prefers-reduced-motion:reduce){
+  .marspass-tab-universe::before,.mp-star{animation:none!important}
+}
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>
@@ -2436,21 +2537,26 @@ setTimeout(function(){
 
   <!-- TABS -->
   <div class="tabs-wrap">
-    <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)"><span class="tab-star">✦</span> MarsPass <span style="font-size:8px;background:linear-gradient(135deg,#FFD700,#ff9500);color:#000;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;margin-left:2px">PRO</span></div>
+    <span class="tab-group-label">Conta</span>
+    <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)"><span class="tab-star">✦</span> MarsPass <span style="font-size:8px;background:#FFD700;color:#000;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;margin-left:2px">PRO</span></div>
+    <div class="tab tab-planeta" onclick="showTab('planeta',this)">🪐 Meu Planeta</div>
+    <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
+
+    <span class="tab-group-label">Recompensas</span>
+    <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
+    <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
     <div class="tab" onclick="showTab('beneficios',this)">🎖️ Benefícios</div>
-    <div class="tab" onclick="showTab('conquistas',this)">🏅 Conquistas</div>
+    <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
+    <div class="tab tab-loja-mp" onclick="showTab('loja-mp',this)">💰 Loja MP</div>
+    <div class="tab tab-cambio" onclick="showTab('cambio',this)">🔄 Câmbio</div>
+
+    <span class="tab-group-label">Atividade & Coleção</span>
     <div class="tab" onclick="showTab('pedidos',this)">📦 Meus Pedidos</div>
     <div class="tab" onclick="showTab('favoritos',this)">❤️ Favoritos</div>
     <div class="tab" onclick="showTab('pontos',this)">📋 Histórico</div>
-    <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
-    <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
-    <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
+    <div class="tab" onclick="showTab('conquistas',this)">🏅 Conquistas</div>
     <div class="tab tab-dna" onclick="showTab('dna',this)">🧬 DNA Alien</div>
     <div class="tab tab-aniversario" onclick="showTab('aniversario',this)">🎂 Aniversário</div>
-    <div class="tab tab-cambio" onclick="showTab('cambio',this)">🔄 Câmbio</div>
-    <div class="tab tab-loja-mp" onclick="showTab('loja-mp',this)">💰 Loja MP</div>
-    <div class="tab tab-planeta" onclick="showTab('planeta',this)">🪐 Meu Planeta</div>
-    <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
   </div>
 
   <!-- BENEFÍCIOS -->
