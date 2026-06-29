@@ -448,10 +448,8 @@ function erroCupom(msg){
 async function marcarCupomUsado(email){
   if(!cupomAtual||!email)return;
   try{
-    var usados=Array.isArray(cupomAtual.emails_usados)?[...cupomAtual.emails_usados]:[];
-    if(!usados.includes(email))usados.push(email);
-    var novosUsos=(cupomAtual.usos_atuais||cupomAtual.usos||0)+1;
-    await sb.from('cupons').update({emails_usados:usados,usos_atuais:novosUsos,usos:novosUsos}).eq('id',cupomAtual.id);
+    /* Uso registrado pela função servidor (SECURITY DEFINER) — seguro contra adulteração */
+    await sb.rpc('aplicar_cupom',{p_codigo:cupomAtual.codigo,p_email:email,p_itens:itens});
     cupomAtual=null;sessionStorage.removeItem('mg_cupom');
   }catch(e){console.warn('[cupom mark]',e);}
 }
