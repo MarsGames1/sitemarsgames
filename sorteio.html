@@ -1380,6 +1380,50 @@ body:not(.tema-claro){--muted:#a8a8b6;--text:#f6f6fa}
 /* foco visível */
 body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
 </style>
+<style id="mg-sorteio-v2">
+/* ═══ SORTEIO — refino minimalista: menos neon, menos emoji-garrido, hierarquia ═══ */
+.sorteio-inner-tabs{padding:22px 28px 4px!important;gap:8px;flex-wrap:wrap}
+.sit{
+  border:1px solid var(--border,#1f1f27)!important;background:transparent!important;
+  border-radius:9px;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.3px;
+  color:var(--muted,#a8a8b6)!important;box-shadow:none!important;transition:border-color .15s,color .15s;
+}
+.sit:hover{color:#fff!important;border-color:#33333d!important}
+.sit.act-d,.sit.active,.sit[class*="act"]{
+  color:#fff!important;border-color:var(--mars,#e8421a)!important;background:rgba(232,66,26,.06)!important;
+}
+.sit-dot{box-shadow:none!important;width:6px;height:6px;opacity:.9}
+
+/* Card de estado (pausado/aguardando/vencedor) */
+.enc-trophy{
+  font-size:30px!important;filter:grayscale(.5);opacity:.9;
+  width:64px;height:64px;line-height:64px!important;margin:0 auto 14px!important;
+  border-radius:50%;background:rgba(255,255,255,.03)!important;
+  border:1px solid var(--border,#1f1f27);display:block;text-align:center;box-shadow:none!important;
+}
+.enc-subtitle{font-size:10px!important;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted,#a8a8b6)!important;margin-bottom:8px}
+.enc-title{font-size:24px!important;font-weight:800;color:#f6f6fa!important;letter-spacing:.2px;margin-bottom:10px}
+.enc-next,#encNext{font-size:13px!important;color:var(--muted,#a8a8b6)!important;line-height:1.7;max-width:430px;margin:0 auto}
+.encerrado-card{background:var(--card,#0e0e13)!important;border:1px solid var(--border,#1f1f27)!important;box-shadow:none!important;padding:44px 28px!important;border-radius:16px}
+.encerrado-card::before{opacity:.5!important;height:2px!important}
+
+/* Hero de tickets: plano, número em destaque */
+.ticket-strip{background:var(--card,#0e0e13)!important;border:1px solid var(--border,#1f1f27)!important;box-shadow:none!important;border-radius:14px}
+.ticket-count{font-family:'Orbitron',monospace!important;color:var(--green,#00ff55)!important;text-shadow:none!important}
+.ticket-label{color:var(--muted,#a8a8b6)!important;letter-spacing:1.5px}
+.ticket-icon{filter:saturate(.8)}
+
+/* Vencedor flat */
+.vencedor-card{background:var(--card,#0e0e13)!important;border:1px solid var(--border,#1f1f27)!important;box-shadow:none!important}
+.vencedor-trophy{filter:grayscale(.3)}
+
+@media(max-width:768px){
+  .sorteio-inner-tabs{padding:16px 14px 2px!important}
+  .enc-title{font-size:20px!important}
+  .encerrado-card{padding:34px 18px!important}
+}
+@media(prefers-reduced-motion:reduce){.sit,.ticket-strip{transition:none!important}}
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>
