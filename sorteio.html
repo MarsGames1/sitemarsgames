@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<link rel="icon" type="image/png" href="Favicon.png">
 <meta charset="UTF-8">
   <!-- SEO -->
   <meta name="description" content="Sorteios semanais de jogos na MarsGames. Use seus MarsTickets para concorrer a prêmios incríveis.">
@@ -1424,6 +1425,52 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 }
 @media(prefers-reduced-motion:reduce){.sit,.ticket-strip{transition:none!important}}
 </style>
+<style id="mg-sorteio-v3">
+/* ═══ SORTEIO v3 — conserta hero, CLAREIA tudo, refaz sidebar ═══ */
+
+/* HERO: folga no topo (limpa a navbar 64px), titulo controlado, brilho */
+.hero{padding:108px 28px 40px!important;margin-top:0!important;overflow:visible!important}
+.hero-eyebrow{color:#ff7a4d!important;opacity:1!important;margin-bottom:10px!important}
+.hero-title{font-size:clamp(26px,4vw,40px)!important;line-height:1.05!important;margin:4px 0 12px!important;letter-spacing:1px}
+.hero-title span{color:var(--mars,#e8421a)!important}
+.hero-sub{color:#cfcfdb!important;font-size:13px!important;line-height:1.6!important}
+
+/* SIDEBAR refeita: superficie legivel, label visivel, ativo com barra Mars */
+body:not(.tema-claro) .spa-nav{background:#0e0e14!important;border-right:1px solid #24242f!important;padding-top:14px}
+.spa-nav-label{display:block!important;color:#8a8a99!important;font-size:9px!important;letter-spacing:2.5px;text-transform:uppercase;padding:0 0 12px 14px!important}
+.spa-page-btn{color:#c8c8d6!important;font-weight:700!important;position:relative;border-radius:0 10px 10px 0!important;margin:2px 8px 2px 0!important;padding:13px 14px!important}
+.spa-page-btn:hover{background:rgba(255,255,255,.05)!important;color:#fff!important}
+.spa-page-btn.active{background:linear-gradient(90deg,rgba(232,66,26,.18),rgba(232,66,26,.04))!important;color:#fff!important}
+.spa-page-btn.active::before{content:'';position:absolute;left:0;top:14%;bottom:14%;width:3px;border-radius:0 3px 3px 0;background:var(--mars,#e8421a)}
+.spa-page-btn .btn-icon{filter:saturate(.85)}
+
+/* CARD do sorteio: dark mais claro, contraste, destaque */
+body:not(.tema-claro) .sorteio-card{background:#13131c!important;border:1px solid #282834!important;box-shadow:0 10px 30px rgba(0,0,0,.45)!important;border-radius:18px!important}
+body:not(.tema-claro) .sorteio-titulo{color:#f7f7fb!important;font-size:23px!important;font-weight:800!important}
+body:not(.tema-claro) .sorteio-desc{color:#b6b6c6!important;font-size:13px!important;line-height:1.6!important}
+body:not(.tema-claro) .sorteio-tipo-badge{background:rgba(232,66,26,.12)!important;border:1px solid rgba(232,66,26,.3)!important;color:#ff8a63!important}
+
+/* PREMIO: caixa destacada */
+body:not(.tema-claro) .premio-box{background:#191922!important;border:1px solid #2e2e3a!important;border-radius:14px!important}
+body:not(.tema-claro) .premio-label{color:#8a8a99!important;letter-spacing:2px}
+body:not(.tema-claro) .premio-nome{color:#fff!important;font-weight:800!important}
+body:not(.tema-claro) .premio-plat{color:#a0a0b0!important}
+
+/* CONTADOR: numeros em destaque */
+body:not(.tema-claro) .contador-wrap{background:#0f0f17!important;border:1px solid #24242f!important;border-radius:14px!important}
+body:not(.tema-claro) .contador-num{color:#fff!important;font-family:'Orbitron',monospace!important;text-shadow:0 0 18px rgba(232,66,26,.25)}
+body:not(.tema-claro) .contador-label{color:#9090a0!important;letter-spacing:1.5px}
+
+/* texto geral mais legivel no dark */
+body:not(.tema-claro) .participantes-info,body:not(.tema-claro) .meus-tickets{color:#c4c4d2!important}
+
+/* MOBILE: hero menor, sidebar compacta */
+@media(max-width:768px){
+  .hero{padding:90px 16px 28px!important}
+  .hero-title{font-size:26px!important}
+  .sorteio-titulo{font-size:20px!important}
+}
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>
@@ -1432,7 +1479,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 
 <nav class="navbar">
   <a class="nav-logo" href="index.html">
-    <div class="nav-logo-text">Mars<span>Games</span></div>
+    <img src="Favicon.png" alt="MarsGames" style="height:42px;width:auto;vertical-align:middle;margin-right:9px;display:inline-block"><div class="nav-logo-text">Mars<span>Games</span></div>
   </a>
   <div class="nav-right">
     <a class="nav-btn" href="index.html">← Loja</a>
