@@ -1202,6 +1202,184 @@ input[type=range].tickets-range::-webkit-slider-thumb:hover{box-shadow:0 0 18px 
 }
 
 </style>
+<style id="mg-v2">
+/* ════════════════════════════════════════════════════════
+   MarsGames — Reskin v2.1  (camada de refino compartilhada)
+   Linkar como ÚLTIMO stylesheet, antes de </head>.
+   Mantém HTML/JS. Clareia o texto, achata gradientes de
+   superfície, troca glows neon por efeitos com profundidade
+   e adiciona assinatura Mars. Escopo: NÃO afeta tema claro.
+   Reverter: remover o <link>.
+   ════════════════════════════════════════════════════════ */
+
+/* — Tokens: superfícies planas + TEXTO MAIS CLARO — */
+body:not(.tema-claro){
+  --card:#13131a;--surface:#181820;
+  --border:#23232f;--border2:#30303e;
+  --green-glow:rgba(0,255,85,.14);--green-dim:rgba(0,255,85,.08);
+  --mars-glow:rgba(232,66,26,.18);--mars-dim:rgba(232,66,26,.12);
+  --text:#f6f6fa;            /* antes apagado → branco quente claro   */
+  --muted:#a8a8b6;           /* legível de verdade (era ~#555/#8a)    */
+  --dim:#16161e;--radius:14px;
+  color:var(--text,#f6f6fa);
+}
+
+/* clareia rótulos/legendas comuns que ficavam "apagados" */
+body:not(.tema-claro) .store-title-main,
+body:not(.tema-claro) .prod-plat,
+body:not(.tema-claro) .store-count-text,
+body:not(.tema-claro) .hero-stat-label{color:#b6b6c4}
+body:not(.tema-claro) .prod-name{color:var(--text)}
+
+/* — Cards: superfície plana, hover com PROFUNDIDADE + fio Mars — */
+body:not(.tema-claro) .prod-card{
+  box-shadow:0 1px 2px rgba(0,0,0,.35);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),border-color .22s,box-shadow .22s;
+}
+body:not(.tema-claro) .prod-card::before{   /* assinatura: fio laranja no topo, surge no hover */
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;z-index:3;
+  background:linear-gradient(to right,transparent,var(--mars),transparent);
+  opacity:0;transition:opacity .25s;
+}
+@media(hover:hover){
+  body:not(.tema-claro) .prod-card:hover{
+    border-color:var(--border2);
+    box-shadow:0 14px 34px rgba(0,0,0,.5);
+    transform:translateY(-4px);
+  }
+  body:not(.tema-claro) .prod-card:hover::before{opacity:.9}
+  body:not(.tema-claro) .prod-btn-buy:hover{background:rgba(232,66,26,.18);box-shadow:none}
+}
+
+/* — Preço: verde vivo, tabular — */
+body:not(.tema-claro) .prod-price{
+  color:#1aff66;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+
+/* — Stats do hero: número limpo com leve brilho (devolve o "pop") — */
+.hero-stat-val{text-shadow:0 0 18px rgba(0,255,85,.28)}
+.hero-title .line2{text-shadow:0 0 26px rgba(0,255,85,.22)}
+
+/* — Categoria ativa: profundidade sutil, sem halo neon — */
+body:not(.tema-claro) .cat-pill{box-shadow:none;transition:border-color .2s,color .2s,background .2s,transform .15s}
+body:not(.tema-claro) .cat-pill.active{
+  background:var(--mars-dim);border-color:var(--mars);color:#ff8a5c;
+  box-shadow:0 2px 12px rgba(232,66,26,.18);
+}
+@media(hover:hover){body:not(.tema-claro) .cat-pill:hover{transform:translateY(-1px)}}
+
+/* — CTA primário: gradiente sutil + brilho controlado no hover — */
+.btn-mars-green{background:linear-gradient(135deg,#00ff55,#00c944);box-shadow:0 2px 10px rgba(0,255,85,.14)}
+.btn-mars-green:hover{box-shadow:0 10px 30px rgba(0,255,85,.28);transform:translateY(-2px)}
+
+/* — Outros componentes: tira glow neon, mantém legibilidade — */
+body:not(.tema-claro) .modal-box,
+body:not(.tema-claro) .cart-drawer,
+body:not(.tema-claro) .benef-card,
+body:not(.tema-claro) .conquista-card,
+body:not(.tema-claro) .fav-card,
+body:not(.tema-claro) .search-input{box-shadow:none}
+
+.tag-novo-badge{background:#0094e0;color:#fff}
+
+/* — Navbar: hairline limpo — */
+body:not(.tema-claro) .navbar{
+  background:rgba(10,10,14,.74);
+  -webkit-backdrop-filter:saturate(170%) blur(18px);
+  backdrop-filter:saturate(170%) blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+/* — Busca: foco verde — */
+body:not(.tema-claro) .search-input:focus{
+  border-color:rgba(0,255,85,.4);box-shadow:0 0 0 3px rgba(0,255,85,.08);
+}
+
+.prod-estoque-baixo{animation:none;background:rgba(232,66,26,.92)}
+
+/* — Foco visível por teclado (acessibilidade) — */
+body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+
+</style>
+<style id="mg-sorteio">
+/* ════════════════════════════════════════════════════════
+   MarsGames — Reskin SORTEIOS (reorganiza abas + destaques)
+   Só CSS, vence a cascata. HTML/JS intactos.
+   ════════════════════════════════════════════════════════ */
+
+/* TEXTO mais claro nesta página (vários #666/#888 apagados) */
+body:not(.tema-claro){--muted:#a8a8b6;--text:#f6f6fa}
+.sorteio-desc,.premio-label,.premio-plat,.contador-label,.spa-mp-chip-sub,.spa-mp-chip-lbl{color:#a8a8b6!important}
+.sorteio-titulo,.premio-nome{color:var(--text)!important}
+.spa-nav-label{color:#9a9aa8!important;letter-spacing:2px}
+.hero-sub{color:#b4b4c2!important}
+
+/* ── NAV PRINCIPAL: consistente, sem rainbow neon ── */
+.spa-nav{background:rgba(10,10,14,.55);border-right:1px solid var(--border)}
+.spa-page-btn{color:#9a9aa8;border-radius:11px;transition:background .18s,color .18s}
+.spa-page-btn:hover{background:rgba(255,255,255,.045);color:var(--text)}
+.spa-page-btn .btn-icon{background:rgba(255,255,255,.05);box-shadow:none}
+/* acento único = Mars, para TODAS as abas ativas (organiza) */
+.spa-page-btn.active,
+.spa-page-btn.pvp-btn.active,
+.spa-page-btn.roda-btn.active{background:rgba(232,66,26,.14);color:#fff}
+.spa-page-btn.active::before,
+.spa-page-btn.pvp-btn.active::before,
+.spa-page-btn.roda-btn.active::before{background:var(--mars);box-shadow:none}
+.spa-page-btn.active .btn-icon,
+.spa-page-btn.pvp-btn.active .btn-icon,
+.spa-page-btn.roda-btn.active .btn-icon{background:rgba(232,66,26,.2);box-shadow:none}
+/* hint de cor por seção só no texto idle (sutil, sem glow) */
+.spa-page-btn.pvp-btn{color:#c98a8a}
+.spa-page-btn.roda-btn{color:#c9b07a}
+.spa-page-btn.pvp-btn:hover,.spa-page-btn.roda-btn:hover{color:var(--text)}
+
+/* MP chip: plano */
+.spa-mp-chip{background:rgba(255,179,0,.06);border:1px solid rgba(255,179,0,.18)}
+.spa-mp-chip-val{color:#ffc24d}
+
+/* ── SUB-ABAS: segmented control limpo, sem bolinhas brilhantes ── */
+.sorteio-inner-tabs{
+  position:sticky;top:64px;z-index:20;
+  background:rgba(10,10,14,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:14px 24px;margin-bottom:4px;gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid var(--border);
+}
+.sit{
+  border:1px solid var(--border2);background:var(--card);color:#b4b4c2;
+  border-radius:10px;padding:8px 14px;font-weight:700;transition:all .16s;box-shadow:none;
+}
+.sit:hover{border-color:#3a3a48;color:var(--text)}
+.sit-dot{box-shadow:none!important;width:7px;height:7px;opacity:.9}
+/* estados ativos: fundo+borda nítidos, SEM animação pulsante */
+.sit.act-d,.sit.act-s,.sit.act-m,.sit.act-p,.sit.act-v{
+  color:#fff;background:rgba(232,66,26,.14);border-color:var(--mars);animation:none!important;
+}
+.sit.act-d{background:rgba(255,85,51,.14);border-color:#ff5533}
+.sit.act-s{background:rgba(255,204,0,.12);border-color:#e0b000}
+.sit.act-m{background:rgba(136,221,255,.12);border-color:#5bc7f0}
+.sit.act-p{background:rgba(124,106,247,.14);border-color:#7c6af7}
+.sit.act-v{background:rgba(255,60,110,.14);border-color:#ff3c6e}
+.sit.prem-tab::after,.sit.vip-tab::after{font-size:8px;opacity:.7}
+
+/* ── DESTAQUES: cards planos, hierarquia clara, acento Mars ── */
+.sorteio-card{border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.35)!important;transition:border-color .22s,box-shadow .22s,transform .22s}
+.sorteio-card.tipo-diario,.sorteio-card.tipo-semanal,.sorteio-card.tipo-mensal{
+  box-shadow:0 1px 2px rgba(0,0,0,.35)!important;
+}
+@media(hover:hover){.sorteio-card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.5)!important;border-color:var(--border2)}}
+/* caixa de prêmio: superfície plana âmbar, sem gradiente */
+.premio-box{background:rgba(255,196,77,.07);border:1px solid rgba(255,196,77,.2)}
+.premio-img{box-shadow:0 4px 16px rgba(0,0,0,.5)}
+/* contador: números vivos */
+.contador-num{color:var(--text)}
+.contador-wrap{background:rgba(0,0,0,.25)}
+/* badge dot: sem pulsar agressivo */
+.badge-dot{animation:none!important}
+
+/* foco visível */
+body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>
