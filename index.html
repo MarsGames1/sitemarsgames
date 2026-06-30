@@ -384,7 +384,7 @@ body.tema-claro .exit-sub{color:#666}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
 .nav-logo img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,66,26,.5))}
 .nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
-.nav-logo-text span{color:var(--mars)}
+.nav-logo-text span{color:var(--green)}
 .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative}
 /* Login */
 .nav-login{
@@ -3566,6 +3566,24 @@ footer::before{
   .nav-mob-search-btn{width:36px;height:36px}
 }
 </style>
+<style id="mg-sino">
+.mg-sino-wrap{position:relative}
+.mg-sino-btn{position:relative;background:rgba(255,255,255,.05);border:1px solid var(--border,#22222a);color:#cfcfdb;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,color .15s}
+.mg-sino-btn:hover{border-color:var(--green,#00ff55);color:#fff}
+.mg-sino-badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--mars,#e8421a);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 0 0 2px #07070c}
+.mg-sino-panel{position:absolute;top:48px;right:0;width:330px;max-width:92vw;background:#0e0e14;border:1px solid #26262f;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.6);opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .18s,transform .18s;z-index:300;overflow:hidden}
+.mg-sino-wrap.open .mg-sino-panel{opacity:1;visibility:visible;transform:translateY(0)}
+.mg-sino-head{padding:14px 16px;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;color:#f6f6fa;border-bottom:1px solid #20202a}
+.mg-sino-list{max-height:380px;overflow-y:auto}
+.mg-sino-item{padding:12px 16px;border-bottom:1px solid #18181f;display:flex;gap:10px;align-items:flex-start}
+.mg-sino-item.nao-lida{background:rgba(0,255,85,.05)}
+.mg-sino-ic{font-size:16px;flex-shrink:0;margin-top:1px}
+.mg-sino-tit{font-size:12px;font-weight:700;color:#f0f0f6;margin-bottom:2px}
+.mg-sino-msg{font-size:11px;color:#a8a8b6;line-height:1.5}
+.mg-sino-data{font-size:9px;color:#6a6a7a;margin-top:3px}
+.mg-sino-empty{padding:26px 16px;text-align:center;color:#7a7a8a;font-size:12px}
+@media(max-width:768px){.mg-sino-panel{position:fixed;top:62px;right:8px;left:8px;width:auto}}
+</style>
 </head>
 <body>
 
@@ -4111,6 +4129,17 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
         <img id="navAvatarImg" src="" alt="" loading="lazy" decoding="async" style="display:none">
         <div id="navAvatarFallback"></div>
       </a>
+    </div>
+    <!-- Sino de notificações -->
+    <div class="mg-sino-wrap" id="mgSinoWrap" style="display:none">
+      <button class="mg-sino-btn" id="mgSinoBtn" aria-label="Notificações" onclick="mgToggleSino(event)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="mg-sino-badge" id="mgSinoBadge" style="display:none">0</span>
+      </button>
+      <div class="mg-sino-panel" id="mgSinoPanel">
+        <div class="mg-sino-head">Notificações</div>
+        <div class="mg-sino-list" id="mgSinoList"><div class="mg-sino-empty">Carregando...</div></div>
+      </div>
     </div>
     <!-- Carrinho -->
     <button class="nav-cart" onclick="toggleCart()" aria-label="Carrinho">
@@ -7052,6 +7081,41 @@ window.addEventListener('resize',function(){
   var ric=window.requestIdleCallback||function(cb){return setTimeout(cb,1200)};
   if(document.readyState==='complete') ric(load,{timeout:2500});
   else window.addEventListener('load',function(){ric(load,{timeout:2500})},{once:true});
+})();
+</script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function fmt(d){try{var t=new Date(d);return t.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+  var IC={jogo:'\uD83C\uDFAE',mensagem:'\uD83C\uDF9F\uFE0F',sorteio:'\uD83C\uDF81',ticket:'\uD83C\uDFAB',pontos:'\u2B50'};
+  function esc(t){return String(t||'').replace(/[<>&]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
+  window._mgNotifs=[];
+  function render(items){var l=$('mgSinoList');if(!l)return;
+    if(!items||!items.length){l.innerHTML='<div class="mg-sino-empty">Nenhuma notifica\u00e7\u00e3o ainda.</div>';return;}
+    l.innerHTML=items.map(function(n){return '<div class="mg-sino-item'+(n.lida?'':' nao-lida')+'"><span class="mg-sino-ic">'+(IC[n.tipo]||'\uD83D\uDD14')+'</span><div><div class="mg-sino-tit">'+esc(n.titulo)+'</div><div class="mg-sino-msg">'+esc(n.mensagem)+'</div><div class="mg-sino-data">'+fmt(n.created_at)+'</div></div></div>';}).join('');
+  }
+  window.mgToggleSino=function(e){if(e)e.stopPropagation();var w=$('mgSinoWrap');if(!w)return;var abrir=!w.classList.contains('open');w.classList.toggle('open');if(abrir)mgMarcarLidas();};
+  document.addEventListener('click',function(e){var w=$('mgSinoWrap');if(w&&w.classList.contains('open')&&!w.contains(e.target))w.classList.remove('open');});
+  window.mgCarregarNotifs=async function(session){
+    if(!session||typeof sb==='undefined')return;
+    try{var r=await sb.from('notificacoes_cliente').select('titulo,mensagem,tipo,lida,created_at').eq('user_email',session.user.email).order('created_at',{ascending:false}).limit(20);
+      window._mgNotifs=r.data||[];render(window._mgNotifs);
+      var nl=window._mgNotifs.filter(function(n){return !n.lida;}).length;
+      var b=$('mgSinoBadge');if(b){b.textContent=nl>9?'9+':String(nl);b.style.display=nl>0?'flex':'none';}
+    }catch(e){console.warn('[sino]',e);}
+  };
+  window.mgMarcarLidas=async function(){
+    if(typeof sb==='undefined'||!window.userSession)return;
+    try{await sb.from('notificacoes_cliente').update({lida:true}).eq('user_email',window.userSession.user.email).eq('lida',false);
+      var b=$('mgSinoBadge');if(b)b.style.display='none';window._mgNotifs.forEach(function(n){n.lida=true;});render(window._mgNotifs);
+    }catch(e){}
+  };
+  function show(session){var w=$('mgSinoWrap');if(!w)return;if(session){w.style.display='block';mgCarregarNotifs(session);}else{w.style.display='none';}}
+  function init(){if(typeof sb==='undefined')return setTimeout(init,400);
+    sb.auth.getSession().then(function(r){show(r.data&&r.data.session?r.data.session:null);});
+    sb.auth.onAuthStateChange(function(ev,session){show(session||null);});
+  }
+  setTimeout(init,700);
 })();
 </script>
 </body>

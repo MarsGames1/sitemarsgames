@@ -219,7 +219,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
 .nav-logo-text{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;color:#fff}
-.nav-logo-text span{color:var(--mars)}
+.nav-logo-text span{color:var(--green)}
 .nav-right{display:flex;align-items:center;gap:8px}
 .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;
   border:1px solid var(--border2);background:rgba(255,255,255,.04);
@@ -3500,22 +3500,12 @@ async function rdAplicarEfeito(sl){
     /* Cupom — gera código único e insere na tabela cupons */
     if(sl.type==='coupon'){
       var pct=sl.id===5?5:10; /* id5=5%OFF, id7=10%OFF */
-      var rand=Math.random().toString(36).slice(2,7).toUpperCase();
-      var cupomCodigo='RODA'+pct+'_'+rand;
-      var validade=new Date(); validade.setDate(validade.getDate()+30); /* 30 dias */
+      var cupomCodigo='';
       try{
-        await sb.from('cupons').insert({
-          codigo:cupomCodigo,
-          desconto:pct,
-          validade:validade.toISOString().split('T')[0],
-          max_usos:1,
-          usos:0,
-          ativo:true,
-          max_usos_por_email:1,
-          emails_usados:[],
-          origem:'roda_fortuna',
-          user_email_exclusivo:userSession.user.email
-        });
+        /* Cupom gerado no servidor (seguro): a função controla desconto/validade/exclusividade */
+        var rpcCup=await sb.rpc('roleta_gerar_cupom',{p_pct:pct});
+        if(rpcCup.error) throw rpcCup.error;
+        cupomCodigo=rpcCup.data;
         /* Notifica o cliente com o código */
         await sb.from('notificacoes_cliente').insert({
           user_email:userSession.user.email,
