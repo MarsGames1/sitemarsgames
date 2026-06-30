@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<link rel="icon" type="image/png" href="Favicon.png">
 <meta charset="UTF-8">
   <!-- SEO -->
   <meta name="description" content="Meu perfil MarsGames — Acompanhe seus pedidos, MarsPoints, conquistas e assinaturas.">
@@ -591,7 +592,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
 .nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
-.nav-logo-text span{color:var(--mars)}
+.nav-logo-text span{color:var(--green)}
 .nav-right{display:flex;align-items:center;gap:8px}
 .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;
   border:1px solid var(--border2);background:rgba(255,255,255,.04);
@@ -2368,6 +2369,31 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   .marspass-tab-universe::before,.mp-star{animation:none!important}
 }
 </style>
+<style id="mg-pag-notif">
+/* ── paginação reutilizável ── */
+.mg-pag-bar{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 8px 4px;margin-top:4px}
+.mg-pag-btn{background:rgba(255,255,255,.05);border:1px solid #2a2a36;color:#cfcfdb;font-size:11px;font-weight:700;padding:7px 14px;border-radius:9px;cursor:pointer;transition:border-color .15s,color .15s}
+.mg-pag-btn:hover:not(:disabled){border-color:var(--green,#00ff55);color:#fff}
+.mg-pag-btn:disabled{opacity:.35;cursor:default}
+.mg-pag-info{font-size:11px;font-weight:700;color:#9090a0;font-family:'Orbitron',sans-serif;letter-spacing:1px;min-width:46px;text-align:center}
+/* ── notificações mais bonitas/organizadas ── */
+.notif-dropdown{background:#0e0e14!important;border:1px solid #26262f!important;border-radius:14px!important;box-shadow:0 20px 55px rgba(0,0,0,.6)!important;width:340px!important;max-width:92vw!important;overflow:hidden!important}
+.notif-header{padding:14px 16px!important;border-bottom:1px solid #20202a!important}
+.notif-header-title{font-family:'Orbitron',sans-serif!important;font-size:12px!important;letter-spacing:1px!important;color:#f6f6fa!important}
+.notif-marcar-btn{font-size:10px!important;color:#00ff55!important;background:rgba(0,255,85,.08)!important;border:1px solid rgba(0,255,85,.25)!important;border-radius:7px!important;padding:4px 9px!important;font-weight:700!important;cursor:pointer}
+.notif-marcar-btn:hover{background:rgba(0,255,85,.16)!important}
+#notifList{max-height:400px!important;overflow-y:auto!important}
+.notif-item{padding:12px 16px!important;border-bottom:1px solid #18181f!important;gap:11px!important;transition:background .15s!important;position:relative!important}
+.notif-item:hover{background:rgba(255,255,255,.03)!important}
+.notif-item.nao-lida{background:rgba(0,255,85,.045)!important}
+.notif-item.nao-lida::before{content:''!important;position:absolute!important;left:0;top:0;bottom:0;width:3px;background:#00ff55}
+.notif-icon{width:36px!important;height:36px!important;border-radius:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:16px!important;flex-shrink:0!important}
+.notif-titulo{font-size:12.5px!important;font-weight:700!important;color:#f0f0f6!important;margin-bottom:2px!important}
+.notif-msg{font-size:11px!important;color:#a8a8b6!important;line-height:1.5!important}
+.notif-time{font-size:9px!important;color:#6a6a7a!important;margin-top:4px!important;letter-spacing:.5px}
+.notif-empty{padding:30px 16px!important;text-align:center!important;color:#7a7a8a!important;font-size:12px!important}
+.notif-badge{background:var(--mars,#e8421a)!important}
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>
@@ -2376,7 +2402,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 
 <nav class="navbar">
   <a class="nav-logo" href="index.html">
-    <div class="nav-logo-text">Mars<span>Games</span></div>
+    <img src="Favicon.png" alt="MarsGames" style="height:42px;width:auto;vertical-align:middle;margin-right:9px;display:inline-block"><div class="nav-logo-text">Mars<span>Games</span></div>
   </a>
   <div class="nav-right">
     <a class="nav-btn" href="catalogo.html">Catálogo</a>
@@ -2430,7 +2456,7 @@ setTimeout(function(){
 <div id="login-screen" style="display:none">
   <div class="login-card">
     <div class="login-planet"></div>
-    <div class="login-logo">Mars<span>Games</span></div>
+    <div class="login-logo"><img src="Favicon.png" alt="MarsGames" style="height:42px;width:auto;vertical-align:middle;margin-right:9px;display:inline-block">Mars<span>Games</span></div>
     <div class="login-sub">Área do Cliente</div>
     <div class="login-desc">
       Entre e acesse seus <strong>MarsPoints</strong>, pedidos,<br>favoritos e benefícios exclusivos.
@@ -4251,7 +4277,7 @@ async function carregarHistoricoPontosEmail(userEmail){
         ptsList.querySelector('#histListWrap').innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;font-weight:600">Nenhum item nesta categoria.</div>';
         return;
       }
-      ptsList.querySelector('#histListWrap').innerHTML=itens.slice(0,50).map(function(h){
+      ptsList.querySelector('#histListWrap').innerHTML=itens.slice(0,300).map(function(h){
         var dtStr=h.data?new Date(h.data).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):(h.hora||'—');
         return '<div class="pts-item" style="gap:10px">'+
           '<div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">'+h.icon+'</div>'+
@@ -4339,7 +4365,7 @@ function setTema(tema){
 
 function checkTema(nivel){
   var temaSalvo=localStorage.getItem('mg_tema');
-  var podeUsarTema=nivel.pct>=5; // Prata ou acima
+  var podeUsarTema=(nivel&&nivel.min>=200); // Prata (min 200pts) ou acima
   document.getElementById('temaSection').style.display=podeUsarTema?'block':'none';
   document.getElementById('temaBloqueado').style.display=podeUsarTema?'none':'block';
   if(podeUsarTema && temaSalvo==='light'){
@@ -7977,6 +8003,44 @@ window.planetaAddXPSilent=function(xp,label,icon,bg,color){
     window.addEventListener('beforeunload',function(){clearInterval(_pi);if(_pc)_pc.untrack();});
   }
   setTimeout(_ini,1500);
+})();
+</script>
+<script>
+(function(){
+  function mgPaginarLista(wrapId, perPage){
+    var wrap=document.getElementById(wrapId); if(!wrap) return;
+    var nb=wrap.nextSibling;
+    if(nb&&nb.classList&&nb.classList.contains('mg-pag-bar')) nb.parentNode.removeChild(nb);
+    var kids=Array.prototype.slice.call(wrap.children);
+    var sig=kids.length;
+    if(wrap._mgSig!==sig){ wrap._mgPage=1; wrap._mgSig=sig; }
+    if(sig<=perPage){ kids.forEach(function(k){k.style.display='';}); return; }
+    var total=Math.ceil(sig/perPage);
+    var page=Math.min(wrap._mgPage||1,total); wrap._mgPage=page;
+    kids.forEach(function(k,idx){ k.style.display=(idx>=(page-1)*perPage&&idx<page*perPage)?'':'none'; });
+    var bar=document.createElement('div'); bar.className='mg-pag-bar';
+    bar.innerHTML='<button class="mg-pag-btn" type="button"'+(page<=1?' disabled':'')+'>\u2039 Anterior</button>'+
+      '<span class="mg-pag-info">'+page+' / '+total+'</span>'+
+      '<button class="mg-pag-btn" type="button"'+(page>=total?' disabled':'')+'>Pr\u00f3xima \u203a</button>';
+    var b=bar.querySelectorAll('.mg-pag-btn');
+    b[0].onclick=function(){ wrap._mgPage=Math.max(1,page-1); mgPaginarLista(wrapId,perPage); };
+    b[1].onclick=function(){ wrap._mgPage=Math.min(total,page+1); mgPaginarLista(wrapId,perPage); };
+    if(wrap.nextSibling) wrap.parentNode.insertBefore(bar,wrap.nextSibling); else wrap.parentNode.appendChild(bar);
+  }
+  window.mgPaginarLista=mgPaginarLista;
+  /* lista de históricos a paginar: [id, itens por página] */
+  var ALVOS=[['histListWrap',12],['ticketsHistoricoList',10],['lojaHistList',8]];
+  function ligar(id,per){
+    var wrap=document.getElementById(id); if(!wrap){return false;}
+    mgPaginarLista(id,per);
+    /* re-pagina sozinho quando a lista é re-renderizada (childList muda; display não dispara) */
+    try{ new MutationObserver(function(){ mgPaginarLista(id,per); }).observe(wrap,{childList:true}); }catch(e){}
+    return true;
+  }
+  function init(){ ALVOS.forEach(function(a){ ligar(a[0],a[1]); }); }
+  /* tenta ligar no load e de novo após render assíncrono */
+  if(document.readyState!=='loading') setTimeout(init,400); else document.addEventListener('DOMContentLoaded',function(){setTimeout(init,400);});
+  setTimeout(init,1500);
 })();
 </script>
 </body>
