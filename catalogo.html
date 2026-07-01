@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<link rel="icon" type="image/png" href="Favicon.png">
 <meta charset="UTF-8">
   <!-- SEO -->
   <meta name="description" content="Catálogo completo de jogos Steam offline na MarsGames. Encontre os melhores títulos com preços acessíveis e entrega imediata.">
@@ -117,7 +118,7 @@ body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--text);
   background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
 .nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
-.nav-logo-text span{color:var(--mars)}
+.nav-logo-text span{color:var(--green)}
 .nav-right{display:flex;align-items:center;gap:8px}
 .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;
   border:1px solid var(--border2);background:rgba(255,255,255,.04);
@@ -430,7 +431,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 <canvas id="mars-canvas"></canvas>
 <nav class="navbar">
   <a class="nav-logo" href="index.html">
-    <div class="nav-logo-text">Mars<span>Games</span></div>
+    <img src="Favicon.png" alt="MarsGames" style="height:42px;width:auto;vertical-align:middle;margin-right:9px;display:inline-block"><div class="nav-logo-text">Mars<span>Games</span></div>
   </a>
   <div class="nav-right">
     <!-- Botão de busca mobile -->
@@ -677,8 +678,7 @@ function calcularDesconto(){
   if(!cupomAtual||carrinho.length===0) return 0;
   var precos=carrinho.map(function(p){return Number(p.preco)});
   var menor=Math.min.apply(null,precos);
-  if(cupomAtual.desconto_tipo==='percentual') return Math.round(menor*(cupomAtual.desconto_valor/100)*100)/100;
-  return Math.min(cupomAtual.desconto_valor,menor);
+  return Math.round(menor*((Number(cupomAtual.desconto)||0)/100)*100)/100;
 }
 function atualizarCarrinho(){
   document.getElementById('cartBadge').textContent=carrinho.length;
@@ -728,15 +728,19 @@ async function aplicarCupom(){
     if(res.error||!res.data){ mostrarErroCupom('Cupom inválido ou expirado.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
     var c=res.data;
     var sess=await sb.auth.getSession();
-    if(sess.data&&sess.data.session){
-      var email=sess.data.session.user.email;
-      var emails_usados=Array.isArray(c.emails_usados)?c.emails_usados:[];
-      if(emails_usados.includes(email)){ mostrarErroCupom('Este cupom já foi utilizado pela sua conta.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    var emailAtual=(sess.data&&sess.data.session)?sess.data.session.user.email:null;
+    if(c.user_email_exclusivo){
+      if(!emailAtual){ mostrarErroCupom('Faça login para usar este cupom exclusivo.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+      if(String(c.user_email_exclusivo).toLowerCase()!==emailAtual.toLowerCase()){ mostrarErroCupom('Cupom exclusivo de outra conta.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
     }
-    if(c.usos_max&&c.usos_atuais>=c.usos_max){ mostrarErroCupom('Este cupom atingiu o limite de usos.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    if(emailAtual){
+      var emails_usados=Array.isArray(c.emails_usados)?c.emails_usados:[];
+      if(emails_usados.includes(emailAtual)){ mostrarErroCupom('Este cupom já foi utilizado pela sua conta.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
+    }
+    if(c.max_usos&&(c.usos||0)>=c.max_usos){ mostrarErroCupom('Este cupom atingiu o limite de usos.'); btn.disabled=false; btn.textContent='Aplicar'; return; }
     cupomAtual=c; btn.textContent='Remover'; btn.disabled=false;
     atualizarCarrinho();
-    var desc=c.desconto_tipo==='percentual'?c.desconto_valor+'% OFF':('R$ '+Number(c.desconto_valor).toFixed(2).replace('.',',')+' OFF');
+    var desc=(Number(c.desconto)||0)+'% OFF';
     status.style.cssText='display:flex;font-size:10px;font-weight:700;padding:5px 8px;border-radius:6px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);color:#00ff55';
     status.innerHTML='✓ Cupom <strong>'+codigo+'</strong> aplicado! '+desc;
   }catch(e){ mostrarErroCupom('Erro ao verificar cupom. Tente novamente.'); btn.disabled=false; btn.textContent='Aplicar'; }

@@ -6169,7 +6169,7 @@ document.getElementById('prodModal').addEventListener('click',function(e){if(e.t
 
 /* ── CARRINHO ── */
 /* ══ SISTEMA DE CUPOM ══ */
-var cupomAtual = null; /* {codigo, desconto_tipo, desconto_valor, id} */
+var cupomAtual = null; /* {codigo, desconto, id} */
 
 async function aplicarCupom(){
   var input = document.getElementById('cartCupomInput');
@@ -6238,9 +6238,7 @@ async function aplicarCupom(){
     atualizarCarrinho();
 
     status.className = 'cart-cupom-status ok';
-    var desc = c.desconto_tipo==='percentual'
-      ? c.desconto_valor+'% OFF no item mais barato'
-      : 'R$ '+Number(c.desconto_valor).toFixed(2).replace('.',',')+ ' OFF no item mais barato';
+    var desc = (Number(c.desconto)||0)+'% OFF no item mais barato';
     status.innerHTML = '✓ Cupom <strong>'+codigo+'</strong> aplicado! '+desc;
     status.style.display = 'flex';
 
@@ -6264,11 +6262,7 @@ function calcularDesconto(){
   var precos = carrinho.map(function(p){return Number(p.preco)});
   var menor  = Math.min.apply(null, precos);
   var desc   = 0;
-  if(cupomAtual.desconto_tipo==='percentual'){
-    desc = menor * (cupomAtual.desconto_valor/100);
-  } else {
-    desc = Math.min(Number(cupomAtual.desconto_valor), menor);
-  }
+  desc = menor * ((Number(cupomAtual.desconto)||0)/100);
   return Math.round(desc*100)/100;
 }
 
@@ -6374,11 +6368,7 @@ async function checkout() {
     /* tokens não necessários: Supabase persiste sessão via storageKey:'mg_auth' */
     /* Passa cupom e desconto para o checkout */
     if(cupomAtual && desconto>0){
-      sessionStorage.setItem('mg_cupom', JSON.stringify({
-        codigo: cupomAtual.codigo,
-        desconto: desconto,
-        tipo: cupomAtual.desconto_tipo
-      }));
+      sessionStorage.setItem('mg_cupom', JSON.stringify(cupomAtual));
     } else {
       sessionStorage.removeItem('mg_cupom');
     }

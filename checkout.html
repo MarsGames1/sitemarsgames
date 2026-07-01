@@ -611,7 +611,7 @@ async function pagar(){
     if(_origemDesconto) sessionStorage.setItem('mg_desconto_origem', _origemDesconto);
     else sessionStorage.removeItem('mg_desconto_origem');
     /* Salva cupom para marcar como usado após confirmação */
-    if(cupomAtual)sessionStorage.setItem('mg_cupom_pix',JSON.stringify({id:cupomAtual.id,email:session.user.email,emails_usados:cupomAtual.emails_usados||[],usos:cupomAtual.usos_atuais||cupomAtual.usos||0}));
+    if(cupomAtual)sessionStorage.setItem('mg_cupom_pix',JSON.stringify({id:cupomAtual.id,email:session.user.email,emails_usados:cupomAtual.emails_usados||[],usos:cupomAtual.usos||0}));
     window.location.href='pix-checkout.html';
   }catch(err){showToast('Erro: '+(err.message||'Tente novamente'));btn.disabled=false;btn.classList.remove('loading');}
 }
