@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<link rel="icon" type="image/png" href="Favicon.png">
 <meta charset="UTF-8">
   <!-- SEO -->
   <meta name="description" content="Finalizar compra na MarsGames. Pague com Pix ou cartão de forma rápida e segura.">
@@ -214,7 +215,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 
   <!-- LOGO -->
   <div class="logo-bar">
-    <div class="logo">Mars<span>Games</span></div>
+    <div class="logo"><img src="Favicon.png" alt="MarsGames" style="height:42px;width:auto;vertical-align:middle;margin-right:9px;display:inline-block">Mars<span>Games</span></div>
     <div class="secure-badge">🔒 Pagamento seguro</div>
   </div>
 
@@ -353,9 +354,8 @@ function calcDesc(){
   var descCupom=0;
   if(cupomAtual){
     var menor=Math.min(...itens.map(p=>Number(p.preco)));
-    descCupom=cupomAtual.desconto_tipo==='percentual'
-      ?Math.round(menor*(cupomAtual.desconto_valor/100)*100)/100
-      :Math.min(cupomAtual.desconto_valor,menor);
+    var pctCup=Number(cupomAtual.desconto)||0;
+    descCupom=Math.round(menor*(pctCup/100)*100)/100;
   }
   return Math.round(Math.max(descAssinatura,descCupom)*100)/100;
 }
@@ -417,19 +417,24 @@ async function aplicarCupom(){
 
     /* Verifica uso por email */
     var sess=await sb.auth.getSession();
-    if(sess.data&&sess.data.session){
-      var email=sess.data.session.user.email;
+    var emailAtual=(sess.data&&sess.data.session)?sess.data.session.user.email:null;
+    /* Cupom exclusivo: só a conta dona pode usar */
+    if(cv.user_email_exclusivo){
+      if(!emailAtual){erroCupom('Faça login para usar este cupom.');btn.disabled=false;btn.textContent='Aplicar';return;}
+      if(String(cv.user_email_exclusivo).toLowerCase()!==emailAtual.toLowerCase()){erroCupom('Cupom exclusivo de outra conta.');btn.disabled=false;btn.textContent='Aplicar';return;}
+    }
+    if(emailAtual){
       var usados=Array.isArray(cv.emails_usados)?cv.emails_usados:[];
-      if(usados.includes(email)){erroCupom('Cupom já utilizado pela sua conta.');btn.disabled=false;btn.textContent='Aplicar';return;}
+      if(usados.includes(emailAtual)){erroCupom('Cupom já utilizado pela sua conta.');btn.disabled=false;btn.textContent='Aplicar';return;}
     }
 
     /* Verifica limite de usos */
-    if(cv.usos_max&&(cv.usos_atuais||cv.usos||0)>=cv.usos_max){erroCupom('Cupom atingiu o limite de usos.');btn.disabled=false;btn.textContent='Aplicar';return;}
+    if(cv.max_usos&&(cv.usos||0)>=cv.max_usos){erroCupom('Cupom atingiu o limite de usos.');btn.disabled=false;btn.textContent='Aplicar';return;}
 
     /* Aplica */
     cupomAtual=cv;sessionStorage.setItem('mg_cupom',JSON.stringify(cv));
     btn.textContent='Remover';btn.disabled=false;
-    var descTxt=cv.desconto_tipo==='percentual'?cv.desconto_valor+'% OFF':fmt(cv.desconto_valor)+' OFF';
+    var descTxt=(Number(cv.desconto)||0)+'% OFF';
     st.className='cupom-st ok';st.innerHTML='✓ <strong>'+codigo+'</strong> aplicado — '+descTxt;st.style.display='block';
     renderResumo();
     if(cardBrickCtrl){cardBrickCtrl.unmount();cardBrickCtrl=null;}
@@ -695,7 +700,7 @@ renderResumo();
 verificarAssinaturaAtiva();
 /* Restaura cupom se havia um aplicado */
 if(cupomAtual){
-  var descTxt=cupomAtual.desconto_tipo==='percentual'?cupomAtual.desconto_valor+'% OFF':fmt(cupomAtual.desconto_valor)+' OFF';
+  var descTxt=(Number(cupomAtual.desconto)||0)+'% OFF';
   var st=document.getElementById('cupomSt');
   st.className='cupom-st ok';st.innerHTML='✓ <strong>'+cupomAtual.codigo+'</strong> aplicado — '+descTxt;st.style.display='block';
   document.getElementById('cupomBtn').textContent='Remover';
