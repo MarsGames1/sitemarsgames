@@ -322,6 +322,34 @@ input[type=range]{position:absolute;top:-8px;left:0;width:100%;opacity:0;cursor:
 .nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;}
 #navAvatarFallback{width:100%;height:100%;background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;}
 </style>
+<style id="mg-promo-v2">
+/* ═══ PROMOÇÕES v2 — conversão / "dopamina da compra" ═══ */
+/* CARD: superfície limpa, hover com brilho verde (recompensa visual) */
+.prod-card{background:#101019!important;border:1px solid #23232f!important;border-radius:16px!important}
+@media(hover:hover){.prod-card:hover{border-color:rgba(0,255,85,.4)!important;box-shadow:0 14px 42px rgba(0,0,0,.55),0 0 0 1px rgba(0,255,85,.18)!important}}
+/* NOME nítido e maior */
+.prod-name{font-size:12.5px!important;color:#f6f6fa!important;font-weight:800!important;line-height:1.35!important}
+.prod-plat{font-size:8px!important;color:#8a8a9a!important}
+/* PREÇO em destaque — verde vivo + leve glow */
+.prod-price{font-size:18px!important;color:#00ff6a!important;text-shadow:0 0 16px rgba(0,255,85,.35)!important;margin-top:4px!important}
+.prod-price.esgotado{color:#5a5a6a!important;text-shadow:none!important}
+/* CTA "Comprar agora": PREENCHIDO vibrante = mais cliques */
+.prod-btn-buy{
+  background:linear-gradient(135deg,#e8421a,#ff6b2b)!important;color:#fff!important;border:none!important;
+  font-size:10px!important;letter-spacing:1px!important;
+  box-shadow:0 6px 18px rgba(232,66,26,.32)!important;position:relative;overflow:hidden;
+}
+.prod-btn-buy:hover{filter:brightness(1.08)!important;transform:translateY(-1px);box-shadow:0 10px 26px rgba(232,66,26,.45)!important}
+.prod-btn-buy::after{content:'';position:absolute;top:0;left:-62%;width:38%;height:100%;pointer-events:none;background:linear-gradient(105deg,transparent,rgba(255,255,255,.3),transparent);transform:skewX(-18deg);animation:promoShine 3.4s ease-in-out infinite}
+@keyframes promoShine{0%{left:-62%}55%,100%{left:135%}}
+/* BADGE com leve blur */
+.prod-tag{backdrop-filter:blur(4px)}
+/* LETRAS mais claras (contagem, paginação, título, busca) */
+.filter-count{color:#c8c8d6!important}
+.pag-info{color:#c4c4d2!important}
+.page-title{color:#fff!important}
+@media(prefers-reduced-motion:reduce){.prod-btn-buy::after{display:none}}
+</style>
 </head>
 <body>
 <div class="stars-bg"></div>
