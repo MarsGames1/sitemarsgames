@@ -144,6 +144,26 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
   .btn-primary,.btn-secondary{padding:13px 16px;font-size:11px;}
 }
 </style>
+<style id="mg-sucesso-v2">
+/* letras mais claras */
+.subtitle{color:#9a9aac!important}
+.step-text{color:#8a8a9a!important}
+.step.active .step-text,.step.done .step-text{color:#e8e8f0!important}
+.step-dot{color:#7a7a8a!important}
+.chave-field-label,.chave-warn{color:#8a8a9a!important}
+.pedido-label{color:rgba(0,255,85,.7)!important}
+.btn-secondary{color:#c8c8d6!important;border-color:rgba(255,255,255,.12)!important}
+/* efeitos suaves */
+.btn-primary,.btn-secondary{transition:all .18s!important;position:relative;overflow:hidden}
+.btn-primary:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn-secondary:hover{border-color:var(--green)!important;color:#fff!important;background:rgba(0,255,85,.06)!important}
+.btn-primary::after{content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;pointer-events:none;background:linear-gradient(105deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-18deg);animation:btnShineS 3.4s ease-in-out infinite}
+@keyframes btnShineS{0%{left:-60%}55%,100%{left:135%}}
+/* mensagem incentivo */
+.volte-msg{font-size:11.5px;font-weight:600;color:#bcc6c0;line-height:1.55;text-align:center;padding:11px 14px;background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.16);border-radius:12px;margin-bottom:4px}
+.volte-msg strong{color:var(--green);font-weight:800}
+@media(prefers-reduced-motion:reduce){.btn-primary::after{display:none}}
+</style>
 </head>
 <body>
 <div class="bg-glow" id="bgGlow"></div>
@@ -199,6 +219,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 
   <!-- Botões finais -->
   <div class="btns" id="btns" style="display:none">
+    <div class="volte-msg">💚 Obrigado por jogar com a gente! Novos títulos toda semana — <strong>volte sempre</strong> pra garantir os seus. 🚀</div>
     <a class="btn-primary" href="perfil.html">🎮 Ver meus pedidos</a>
     <a class="btn-secondary" href="index.html">Continuar comprando</a>
   </div>
