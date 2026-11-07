@@ -612,6 +612,7 @@ async function pagar(){
     });
     var data=await resp.json();
     if(!resp.ok)throw new Error(data.error||'Erro ao gerar Pix');
+    try{var _vt=itens.reduce(function(a,p){return a+Number(p.preco||0)},0)-(_desc||0);mgEvento('pix_gerado',{valor:_vt,meta:{pedido_id:data.pedido_id||null,reference:data.reference||null,itens:itens.length}});}catch(e){}
     sessionStorage.setItem('mg_pix_data',JSON.stringify(data));
     sessionStorage.setItem('mg_external_ref',data.reference||'');
     sessionStorage.setItem('mg_pedido_id',data.pedido_id||'');
@@ -778,6 +779,10 @@ if(cupomAtual){
 <script>
 /* Rastreamento de pageviews (jornada do visitante) */
 (function(){var _t=0;function _reg(){if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_reg,500);return;}var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}var pg=window.location.pathname.replace(/^\//,'').replace('.html','').replace(/\/$/,'')||'index';sb.from('site_pageviews').insert({pagina:pg,email:em,session_id:sid,referrer:document.referrer||null}).then(function(r){if(r&&r.error)console.warn('[pageview]',r.error.message);});}setTimeout(_reg,1200);})();
+</script>
+<script>
+/* Eventos de funil (carrinho, pix) — leitura só admin */
+window.mgEvento=function(ev,d){try{d=d||{};var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}if(typeof sb==='undefined'||!sb)return;sb.from('site_eventos').insert({evento:ev,session_id:sid,email:em,produto_id:d.produto_id!=null?String(d.produto_id):null,produto_nome:d.produto_nome||null,valor:d.valor!=null?Number(d.valor):null,meta:d.meta||null}).then(function(r){if(r&&r.error)console.warn('[evento]',r.error.message);});}catch(e){}};
 </script>
 </body>
 </html>

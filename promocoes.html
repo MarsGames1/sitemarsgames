@@ -793,7 +793,7 @@ window.aplicarFiltros=function(){
 function addCarrinho(id){
   var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
   if(carrinho.find(function(x){return x.id===id})){showToast('Jogo já está no carrinho!');return}
-  carrinho.push(p);salvarCarrinho();atualizarCarrinho();
+  carrinho.push(p);try{mgEvento('carrinho_add',{produto_id:p.id,produto_nome:p.nome,valor:p.preco});}catch(e){}salvarCarrinho();atualizarCarrinho();
   showToast('✓ '+p.nome.substring(0,28)+' adicionado!');
 }
 function removerCarrinho(id){carrinho=carrinho.filter(function(x){return x.id!==id});salvarCarrinho();atualizarCarrinho()}
@@ -866,6 +866,10 @@ init();
   }
   setTimeout(_ini,1500);
 })();
+</script>
+<script>
+/* Eventos de funil (carrinho, pix) — leitura só admin */
+window.mgEvento=function(ev,d){try{d=d||{};var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}if(typeof sb==='undefined'||!sb)return;sb.from('site_eventos').insert({evento:ev,session_id:sid,email:em,produto_id:d.produto_id!=null?String(d.produto_id):null,produto_nome:d.produto_nome||null,valor:d.valor!=null?Number(d.valor):null,meta:d.meta||null}).then(function(r){if(r&&r.error)console.warn('[evento]',r.error.message);});}catch(e){}};
 </script>
 </body>
 </html>

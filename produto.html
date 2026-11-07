@@ -1191,7 +1191,7 @@ function adicionarCarrinho(){
   if(!produto)return;
   var jatem=carrinho.find(function(x){return x.id===produto.id});
   if(jatem){showToast('Jogo já está no carrinho!');return}
-  carrinho.push(produto);
+  carrinho.push(produto);try{mgEvento('carrinho_add',{produto_id:produto.id,produto_nome:produto.nome,valor:produto.preco});}catch(e){}
   salvarCarrinho();
   atualizarCarrinho();
   showToast('✓ '+produto.nome.substring(0,30)+' adicionado!');
@@ -1724,6 +1724,10 @@ setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.da
 <script>
 /* Rastreamento de pageviews (jornada do visitante) */
 (function(){var _t=0;function _reg(){if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_reg,500);return;}var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}var pg=window.location.pathname.replace(/^\//,'').replace('.html','').replace(/\/$/,'')||'index';sb.from('site_pageviews').insert({pagina:pg,email:em,session_id:sid,referrer:document.referrer||null}).then(function(r){if(r&&r.error)console.warn('[pageview]',r.error.message);});}setTimeout(_reg,1200);})();
+</script>
+<script>
+/* Eventos de funil (carrinho, pix) — leitura só admin */
+window.mgEvento=function(ev,d){try{d=d||{};var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}if(typeof sb==='undefined'||!sb)return;sb.from('site_eventos').insert({evento:ev,session_id:sid,email:em,produto_id:d.produto_id!=null?String(d.produto_id):null,produto_nome:d.produto_nome||null,valor:d.valor!=null?Number(d.valor):null,meta:d.meta||null}).then(function(r){if(r&&r.error)console.warn('[evento]',r.error.message);});}catch(e){}};
 </script>
 </body>
 </html>

@@ -5328,7 +5328,7 @@ function calcularDesconto(){
 function addCarrinho(id){
   var p=todosProdutos.find(function(x){return x.id===id});if(!p)return;
   if(carrinho.find(function(x){return x.id===id})){showToast('Jogo já está no carrinho!');return}
-  carrinho.push(p);atualizarCarrinho();showToast('✓ '+p.nome.substring(0,28)+'... adicionado!');
+  carrinho.push(p);try{mgEvento('carrinho_add',{produto_id:p.id,produto_nome:p.nome,valor:p.preco});}catch(e){}atualizarCarrinho();showToast('✓ '+p.nome.substring(0,28)+'... adicionado!');
 }
 function removerCarrinho(id){
   carrinho=carrinho.filter(function(x){return x.id!==id});
@@ -6101,6 +6101,10 @@ body:not(.tema-claro), body.tema-claro{
 .prod-tag{border-radius:7px!important;font-size:9px!important;padding:3px 8px!important;letter-spacing:.4px!important}
 .tag-novo{background:var(--mg-success)!important;color:#04291c!important}
 </style>
+<script>
+/* Eventos de funil (carrinho, pix) — leitura só admin */
+window.mgEvento=function(ev,d){try{d=d||{};var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}if(typeof sb==='undefined'||!sb)return;sb.from('site_eventos').insert({evento:ev,session_id:sid,email:em,produto_id:d.produto_id!=null?String(d.produto_id):null,produto_nome:d.produto_nome||null,valor:d.valor!=null?Number(d.valor):null,meta:d.meta||null}).then(function(r){if(r&&r.error)console.warn('[evento]',r.error.message);});}catch(e){}};
+</script>
 </body>
 </html>
 <style id="mg-mobile-polish">
