@@ -170,7 +170,46 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 body{background:var(--mg-bg)!important;color:var(--mg-text)!important}
 body::before{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(45,212,196,.05),transparent)!important}
 body :focus-visible{outline:2px solid var(--mg-accent)!important}
+/* Cofre de revelação da chave */
+.chave-cofre{position:relative;border-radius:12px;overflow:hidden}
+.cofre-conteudo{filter:blur(9px);opacity:.5;pointer-events:none;transition:filter .4s,opacity .4s;user-select:none}
+.chave-cofre.aberto .cofre-conteudo{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+.cofre-cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:18px;text-align:center;background:rgba(10,14,26,.78);backdrop-filter:blur(2px);border-radius:12px}
+.chave-cofre.aberto .cofre-cover{display:none}
+.cofre-aviso{font-size:10.5px;line-height:1.5;color:var(--mg-text-dim);max-width:340px}
+.cofre-btn{background:var(--mg-accent);color:var(--mg-accent-ink);border:none;border-radius:10px;
+  padding:12px 24px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:.5px;
+  cursor:pointer;min-height:44px}
+.cofre-btn:disabled{opacity:.5;cursor:default}
+.cofre-registro{margin-top:10px;font-size:10px;font-weight:700;color:var(--mg-gold);
+  background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.25);border-radius:6px;padding:7px 10px;line-height:1.45}
 </style>
+<script>
+async function revelarChave(pedidoId, idx, btn){
+  if(btn){btn.disabled=true;btn.textContent='Revelando...';}
+  var quando=new Date();
+  try{
+    if(window.sb&&sb.rpc){
+      var r=await sb.rpc('revelar_chave',{p_pedido:pedidoId,p_ref:String(idx)});
+      if(r&&r.data&&r.data.revelado_em){quando=new Date(r.data.revelado_em);}
+    }
+  }catch(e){/* log best-effort; revela mesmo assim pois o pedido ja esta pago */}
+  var cofre=document.getElementById('cofre'+idx);
+  if(cofre){
+    cofre.classList.add('aberto');
+    var cover=document.getElementById('cover'+idx);
+    var conteudo=cofre.querySelector('.cofre-conteudo');
+    if(conteudo&&!conteudo.querySelector('.cofre-registro')){
+      var dt=quando.toLocaleDateString('pt-BR')+' às '+quando.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      var av=document.createElement('div');
+      av.className='cofre-registro';
+      av.textContent='Chave revelada em '+dt+'. A partir daqui, troca somente mediante comprovação de que a chave não funcionou — sem reembolso.';
+      conteudo.appendChild(av);
+    }
+  }
+}
+</script>
 </head>
 <body>
 <div class="bg-glow" id="bgGlow"></div>
@@ -301,7 +340,8 @@ function mostrarSucesso(pedido){
           +'Entrega em processamento. Acesse Meus Pedidos em instantes.</div></div>';
       }
       var corpo='';
-      if(c.tipo==='login_senha'){
+      var ehConta=c.tipo==='login_senha';
+      if(ehConta){
         var p=(c.conteudo||'').split('|');
         corpo='<div class="chave-row"><div class="chave-field-label">Login / Email</div>'
           +'<div class="chave-code">'+esc(p[0]||'')+'</div></div>'
@@ -311,11 +351,19 @@ function mostrarSucesso(pedido){
         corpo='<div class="chave-row"><div class="chave-field-label">Chave de ativação</div>'
           +'<div class="chave-code">'+esc(c.conteudo||'')+'</div></div>';
       }
+      var rotulo=ehConta?'Ver meu jogo':'Ver minha chave';
       return '<div class="chave-box" style="animation-delay:'+idx*.12+'s">'
-        +'<div class="chave-label">🔑 '+esc(c.produto_nome||'Sua chave')+'</div>'
-        +corpo
-        +'<div class="chave-warn">📋 Copie e guarde sua chave em local seguro!</div>'
-        +'<button class="copy-btn" id="cbtn'+idx+'" onclick="copiar(\''+esc(c.conteudo||'')+'\','+idx+')">📋 Copiar chave</button>'
+        +'<div class="chave-label">'+esc(c.produto_nome||'Sua chave')+'</div>'
+        +'<div class="chave-cofre" id="cofre'+idx+'">'
+          +'<div class="cofre-conteudo">'+corpo
+            +'<div class="chave-warn">Copie e guarde sua chave em local seguro.</div>'
+            +'<button class="copy-btn" id="cbtn'+idx+'" onclick="copiar(\''+esc(c.conteudo||'')+'\','+idx+')">Copiar chave</button>'
+          +'</div>'
+          +'<div class="cofre-cover" id="cover'+idx+'">'
+            +'<p class="cofre-aviso">Ao revelar, a abertura fica registrada. A partir daí, a troca só ocorre mediante comprovação de que a chave não funcionou — não há reembolso. Antes de revelar, você pode desistir em até 7 dias.</p>'
+            +'<button class="cofre-btn" onclick="revelarChave(\''+esc(pedido.id)+'\','+idx+',this)">'+rotulo+'</button>'
+          +'</div>'
+        +'</div>'
         +'</div>';
     }).join('');
   } else {

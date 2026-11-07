@@ -2396,6 +2396,44 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 </style>
 <link rel="stylesheet" href="mg-tokens.css">
 <link rel="stylesheet" href="mg-shell.css">
+<style id="mg-f5-cofre">
+.chave-cofre{position:relative;border-radius:12px;overflow:hidden}
+.cofre-conteudo{filter:blur(9px);opacity:.5;pointer-events:none;transition:filter .4s,opacity .4s;user-select:none}
+.chave-cofre.aberto .cofre-conteudo{filter:none;opacity:1;pointer-events:auto;user-select:auto}
+.cofre-cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:16px;text-align:center;background:rgba(10,14,26,.8);backdrop-filter:blur(2px);border-radius:12px}
+.chave-cofre.aberto .cofre-cover{display:none}
+.cofre-aviso{font-size:10.5px;line-height:1.5;color:var(--mg-text-dim,#8A94AD);max-width:340px}
+.cofre-btn{background:var(--mg-accent,#2DD4C4);color:var(--mg-accent-ink,#06312D);border:none;border-radius:10px;
+  padding:12px 24px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:.5px;cursor:pointer;min-height:44px}
+.cofre-btn:disabled{opacity:.5;cursor:default}
+.cofre-registro{margin-top:10px;font-size:10px;font-weight:700;color:var(--mg-gold,#FFC24B);
+  background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.25);border-radius:6px;padding:7px 10px;line-height:1.45}
+</style>
+<script>
+async function revelarChavePerfil(pedidoId, idx, btn){
+  if(btn){btn.disabled=true;btn.textContent='Revelando...';}
+  var quando=new Date();
+  try{
+    if(typeof sb!=='undefined'&&sb&&sb.rpc){
+      var r=await sb.rpc('revelar_chave',{p_pedido:pedidoId,p_ref:String(idx)});
+      if(r&&r.data&&r.data.revelado_em){quando=new Date(r.data.revelado_em);}
+    }
+  }catch(e){/* best-effort */}
+  var cofre=btn?btn.closest('.chave-cofre'):null;
+  if(cofre){
+    cofre.classList.add('aberto');
+    var conteudo=cofre.querySelector('.cofre-conteudo');
+    if(conteudo&&!conteudo.querySelector('.cofre-registro')){
+      var dt=quando.toLocaleDateString('pt-BR')+' às '+quando.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      var av=document.createElement('div');
+      av.className='cofre-registro';
+      av.textContent='Chave revelada em '+dt+'. A partir daqui, troca somente mediante comprovação de que a chave não funcionou — sem reembolso.';
+      conteudo.appendChild(av);
+    }
+  }
+}
+</script>
 </head>
 <body>
 <div class="stars-bg"></div>
@@ -3963,12 +4001,24 @@ async function carregarPedidos(userId){
 
       /* Chaves */
       if(chavesValidas.length>0){
-        var chavesHtml=chavesValidas.map(function(c){
+        var chavesHtml=chaves.map(function(c,idx){
+          if(!c.conteudo||c.conteudo==='ERRO_ESTOQUE') return '';
           var conteudo=esc(c.conteudo||'');
+          var ehConta=c.tipo==='login_senha';
+          var rotulo=ehConta?'Ver meu jogo':'Ver minha chave';
+          var pid=esc(p.id||'');
           return '<div class="chave-box">'+
-            '<div class="chave-label">🔑 Sua chave de acesso</div>'+
-            '<div class="chave-valor">'+conteudo+'</div>'+
-            '<button class="chave-copiar" onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'">📋 Copiar chave</button>'+
+            '<div class="chave-label">Sua chave de acesso</div>'+
+            '<div class="chave-cofre">'+
+              '<div class="cofre-conteudo">'+
+                '<div class="chave-valor">'+conteudo+'</div>'+
+                '<button class="chave-copiar" onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'">Copiar chave</button>'+
+              '</div>'+
+              '<div class="cofre-cover">'+
+                '<p class="cofre-aviso">Ao revelar, a abertura fica registrada. A partir daí, a troca só ocorre mediante comprovação de que a chave não funcionou — não há reembolso. Antes de revelar, você pode desistir em até 7 dias.</p>'+
+                '<button class="cofre-btn" onclick="revelarChavePerfil(\''+pid+'\','+idx+',this)">'+rotulo+'</button>'+
+              '</div>'+
+            '</div>'+
           '</div>';
         }).join('');
 
