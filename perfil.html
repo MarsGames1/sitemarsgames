@@ -52,7 +52,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0a0a0e;--card:#131318;--surface:#1a1a20;--border:#252530;--border2:#323240;
-  --green:#00ff55;--green-glow:rgba(0,255,85,.2);--green-dim:rgba(0,255,85,.07);
+  --green:#2DD4C4;--green-glow:rgba(45,212,196,.2);--green-dim:rgba(45,212,196,.07);
   --mars:#e8421a;--orange:#ff6b2b;--amber:#ffb300;
   --text:#fff;--muted:rgba(255,255,255,.65);--dim:#1a1a22;--radius:12px;
   --bronze:#cd9f6a;--prata:#e8e8e8;--ouro:#FFD700;--esm:#50c878;--dia:#b9f2ff;
@@ -77,7 +77,7 @@
 }
 @keyframes esmPulse{
   0%,100%{box-shadow:0 0 8px 2px rgba(80,200,120,.55)}
-  50%{box-shadow:0 0 24px 7px rgba(80,200,120,.9),0 0 10px 4px rgba(0,255,100,.4)}
+  50%{box-shadow:0 0 24px 7px rgba(80,200,120,.9),0 0 10px 4px rgba(45,212,196,.4)}
 }
 @keyframes diaRotate{to{transform:rotate(360deg)}}
 @keyframes diaPulse{
@@ -93,7 +93,7 @@
 @keyframes navOuroGlow{0%,100%{box-shadow:0 0 10px 2px rgba(220,170,0,.55),0 0 20px rgba(255,160,0,.25)}50%{box-shadow:0 0 20px 6px rgba(255,215,0,.95),0 0 38px rgba(255,165,0,.5),0 0 55px rgba(255,120,0,.2)}}
 @keyframes navEsmRotate{to{transform:rotate(360deg)}}
 @keyframes navEsmRotateRev{to{transform:rotate(-360deg)}}
-@keyframes navEsmGlow{0%,100%{box-shadow:0 0 10px 3px rgba(0,200,80,.5),0 0 22px rgba(0,255,100,.2)}50%{box-shadow:0 0 24px 8px rgba(0,255,120,.9),0 0 44px rgba(0,200,80,.5),0 0 66px rgba(0,255,100,.2)}}
+@keyframes navEsmGlow{0%,100%{box-shadow:0 0 10px 3px rgba(0,200,80,.5),0 0 22px rgba(45,212,196,.2)}50%{box-shadow:0 0 24px 8px rgba(45,212,196,.9),0 0 44px rgba(0,200,80,.5),0 0 66px rgba(45,212,196,.2)}}
 @keyframes navDiaRotate{to{transform:rotate(360deg)}}
 @keyframes navDiaGlow{0%,100%{box-shadow:0 0 16px rgba(185,242,255,.6),0 0 32px rgba(123,97,255,.35)}50%{box-shadow:0 0 28px rgba(185,242,255,.9),0 0 52px rgba(167,139,250,.6),0 0 72px rgba(0,255,255,.25)}}
 
@@ -110,9 +110,9 @@
 .nav-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 #navAvatarFallback{
   width:100%;height:100%;
-  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(0,255,85,.15));
+  background:linear-gradient(135deg,rgba(232,66,26,.3),rgba(45,212,196,.15));
   display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#00ff55;
+  font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:#2DD4C4;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -200,7 +200,7 @@
 .avatar-esmeralda .avatar-ring{
   border:2px solid #50c878;
   animation:esmCrystal 2.5s ease-in-out infinite;
-  background:linear-gradient(135deg,rgba(80,200,120,.1),rgba(0,255,100,.05));
+  background:linear-gradient(135deg,rgba(80,200,120,.1),rgba(45,212,196,.05));
 }
 .avatar-esmeralda .avatar-ring::before{
   content:'';position:absolute;width:7px;height:7px;border-radius:50%;
@@ -386,25 +386,25 @@
 .nav-nivel-esmeralda .nav-avatar-ring{
   background:conic-gradient(from 0deg,
     #001a0a 0%,#00aa44 18%,#00ff88 30%,
-    #b0ffd8 38%,#00ffaa 44%,#00cc55 55%,
+    #b0ffd8 38%,#2DD4C4 44%,#00cc55 55%,
     #007733 65%,#00ff77 75%,#80ffc0 82%,
     #009944 90%,#001a0a 100%
   );
   animation:navEsmRotate 1.6s linear infinite;
   filter:blur(.15px);
-  box-shadow:0 0 10px rgba(0,255,100,.4);
+  box-shadow:0 0 10px rgba(45,212,196,.4);
 }
 .nav-nivel-esmeralda .nav-avatar-ring::before{
   content:'';position:absolute;inset:2.5px;border-radius:50%;background:#0a0a0e;
-  box-shadow:inset 0 0 0 1.5px rgba(0,255,120,.2),inset 0 0 6px rgba(0,200,80,.12);
+  box-shadow:inset 0 0 0 1.5px rgba(45,212,196,.2),inset 0 0 6px rgba(0,200,80,.12);
 }
 .nav-nivel-esmeralda .nav-avatar-ring::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 0deg,
     transparent 30%,
-    rgba(0,255,120,.5) 44%,
+    rgba(45,212,196,.5) 44%,
     rgba(160,255,190,.8) 52%,
-    rgba(0,255,120,.5) 60%,
+    rgba(45,212,196,.5) 60%,
     transparent 72%
   );
   animation:navEsmRotateRev 2s linear infinite;
@@ -594,7 +594,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   border-bottom:1px solid rgba(232,66,26,.15);padding:0 16px;height:64px;
   display:flex;align-items:center;justify-content:space-between;gap:12px}
 .navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(0,255,85,.25) 70%,transparent)}
+  background:linear-gradient(to right,transparent,rgba(232,66,26,.4) 30%,rgba(45,212,196,.25) 70%,transparent)}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
 .nav-logo-text{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;letter-spacing:2px;color:#fff}
 .nav-logo-text span{color:var(--green)}
@@ -689,7 +689,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 .login-btn.discord:hover{border-color:rgba(114,137,218,.5);background:rgba(114,137,218,.06);box-shadow:0 4px 20px rgba(114,137,218,.15)}
 .login-info{
   margin-top:20px;padding:12px 16px;border-radius:10px;
-  background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.1);
+  background:rgba(45,212,196,.04);border:1px solid rgba(45,212,196,.1);
   font-size:10px;color:var(--muted);line-height:1.6;font-weight:600;
 }
 .login-info strong{color:var(--green)}
@@ -706,7 +706,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* Hero do perfil */
 .perfil-hero{
-  background:linear-gradient(135deg,rgba(232,66,26,.18) 0%,rgba(0,255,85,.10) 100%);
+  background:linear-gradient(135deg,rgba(232,66,26,.18) 0%,rgba(45,212,196,.10) 100%);
   border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:28px;
   display:flex;align-items:center;gap:24px;margin-bottom:28px;
   position:relative;overflow:hidden;flex-wrap:wrap;
@@ -759,7 +759,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 }
 .perfil-avatar-fallback{
   width:100%;height:100%;
-  background:linear-gradient(135deg,rgba(232,66,26,.25),rgba(0,255,85,.12));
+  background:linear-gradient(135deg,rgba(232,66,26,.25),rgba(45,212,196,.12));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--green);
 }
@@ -853,11 +853,11 @@ body.tema-claro .section-loader{color:var(--muted)}
 /* ── Esmeralda: cristal verde intenso + halo reverso ── */
 @keyframes esmRotate{to{transform:rotate(360deg)}}
 @keyframes esmRotateRev{to{transform:rotate(-360deg)}}
-@keyframes esmPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,200,80,.5))}50%{filter:drop-shadow(0 0 24px rgba(0,255,120,.9))}}
+@keyframes esmPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,200,80,.5))}50%{filter:drop-shadow(0 0 24px rgba(45,212,196,.9))}}
 .avatar-esmeralda .avatar-ring{
-  background:conic-gradient(from 0deg,#001208,#00aa44,#00ff88,#80ffcc,#00ffaa,#009933,#001208);
+  background:conic-gradient(from 0deg,#001208,#00aa44,#00ff88,#80ffcc,#2DD4C4,#009933,#001208);
   animation:esmRotate 1.8s linear infinite;
-  box-shadow:0 0 18px rgba(0,255,100,.5),0 0 36px rgba(0,200,80,.25);
+  box-shadow:0 0 18px rgba(45,212,196,.5),0 0 36px rgba(0,200,80,.25);
 }
 .avatar-esmeralda .avatar-ring::before{
   content:'';position:absolute;inset:6px;border-radius:50%;
@@ -866,7 +866,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 .avatar-esmeralda .avatar-ring::after{
   content:'';position:absolute;inset:2px;border-radius:50%;
   background:conic-gradient(from 0deg,
-    transparent 28%,rgba(0,255,100,.5) 42%,rgba(150,255,180,.85) 50%,rgba(0,255,100,.5) 58%,transparent 70%
+    transparent 28%,rgba(45,212,196,.5) 42%,rgba(150,255,180,.85) 50%,rgba(45,212,196,.5) 58%,transparent 70%
   );
   animation:esmRotateRev 2.4s linear infinite;
   filter:blur(.8px);pointer-events:none;z-index:0;
@@ -997,23 +997,23 @@ body.tema-claro .section-loader{color:var(--muted)}
   padding:10px 14px;border-radius:12px;
   font-size:10.5px;font-weight:800;letter-spacing:.5px;
   font-family:'Montserrat',sans-serif;cursor:pointer;
-  background:rgba(0,255,85,.09);
-  border:1px solid rgba(0,255,85,.25);
+  background:rgba(45,212,196,.09);
+  border:1px solid rgba(45,212,196,.25);
   color:#7dd8a0;
   transition:all .2s;white-space:nowrap;
 }
 .tab-editar-btn:hover{
-  background:rgba(0,255,85,.12);
-  border-color:rgba(0,255,85,.35);
+  background:rgba(45,212,196,.12);
+  border-color:rgba(45,212,196,.35);
   color:var(--green);
   transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(0,255,85,.12);
+  box-shadow:0 6px 20px rgba(45,212,196,.12);
 }
 .tab-editar-btn.active{
-  background:rgba(0,255,85,.14);
-  border-color:rgba(0,255,85,.5);
+  background:rgba(45,212,196,.14);
+  border-color:rgba(45,212,196,.5);
   color:var(--green);
-  box-shadow:0 0 20px rgba(0,255,85,.18);
+  box-shadow:0 0 20px rgba(45,212,196,.18);
 }
 
 /* ── Tab base ── */
@@ -1046,10 +1046,10 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* ── Estilo ativo padrão (verde) ── */
 .tab.active:not(.tab-marspass):not(.tab-marspoints):not(.tab-tickets):not(.tab-premios):not(.tab-dna){
-  background:rgba(0,255,85,.08);
-  border-color:rgba(0,255,85,.3);
+  background:rgba(45,212,196,.08);
+  border-color:rgba(45,212,196,.3);
   color:var(--green);
-  box-shadow:0 6px 20px rgba(0,255,85,.1);
+  box-shadow:0 6px 20px rgba(45,212,196,.1);
 }
 .tab.active:not(.tab-marspass):not(.tab-marspoints):not(.tab-tickets):not(.tab-premios):not(.tab-dna)::after{
   background:var(--green);
@@ -1103,9 +1103,9 @@ body.tema-claro .section-loader{color:var(--muted)}
 }
 
 /* ── MarsPoints ── */
-.tab-marspoints{border-color:rgba(0,255,85,.25);color:#5ccc80}
-.tab-marspoints:hover{border-color:rgba(0,255,85,.45);color:var(--green);background:rgba(0,255,85,.1);}
-.tab-marspoints.active{background:rgba(0,255,85,.14);border-color:rgba(0,255,85,.55);color:var(--green);box-shadow:0 6px 20px rgba(0,255,85,.18);}
+.tab-marspoints{border-color:rgba(45,212,196,.25);color:#5ccc80}
+.tab-marspoints:hover{border-color:rgba(45,212,196,.45);color:var(--green);background:rgba(45,212,196,.1);}
+.tab-marspoints.active{background:rgba(45,212,196,.14);border-color:rgba(45,212,196,.55);color:var(--green);box-shadow:0 6px 20px rgba(45,212,196,.18);}
 .tab-marspoints.active::after{background:var(--green);}
 
 /* ── Tickets ── */
@@ -1577,7 +1577,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   cursor:pointer;transition:all .2s;position:relative;
 }
 .anel-option:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}
-.anel-option.ativo{border-color:var(--green);background:rgba(0,255,85,.05)}
+.anel-option.ativo{border-color:var(--green);background:rgba(45,212,196,.05)}
 .anel-option.ativo::after{
   content:'✓';position:absolute;top:4px;right:6px;
   font-size:8px;font-weight:900;color:var(--green);
@@ -1704,8 +1704,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 .benef-desc{font-size:11px;font-weight:900}
 
 /* CUPOM */
-.cupom-box{background:linear-gradient(135deg,rgba(0,255,85,.06),rgba(0,255,85,.02));
-  border:1px solid rgba(0,255,85,.2);border-radius:14px;padding:20px;
+.cupom-box{background:linear-gradient(135deg,rgba(45,212,196,.06),rgba(45,212,196,.02));
+  border:1px solid rgba(45,212,196,.2);border-radius:14px;padding:20px;
   display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
   margin-bottom:20px}
 .cupom-info{}
@@ -1772,25 +1772,25 @@ body.tema-claro .section-loader{color:var(--muted)}
 .pedido-preco{font-size:15px;font-weight:900;color:var(--green);white-space:nowrap}
 .pedido-status{font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
   padding:3px 10px;border-radius:99px;border:1px solid;white-space:nowrap}
-.status-entregue{color:var(--green);background:rgba(0,255,85,.08);border-color:rgba(0,255,85,.25)}
+.status-entregue{color:var(--green);background:rgba(45,212,196,.08);border-color:rgba(45,212,196,.25)}
 .status-pendente{color:var(--amber);background:rgba(255,179,0,.08);border-color:rgba(255,179,0,.25)}
 .sem-pedidos{text-align:center;padding:48px 20px;color:var(--muted);font-size:12px;font-weight:600}
 .pedido-body{padding:0 16px 14px}
 
 /* ── CHAVE ── */
 .chave-box{
-  background:rgba(0,255,85,.04);
-  border:1px solid rgba(0,255,85,.12);
+  background:rgba(45,212,196,.04);
+  border:1px solid rgba(45,212,196,.12);
   border-radius:10px;padding:12px 14px;margin-bottom:10px;
 }
 .chave-label{font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
-  color:rgba(0,255,85,.5);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+  color:rgba(45,212,196,.5);margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .chave-valor{font-family:monospace;font-size:12px;font-weight:700;color:var(--green);
   word-break:break-all;line-height:1.6;margin-bottom:8px}
-.chave-copiar{width:100%;padding:7px;border-radius:7px;background:rgba(0,255,85,.12);
-  border:1px solid rgba(0,255,85,.25);color:var(--green);font-family:'Montserrat',sans-serif;
+.chave-copiar{width:100%;padding:7px;border-radius:7px;background:rgba(45,212,196,.12);
+  border:1px solid rgba(45,212,196,.25);color:var(--green);font-family:'Montserrat',sans-serif;
   font-size:10px;font-weight:900;cursor:pointer;letter-spacing:.5px;transition:background .15s}
-.chave-copiar:hover{background:rgba(0,255,85,.22)}
+.chave-copiar:hover{background:rgba(45,212,196,.22)}
 
 /* ── AVALIAÇÃO ── */
 .aval-wrap{margin-top:10px}
@@ -1801,8 +1801,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 }
 .aval-titulo{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
   color:rgba(255,183,0,.8);margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.aval-bonus{font-size:9px;font-weight:700;color:rgba(0,255,85,.7);
-  background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.15);
+.aval-bonus{font-size:9px;font-weight:700;color:rgba(45,212,196,.7);
+  background:rgba(45,212,196,.08);border:1px solid rgba(45,212,196,.15);
   border-radius:99px;padding:2px 8px;margin-left:auto}
 .aval-estrelas{display:flex;gap:6px;margin:10px 0}
 .aval-estrela{font-size:24px;cursor:pointer;opacity:.2;transition:opacity .15s,transform .15s;
@@ -1823,7 +1823,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   box-shadow:0 4px 16px rgba(255,183,0,.15)}
 .aval-btn:disabled{opacity:.4;cursor:not-allowed}
 .aval-enviada{display:flex;align-items:center;gap:8px;padding:10px 12px;
-  background:rgba(0,255,85,.06);border:1px solid rgba(0,255,85,.2);
+  background:rgba(45,212,196,.06);border:1px solid rgba(45,212,196,.2);
   border-radius:8px;font-size:11px;font-weight:700;color:var(--green)}
 
 /* ── Conquistas ── */
@@ -1835,8 +1835,8 @@ body.tema-claro .section-loader{color:var(--muted)}
   padding:14px;text-align:center;position:relative;overflow:hidden;
   transition:border-color .2s,transform .2s;
 }
-.conquista-card.desbloqueada{border-color:rgba(0,255,85,.2)}
-.conquista-card.desbloqueada:hover{transform:translateY(-3px);border-color:rgba(0,255,85,.4)}
+.conquista-card.desbloqueada{border-color:rgba(45,212,196,.2)}
+.conquista-card.desbloqueada:hover{transform:translateY(-3px);border-color:rgba(45,212,196,.4)}
 .conquista-card.bloqueada{opacity:.35;filter:grayscale(1)}
 .conquista-icon{font-size:28px;margin-bottom:6px;display:block}
 .conquista-nome{font-size:10px;font-weight:900;color:#fff;margin-bottom:3px;letter-spacing:.5px}
@@ -1844,7 +1844,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 .conquista-titulo{font-size:8px;font-weight:700;color:var(--green);letter-spacing:1px}
 .conquista-pts{
   position:absolute;top:8px;right:8px;
-  background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.2);
+  background:rgba(45,212,196,.1);border:1px solid rgba(45,212,196,.2);
   border-radius:4px;padding:2px 6px;font-size:8px;font-weight:900;color:var(--green);
 }
 .conquista-lock{position:absolute;top:8px;right:8px;font-size:12px;opacity:.4}
@@ -1859,7 +1859,7 @@ body.tema-claro .section-loader{color:var(--muted)}
   cursor:pointer;transition:border-color .2s,background .2s;
 }
 .titulo-opcao:hover{border-color:var(--border);background:rgba(255,255,255,.02)}
-.titulo-opcao.selecionado{border-color:var(--green);background:rgba(0,255,85,.04)}
+.titulo-opcao.selecionado{border-color:var(--green);background:rgba(45,212,196,.04)}
 .titulo-opcao-nome{font-size:11px;font-weight:700;color:#fff}
 .titulo-opcao-fonte{font-size:9px;color:rgba(255,255,255,.6);font-weight:600;margin-top:2px}
 .titulo-opcao-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);
@@ -1874,7 +1874,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 .edit-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
   padding:11px 13px;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;
   outline:none;transition:border-color .2s;margin-bottom:14px}
-.edit-input:focus{border-color:rgba(0,255,85,.35)}
+.edit-input:focus{border-color:rgba(45,212,196,.35)}
 .edit-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:8px;
   background:var(--green);color:#000;border:none;font-family:'Montserrat',sans-serif;
   font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
@@ -1887,7 +1887,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 
 /* Toast */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
-  background:var(--card);border:1px solid rgba(0,255,85,.3);color:var(--green);
+  background:var(--card);border:1px solid rgba(45,212,196,.3);color:var(--green);
   padding:12px 22px;border-radius:8px;font-size:10px;font-weight:700;
   letter-spacing:1px;text-transform:uppercase;pointer-events:none;
   opacity:0;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap}
@@ -2152,7 +2152,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 .mp-plano-atual-tag{
   display:inline-flex;align-items:center;gap:6px;
   padding:6px 14px;border-radius:99px;
-  background:rgba(0,255,85,.1);border:1px solid rgba(0,255,85,.3);
+  background:rgba(45,212,196,.1);border:1px solid rgba(45,212,196,.3);
   font-size:10px;font-weight:900;color:var(--green);letter-spacing:1px;
   text-transform:uppercase;margin-left:10px;
 }
@@ -2188,7 +2188,7 @@ body.tema-claro .section-loader{color:var(--muted)}
 body:not(.tema-claro){
   --card:#13131a;--surface:#181820;
   --border:#23232f;--border2:#30303e;
-  --green-glow:rgba(0,255,85,.14);--green-dim:rgba(0,255,85,.08);
+  --green-glow:rgba(45,212,196,.14);--green-dim:rgba(45,212,196,.08);
   --mars-glow:rgba(232,66,26,.18);--mars-dim:rgba(232,66,26,.12);
   --text:#f6f6fa;            /* antes apagado → branco quente claro   */
   --muted:#a8a8b6;           /* legível de verdade (era ~#555/#8a)    */
@@ -2229,8 +2229,8 @@ body:not(.tema-claro) .prod-price{
 }
 
 /* — Stats do hero: número limpo com leve brilho (devolve o "pop") — */
-.hero-stat-val{text-shadow:0 0 18px rgba(0,255,85,.28)}
-.hero-title .line2{text-shadow:0 0 26px rgba(0,255,85,.22)}
+.hero-stat-val{text-shadow:0 0 18px rgba(45,212,196,.28)}
+.hero-title .line2{text-shadow:0 0 26px rgba(45,212,196,.22)}
 
 /* — Categoria ativa: profundidade sutil, sem halo neon — */
 body:not(.tema-claro) .cat-pill{box-shadow:none;transition:border-color .2s,color .2s,background .2s,transform .15s}
@@ -2241,8 +2241,8 @@ body:not(.tema-claro) .cat-pill.active{
 @media(hover:hover){body:not(.tema-claro) .cat-pill:hover{transform:translateY(-1px)}}
 
 /* — CTA primário: gradiente sutil + brilho controlado no hover — */
-.btn-mars-green{background:linear-gradient(135deg,#00ff55,#00c944);box-shadow:0 2px 10px rgba(0,255,85,.14)}
-.btn-mars-green:hover{box-shadow:0 10px 30px rgba(0,255,85,.28);transform:translateY(-2px)}
+.btn-mars-green{background:linear-gradient(135deg,#2DD4C4,#00c944);box-shadow:0 2px 10px rgba(45,212,196,.14)}
+.btn-mars-green:hover{box-shadow:0 10px 30px rgba(45,212,196,.28);transform:translateY(-2px)}
 
 /* — Outros componentes: tira glow neon, mantém legibilidade — */
 body:not(.tema-claro) .modal-box,
@@ -2264,13 +2264,13 @@ body:not(.tema-claro) .navbar{
 
 /* — Busca: foco verde — */
 body:not(.tema-claro) .search-input:focus{
-  border-color:rgba(0,255,85,.4);box-shadow:0 0 0 3px rgba(0,255,85,.08);
+  border-color:rgba(45,212,196,.4);box-shadow:0 0 0 3px rgba(45,212,196,.08);
 }
 
 .prod-estoque-baixo{animation:none;background:rgba(232,66,26,.92)}
 
 /* — Foco visível por teclado (acessibilidade) — */
-body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+body :focus-visible{outline:2px solid var(--green,#2DD4C4);outline-offset:2px;border-radius:4px}
 
 </style>
 <style id="mg-perfil">
@@ -2291,7 +2291,7 @@ body:not(.tema-claro){--muted:#a8a8b6;--text:#f6f6fa}
 .tab-editar-btn{flex:0 0 auto;box-shadow:none!important;margin-left:auto}
 .tab-editar-btn:hover,.tab-editar-btn.active{box-shadow:none!important;transform:none}
 /* foco visível */
-body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+body :focus-visible{outline:2px solid var(--green,#2DD4C4);outline-offset:2px;border-radius:4px}
 </style>
 <style id="mg-mp">
 /* ═══ MarsPass — a CAPA do perfil: vitrine premium + texto claro ═══ */
@@ -2308,7 +2308,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 .anel-option{padding:14px 8px;transition:transform .16s,border-color .16s,background .16s,box-shadow .16s}
 .anel-option:not(.bloqueado):hover{transform:translateY(-3px);border-color:rgba(124,106,247,.45);background:rgba(124,106,247,.08);box-shadow:0 10px 26px rgba(0,0,0,.4)}
 .anel-preview{width:46px;height:46px}
-.anel-option.ativo{border-color:var(--green);background:rgba(0,255,85,.06);box-shadow:0 0 0 1px rgba(0,255,85,.18)}
+.anel-option.ativo{border-color:var(--green);background:rgba(45,212,196,.06);box-shadow:0 0 0 1px rgba(45,212,196,.18)}
 /* bloqueados: menos apagados — convidam à descoberta em vez de sumir */
 .anel-option.bloqueado{opacity:.5;filter:grayscale(.55)}
 .anel-option.bloqueado:hover{opacity:.64;cursor:not-allowed}
@@ -2378,20 +2378,20 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 /* ── paginação reutilizável ── */
 .mg-pag-bar{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 8px 4px;margin-top:4px}
 .mg-pag-btn{background:rgba(255,255,255,.05);border:1px solid #2a2a36;color:#cfcfdb;font-size:11px;font-weight:700;padding:7px 14px;border-radius:9px;cursor:pointer;transition:border-color .15s,color .15s}
-.mg-pag-btn:hover:not(:disabled){border-color:var(--green,#00ff55);color:#fff}
+.mg-pag-btn:hover:not(:disabled){border-color:var(--green,#2DD4C4);color:#fff}
 .mg-pag-btn:disabled{opacity:.35;cursor:default}
 .mg-pag-info{font-size:11px;font-weight:700;color:#9090a0;font-family:'Orbitron',sans-serif;letter-spacing:1px;min-width:46px;text-align:center}
 /* ── notificações mais bonitas/organizadas ── */
 .notif-dropdown{background:#0e0e14!important;border:1px solid #26262f!important;border-radius:14px!important;box-shadow:0 20px 55px rgba(0,0,0,.6)!important;width:340px!important;max-width:92vw!important;overflow:hidden!important}
 .notif-header{padding:14px 16px!important;border-bottom:1px solid #20202a!important}
 .notif-header-title{font-family:'Orbitron',sans-serif!important;font-size:12px!important;letter-spacing:1px!important;color:#f6f6fa!important}
-.notif-marcar-btn{font-size:10px!important;color:#00ff55!important;background:rgba(0,255,85,.08)!important;border:1px solid rgba(0,255,85,.25)!important;border-radius:7px!important;padding:4px 9px!important;font-weight:700!important;cursor:pointer}
-.notif-marcar-btn:hover{background:rgba(0,255,85,.16)!important}
+.notif-marcar-btn{font-size:10px!important;color:#2DD4C4!important;background:rgba(45,212,196,.08)!important;border:1px solid rgba(45,212,196,.25)!important;border-radius:7px!important;padding:4px 9px!important;font-weight:700!important;cursor:pointer}
+.notif-marcar-btn:hover{background:rgba(45,212,196,.16)!important}
 #notifList{max-height:400px!important;overflow-y:auto!important}
 .notif-item{padding:12px 16px!important;border-bottom:1px solid #18181f!important;gap:11px!important;transition:background .15s!important;position:relative!important}
 .notif-item:hover{background:rgba(255,255,255,.03)!important}
-.notif-item.nao-lida{background:rgba(0,255,85,.045)!important}
-.notif-item.nao-lida::before{content:''!important;position:absolute!important;left:0;top:0;bottom:0;width:3px;background:#00ff55}
+.notif-item.nao-lida{background:rgba(45,212,196,.045)!important}
+.notif-item.nao-lida::before{content:''!important;position:absolute!important;left:0;top:0;bottom:0;width:3px;background:#2DD4C4}
 .notif-icon{width:36px!important;height:36px!important;border-radius:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:16px!important;flex-shrink:0!important}
 .notif-titulo{font-size:12.5px!important;font-weight:700!important;color:#f0f0f6!important;margin-bottom:2px!important}
 .notif-msg{font-size:11px!important;color:#a8a8b6!important;line-height:1.5!important}
@@ -2429,6 +2429,16 @@ body:not(.tema-claro),body.tema-claro{
 }
 /* Spinner em petróleo */
 .spinner{border-color:rgba(45,212,196,.2)!important;border-top-color:var(--mg-accent)!important}
+/* Caixa da chave: petróleo (era tudo verde hardcoded) */
+.chave-box{background:var(--mg-accent-dim,rgba(45,212,196,.06))!important;border:1px solid rgba(45,212,196,.18)!important}
+.chave-label{color:var(--mg-accent,#2DD4C4)!important;opacity:.8}
+.chave-valor{color:var(--mg-accent,#2DD4C4)!important}
+.chave-copiar{background:var(--mg-accent-dim,rgba(45,212,196,.12))!important;border:1px solid rgba(45,212,196,.3)!important;color:var(--mg-accent,#2DD4C4)!important}
+.chave-copiar:hover{background:rgba(45,212,196,.22)!important}
+/* Aviso do cofre menor e proporcional */
+.cofre-aviso{font-size:10px!important;line-height:1.45!important;max-width:300px!important}
+.cofre-registro{font-size:9.5px!important;padding:6px 9px!important}
+.cofre-cover{padding:14px!important;gap:10px!important}
 /* Barra de abas: limpa e centralizada (só 3 abas agora) */
 .tabs-wrap{display:flex!important;flex-wrap:wrap;gap:8px;justify-content:center;background:transparent!important;
   border:none!important;border-bottom:1px solid var(--mg-border)!important;border-radius:0!important;
@@ -2460,7 +2470,7 @@ async function revelarChavePerfil(pedidoId, idx, btn){
       var dt=quando.toLocaleDateString('pt-BR')+' às '+quando.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
       var av=document.createElement('div');
       av.className='cofre-registro';
-      av.textContent='Chave revelada em '+dt+'. A partir daqui, troca somente mediante comprovação de que a chave não funcionou — sem reembolso.';
+      av.textContent='Revelada em '+dt+' · troca apenas com comprovação de defeito.';
       conteudo.appendChild(av);
     }
   }
@@ -2510,7 +2520,7 @@ async function revelarChavePerfil(pedidoId, idx, btn){
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#555" id="loadingMsg">Verificando sessão...</div>
   <div id="loadingDemorado" style="display:none;text-align:center;padding:0 32px">
     <div style="font-size:11px;color:#444;font-weight:600;margin-bottom:12px">Conexão lenta detectada...</div>
-    <button onclick="mostrarLogin()" style="padding:10px 22px;border-radius:8px;border:1px solid rgba(0,255,85,.3);background:rgba(0,255,85,.07);color:#00ff55;font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer">
+    <button onclick="mostrarLogin()" style="padding:10px 22px;border-radius:8px;border:1px solid rgba(45,212,196,.3);background:rgba(45,212,196,.07);color:#2DD4C4;font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;letter-spacing:1px;cursor:pointer">
       Fazer login manualmente
     </button>
   </div>
@@ -2620,10 +2630,10 @@ setTimeout(function(){
         <div class="pstat-val" id="statDesconto" style="font-size:12px">—</div>
         <div class="pstat-lbl">Nível</div>
       </div>
-      <div class="pstat" style="border-color:rgba(0,255,85,.25);background:rgba(0,255,85,.05);cursor:pointer"
+      <div class="pstat" style="border-color:rgba(45,212,196,.25);background:rgba(45,212,196,.05);cursor:pointer"
            onclick="showTab('pontos',document.querySelector('.tab'))">
         <div class="pstat-val" id="statMarsPoints" style="color:var(--green)">0</div>
-        <div class="pstat-lbl" style="color:rgba(0,255,85,.7)">⭐ MarsPoints</div>
+        <div class="pstat-lbl" style="color:rgba(45,212,196,.7)">⭐ MarsPoints</div>
       </div>
       <div class="pstat" style="border-color:rgba(255,183,0,.3);background:rgba(255,183,0,.05);cursor:pointer"
            onclick="showTab('tickets',document.querySelector('.tab-tickets'))">
@@ -2710,8 +2720,8 @@ setTimeout(function(){
   <!-- MARSPOINTS PERFIL -->
   <div class="tab-content" id="tab-marspoints-perfil">
     <!-- Hero MarsPoints -->
-    <div style="background:linear-gradient(135deg,rgba(0,255,85,.08),rgba(0,255,85,.03));border:1px solid rgba(0,255,85,.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:20px">
-      <div style="font-size:48px;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(0,255,85,.5))">⭐</div>
+    <div style="background:linear-gradient(135deg,rgba(45,212,196,.08),rgba(45,212,196,.03));border:1px solid rgba(45,212,196,.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:20px">
+      <div style="font-size:48px;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(45,212,196,.5))">⭐</div>
       <div>
         <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Meus MarsPoints</div>
         <div style="font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--green);line-height:1" id="mpHeroCount">0</div>
@@ -3057,7 +3067,7 @@ setTimeout(function(){
       <div id="planetaTechPanel" style="position:absolute;top:36px;left:8px;z-index:10;pointer-events:none">
         <div style="background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;min-width:160px;backdrop-filter:blur(6px)">
           <div style="font-family:monospace;font-size:8px;color:rgba(0,255,150,.7);letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:5px">
-            <span style="width:5px;height:5px;border-radius:50%;background:#00ff96;display:inline-block;box-shadow:0 0 6px #00ff96;animation:pulse 1.5s ease-in-out infinite"></span>
+            <span style="width:5px;height:5px;border-radius:50%;background:#2DD4C4;display:inline-block;box-shadow:0 0 6px #2DD4C4;animation:pulse 1.5s ease-in-out infinite"></span>
             SCAN ATIVO
           </div>
           <div style="font-size:9px;color:rgba(255,255,255,.55);font-weight:600;line-height:2">
@@ -3205,7 +3215,7 @@ setTimeout(function(){
         <div style="display:flex;gap:10px;margin-top:6px">
           <button id="btnTemaDark" onclick="setTema('dark')"
             style="flex:1;padding:12px;border-radius:8px;border:2px solid var(--green);
-            background:rgba(0,255,85,.07);color:var(--green);font-family:'Montserrat',sans-serif;
+            background:rgba(45,212,196,.07);color:var(--green);font-family:'Montserrat',sans-serif;
             font-size:11px;font-weight:900;cursor:pointer;transition:all .2s">
             🌙 Dark (Padrão)
           </button>
@@ -3502,7 +3512,7 @@ function renderNotifCliente(){
   else{badge.style.display='none';}
   if(!_notifData.length){list.innerHTML='<div class="notif-empty">Nenhuma notificação ainda 🚀</div>';return;}
   var ICONS={marspoints:'⭐',ticket:'🎟️',jogo:'🎮',marspass:'🌌',xp:'🪐',mensagem:'💬'};
-  var CORES={marspoints:'rgba(255,183,0,.15)',ticket:'rgba(255,183,0,.12)',jogo:'rgba(0,255,85,.1)',marspass:'rgba(124,106,247,.12)',xp:'rgba(185,242,255,.1)',mensagem:'rgba(232,66,26,.1)'};
+  var CORES={marspoints:'rgba(255,183,0,.15)',ticket:'rgba(255,183,0,.12)',jogo:'rgba(45,212,196,.1)',marspass:'rgba(124,106,247,.12)',xp:'rgba(185,242,255,.1)',mensagem:'rgba(232,66,26,.1)'};
   list.innerHTML=_notifData.map(function(n){
     var icon=ICONS[n.tipo]||'📬';
     var cor=CORES[n.tipo]||'rgba(255,255,255,.06)';
@@ -3750,7 +3760,7 @@ async function carregarPerfil(user){
           window.planetaAddXPSilent(
             xpTotal,
             novos===1 ? 'Jogo adquirido' : novos+' jogos adquiridos',
-            '🎮','rgba(0,255,85,.1)','#00ff55'
+            '🎮','rgba(45,212,196,.1)','#2DD4C4'
           );
           localStorage.setItem(xpKey, String(peds.length));
           console.log('[Planeta XP] +'+xpTotal+' XP por '+novos+' jogo(s) novo(s)');
@@ -3759,7 +3769,7 @@ async function carregarPerfil(user){
           setTimeout(function(){
             if(typeof window.planetaAddXPSilent === 'function'){
               var xpTotal2 = novos * XP_POR_JOGO;
-              window.planetaAddXPSilent(xpTotal2,'Jogos adquiridos','🎮','rgba(0,255,85,.1)','#00ff55');
+              window.planetaAddXPSilent(xpTotal2,'Jogos adquiridos','🎮','rgba(45,212,196,.1)','#2DD4C4');
               localStorage.setItem(xpKey, String(peds.length));
             }
           }, 2000);
@@ -4032,7 +4042,7 @@ async function carregarPedidos(userId){
                 '<button class="chave-copiar" onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'">Copiar chave</button>'+
               '</div>'+
               '<div class="cofre-cover">'+
-                '<p class="cofre-aviso">Ao revelar, a abertura fica registrada. A partir daí, a troca só ocorre mediante comprovação de que a chave não funcionou — não há reembolso. Antes de revelar, você pode desistir em até 7 dias.</p>'+
+                '<p class="cofre-aviso">Ao revelar, a abertura fica registrada. Antes de revelar, você pode desistir em até 7 dias.</p>'+
                 '<button class="cofre-btn" onclick="revelarChavePerfil(\''+pid+'\','+idx+',this)">'+rotulo+'</button>'+
               '</div>'+
             '</div>'+
@@ -4380,7 +4390,7 @@ async function carregarHistoricoPontosEmail(userEmail){
       '<div id="histListWrap"></div>';
 
     function _btnStyle(ativo){
-      return 'font-size:10px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid '+(ativo?'var(--green)':'var(--border2)')+';background:'+(ativo?'rgba(0,255,85,.08)':'rgba(255,255,255,.03)')+';color:'+(ativo?'var(--green)':'var(--muted)')+';cursor:pointer;transition:all .2s';
+      return 'font-size:10px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid '+(ativo?'var(--green)':'var(--border2)')+';background:'+(ativo?'rgba(45,212,196,.08)':'rgba(255,255,255,.03)')+';color:'+(ativo?'var(--green)':'var(--muted)')+';cursor:pointer;transition:all .2s';
     }
     window._histFiltro=function(tipo){
       _filtroAtivo=tipo;
@@ -4422,7 +4432,7 @@ function setTema(tema){
   if(btnD){
     btnD.style.borderColor = isDark ? 'var(--green)' : 'var(--border2)';
     btnD.style.color       = isDark ? 'var(--green)' : '#aaa';
-    btnD.style.background  = isDark ? 'rgba(0,255,85,.07)' : 'rgba(255,255,255,.04)';
+    btnD.style.background  = isDark ? 'rgba(45,212,196,.07)' : 'rgba(255,255,255,.04)';
   }
   if(btnL){
     btnL.style.borderColor = !isDark ? 'var(--mars)' : 'var(--border2)';
@@ -4633,10 +4643,10 @@ async function carregarMarsPassPerfil(user, forcado){
       jogoContent=
         '<div style="margin-bottom:10px">'+
           '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--green);margin-bottom:6px">✅ JOGO ENTREGUE — '+esc(a.jogo_mensal_solicitacao)+'</div>'+
-          '<div style="background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.2);border-radius:10px;padding:12px">'+
+          '<div style="background:rgba(45,212,196,.05);border:1px solid rgba(45,212,196,.2);border-radius:10px;padding:12px">'+
             '<div style="font-size:8px;font-weight:700;letter-spacing:2px;color:#555;margin-bottom:8px">🔑 SEUS DADOS DE ACESSO</div>'+
             '<div style="font-family:monospace;font-size:13px;font-weight:700;color:#fff;background:rgba(0,0,0,.3);border-radius:6px;padding:10px;word-break:break-all;margin-bottom:8px">'+esc(a.jogo_mensal_chave_entregue)+'</div>'+
-            '<button onclick="navigator.clipboard.writeText(\''+esc(a.jogo_mensal_chave_entregue)+'\').then(function(){showToast(\'Copiado!\')})" style="width:100%;padding:8px;border-radius:7px;border:1px solid rgba(0,255,85,.3);background:rgba(0,255,85,.08);color:var(--green);font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;cursor:pointer;letter-spacing:.5px">📋 COPIAR ACESSO</button>'+
+            '<button onclick="navigator.clipboard.writeText(\''+esc(a.jogo_mensal_chave_entregue)+'\').then(function(){showToast(\'Copiado!\')})" style="width:100%;padding:8px;border-radius:7px;border:1px solid rgba(45,212,196,.3);background:rgba(45,212,196,.08);color:var(--green);font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;cursor:pointer;letter-spacing:.5px">📋 COPIAR ACESSO</button>'+
           '</div>'+
         '</div>'+
         '<div style="font-size:10px;color:#555">Guarde seus dados em local seguro. A MarsGames não se responsabiliza por perda após visualização.</div>';
@@ -4644,7 +4654,7 @@ async function carregarMarsPassPerfil(user, forcado){
     } else if(jogoUsadoMes){
       jogoContent=
         '<div style="display:flex;align-items:center;gap:10px">'+
-          '<div style="width:36px;height:36px;border-radius:10px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✅</div>'+
+          '<div style="width:36px;height:36px;border-radius:10px;background:rgba(45,212,196,.08);border:1px solid rgba(45,212,196,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✅</div>'+
           '<div style="font-size:12px;color:var(--green);font-weight:700">Jogo do mês já solicitado!<br><span style="font-size:10px;color:#555;font-weight:600">Novo jogo disponível no próximo mês.</span></div>'+
         '</div>';
 
@@ -4696,10 +4706,10 @@ async function carregarMarsPassPerfil(user, forcado){
           '<span style="font-size:9px;font-weight:900;letter-spacing:2px;color:#7c6af7">MENSAGENS DA MARSGAMES</span>'+
         '</div>'+
         (msgAdmin
-          ? '<div style="background:rgba(0,255,85,.05);border:1px solid rgba(0,255,85,.2);border-radius:10px;padding:12px">'+
+          ? '<div style="background:rgba(45,212,196,.05);border:1px solid rgba(45,212,196,.2);border-radius:10px;padding:12px">'+
               '<div style="font-size:8px;font-weight:700;letter-spacing:2px;color:#555;margin-bottom:8px">📨 MENSAGEM RECEBIDA</div>'+
               '<div style="font-family:monospace;font-size:12px;color:#fff;background:rgba(0,0,0,.3);border-radius:6px;padding:10px;word-break:break-all;margin-bottom:8px">'+esc(msgAdmin)+'</div>'+
-              '<button onclick="navigator.clipboard.writeText(\''+esc(msgAdmin)+'\').then(function(){showToast(\'Copiado!\')})" style="width:100%;padding:7px;border-radius:7px;border:1px solid rgba(0,255,85,.3);background:rgba(0,255,85,.08);color:var(--green);font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;cursor:pointer">📋 COPIAR</button>'+
+              '<button onclick="navigator.clipboard.writeText(\''+esc(msgAdmin)+'\').then(function(){showToast(\'Copiado!\')})" style="width:100%;padding:7px;border-radius:7px;border:1px solid rgba(45,212,196,.3);background:rgba(45,212,196,.08);color:var(--green);font-family:Montserrat,sans-serif;font-size:10px;font-weight:900;cursor:pointer">📋 COPIAR</button>'+
             '</div>'
           : '<div style="display:flex;align-items:center;gap:12px;padding:4px 0">'+
               '<div style="width:36px;height:36px;border-radius:10px;background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🌀</div>'+
@@ -4955,7 +4965,7 @@ async function carregarMarsPointsPerfil(user){
       var ganho=(h.pontos||0)>0;
       var dt=h.data?new Date(h.data).toLocaleString('pt-BR'):'—';
       return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;background:var(--card);border:1px solid var(--border)">'+
-        '<div style="width:34px;height:34px;border-radius:8px;flex-shrink:0;background:'+(ganho?'rgba(0,255,85,.1)':'rgba(255,85,85,.1)')+';display:flex;align-items:center;justify-content:center;font-size:15px">'+(h.tipo==='sorteio'?'🏆':ganho?'⭐':'💸')+'</div>'+
+        '<div style="width:34px;height:34px;border-radius:8px;flex-shrink:0;background:'+(ganho?'rgba(45,212,196,.1)':'rgba(255,85,85,.1)')+';display:flex;align-items:center;justify-content:center;font-size:15px">'+(h.tipo==='sorteio'?'🏆':ganho?'⭐':'💸')+'</div>'+
         '<div style="flex:1;min-width:0">'+
           '<div style="font-size:11px;font-weight:700;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(h.descricao||'Ajuste')+'</div>'+
           '<div style="font-size:9px;color:var(--muted);margin-top:2px">'+dt+'</div>'+
@@ -6053,7 +6063,7 @@ var DNA_ALIENS=[
    desc:'Cada partida é uma final de mundial. Conhece cada estatística, cada jogador, cada tática.',
    traits:[{icon:'🏆',name:'Competição',val:'Feroz'},{icon:'📈',name:'Ranking',val:'Obsessão'},{icon:'🤝',name:'Fair Play',val:'Opcional'},{icon:'💪',name:'Grit',val:'Extremo'}],
    compat:[{name:'Speed Daemon',score:85,color:'#ffc200',icon:'💨',type:'Rivalidade'},{name:'Iron Tactician',score:77,color:'#00b8e6',icon:'♟️',type:'Análise+Execução'},{name:'Berserker',score:66,color:'#ff1f30',icon:'💢',type:'Jogo Físico'}],
-   evo:[{name:'Amateur Pyxis',req:'Iniciante',color:'#4a5168',current:false},{name:'Pro Striker Lyx',req:'2 esportes',color:'#009950',current:false},{name:'Astro Athlete Kyros',req:'Você está aqui',color:'#00e87a',current:true},{name:'Galaxy MVP Zorak',req:'5+ esportes',color:'#00ffaa',current:false},{name:'Legend Titan',req:'Eternamente',color:'#ffc200',current:false}],
+   evo:[{name:'Amateur Pyxis',req:'Iniciante',color:'#4a5168',current:false},{name:'Pro Striker Lyx',req:'2 esportes',color:'#009950',current:false},{name:'Astro Athlete Kyros',req:'Você está aqui',color:'#00e87a',current:true},{name:'Galaxy MVP Zorak',req:'5+ esportes',color:'#2DD4C4',current:false},{name:'Legend Titan',req:'Eternamente',color:'#ffc200',current:false}],
    codeChars:'GCAT'},
   {id:'void_architect',name:'VOID ARCHITECT ZYRETH',subtitle:'Construtor das Realidades Paralelas',
    color:'#7c6af7',color2:'#ff3c6e',exclusive:true,marspassRequired:'any',
@@ -6779,7 +6789,7 @@ function _cambioMostrarSucesso(item,recompensaVal,novoMP){
   _cambioModal(
     icone+' Câmbio realizado!',
     '<div style="font-size:28px;margin-bottom:10px">'+icone+'</div>'+
-    '<div style="font-family:\'Orbitron\',sans-serif;font-size:20px;font-weight:900;color:#00ff55;margin-bottom:4px">+'+label+'</div>'+
+    '<div style="font-family:\'Orbitron\',sans-serif;font-size:20px;font-weight:900;color:#2DD4C4;margin-bottom:4px">+'+label+'</div>'+
     '<div style="font-size:12px;color:#888;margin-bottom:16px">creditado na sua conta agora</div>'+
     '<div style="font-size:11px;color:#555">Saldo restante: <strong style="color:#ffc200">'+novoMP.toLocaleString('pt-BR')+' MP</strong></div>',
     [{txt:'✅ Fechar',cor:'var(--green)',acao:'fechar'}]
@@ -6924,7 +6934,7 @@ window.lojaEscolherPagamento=function(pkgId){
         '<div style="font-size:18px;font-weight:900;color:#fff;margin-top:6px">'+pkg.price+'</div>'+
       '</div>'+
       '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:10px;text-align:center">Como deseja pagar?</div>'+
-      '<button onclick="lojaComprarPix(\''+pkg.id+'\')" style="width:100%;padding:14px;border-radius:12px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.25);color:#00ff55;font-family:Montserrat,sans-serif;font-weight:900;font-size:12px;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s" onmouseover="this.style.background=\'rgba(0,255,85,.15)\'" onmouseout="this.style.background=\'rgba(0,255,85,.08)\'">'+
+      '<button onclick="lojaComprarPix(\''+pkg.id+'\')" style="width:100%;padding:14px;border-radius:12px;background:rgba(45,212,196,.08);border:1px solid rgba(45,212,196,.25);color:#2DD4C4;font-family:Montserrat,sans-serif;font-weight:900;font-size:12px;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s" onmouseover="this.style.background=\'rgba(45,212,196,.15)\'" onmouseout="this.style.background=\'rgba(45,212,196,.08)\'">'+
         '<span style="font-size:18px">⚡</span><span>PIX — instantâneo</span>'+
       '</button>'+
       '<button onclick="lojaComprarCartao(\''+pkg.id+'\')" style="width:100%;padding:14px;border-radius:12px;background:rgba(91,154,246,.08);border:1px solid rgba(91,154,246,.25);color:#5b9af6;font-family:Montserrat,sans-serif;font-weight:900;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s" onmouseover="this.style.background=\'rgba(91,154,246,.15)\'" onmouseout="this.style.background=\'rgba(91,154,246,.08)\'">'+
