@@ -7147,5 +7147,19 @@ window.addEventListener('resize',function(){
   setTimeout(init,700);
 })();
 </script>
+<style id="mg-f3-home">
+/* ── F3: reskin do miolo da home pra nova identidade (petróleo, dark-only) ── */
+body:not(.tema-claro), body.tema-claro{
+  --bg:#0A0E1A; --card:#141A28; --surface:#1B2334;
+  --border:#243049; --border2:#31405E;
+  --text:#F2EFE6; --muted:#8A94AD;
+  --green:#2DD4C4; --green-glow:rgba(45,212,196,.22); --green-dim:rgba(45,212,196,.08);
+  --mars:#2DD4C4; --mars-glow:rgba(45,212,196,.25); --mars-dim:rgba(45,212,196,.1);
+  --orange:#2DD4C4; --amber:#FFC24B;
+}
+/* mata o gradiente no título do hero (tell de IA) e unifica acento */
+.hero-title{background:none!important;-webkit-text-fill-color:var(--mg-text)!important;color:var(--mg-text)!important}
+.hero-badge-dot{background:var(--mg-accent)!important}
+</style>
 </body>
 </html>
