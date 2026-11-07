@@ -61,7 +61,7 @@ serve(async (req) => {
     if (ehProdutoFisico) {
       const ids = itens.map((i: any) => i.id || i.produto_id).filter(Boolean);
       const { data: prods } = await sb
-        .from("produtos").select("id, nome, preco, ativo, imagem").in("id", ids);
+        .from("produtos").select("id, nome, preco, ativo, imagem, categoria, tipo_key, preco_original, desconto").in("id", ids);
       const mapa = new Map((prods || []).map((p: any) => [String(p.id), p]));
 
       itensServidor = [];
@@ -82,6 +82,10 @@ serve(async (req) => {
           id: prod.id, produto_id: prod.id, nome: prod.nome,
           imagem: prod.imagem || i.imagem || "",
           tipo: i.tipo || null,
+          categoria: prod.categoria || null,
+          tipo_key: prod.tipo_key || null,
+          em_promo: (Number(prod.desconto) > 0) ||
+            (prod.preco_original != null && Number(prod.preco_original) > Number(prod.preco)),
           quantidade: Math.max(1, Number(i.quantidade || 1)),
           preco: Number(prod.preco),
         });
@@ -104,7 +108,17 @@ serve(async (req) => {
           const usosEmail = Array.isArray(c.emails_usados)
             ? c.emails_usados.filter((e: any) => (e?.email || e) === user.email).length : 0;
           const dentroEmail = usosEmail < (c.max_usos_por_email || 1);
-          if (validoData && dentroGlobal && okExcl && dentroEmail) {
+          const subtotalItens = itensServidor.reduce(
+            (s: number, x: any) => s + Number(x.preco) * Number(x.quantidade || 1), 0);
+          const ehRoleta = ["roda_fortuna", "roleta"].includes(String(c.origem || "").toLowerCase());
+          const atingeMin = Number(c.valor_minimo || 0) <= 0 || subtotalItens >= Number(c.valor_minimo);
+          const temItemBloqueado = itensServidor.some((x: any) =>
+            x.tipo_key === "key" ||
+            x.categoria === "Combos e Bundles" ||
+            x.categoria === "Steam Key / Outros" ||
+            x.em_promo === true);
+          const passaRoleta = !ehRoleta || (atingeMin && !temItemBloqueado);
+          if (validoData && dentroGlobal && okExcl && dentroEmail && atingeMin && passaRoleta) {
             descontoValor = Math.round(menor * (Number(c.desconto) || 0) / 100 * 100) / 100;
             descontoInfo = { tipo: "cupom", codigo: c.codigo, cupom_id: c.id, pct: Number(c.desconto) || 0 };
           }
