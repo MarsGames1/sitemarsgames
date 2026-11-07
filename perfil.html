@@ -2646,6 +2646,7 @@ setTimeout(function(){
   <!-- TABS (minimalista — essencial) -->
   <div class="tabs-wrap">
     <div class="tab active" id="tabPedidosBtn" onclick="showTab('pedidos',this)">Meus Pedidos</div>
+    <div class="tab" onclick="showTab('conquistas',this)">Conquistas</div>
     <div class="tab" onclick="showTab('favoritos',this)">Favoritos</div>
     <div class="tab" onclick="showTab('editar',this)">Minha Conta</div>
   </div>
@@ -4018,7 +4019,8 @@ async function carregarPedidos(userId){
       }
     }catch(ae){console.warn('[avaliacoes check]',ae);}
 
-    list.innerHTML=data.map(function(p){
+    window._pedidosData=data; window._pedidosPag=1;
+    window._pedidoCard=function(p){
       var statusPago=p.status==='pago'||p.status==='aprovado'||p.status==='entregue';
       var img=p.produto_img||(p.itens&&p.itens[0]&&p.itens[0].imagem)||'';
       var chaves=p.chaves_entregues||[];
@@ -4096,12 +4098,44 @@ async function carregarPedidos(userId){
         '</div>'+
         bodyHtml+
       '</div>';
-    }).join('');
+    };
+    _renderPedidosPag();
   }catch(e){
     console.error('[carregarPedidos] ERRO:',e);
     if(loader)loader.style.display='none';
     if(list){list.style.display='flex';list.innerHTML='<div class="sem-pedidos">Você ainda não fez nenhum pedido.<br><a href="catalogo.html" style="color:var(--green);font-weight:700">Ver catálogo</a></div>';}
   }
+}
+
+/* ── Paginação de Meus Pedidos (8 por página) ── */
+var PEDIDOS_POR_PAGINA=8;
+function _renderPedidosPag(){
+  var list=document.getElementById('pedidosList');
+  var data=window._pedidosData||[];
+  if(!list) return;
+  var total=data.length;
+  var totalPags=Math.max(1,Math.ceil(total/PEDIDOS_POR_PAGINA));
+  if(window._pedidosPag>totalPags) window._pedidosPag=totalPags;
+  var ini=(window._pedidosPag-1)*PEDIDOS_POR_PAGINA;
+  var pagina=data.slice(ini,ini+PEDIDOS_POR_PAGINA);
+  var cards=pagina.map(window._pedidoCard).join('');
+  var nav='';
+  if(totalPags>1){
+    nav='<div class="mg-pag-bar" style="flex-wrap:wrap">'+
+      '<button class="mg-pag-btn" '+(window._pedidosPag===1?'disabled':'')+' onclick="_irPedidosPag(-1)">← Anterior</button>'+
+      '<span class="mg-pag-info" style="min-width:auto">Página '+window._pedidosPag+' de '+totalPags+' · '+total+' pedidos</span>'+
+      '<button class="mg-pag-btn" '+(window._pedidosPag===totalPags?'disabled':'')+' onclick="_irPedidosPag(1)">Próxima →</button>'+
+    '</div>';
+  }
+  list.innerHTML=cards+nav;
+}
+function _irPedidosPag(d){
+  var data=window._pedidosData||[];
+  var totalPags=Math.max(1,Math.ceil(data.length/PEDIDOS_POR_PAGINA));
+  window._pedidosPag=Math.max(1,Math.min(totalPags,(window._pedidosPag||1)+d));
+  _renderPedidosPag();
+  var el=document.getElementById('tab-pedidos');
+  if(el&&el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* ── CONQUISTAS ── */
@@ -8122,6 +8156,10 @@ window.planetaAddXPSilent=function(xp,label,icon,bg,color){
   if(document.readyState!=='loading') setTimeout(init,400); else document.addEventListener('DOMContentLoaded',function(){setTimeout(init,400);});
   setTimeout(init,1500);
 })();
+</script>
+<script>
+/* Rastreamento de pageviews (jornada do visitante) */
+(function(){var _t=0;function _reg(){if(typeof sb==='undefined'||!sb){if(_t++<20)setTimeout(_reg,500);return;}var sid=sessionStorage.getItem('mg_sid');if(!sid){sid='s'+Date.now()+Math.random().toString(36).slice(2,6);sessionStorage.setItem('mg_sid',sid);}var em=null;try{em=(typeof userSession!=='undefined'&&userSession&&userSession.user&&userSession.user.email)||sessionStorage.getItem('mg_user_email')||null;}catch(e){}var pg=window.location.pathname.replace(/^\//,'').replace('.html','').replace(/\/$/,'')||'index';sb.from('site_pageviews').insert({pagina:pg,email:em,session_id:sid,referrer:document.referrer||null}).then(function(r){if(r&&r.error)console.warn('[pageview]',r.error.message);});}setTimeout(_reg,1200);})();
 </script>
 </body>
 </html>
