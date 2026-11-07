@@ -1005,6 +1005,26 @@ init();
   setTimeout(_ini,1500);
 })();
 </script>
+<style id="mg-icons-fix">
+/* ══ Ajuste de ícones: carrinho petróleo, busca ampliada, plataformas padronizadas ══ */
+/* Carrinho: petróleo, proporção padrão (sem verde vivo nem glow exagerado) */
+.nav-cart-btn{width:44px;height:44px;background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important;box-shadow:none!important}
+.nav-cart-btn:hover{background:#3FE0D0!important;box-shadow:none!important}
+.nav-cart-btn svg{width:20px;height:20px;stroke:var(--mg-accent-ink)!important}
+.cart-badge{background:var(--mg-danger)!important}
+/* Busca: barra e lupa maiores (estilo Nuuvem) */
+.search-wrap{border-radius:10px;border-color:var(--mg-border-strong)}
+.search-wrap:focus-within{border-color:var(--mg-accent)!important}
+.search-wrap svg{width:20px!important;height:20px!important;margin-left:14px!important;color:var(--mg-text-dim)!important}
+.search-wrap input{padding:14px 14px!important;font-size:14px!important}
+/* Ícones de plataforma: tamanho único e consistente */
+.plat-icon-svg{width:18px!important;height:18px!important}
+.prod-plat-tag .plat-icon-svg{width:12px!important;height:12px!important}
+.hero-chip .plat-icon-svg{width:16px!important;height:16px!important}
+/* Check dos filtros em petróleo */
+.plat-item input:checked~.plat-check{border-color:var(--mg-accent)!important;background:var(--mg-accent-dim)!important}
+.plat-check svg{color:var(--mg-accent)!important;width:11px!important;height:11px!important}
+</style>
 </body>
 </html>
 

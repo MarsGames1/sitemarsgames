@@ -24,8 +24,12 @@
 .nav-search-suggestions{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
 .nav-login{color:var(--mg-text)!important;border-color:var(--mg-border-strong)!important}
 .nav-login:hover{border-color:var(--mg-accent)!important}
-.nav-cart{color:var(--mg-text)!important}
-.cart-count{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important}
+.nav-cart{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important;box-shadow:none!important}
+.nav-cart:hover{box-shadow:none!important;background:#3FE0D0!important}
+.nav-cart-icon{stroke:var(--mg-accent-ink)!important}
+.cart-count{background:var(--mg-danger)!important;color:#fff!important}
+/* Ícone de busca padronizado/maior */
+.nav-search-icon-btn svg,.nav-search svg{width:20px!important;height:20px!important}
 .mg-sino-btn{color:var(--mg-text)!important}
 .mg-sino-badge{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important}
 .mg-sino-panel{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
