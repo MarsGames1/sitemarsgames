@@ -4291,3 +4291,31 @@ document.getElementById('rdOverlay').addEventListener('click',function(e){if(e.t
   setTimeout(_ini,1500);
 })();
 </script>
+<style id="mg-f6-sorteio">
+/* ══ F6 Sorteio — remap petróleo + Arena oculta + nav em abas horizontais ══ */
+body:not(.tema-claro),body.tema-claro{
+  --bg:#0A0E1A;--card:#141A28;--surface:#1B2334;--dim:#10151F;
+  --border:#243049;--border2:#31405E;--text:#F2EFE6;--muted:#8A94AD;
+  --green:#2DD4C4;--green-glow:rgba(45,212,196,.22);--green-dim:rgba(45,212,196,.08);
+  --mars:#2DD4C4;--orange:#2DD4C4;--amber:#FFC24B;
+}
+/* Arena PvP removida por enquanto (reversível: apagar esta regra) */
+#spaBtnArena{display:none!important}
+/* Nav: abas horizontais no topo (desktop), não mais sidebar */
+.spa-nav{width:auto!important;flex-shrink:0;position:static!important;height:auto!important;
+  padding:14px 16px 0!important;border-right:none!important;border-bottom:1px solid var(--mg-border)!important;
+  background:transparent!important;backdrop-filter:none!important;display:flex;align-items:center;gap:10px;overflow-x:auto}
+.spa-nav-section{margin:0!important;display:flex!important;gap:8px}
+.spa-nav-label{display:none!important}
+.spa-nav-sep{display:none!important}
+.spa-content{width:100%}
+.spa-page-btn.active{background:var(--mg-accent-dim)!important;color:var(--mg-text)!important}
+.spa-page-btn.active::before{background:var(--mg-accent)!important;box-shadow:0 0 8px var(--mg-accent)!important}
+.spa-page-btn.roda-btn{color:var(--mg-accent)!important}
+.spa-page-btn.roda-btn.active{background:var(--mg-accent-dim)!important;color:var(--mg-text)!important}
+.spa-page-btn.roda-btn .btn-icon{background:var(--mg-accent-dim)!important}
+.roda-title-block h2 span{background:linear-gradient(135deg,var(--mg-accent),var(--mg-accent))!important;-webkit-text-fill-color:var(--mg-accent)!important}
+body :focus-visible{outline:2px solid var(--mg-accent)!important}
+/* Empilha: nav (abas) em cima, conteúdo embaixo */
+.spa-layout{flex-direction:column!important;gap:0!important}
+</style>
