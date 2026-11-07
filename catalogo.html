@@ -477,6 +477,14 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
       <input type="text" id="searchInput" placeholder="Buscar jogo..." oninput="buscar(this.value)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </div>
+    <select id="ordenarSel" class="filter-sort" onchange="renderProdutos()" aria-label="Ordenar">
+      <option value="rel">Relevância</option>
+      <option value="menor">Menor preço</option>
+      <option value="maior">Maior preço</option>
+      <option value="novo">Lançamentos</option>
+    </select>
+    <button type="button" id="promoToggle" class="filter-promo" aria-pressed="false"
+      onclick="this.classList.toggle('on');this.setAttribute('aria-pressed',this.classList.contains('on'));renderProdutos()">Só promoções</button>
     <div class="filter-count" id="filterCount">— jogos</div>
   </div>
 
@@ -600,38 +608,58 @@ async function init(){
 }
 
 function renderProdutos(){
+  var soPromo=document.getElementById('promoToggle');
+  soPromo=soPromo&&soPromo.classList.contains('on');
   var lista=todosProdutos.filter(function(p){
     /* Se está buscando por texto, ignora filtro de categoria para mostrar todos os resultados */
     var catOk=buscaAtual?true:(catAtual==='todos'||p.categoria===catAtual);
     var buscaOk=!buscaAtual||(p.nome||'').toLowerCase().includes(buscaAtual.toLowerCase())||
                 (p.categoria||'').toLowerCase().includes(buscaAtual.toLowerCase());
-    return catOk&&buscaOk;
+    var promoOk=!soPromo||(Number(p.desconto)>0||(p.preco_original&&Number(p.preco_original)>Number(p.preco)));
+    return catOk&&buscaOk&&promoOk;
   });
+  var ord=(document.getElementById('ordenarSel')||{}).value||'rel';
+  if(ord==='menor')lista.sort(function(a,b){return Number(a.preco)-Number(b.preco)});
+  else if(ord==='maior')lista.sort(function(a,b){return Number(b.preco)-Number(a.preco)});
+  else if(ord==='novo')lista.sort(function(a,b){return new Date(b.created_at)-new Date(a.created_at)});
   document.getElementById('filterCount').textContent=lista.length+' jogo'+(lista.length!==1?'s':'');
   var grid=document.getElementById('prodsGrid');
   if(lista.length===0){
     grid.innerHTML='<div class="empty-grid">🔍 Nenhum jogo encontrado para <strong style="color:#ccc">"'+esc(buscaAtual)+'"</strong>.<br><span style="font-size:10px;margin-top:8px;display:block">Tente outro nome ou verifique a ortografia.</span></div>';
     return;
   }
+  var agora=Date.now();
   grid.innerHTML=lista.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
-    var tagClass=!ok?'tag-esgotado':p.categoria==='Combos e Bundles'?'tag-combo':p.categoria==='Steam Key / Outros'?'tag-key':'tag-oferta';
-    var tagTxt=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Bundle':p.categoria==='Steam Key / Outros'?'Key':'Oferta';
+    var precoN=Number(p.preco);
+    var orig=p.preco_original?Number(p.preco_original):0;
+    var pct=Number(p.desconto)>0?Number(p.desconto):(orig>precoN?Math.round((1-precoN/orig)*100):0);
+    var temPromo=pct>0&&orig>precoN;
+    var novo=p.created_at&&(agora-new Date(p.created_at).getTime())<21*864e5;
+    /* UM badge, top-left, por prioridade: esgotado > desconto > novo > combo/key */
+    var badge='';
+    if(!ok)badge='<div class="prod-tag tag-esgotado">Esgotado</div>';
+    else if(temPromo)badge='<div class="prod-tag tag-oferta">-'+pct+'%</div>';
+    else if(novo)badge='<div class="prod-tag tag-novo-badge">Novo</div>';
+    else if(p.categoria==='Combos e Bundles')badge='<div class="prod-tag tag-combo">Combo</div>';
+    else if(p.categoria==='Steam Key / Outros')badge='<div class="prod-tag tag-key">Key</div>';
     /* Highlight do nome na busca */
     var nomeFinal=esc(p.nome);
     if(buscaAtual){
       var re=new RegExp('('+buscaAtual.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
-      nomeFinal=esc(p.nome).replace(re,'<mark style="background:rgba(232,66,26,.35);color:#fff;border-radius:2px;padding:0 1px">$1</mark>');
+      nomeFinal=esc(p.nome).replace(re,'<mark>$1</mark>');
     }
+    var precoHtml='<span class="prod-price'+(ok?'':' esgotado')+'">R$ '+precoN.toFixed(2).replace('.',',')+'</span>';
+    if(temPromo)precoHtml='<span class="prod-price-old">R$ '+orig.toFixed(2).replace('.',',')+'</span>'+precoHtml;
     return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s">'+
       '<div class="prod-img-wrap">'+
         (p.imagem?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">':'')+
-        '<div class="prod-tag '+tagClass+'">'+tagTxt+'</div>'+
+        badge+
       '</div>'+
       '<div class="prod-body">'+
         '<div class="prod-name">'+nomeFinal+'</div>'+
         '<div class="prod-plat">'+esc(p.plataforma||'Steam')+'</div>'+
-        '<div class="prod-price'+(ok?'':' esgotado')+'">R$ '+Number(p.preco).toFixed(2).replace('.',',')+'</div>'+
+        '<div class="prod-price-row">'+precoHtml+'</div>'+
         '<button class="prod-btn '+(ok?'prod-btn-buy':'prod-btn-dis')+'" '+(ok?'':'disabled')+
           ' onclick="event.preventDefault();event.stopPropagation();addCarrinho(\''+p.id+'\')">'+(ok?'Comprar agora':'Esgotado')+'</button>'+
       '</div>'+
@@ -976,5 +1004,42 @@ setTimeout(function(){sb.auth.getSession().then(function(r){atualizarNavbar(r.da
   setTimeout(_ini,1500);
 })();
 </script>
+<style id="mg-f4-cat">
+/* ══ F4 Catálogo — remap petróleo + ordenação + badges reais ══ */
+body:not(.tema-claro),body.tema-claro{
+  --bg:#0A0E1A;--card:#141A28;--surface:#1B2334;--dim:#10151F;
+  --border:#243049;--border2:#31405E;
+  --text:#F2EFE6;--muted:#8A94AD;
+  --green:#2DD4C4;--green-glow:rgba(45,212,196,.22);--green-dim:rgba(45,212,196,.08);
+  --mars:#2DD4C4;--mars-glow:rgba(45,212,196,.25);--mars-dim:rgba(45,212,196,.1);
+  --orange:#2DD4C4;--amber:#FFC24B;
+}
+body:not(.tema-claro) .prod-price{color:var(--mg-accent)!important}
+body:not(.tema-claro) .prod-card::before{background:linear-gradient(to right,transparent,var(--mg-accent),transparent)!important}
+body:not(.tema-claro) .prod-card:hover{border-color:var(--mg-accent)!important}
+.prod-tag{border-radius:5px;font-size:8px;padding:4px 7px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.tag-oferta{background:var(--mg-accent);color:var(--mg-accent-ink)}
+.tag-novo-badge{background:var(--mg-success);color:#06251A}
+.tag-combo{background:var(--mg-gold);color:#3A2A00}
+.tag-key{background:var(--mg-border-strong);color:var(--mg-text)}
+.prod-price-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-top:2px}
+.prod-price-old{font-size:11px;font-weight:700;color:var(--mg-text-dim);text-decoration:line-through}
+.prod-name mark{background:var(--mg-accent-dim);color:var(--mg-accent);border-radius:2px;padding:0 1px}
+.prod-btn-buy{background:var(--mg-accent-dim)!important;color:var(--mg-accent)!important;border:1px solid rgba(45,212,196,.3)!important}
+@media(hover:hover){.prod-btn-buy:hover{background:rgba(45,212,196,.2)!important}}
+/* Ordenar + Só promoções */
+.filter-sort{appearance:none;-webkit-appearance:none;background:var(--card);border:1px solid var(--border2);
+  border-radius:10px;padding:11px 32px 11px 14px;font-size:12px;font-weight:700;color:var(--mg-text);
+  font-family:'Montserrat',sans-serif;cursor:pointer;outline:none;min-height:44px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A94AD' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
+.filter-sort:focus{border-color:var(--mg-accent)}
+.filter-promo{background:var(--card);border:1px solid var(--border2);border-radius:10px;
+  padding:11px 16px;font-size:12px;font-weight:700;color:var(--mg-text-dim);cursor:pointer;
+  font-family:'Montserrat',sans-serif;min-height:44px;transition:border-color .2s,color .2s,background .2s;white-space:nowrap}
+.filter-promo.on{border-color:var(--mg-accent);color:var(--mg-accent);background:var(--mg-accent-dim)}
+body :focus-visible{outline:2px solid var(--mg-accent)!important}
+@media(max-width:640px){.filter-sort,.filter-promo{font-size:11px;padding:9px 12px;min-height:40px}.filter-sort{padding-right:30px}}
+</style>
 </body>
 </html>
