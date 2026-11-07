@@ -1,0 +1,28 @@
+# MarsGames
+
+> Loja brasileira de CD keys originais para PC. Chaves de ativação legítimas com entrega digital imediata e pagamento seguro via Pix ou cartão pelo Mercado Pago.
+
+MarsGames vende CD keys originais (jogos para Steam e outras plataformas), adquiridas por canais oficiais e distribuidoras autorizadas. A entrega é digital e imediata após a confirmação do pagamento. Também há contas de jogo em modo offline, sempre identificadas como tal no catálogo e oferecidas de forma transparente, por ciência do cliente.
+
+## Como funciona
+- Produtos: CD keys originais (ativação na Steam/plataforma) e, para alguns títulos, contas offline identificadas.
+- Entrega: digital e imediata após o pagamento.
+- Pagamento: Pix e cartão de crédito, processados pelo Mercado Pago. A operação é de pessoa física; a cobrança pode aparecer no nome do responsável pela MarsGames.
+- Suporte: até 7 dias após a compra.
+- Troca e reembolso: política de troca, não de reembolso. Antes de revelar a chave, há direito de arrependimento em até 7 dias (CDC art. 49). Após revelar a chave, a troca ocorre apenas mediante comprovação de que a chave não funcionou.
+
+## Páginas
+- [Início](https://marsgames.com.br/): destaques e categorias.
+- [CD Keys](https://marsgames.com.br/cdkeys.html): chaves originais por plataforma.
+- [Catálogo](https://marsgames.com.br/catalogo.html): todos os jogos com filtros e ordenação.
+- [Chaves Aleatórias](https://marsgames.com.br/chaves.html): chaves Steam surpresa.
+- [Combos e Bundles](https://marsgames.com.br/combos.html): pacotes com mais jogos por menos.
+- [Promoções](https://marsgames.com.br/promocoes.html): ofertas da semana.
+- [Quem Somos](https://marsgames.com.br/quem-somos.html): sobre a loja.
+- [FAQ](https://marsgames.com.br/faq.html): dúvidas frequentes.
+
+## Políticas
+- [Reembolso e Troca](https://marsgames.com.br/reembolso.html)
+- [Entrega](https://marsgames.com.br/envio.html)
+- [Termos e Condições](https://marsgames.com.br/termos.html)
+- [Privacidade (LGPD)](https://marsgames.com.br/privacidade.html)

@@ -3,23 +3,22 @@
 <head>
 <meta charset="UTF-8">
   <!-- SEO -->
-  <meta name="description" content="Compre jogos Steam offline com desconto na MarsGames. Entrega imediata após o pagamento. Pix e cartão aceitos.">
+  <meta name="description" id="mDesc" content="CD keys originais para PC na MarsGames — entrega digital imediata, pagamento seguro via Pix ou cartão pelo Mercado Pago.">
   <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://marsgames.com.br/produto.html">
+  <link rel="canonical" id="mCanonical" href="https://marsgames.com.br/produto.html">
   <!-- Open Graph -->
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="product">
   <meta property="og:site_name" content="MarsGames">
-  <meta property="og:title" content="Jogo Steam — MarsGames">
-  <meta property="og:description" content="Compre jogos Steam offline com desconto na MarsGames. Entrega imediata após o pagamento. Pix e cartão aceitos.">
-  <meta property="og:url" content="https://marsgames.com.br/produto.html">
-  <meta property="og:image" content="https://marsgames.com.br/og-image.jpg">
+  <meta property="og:title" id="mOgTitle" content="CD Key Original — MarsGames">
+  <meta property="og:description" id="mOgDesc" content="CD keys originais com entrega digital imediata. Pague com Pix ou cartão pelo Mercado Pago.">
+  <meta property="og:url" id="mOgUrl" content="https://marsgames.com.br/produto.html">
+  <meta property="og:image" id="mOgImg" content="https://marsgames.com.br/og-image.jpg">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Jogo Steam — MarsGames">
-  <meta name="twitter:description" content="Compre jogos Steam offline com desconto na MarsGames. Entrega imediata após o pagamento. Pix e cartão aceitos.">
+  <meta name="twitter:title" id="mTwTitle" content="CD Key Original — MarsGames">
+  <meta name="twitter:description" id="mTwDesc" content="CD keys originais com entrega digital imediata via Pix ou cartão.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MarsGames — Produto</title>
-<meta name="description" content="Jogos PC Steam com até 90% OFF. Entrega imediata.">
+<title>MarsGames — CD Keys Originais</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -892,9 +891,56 @@ async function init(){
   atualizarCarrinho();
 }
 
+function aplicarSEOProduto(p){
+  try{
+    var base='https://marsgames.com.br/produto.html?id='+encodeURIComponent(p.id);
+    var preco=Number(p.preco)||0;
+    var temEstoque=p.estoque===null||p.estoque===undefined||p.estoque>0;
+    var tipoKey=(p.tipo_key||'').toLowerCase();
+    var ehKey=tipoKey==='key';
+    var rotulo=ehKey?'CD key original':'jogo para PC';
+    var desc='Compre '+p.nome+' ('+rotulo+') na MarsGames por R$ '+preco.toFixed(2).replace('.',',')
+      +'. Entrega digital imediata, pagamento seguro via Pix ou cartão pelo Mercado Pago.';
+    var titulo=p.nome+' — '+(ehKey?'CD Key Original':'Jogo PC')+' | MarsGames';
+    var img=p.imagem||'https://marsgames.com.br/og-image.jpg';
+    function setA(id,attr,val){var e=document.getElementById(id);if(e)e.setAttribute(attr,val);}
+    setA('mDesc','content',desc);
+    setA('mCanonical','href',base);
+    setA('mOgUrl','content',base);
+    setA('mOgTitle','content',titulo);
+    setA('mOgDesc','content',desc);
+    setA('mOgImg','content',img);
+    setA('mTwTitle','content',titulo);
+    setA('mTwDesc','content',desc);
+    // Product JSON-LD (rich result de preço/estoque no Google e leitura por IAs)
+    var ld={
+      "@context":"https://schema.org",
+      "@type":"Product",
+      "name":p.nome,
+      "image":img,
+      "description":desc,
+      "category":p.categoria||"Jogo PC",
+      "brand":{"@type":"Brand","name":"MarsGames"},
+      "offers":{
+        "@type":"Offer",
+        "url":base,
+        "priceCurrency":"BRL",
+        "price":preco.toFixed(2),
+        "availability":temEstoque?"https://schema.org/InStock":"https://schema.org/OutOfStock",
+        "itemCondition":"https://schema.org/NewCondition",
+        "seller":{"@type":"Organization","name":"MarsGames"}
+      }
+    };
+    var old=document.getElementById('prodLD');if(old)old.remove();
+    var sc=document.createElement('script');sc.type='application/ld+json';sc.id='prodLD';
+    sc.textContent=JSON.stringify(ld);
+    document.head.appendChild(sc);
+  }catch(e){}
+}
 function renderProduto(p){
   // Meta
-  document.title='MarsGames — '+p.nome;
+  document.title=p.nome+' — CD Key Original | MarsGames';
+  aplicarSEOProduto(p);
 
   // Breadcrumb
   document.getElementById('breadCat').textContent=p.categoria||'Produto';
