@@ -2413,6 +2413,29 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 .tab-marspass{display:none!important}
 #tab-marspass-perfil{display:none!important}
 #dnaExclTag{display:none!important}
+
+/* ══ Perfil minimalista — remap petróleo + abas essenciais ══ */
+body:not(.tema-claro),body.tema-claro{
+  --bg:#0A0E1A;--card:#141A28;--surface:#1B2334;--dim:#10151F;
+  --border:#243049;--border2:#31405E;--text:#F2EFE6;--muted:#8A94AD;
+  --green:#2DD4C4;--green-glow:rgba(45,212,196,.22);--green-dim:rgba(45,212,196,.08);
+  --mars:#2DD4C4;--mars-glow:rgba(45,212,196,.25);--mars-dim:rgba(45,212,196,.1);
+  --orange:#2DD4C4;--amber:#FFC24B;
+}
+/* Spinner em petróleo */
+.spinner{border-color:rgba(45,212,196,.2)!important;border-top-color:var(--mg-accent)!important}
+/* Barra de abas: limpa e centralizada (só 3 abas agora) */
+.tabs-wrap{display:flex!important;flex-wrap:wrap;gap:8px;justify-content:center;background:transparent!important;
+  border:none!important;border-bottom:1px solid var(--mg-border)!important;border-radius:0!important;
+  padding:0 0 2px!important;margin-bottom:22px!important}
+.tab-group-label{display:none!important}
+.tab{background:transparent!important;border:none!important;border-radius:0!important;color:var(--mg-text-dim)!important;
+  font-weight:700;font-size:13px!important;letter-spacing:.3px!important;padding:12px 18px!important;position:relative;min-height:44px}
+.tab:hover{color:var(--mg-text)!important}
+.tab.active{color:var(--mg-accent)!important;background:transparent!important}
+.tab.active::after{content:''!important;position:absolute;left:14px;right:14px;bottom:-3px;height:2px;
+  background:var(--mg-accent)!important;opacity:1!important;border-radius:2px}
+body :focus-visible{outline:2px solid var(--mg-accent)!important}
 </style>
 <script>
 async function revelarChavePerfil(pedidoId, idx, btn){
@@ -2478,7 +2501,7 @@ async function revelarChavePerfil(pedidoId, idx, btn){
 
 <!-- LOADING -->
 <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;min-height:80vh;flex-direction:column;gap:16px;position:relative;z-index:1">
-  <div style="width:36px;height:36px;border:3px solid rgba(0,255,85,.15);border-top-color:#00ff55;border-radius:50%;animation:spin 0.7s linear infinite"></div>
+  <div style="width:36px;height:36px;border:3px solid rgba(45,212,196,.18);border-top-color:#2DD4C4;border-radius:50%;animation:spin 0.7s linear infinite"></div>
   <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#555" id="loadingMsg">Verificando sessão...</div>
   <div id="loadingDemorado" style="display:none;text-align:center;padding:0 32px">
     <div style="font-size:11px;color:#444;font-weight:600;margin-bottom:12px">Conexão lenta detectada...</div>
@@ -2605,28 +2628,11 @@ setTimeout(function(){
     </div>
   </div>
 
-  <!-- TABS -->
+  <!-- TABS (minimalista — essencial) -->
   <div class="tabs-wrap">
-    <span class="tab-group-label">Conta</span>
-    <div class="tab tab-marspass" onclick="showTab('marspass-perfil',this)"><span class="tab-star">✦</span> MarsPass <span style="font-size:8px;background:#FFD700;color:#000;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;margin-left:2px">PRO</span></div>
-    <div class="tab tab-planeta active" onclick="showTab('planeta',this)">🪐 Meu Planeta</div>
-    <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
-
-    <span class="tab-group-label">Recompensas</span>
-    <div class="tab tab-marspoints" onclick="showTab('marspoints-perfil',this)">⭐ MarsPoints</div>
-    <div class="tab tab-tickets" onclick="showTab('tickets',this)">🎟️ MarsTickets</div>
-    <div class="tab" onclick="showTab('beneficios',this)">🎖️ Benefícios</div>
-    <div class="tab tab-premios" onclick="showTab('premios',this)">🏆 Prêmios</div>
-    <div class="tab tab-loja-mp" onclick="showTab('loja-mp',this)">💰 Loja MP</div>
-    <div class="tab tab-cambio" onclick="showTab('cambio',this)">🔄 Câmbio</div>
-
-    <span class="tab-group-label">Atividade & Coleção</span>
-    <div class="tab" onclick="showTab('pedidos',this)">📦 Meus Pedidos</div>
-    <div class="tab" onclick="showTab('favoritos',this)">❤️ Favoritos</div>
-    <div class="tab" onclick="showTab('pontos',this)">📋 Histórico</div>
-    <div class="tab" onclick="showTab('conquistas',this)">🏅 Conquistas</div>
-    <div class="tab tab-dna" onclick="showTab('dna',this)">🧬 DNA Alien</div>
-    <div class="tab tab-aniversario" onclick="showTab('aniversario',this)">🎂 Aniversário</div>
+    <div class="tab active" id="tabPedidosBtn" onclick="showTab('pedidos',this)">Meus Pedidos</div>
+    <div class="tab" onclick="showTab('favoritos',this)">Favoritos</div>
+    <div class="tab" onclick="showTab('editar',this)">Minha Conta</div>
   </div>
 
   <!-- BENEFÍCIOS -->
@@ -2679,7 +2685,7 @@ setTimeout(function(){
   </div>
 
   <!-- PEDIDOS -->
-  <div class="tab-content" id="tab-pedidos">
+  <div class="tab-content active" id="tab-pedidos">
     <div class="section-loader" id="pedidosLoader"><div class="spinner"></div> Carregando pedidos...</div>
     <div class="pedidos-list" id="pedidosList" style="display:none"></div>
   </div>
@@ -3016,7 +3022,7 @@ setTimeout(function(){
   </div>
 
   <!-- ══ ABA PLANETA ══ -->
-  <div class="tab-content active" id="tab-planeta">
+  <div class="tab-content" id="tab-planeta">
     <div class="planeta-lu-overlay" id="planetaLuOverlay">
       <div class="planeta-lu-box">
         <div class="planeta-lu-pre">EVOLUÇÃO DESBLOQUEADA</div>
@@ -3594,6 +3600,8 @@ async function checkAuth() {
     userSession = session;
     mostrarPerfil();
     carregarPerfil(user);
+    /* Aba padrão minimalista: Meus Pedidos */
+    try{ showTab('pedidos', document.getElementById('tabPedidosBtn')); }catch(e){}
     /* Inicia notificações — polling leve a cada 90s */
     setTimeout(iniciarNotifCliente, 1500);
   }
