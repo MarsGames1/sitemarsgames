@@ -4007,65 +4007,34 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   </a>
 </div>
 
-<!-- ══ HERO — banners promocionais ══ -->
-<section class="mg-bnr" id="mgBnr" aria-label="Destaques da semana">
-  <div class="mg-bnr-stage">
-    <a class="mg-bnr-slide active" href="produto.html?id=5fffb9e4-e7a9-4aa4-a334-ab41c0f3f1ed">
-      <img src="banners/banner-blackfriday.png" alt="Black Friday — Lords of the Fallen GOTY em promoção" loading="eager" width="1672" height="941">
-    </a>
-    <a class="mg-bnr-slide" href="produto.html?id=d1328261-a94a-4711-be74-197ead108fde">
+<!-- ══ HERO — banners (estilo Nuuvem: 1 grande + 2 tiles) ══ -->
+<section class="mg-hero2" aria-label="Destaques da semana">
+  <a class="mg-hero2-main" href="produto.html?id=5fffb9e4-e7a9-4aa4-a334-ab41c0f3f1ed">
+    <img src="banners/banner-blackfriday.png" alt="Black Friday — Lords of the Fallen GOTY em promoção" loading="eager" width="1672" height="941">
+  </a>
+  <div class="mg-hero2-side">
+    <a class="mg-hero2-tile" href="produto.html?id=d1328261-a94a-4711-be74-197ead108fde">
       <img src="banners/banner-darkwood.png" alt="Darkwood — CD key original em promoção" loading="lazy" width="1672" height="941">
     </a>
-    <a class="mg-bnr-slide" href="cdkeys.html">
+    <a class="mg-hero2-tile" href="cdkeys.html">
       <img src="banners/banner-keys.png" alt="Keys originais Steam — entrega digital imediata" loading="lazy" width="1672" height="941">
     </a>
   </div>
-  <button class="mg-bnr-nav mg-bnr-prev" id="mgBnrPrev" aria-label="Anterior">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <button class="mg-bnr-nav mg-bnr-next" id="mgBnrNext" aria-label="Próximo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
-  <div class="mg-bnr-dots" id="mgBnrDots">
-    <button class="mg-bnr-dot active" data-d="0" aria-label="Banner 1"></button>
-    <button class="mg-bnr-dot" data-d="1" aria-label="Banner 2"></button>
-    <button class="mg-bnr-dot" data-d="2" aria-label="Banner 3"></button>
-  </div>
 </section>
 <style>
-.mg-bnr{position:relative;max-width:1240px;margin:18px auto 10px;padding:0 16px}
-.mg-bnr-stage{position:relative;aspect-ratio:1672/941;border-radius:16px;overflow:hidden;border:1px solid var(--mg-border);background:var(--mg-surface)}
-.mg-bnr-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .5s ease;display:block}
-.mg-bnr-slide.active{opacity:1;visibility:visible}
-.mg-bnr-slide img{width:100%;height:100%;object-fit:cover;display:block}
-.mg-bnr-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:40px;height:40px;border-radius:50%;
-  border:1px solid var(--mg-border-strong);background:rgba(10,14,26,.55);backdrop-filter:blur(6px);
-  color:var(--mg-text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;opacity:0}
-.mg-bnr:hover .mg-bnr-nav{opacity:1}
-.mg-bnr-nav:hover{background:var(--mg-accent);color:var(--mg-accent-ink);border-color:var(--mg-accent)}
-.mg-bnr-nav svg{width:20px;height:20px}
-.mg-bnr-prev{left:28px}.mg-bnr-next{right:28px}
-.mg-bnr-dots{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;z-index:4;display:flex;gap:8px}
-.mg-bnr-dot{width:26px;height:5px;border-radius:99px;border:none;background:rgba(255,255,255,.3);cursor:pointer;padding:0;transition:background .2s,width .2s}
-.mg-bnr-dot.active{background:var(--mg-accent);width:34px}
-@media(max-width:560px){.mg-bnr-nav{display:none}.mg-bnr-dots{bottom:10px}.mg-bnr-dot{width:20px}.mg-bnr-dot.active{width:26px}}
+.mg-hero2{max-width:1240px;margin:18px auto 10px;padding:0 16px;display:grid;grid-template-columns:1.9fr 1fr;gap:14px}
+.mg-hero2-main{aspect-ratio:1672/941;border-radius:16px;overflow:hidden;border:1px solid var(--mg-border);display:block}
+.mg-hero2-main img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.mg-hero2-main:hover{border-color:var(--mg-accent)}
+.mg-hero2-main:hover img{transform:scale(1.02)}
+.mg-hero2-side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.mg-hero2-tile{flex:1;min-height:0;border-radius:14px;overflow:hidden;border:1px solid var(--mg-border);display:block}
+.mg-hero2-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.mg-hero2-tile:hover{border-color:var(--mg-accent)}
+.mg-hero2-tile:hover img{transform:scale(1.03)}
+@media(max-width:860px){.mg-hero2{grid-template-columns:1fr}.mg-hero2-side{flex-direction:row}.mg-hero2-tile{aspect-ratio:1672/941}}
+@media(max-width:560px){.mg-hero2-side{flex-direction:column}}
 </style>
-<script>
-(function(){
-  var root=document.getElementById('mgBnr'); if(!root)return;
-  var slides=root.querySelectorAll('.mg-bnr-slide'),
-      dots=root.querySelectorAll('.mg-bnr-dot'), i=0, t;
-  function go(n){ i=(n+slides.length)%slides.length;
-    slides.forEach(function(s,k){s.classList.toggle('active',k===i)});
-    dots.forEach(function(d,k){d.classList.toggle('active',k===i)}); }
-  function reset(){clearInterval(t);t=setInterval(function(){go(i+1)},6000);}
-  dots.forEach(function(d){d.addEventListener('click',function(){go(parseInt(this.dataset.d,10));reset();})});
-  var p=document.getElementById('mgBnrPrev'), n=document.getElementById('mgBnrNext');
-  if(p)p.addEventListener('click',function(){go(i-1);reset();});
-  if(n)n.addEventListener('click',function(){go(i+1);reset();});
-  reset();
-})();
-</script>
 
 <!-- ══ CD KEYS — CARROSSEL ══ -->
 <section class="cdk-section" id="cdk-section">
