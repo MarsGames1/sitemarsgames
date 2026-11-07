@@ -164,6 +164,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .volte-msg strong{color:var(--green);font-weight:800}
 @media(prefers-reduced-motion:reduce){.btn-primary::after{display:none}}
 </style>
+<link rel="stylesheet" href="mg-tokens.css">
+<style id="mg-f5">
+:root{--bg:#0A0E1A;--card:#141A28;--green:#2DD4C4;--green2:#24B3A5;--mars:#2DD4C4;--orange:#2DD4C4;--border:#243049;--muted:#8A94AD;--gold:#FFC24B;}
+body{background:var(--mg-bg)!important;color:var(--mg-text)!important}
+body::before{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(45,212,196,.05),transparent)!important}
+body :focus-visible{outline:2px solid var(--mg-accent)!important}
+</style>
 </head>
 <body>
 <div class="bg-glow" id="bgGlow"></div>

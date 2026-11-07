@@ -159,6 +159,13 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
 .card{transition:box-shadow .3s}
 </style>
+<link rel="stylesheet" href="mg-tokens.css">
+<style id="mg-f5">
+:root{--bg:#0A0E1A;--card:#141A28;--green:#2DD4C4;--green2:#24B3A5;--mars:#2DD4C4;--orange:#2DD4C4;--gold:#FFC24B;--border:#243049;--muted:#8A94AD;}
+body{background:var(--mg-bg)!important;color:var(--mg-text)!important}
+body::before{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(45,212,196,.05),transparent)!important}
+body :focus-visible{outline:2px solid var(--mg-accent)!important}
+</style>
 </head>
 <body>
 <div class="card">
