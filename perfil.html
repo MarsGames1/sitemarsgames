@@ -2409,6 +2409,10 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 .cofre-btn:disabled{opacity:.5;cursor:default}
 .cofre-registro{margin-top:10px;font-size:10px;font-weight:700;color:var(--mg-gold,#FFC24B);
   background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.25);border-radius:6px;padding:7px 10px;line-height:1.45}
+/* MarsPass removido por enquanto (reversível: apagar estas regras) */
+.tab-marspass{display:none!important}
+#tab-marspass-perfil{display:none!important}
+#dnaExclTag{display:none!important}
 </style>
 <script>
 async function revelarChavePerfil(pedidoId, idx, btn){
@@ -2584,7 +2588,7 @@ setTimeout(function(){
         <div class="pstat-val" id="statFavs" style="font-size:14px">—</div>
         <div class="pstat-lbl">Favoritos</div>
       </div>
-      <div class="pstat" onclick="showTab('marspass-perfil',document.querySelector('.tab-marspass'))" style="cursor:pointer">
+      <div class="pstat" onclick="showTab('planeta',document.querySelector('.tab-planeta'))" style="cursor:pointer;display:none">
         <div class="pstat-val" id="statDesconto" style="font-size:12px">—</div>
         <div class="pstat-lbl">Nível</div>
       </div>
@@ -2604,8 +2608,8 @@ setTimeout(function(){
   <!-- TABS -->
   <div class="tabs-wrap">
     <span class="tab-group-label">Conta</span>
-    <div class="tab tab-marspass active" onclick="showTab('marspass-perfil',this)"><span class="tab-star">✦</span> MarsPass <span style="font-size:8px;background:#FFD700;color:#000;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;margin-left:2px">PRO</span></div>
-    <div class="tab tab-planeta" onclick="showTab('planeta',this)">🪐 Meu Planeta</div>
+    <div class="tab tab-marspass" onclick="showTab('marspass-perfil',this)"><span class="tab-star">✦</span> MarsPass <span style="font-size:8px;background:#FFD700;color:#000;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;margin-left:2px">PRO</span></div>
+    <div class="tab tab-planeta active" onclick="showTab('planeta',this)">🪐 Meu Planeta</div>
     <button class="tab-editar-btn" onclick="showTab('editar',document.querySelector('.tab-editar-btn'))">⚙️ Editar Perfil</button>
 
     <span class="tab-group-label">Recompensas</span>
@@ -2894,7 +2898,7 @@ setTimeout(function(){
   </div>
 
   <!-- MARSPASS -->
-  <div class="tab-content active" id="tab-marspass-perfil">
+  <div class="tab-content" id="tab-marspass-perfil">
     <div class="marspass-tab-universe" id="mpUniverse">
       <!-- Estrelas animadas geradas por JS -->
       <div class="mp-stars" id="mpStars"></div>
@@ -3012,7 +3016,7 @@ setTimeout(function(){
   </div>
 
   <!-- ══ ABA PLANETA ══ -->
-  <div class="tab-content" id="tab-planeta">
+  <div class="tab-content active" id="tab-planeta">
     <div class="planeta-lu-overlay" id="planetaLuOverlay">
       <div class="planeta-lu-box">
         <div class="planeta-lu-pre">EVOLUÇÃO DESBLOQUEADA</div>
@@ -4857,8 +4861,9 @@ function abrirTabPeloHash(){
     showTab('marspoints-perfil', tabEl);
     if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'center'});
   } else if(hash==='marspass'){
-    var tabEl=document.querySelector('.tab-marspass');
-    showTab('marspass-perfil', tabEl);
+    /* MarsPass removido por enquanto — redireciona pro Planeta */
+    var tabEl=document.querySelector('.tab-planeta');
+    showTab('planeta', tabEl);
     if(tabEl) tabEl.scrollIntoView({behavior:'smooth',block:'center'});
   }
 }
