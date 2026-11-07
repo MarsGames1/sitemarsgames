@@ -4382,6 +4382,358 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   </div>
 </section>
 
+<!-- ══ CD KEYS — CARROSSEL ══ -->
+<section class="cdk-section" id="cdk-section">
+  <div class="cdk-title">
+    <span class="cdk-title-wrap">
+      <span class="cdk-title-base">🔑 CD Keys Originais</span>
+      <span class="cdk-title-r" aria-hidden="true">🔑 CD Keys Originais</span>
+      <span class="cdk-title-c" aria-hidden="true">🔑 CD Keys Originais</span>
+    </span>
+  </div>
+
+  <div class="cdk-trust">
+    <div class="cdk-pill green">Chave original</div>
+    <div class="cdk-pill green">Entrega imediata</div>
+    <div class="cdk-pill blue">Xbox · PlayStation · PC · Nintendo</div>
+    <div class="cdk-pill yellow">Resgate direto na conta</div>
+  </div>
+
+  <div class="cdk-outer">
+    <button class="cdk-nav cdk-nav-l" id="cdkBtnL" aria-label="Anterior">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cdk-viewport">
+      <div class="cdk-track" id="cdkTrack">
+        <div style="padding:60px;color:#fff;font-size:12px;text-align:center;width:100%">Carregando chaves...</div>
+      </div>
+    </div>
+    <button class="cdk-nav cdk-nav-r" id="cdkBtnR" aria-label="Próximo">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</section>
+
+<script>
+(function(){
+  var GAP=14, CLONES=4;
+  var CARD_W, STEP, pos, offsetPx, N;
+  var animating=false;
+  var cdkAutoId;
+  var cdkTouchX=null;
+  var track=document.getElementById('cdkTrack');
+  var btnL=document.getElementById('cdkBtnL');
+  var btnR=document.getElementById('cdkBtnR');
+
+  function getW(){return window.innerWidth>=1024?270:window.innerWidth>=768?252:window.innerWidth<=480?200:216}
+
+  function platRibbon(plat){
+    if(!plat)return 'key';
+    var p=plat.toLowerCase();
+    if(p.indexOf('xbox')>-1)return 'xbox';
+    if(p.indexOf('playstation')>-1||p.indexOf('ps4')>-1||p.indexOf('ps5')>-1)return 'ps';
+    if(p.indexOf('nintendo')>-1||p.indexOf('switch')>-1)return 'nintendo';
+    return 'key';
+  }
+  function platLabel(plat){
+    if(!plat)return 'PC / STEAM';
+    var p=plat.toLowerCase();
+    if(p.indexOf('xbox')>-1)return 'XBOX';
+    if(p.indexOf('playstation')>-1||p.indexOf('ps4')>-1||p.indexOf('ps5')>-1)return 'PLAYSTATION';
+    if(p.indexOf('nintendo')>-1||p.indexOf('switch')>-1)return 'NINTENDO';
+    if(p.indexOf('steam')>-1)return 'STEAM';
+    return plat.toUpperCase();
+  }
+  function ribbonLabel(plat){
+    var r=platRibbon(plat);
+    if(r==='xbox')return 'XBOX';
+    if(r==='ps')return 'PS';
+    if(r==='nintendo')return 'SWITCH';
+    return 'CD KEY';
+  }
+
+  function buildCard(p){
+    var ok=p.estoque>0&&p.ativo;
+    var prc='R$ '+Number(p.preco).toFixed(2).replace('.',',');
+    var oldPrc=p.preco_original&&p.preco_original>p.preco?'R$ '+Number(p.preco_original).toFixed(2).replace('.',','):null;
+    var disc=p.preco_original&&p.preco_original>p.preco?Math.round((1-p.preco/p.preco_original)*100):0;
+    var rib=platRibbon(p.plataforma);
+    var ribLbl=ribbonLabel(p.plataforma);
+    var platLbl=platLabel(p.plataforma);
+    var link='produto.html?id='+p.id;
+    return '<div class="cdk-card'+(ok?'':' cdk-esg')+'" data-cdklink="'+link+'">'+
+      '<div class="cdk-ribbon-wrap"><div class="cdk-ribbon '+(ok?rib:'esgotado')+'">'+(ok?ribLbl:'Esgotado')+'</div></div>'+
+      '<button class="cdk-wish" data-cdkwl="1" data-pid="'+p.nome+'" title="Favoritar">'+
+        '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
+      '</button>'+
+      '<div class="cdk-card-inner">'+
+        '<div class="cdk-img-wrap">'+
+          (p.imagem?'<img class="cdk-img" src="'+p.imagem+'" alt="'+p.nome+'" loading="lazy" decoding="async">':
+            '<div class="cdk-img" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:var(--dim)">🔑</div>')+
+          '<div class="cdk-plat-badge">'+platLbl+'</div>'+
+        '</div>'+
+        '<div class="cdk-info">'+
+          '<h3 class="cdk-name">'+p.nome+'</h3>'+
+          '<div class="cdk-price-area">'+
+            (disc>0?'<div class="cdk-disc-badge">-'+disc+'%</div><div class="cdk-old-price">'+oldPrc+'</div>':'')+
+            '<div class="cdk-price">'+prc+'</div>'+
+          '</div>'+
+          (ok?'<div class="cdk-urgency"><div class="cdk-urgency-dot"></div><span class="cdk-urgency-txt">Disponível agora</span></div>':'')+
+          '<button class="cdk-buy'+(ok?'':' cdk-dis')+'" data-cdkbuy="'+link+'">'+(ok?'🔑 COMPRAR AGORA':'ESGOTADO')+'</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function iniciarCarrossel(produtos){
+    var N_local=produtos.length;
+    if(N_local===0){
+      track.innerHTML='<div style="padding:60px;color:#fff;font-size:12px;text-align:center;width:100%">Nenhuma chave disponível no momento.</div>';
+      return;
+    }
+    N=N_local;
+    pos=CLONES;
+    CARD_W=getW();STEP=CARD_W+GAP;
+    offsetPx=pos*STEP;
+    var h='';
+    for(var i=N-CLONES;i<N;i++) h+=buildCard(produtos[i%N]);
+    for(var j=0;j<N;j++)        h+=buildCard(produtos[j]);
+    for(var k=0;k<CLONES;k++)   h+=buildCard(produtos[k%N]);
+    track.innerHTML=h;
+    resizeCards();
+    applyT(false);
+    setTimeout(aplicarFavs,50);
+
+    track.addEventListener('click',function(e){
+      var buy=e.target.closest('[data-cdkbuy]');
+      var wl=e.target.closest('[data-cdkwl]');
+      var card=e.target.closest('[data-cdklink]');
+      if(buy&&!buy.classList.contains('cdk-dis')){e.stopPropagation();window.location.href=buy.dataset.cdkbuy;return}
+      if(wl){e.stopPropagation();toggleWish(wl);return}
+      if(card){window.location.href=card.dataset.cdklink}
+    });
+
+    cdkSchedule();
+    track.addEventListener('mouseenter',function(){clearTimeout(cdkAutoId)},{passive:true});
+    track.addEventListener('mouseleave',cdkSchedule,{passive:true});
+    track.addEventListener('touchstart',function(e){cdkTouchX=e.touches[0].clientX;clearTimeout(cdkAutoId)},{passive:true});
+    track.addEventListener('touchend',function(e){
+      if(cdkTouchX===null)return;
+      var dx=e.changedTouches[0].clientX-cdkTouchX;
+      if(Math.abs(dx)>40)cdkSlide(dx<0?1:-1);
+      cdkTouchX=null;cdkSchedule();
+    },{passive:true});
+  }
+
+  function resizeCards(){
+    CARD_W=getW();STEP=CARD_W+GAP;
+    track.querySelectorAll('.cdk-card').forEach(function(c){c.style.flexBasis=CARD_W+'px';c.style.minWidth=CARD_W+'px'});
+    if(pos!==undefined)offsetPx=pos*STEP;
+    applyT(false);
+  }
+  window.addEventListener('resize',resizeCards,{passive:true});
+
+  function applyT(anim){
+    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
+    track.style.transform='translateX(-'+offsetPx+'px)';
+  }
+
+  function cdkSlide(dir){
+    if(animating||N===undefined)return;
+    animating=true;pos+=dir;offsetPx+=dir*STEP;
+    applyT(true);
+    setTimeout(function(){
+      if(pos>=N+CLONES){pos-=N;offsetPx-=N*STEP;applyT(false)}
+      if(pos<CLONES)   {pos+=N;offsetPx+=N*STEP;applyT(false)}
+      animating=false;
+    },420);
+  }
+
+  btnL.addEventListener('click',function(){cdkSlide(-1)});
+  btnR.addEventListener('click',function(){cdkSlide(1)});
+
+  function cdkSchedule(){
+    if('requestIdleCallback' in window){
+      requestIdleCallback(function(){cdkAutoId=setTimeout(function(){cdkSlide(1);cdkSchedule()},4200)},{timeout:5000});
+    } else {
+      cdkAutoId=setTimeout(function(){cdkSlide(1);cdkSchedule()},4200);
+    }
+  }
+
+  function tryCarregar(){
+    if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
+    sb.from('produtos')
+      .select('id,nome,preco,preco_original,desconto,imagem,plataforma,tipo_key,categoria,estoque,ativo')
+      .eq('ativo',true)
+      .or('tipo_key.eq.key,plataforma.eq.Steam Original,categoria.ilike.%cd key%,categoria.ilike.%cdkey%,categoria.ilike.%pc key%,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo')
+      .order('estoque',{ascending:false})
+      .limit(20)
+      .then(function(res){
+        iniciarCarrossel(res.data||[]);
+      }).catch(function(){
+        iniciarCarrossel([]);
+      });
+  }
+  tryCarregar();
+})();
+</script>
+
+<!-- ══ CHAVES ALEATÓRIAS STEAM ══ -->
+<section class="chv-section" id="chv-section">
+  <div class="chv-title">
+    <span class="chv-title-wrap">
+      <span class="chv-title-base">Chaves Aleatórias Steam</span>
+      <span class="chv-title-r" aria-hidden="true">Chaves Aleatórias Steam</span>
+      <span class="chv-title-c" aria-hidden="true">Chaves Aleatórias Steam</span>
+    </span>
+  </div>
+
+  <div class="chv-trust">
+    <div class="chv-pill green">Chave original Steam</div>
+    <div class="chv-pill green">Entrega imediata</div>
+    <div class="chv-pill yellow">+500 clientes satisfeitos</div>
+    <div class="chv-pill purple">Resgate direto na conta</div>
+  </div>
+
+  <div class="chv-outer">
+    <button class="chv-nav chv-nav-l" id="chvBtnL" aria-label="Anterior">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="chv-viewport">
+      <div class="chv-track" id="chvTrack"></div>
+    </div>
+    <button class="chv-nav chv-nav-r" id="chvBtnR" aria-label="Próximo">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</section>
+
+<script>
+(function(){
+  var CHV_PRODUTOS=[
+    {name:"Chave Steam Aleatória Gold",   price:"R$ 19,99",tier:"gold",
+     desc:"Jogos variados com alto valor de mercado",
+     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/08dbd238-8ec4-4e29-8fe2-dd81f7241a7b.png",
+     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Gold",
+     urgency:"Mais popular da loja"},
+    {name:"Chave Steam Aleatória Violeta",price:"R$ 9,99", tier:"purple",
+     desc:"Surpresa garantida — vale muito mais!",
+     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/34096aef-e832-4fb6-bff0-f4bfd69b0c12.png",
+     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Violeta",
+     urgency:"Muito procurado hoje"},
+    {name:"Chave Steam Aleatória Red",    price:"R$ 4,99", tier:"red",
+     desc:"Jogos de ação e aventura — surpresa total!",
+     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/3d4e5676-77d1-4bee-aa89-6129cd6169b2.png",
+     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Red",
+     urgency:"12 pessoas viram hoje"},
+    {name:"Chave Steam Aleatória Bronze", price:"R$ 1,99", tier:"bronze",
+     desc:"Ótima entrada — comece sua coleção!",
+     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/BRONZE.jpg",
+     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Gold-bronze",
+     urgency:"5 vendidos esta semana"},
+  ];
+
+  var CARD_W, GAP=14, CLONES=4, N=CHV_PRODUTOS.length;
+  var track=document.getElementById('chvTrack');
+  var pos=CLONES, animating=false;
+
+  function getW(){return window.innerWidth>=1024?310:window.innerWidth>=768?290:260}
+  CARD_W=getW();
+  var STEP=CARD_W+GAP;
+  var offsetPx=pos*STEP;
+
+  function buildCard(p){
+    return '<div class="chv-card t-'+p.tier+'" data-chvlink="'+p.link+'">'+
+      '<div class="chv-ribbon-wrap"><div class="chv-ribbon">Novidade</div></div>'+
+      '<button class="chv-wish" data-chvwl="1" data-pid="'+p.name+'" title="Favoritar">'+
+        '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
+      '</button>'+
+      '<div class="chv-card-inner">'+
+        '<div class="chv-img-wrap">'+
+          '<img class="chv-img" src="'+p.img+'" alt="'+p.name+'" loading="lazy" decoding="async">'+
+          '<div class="chv-img-overlay"></div>'+
+          '<div class="chv-plat">STEAM ORIGINAL</div>'+
+        '</div>'+
+        '<div class="chv-info">'+
+          '<h3 class="chv-name">'+p.name+'</h3>'+
+          '<p class="chv-desc">'+p.desc+'</p>'+
+          '<div class="chv-price">'+p.price+'</div>'+
+          '<div class="chv-urgency"><div class="chv-urgency-dot"></div><span class="chv-urgency-txt">'+p.urgency+'</span></div>'+
+          '<button class="chv-btn" data-chvbuy="'+p.link+'">COMPRAR AGORA</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  var h='';
+  for(var i=N-CLONES;i<N;i++) h+=buildCard(CHV_PRODUTOS[i%N]);
+  for(var j=0;j<N;j++)        h+=buildCard(CHV_PRODUTOS[j]);
+  for(var k=0;k<CLONES;k++)   h+=buildCard(CHV_PRODUTOS[k%N]);
+  track.innerHTML=h;
+  setTimeout(aplicarFavs,50);
+
+  function resizeCards(){
+    CARD_W=getW();STEP=CARD_W+GAP;
+    track.querySelectorAll('.chv-card').forEach(function(c){c.style.flexBasis=CARD_W+'px';c.style.minWidth=CARD_W+'px'});
+    offsetPx=pos*STEP;applyT(false);
+  }
+  resizeCards();
+  window.addEventListener('resize',resizeCards,{passive:true});
+
+  track.addEventListener('click',function(e){
+    var buy=e.target.closest('[data-chvbuy]');
+    var wl=e.target.closest('[data-chvwl]');
+    var card=e.target.closest('[data-chvlink]');
+    if(buy){e.stopPropagation();window.location.href=buy.dataset.chvbuy;return}
+    if(wl){e.stopPropagation();toggleWish(wl);return}
+    if(card){window.location.href=card.dataset.chvlink}
+  });
+
+  function applyT(anim){
+    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
+    track.style.transform='translateX(-'+offsetPx+'px)';
+  }
+  applyT(false);
+
+  function chvSlide(dir){
+    if(animating)return;
+    animating=true;pos+=dir;offsetPx+=dir*STEP;
+    applyT(true);
+    setTimeout(function(){
+      if(pos>=N+CLONES){pos-=N;offsetPx-=N*STEP;applyT(false)}
+      if(pos<CLONES)   {pos+=N;offsetPx+=N*STEP;applyT(false)}
+      animating=false;
+    },420);
+  }
+
+  document.getElementById('chvBtnL').addEventListener('click',function(){chvSlide(-1)});
+  document.getElementById('chvBtnR').addEventListener('click',function(){chvSlide(1)});
+
+  var chvAutoId;
+  function chvSchedule(){
+    if('requestIdleCallback' in window){
+      requestIdleCallback(function(){chvAutoId=setTimeout(function(){chvSlide(1);chvSchedule()},4500)},{timeout:5000});
+    } else {
+      chvAutoId=setTimeout(function(){chvSlide(1);chvSchedule()},4500);
+    }
+  }
+  chvSchedule();
+  track.addEventListener('mouseenter',function(){clearTimeout(chvAutoId)},{passive:true});
+  track.addEventListener('mouseleave',chvSchedule,{passive:true});
+
+  /* Swipe touch */
+  var chvTouchX=null;
+  track.addEventListener('touchstart',function(e){chvTouchX=e.touches[0].clientX;clearTimeout(chvAutoId)},{passive:true});
+  track.addEventListener('touchend',function(e){
+    if(chvTouchX===null)return;
+    var dx=e.changedTouches[0].clientX-chvTouchX;
+    if(Math.abs(dx)>40)chvSlide(dx<0?1:-1);
+    chvTouchX=null;chvSchedule();
+  },{passive:true});
+})();
+</script>
+
+
 
 <!-- ══ MAIS VENDIDOS ══ -->
 <!-- MARSPASS BANNER — Canvas Edition -->
@@ -5041,356 +5393,6 @@ function aplicarFavs(){
 </section>
 
 
-<!-- ══ CD KEYS — CARROSSEL ══ -->
-<section class="cdk-section" id="cdk-section">
-  <div class="cdk-title">
-    <span class="cdk-title-wrap">
-      <span class="cdk-title-base">🔑 CD Keys Originais</span>
-      <span class="cdk-title-r" aria-hidden="true">🔑 CD Keys Originais</span>
-      <span class="cdk-title-c" aria-hidden="true">🔑 CD Keys Originais</span>
-    </span>
-  </div>
-
-  <div class="cdk-trust">
-    <div class="cdk-pill green">Chave original</div>
-    <div class="cdk-pill green">Entrega imediata</div>
-    <div class="cdk-pill blue">Xbox · PlayStation · PC · Nintendo</div>
-    <div class="cdk-pill yellow">Resgate direto na conta</div>
-  </div>
-
-  <div class="cdk-outer">
-    <button class="cdk-nav cdk-nav-l" id="cdkBtnL" aria-label="Anterior">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="cdk-viewport">
-      <div class="cdk-track" id="cdkTrack">
-        <div style="padding:60px;color:#fff;font-size:12px;text-align:center;width:100%">Carregando chaves...</div>
-      </div>
-    </div>
-    <button class="cdk-nav cdk-nav-r" id="cdkBtnR" aria-label="Próximo">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-  </div>
-</section>
-
-<script>
-(function(){
-  var GAP=14, CLONES=4;
-  var CARD_W, STEP, pos, offsetPx, N;
-  var animating=false;
-  var cdkAutoId;
-  var cdkTouchX=null;
-  var track=document.getElementById('cdkTrack');
-  var btnL=document.getElementById('cdkBtnL');
-  var btnR=document.getElementById('cdkBtnR');
-
-  function getW(){return window.innerWidth>=1024?270:window.innerWidth>=768?252:window.innerWidth<=480?200:216}
-
-  function platRibbon(plat){
-    if(!plat)return 'key';
-    var p=plat.toLowerCase();
-    if(p.indexOf('xbox')>-1)return 'xbox';
-    if(p.indexOf('playstation')>-1||p.indexOf('ps4')>-1||p.indexOf('ps5')>-1)return 'ps';
-    if(p.indexOf('nintendo')>-1||p.indexOf('switch')>-1)return 'nintendo';
-    return 'key';
-  }
-  function platLabel(plat){
-    if(!plat)return 'PC / STEAM';
-    var p=plat.toLowerCase();
-    if(p.indexOf('xbox')>-1)return 'XBOX';
-    if(p.indexOf('playstation')>-1||p.indexOf('ps4')>-1||p.indexOf('ps5')>-1)return 'PLAYSTATION';
-    if(p.indexOf('nintendo')>-1||p.indexOf('switch')>-1)return 'NINTENDO';
-    if(p.indexOf('steam')>-1)return 'STEAM';
-    return plat.toUpperCase();
-  }
-  function ribbonLabel(plat){
-    var r=platRibbon(plat);
-    if(r==='xbox')return 'XBOX';
-    if(r==='ps')return 'PS';
-    if(r==='nintendo')return 'SWITCH';
-    return 'CD KEY';
-  }
-
-  function buildCard(p){
-    var ok=p.estoque>0&&p.ativo;
-    var prc='R$ '+Number(p.preco).toFixed(2).replace('.',',');
-    var oldPrc=p.preco_original&&p.preco_original>p.preco?'R$ '+Number(p.preco_original).toFixed(2).replace('.',','):null;
-    var disc=p.preco_original&&p.preco_original>p.preco?Math.round((1-p.preco/p.preco_original)*100):0;
-    var rib=platRibbon(p.plataforma);
-    var ribLbl=ribbonLabel(p.plataforma);
-    var platLbl=platLabel(p.plataforma);
-    var link='produto.html?id='+p.id;
-    return '<div class="cdk-card'+(ok?'':' cdk-esg')+'" data-cdklink="'+link+'">'+
-      '<div class="cdk-ribbon-wrap"><div class="cdk-ribbon '+(ok?rib:'esgotado')+'">'+(ok?ribLbl:'Esgotado')+'</div></div>'+
-      '<button class="cdk-wish" data-cdkwl="1" data-pid="'+p.nome+'" title="Favoritar">'+
-        '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
-      '</button>'+
-      '<div class="cdk-card-inner">'+
-        '<div class="cdk-img-wrap">'+
-          (p.imagem?'<img class="cdk-img" src="'+p.imagem+'" alt="'+p.nome+'" loading="lazy" decoding="async">':
-            '<div class="cdk-img" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:var(--dim)">🔑</div>')+
-          '<div class="cdk-plat-badge">'+platLbl+'</div>'+
-        '</div>'+
-        '<div class="cdk-info">'+
-          '<h3 class="cdk-name">'+p.nome+'</h3>'+
-          '<div class="cdk-price-area">'+
-            (disc>0?'<div class="cdk-disc-badge">-'+disc+'%</div><div class="cdk-old-price">'+oldPrc+'</div>':'')+
-            '<div class="cdk-price">'+prc+'</div>'+
-          '</div>'+
-          (ok?'<div class="cdk-urgency"><div class="cdk-urgency-dot"></div><span class="cdk-urgency-txt">Disponível agora</span></div>':'')+
-          '<button class="cdk-buy'+(ok?'':' cdk-dis')+'" data-cdkbuy="'+link+'">'+(ok?'🔑 COMPRAR AGORA':'ESGOTADO')+'</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  }
-
-  function iniciarCarrossel(produtos){
-    var N_local=produtos.length;
-    if(N_local===0){
-      track.innerHTML='<div style="padding:60px;color:#fff;font-size:12px;text-align:center;width:100%">Nenhuma chave disponível no momento.</div>';
-      return;
-    }
-    N=N_local;
-    pos=CLONES;
-    CARD_W=getW();STEP=CARD_W+GAP;
-    offsetPx=pos*STEP;
-    var h='';
-    for(var i=N-CLONES;i<N;i++) h+=buildCard(produtos[i%N]);
-    for(var j=0;j<N;j++)        h+=buildCard(produtos[j]);
-    for(var k=0;k<CLONES;k++)   h+=buildCard(produtos[k%N]);
-    track.innerHTML=h;
-    resizeCards();
-    applyT(false);
-    setTimeout(aplicarFavs,50);
-
-    track.addEventListener('click',function(e){
-      var buy=e.target.closest('[data-cdkbuy]');
-      var wl=e.target.closest('[data-cdkwl]');
-      var card=e.target.closest('[data-cdklink]');
-      if(buy&&!buy.classList.contains('cdk-dis')){e.stopPropagation();window.location.href=buy.dataset.cdkbuy;return}
-      if(wl){e.stopPropagation();toggleWish(wl);return}
-      if(card){window.location.href=card.dataset.cdklink}
-    });
-
-    cdkSchedule();
-    track.addEventListener('mouseenter',function(){clearTimeout(cdkAutoId)},{passive:true});
-    track.addEventListener('mouseleave',cdkSchedule,{passive:true});
-    track.addEventListener('touchstart',function(e){cdkTouchX=e.touches[0].clientX;clearTimeout(cdkAutoId)},{passive:true});
-    track.addEventListener('touchend',function(e){
-      if(cdkTouchX===null)return;
-      var dx=e.changedTouches[0].clientX-cdkTouchX;
-      if(Math.abs(dx)>40)cdkSlide(dx<0?1:-1);
-      cdkTouchX=null;cdkSchedule();
-    },{passive:true});
-  }
-
-  function resizeCards(){
-    CARD_W=getW();STEP=CARD_W+GAP;
-    track.querySelectorAll('.cdk-card').forEach(function(c){c.style.flexBasis=CARD_W+'px';c.style.minWidth=CARD_W+'px'});
-    if(pos!==undefined)offsetPx=pos*STEP;
-    applyT(false);
-  }
-  window.addEventListener('resize',resizeCards,{passive:true});
-
-  function applyT(anim){
-    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
-    track.style.transform='translateX(-'+offsetPx+'px)';
-  }
-
-  function cdkSlide(dir){
-    if(animating||N===undefined)return;
-    animating=true;pos+=dir;offsetPx+=dir*STEP;
-    applyT(true);
-    setTimeout(function(){
-      if(pos>=N+CLONES){pos-=N;offsetPx-=N*STEP;applyT(false)}
-      if(pos<CLONES)   {pos+=N;offsetPx+=N*STEP;applyT(false)}
-      animating=false;
-    },420);
-  }
-
-  btnL.addEventListener('click',function(){cdkSlide(-1)});
-  btnR.addEventListener('click',function(){cdkSlide(1)});
-
-  function cdkSchedule(){
-    if('requestIdleCallback' in window){
-      requestIdleCallback(function(){cdkAutoId=setTimeout(function(){cdkSlide(1);cdkSchedule()},4200)},{timeout:5000});
-    } else {
-      cdkAutoId=setTimeout(function(){cdkSlide(1);cdkSchedule()},4200);
-    }
-  }
-
-  function tryCarregar(){
-    if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
-    sb.from('produtos')
-      .select('id,nome,preco,preco_original,desconto,imagem,plataforma,tipo_key,categoria,estoque,ativo')
-      .eq('ativo',true)
-      .or('tipo_key.eq.key,plataforma.eq.Steam Original,categoria.ilike.%cd key%,categoria.ilike.%cdkey%,categoria.ilike.%pc key%,categoria.eq.Xbox,categoria.eq.PlayStation,categoria.eq.Nintendo')
-      .order('estoque',{ascending:false})
-      .limit(20)
-      .then(function(res){
-        iniciarCarrossel(res.data||[]);
-      }).catch(function(){
-        iniciarCarrossel([]);
-      });
-  }
-  tryCarregar();
-})();
-</script>
-
-<!-- ══ CHAVES ALEATÓRIAS STEAM ══ -->
-<section class="chv-section" id="chv-section">
-  <div class="chv-title">
-    <span class="chv-title-wrap">
-      <span class="chv-title-base">Chaves Aleatórias Steam</span>
-      <span class="chv-title-r" aria-hidden="true">Chaves Aleatórias Steam</span>
-      <span class="chv-title-c" aria-hidden="true">Chaves Aleatórias Steam</span>
-    </span>
-  </div>
-
-  <div class="chv-trust">
-    <div class="chv-pill green">Chave original Steam</div>
-    <div class="chv-pill green">Entrega imediata</div>
-    <div class="chv-pill yellow">+500 clientes satisfeitos</div>
-    <div class="chv-pill purple">Resgate direto na conta</div>
-  </div>
-
-  <div class="chv-outer">
-    <button class="chv-nav chv-nav-l" id="chvBtnL" aria-label="Anterior">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="chv-viewport">
-      <div class="chv-track" id="chvTrack"></div>
-    </div>
-    <button class="chv-nav chv-nav-r" id="chvBtnR" aria-label="Próximo">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-  </div>
-</section>
-
-<script>
-(function(){
-  var CHV_PRODUTOS=[
-    {name:"Chave Steam Aleatória Gold",   price:"R$ 19,99",tier:"gold",
-     desc:"Jogos variados com alto valor de mercado",
-     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/08dbd238-8ec4-4e29-8fe2-dd81f7241a7b.png",
-     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Gold",
-     urgency:"Mais popular da loja"},
-    {name:"Chave Steam Aleatória Violeta",price:"R$ 9,99", tier:"purple",
-     desc:"Surpresa garantida — vale muito mais!",
-     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/34096aef-e832-4fb6-bff0-f4bfd69b0c12.png",
-     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Violeta",
-     urgency:"Muito procurado hoje"},
-    {name:"Chave Steam Aleatória Red",    price:"R$ 4,99", tier:"red",
-     desc:"Jogos de ação e aventura — surpresa total!",
-     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/3d4e5676-77d1-4bee-aa89-6129cd6169b2.png",
-     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Red",
-     urgency:"12 pessoas viram hoje"},
-    {name:"Chave Steam Aleatória Bronze", price:"R$ 1,99", tier:"bronze",
-     desc:"Ótima entrada — comece sua coleção!",
-     img:"https://rzjtlghpsygxkivgwgws.supabase.co/storage/v1/object/public/assets/BRONZE.jpg",
-     link:"produto.html?nome=Chave+Steam+Aleat%C3%B3ria+Gold-bronze",
-     urgency:"5 vendidos esta semana"},
-  ];
-
-  var CARD_W, GAP=14, CLONES=4, N=CHV_PRODUTOS.length;
-  var track=document.getElementById('chvTrack');
-  var pos=CLONES, animating=false;
-
-  function getW(){return window.innerWidth>=1024?310:window.innerWidth>=768?290:260}
-  CARD_W=getW();
-  var STEP=CARD_W+GAP;
-  var offsetPx=pos*STEP;
-
-  function buildCard(p){
-    return '<div class="chv-card t-'+p.tier+'" data-chvlink="'+p.link+'">'+
-      '<div class="chv-ribbon-wrap"><div class="chv-ribbon">Novidade</div></div>'+
-      '<button class="chv-wish" data-chvwl="1" data-pid="'+p.name+'" title="Favoritar">'+
-        '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
-      '</button>'+
-      '<div class="chv-card-inner">'+
-        '<div class="chv-img-wrap">'+
-          '<img class="chv-img" src="'+p.img+'" alt="'+p.name+'" loading="lazy" decoding="async">'+
-          '<div class="chv-img-overlay"></div>'+
-          '<div class="chv-plat">STEAM ORIGINAL</div>'+
-        '</div>'+
-        '<div class="chv-info">'+
-          '<h3 class="chv-name">'+p.name+'</h3>'+
-          '<p class="chv-desc">'+p.desc+'</p>'+
-          '<div class="chv-price">'+p.price+'</div>'+
-          '<div class="chv-urgency"><div class="chv-urgency-dot"></div><span class="chv-urgency-txt">'+p.urgency+'</span></div>'+
-          '<button class="chv-btn" data-chvbuy="'+p.link+'">COMPRAR AGORA</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  }
-
-  var h='';
-  for(var i=N-CLONES;i<N;i++) h+=buildCard(CHV_PRODUTOS[i%N]);
-  for(var j=0;j<N;j++)        h+=buildCard(CHV_PRODUTOS[j]);
-  for(var k=0;k<CLONES;k++)   h+=buildCard(CHV_PRODUTOS[k%N]);
-  track.innerHTML=h;
-  setTimeout(aplicarFavs,50);
-
-  function resizeCards(){
-    CARD_W=getW();STEP=CARD_W+GAP;
-    track.querySelectorAll('.chv-card').forEach(function(c){c.style.flexBasis=CARD_W+'px';c.style.minWidth=CARD_W+'px'});
-    offsetPx=pos*STEP;applyT(false);
-  }
-  resizeCards();
-  window.addEventListener('resize',resizeCards,{passive:true});
-
-  track.addEventListener('click',function(e){
-    var buy=e.target.closest('[data-chvbuy]');
-    var wl=e.target.closest('[data-chvwl]');
-    var card=e.target.closest('[data-chvlink]');
-    if(buy){e.stopPropagation();window.location.href=buy.dataset.chvbuy;return}
-    if(wl){e.stopPropagation();toggleWish(wl);return}
-    if(card){window.location.href=card.dataset.chvlink}
-  });
-
-  function applyT(anim){
-    track.style.transition=anim?'transform .40s cubic-bezier(.23,1,.32,1)':'none';
-    track.style.transform='translateX(-'+offsetPx+'px)';
-  }
-  applyT(false);
-
-  function chvSlide(dir){
-    if(animating)return;
-    animating=true;pos+=dir;offsetPx+=dir*STEP;
-    applyT(true);
-    setTimeout(function(){
-      if(pos>=N+CLONES){pos-=N;offsetPx-=N*STEP;applyT(false)}
-      if(pos<CLONES)   {pos+=N;offsetPx+=N*STEP;applyT(false)}
-      animating=false;
-    },420);
-  }
-
-  document.getElementById('chvBtnL').addEventListener('click',function(){chvSlide(-1)});
-  document.getElementById('chvBtnR').addEventListener('click',function(){chvSlide(1)});
-
-  var chvAutoId;
-  function chvSchedule(){
-    if('requestIdleCallback' in window){
-      requestIdleCallback(function(){chvAutoId=setTimeout(function(){chvSlide(1);chvSchedule()},4500)},{timeout:5000});
-    } else {
-      chvAutoId=setTimeout(function(){chvSlide(1);chvSchedule()},4500);
-    }
-  }
-  chvSchedule();
-  track.addEventListener('mouseenter',function(){clearTimeout(chvAutoId)},{passive:true});
-  track.addEventListener('mouseleave',chvSchedule,{passive:true});
-
-  /* Swipe touch */
-  var chvTouchX=null;
-  track.addEventListener('touchstart',function(e){chvTouchX=e.touches[0].clientX;clearTimeout(chvAutoId)},{passive:true});
-  track.addEventListener('touchend',function(e){
-    if(chvTouchX===null)return;
-    var dx=e.changedTouches[0].clientX-chvTouchX;
-    if(Math.abs(dx)>40)chvSlide(dx<0?1:-1);
-    chvTouchX=null;chvSchedule();
-  },{passive:true});
-})();
-</script>
 
 
 
