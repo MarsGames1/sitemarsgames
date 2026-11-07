@@ -6387,3 +6387,23 @@ body:not(.tema-claro), body.tema-claro{
 </style>
 </body>
 </html>
+<style id="mg-mobile-polish">
+/* ══ Organização mobile (referência Nuuvem) ══ */
+@media(max-width:600px){
+  /* Hero: só dots (sem setas cobrindo o banner), full-width confortável */
+  .mg-bnr{max-width:100%;margin:10px auto 14px;padding:0 12px}
+  .mg-bnr-nav{display:none!important}
+  .mg-bnr-dots{bottom:12px}
+  /* Títulos de seção menores e com menos espaço (nada de título gigante) */
+  .cdk-title,.chv-title,.mv-title,.com-title,.manu-title{font-size:clamp(17px,5.5vw,22px)!important;letter-spacing:.5px!important;line-height:1.15!important}
+  .cdk-title-wrap,.chv-title-wrap,.com-title-wrap,.mv-title{margin-bottom:10px!important}
+  /* Menos respiro vertical entre seções */
+  .cdk-section,.chv-section,.mv-section,.com-section{padding-top:20px!important;padding-bottom:20px!important}
+  /* Barras de confiança/pills: mais compactas */
+  .mv-trust,.cdk-pills,.chv-pills{gap:6px!important;margin-bottom:10px!important}
+  .mv-pill,.chv-pill,.cdk-pill{font-size:10px!important;padding:5px 9px!important}
+  /* Setas dos carrosséis de produto menores no mobile */
+  .cdk-nav,.chv-nav,.mv-nav{width:34px!important;height:34px!important}
+  .cdk-nav svg,.chv-nav svg,.mv-nav svg{width:15px!important;height:15px!important}
+}
+</style>
