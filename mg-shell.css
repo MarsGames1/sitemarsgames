@@ -1,0 +1,66 @@
+/* ═══════════════════════════════════════════════════════════
+   MarsGames — Reskin compartilhado de header + rodapé (F2)
+   Nova identidade petróleo. Incluir DEPOIS de mg-tokens.css:
+   <link rel="stylesheet" href="mg-tokens.css">
+   <link rel="stylesheet" href="mg-shell.css">
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Header rico (loja) ── */
+.navbar{background:rgba(10,14,26,.95)!important;border-bottom:1px solid var(--mg-border)!important}
+.navbar::after{background:linear-gradient(to right,transparent,var(--mg-accent) 40%,transparent)!important;opacity:.7}
+.nav-logo-text span{color:var(--mg-accent)!important}
+.nav-link{color:var(--mg-text-dim)!important}
+.nav-link:hover{color:var(--mg-text)!important}
+.nav-link.active{color:var(--mg-accent)!important}
+.nav-link-sorteio,.nav-link-chaves,.nav-link-marspass{color:var(--mg-text-dim)!important}
+.nav-dropdown-toggle{color:var(--mg-text-dim)!important}
+.nav-dropdown-toggle:hover{color:var(--mg-text)!important}
+.nav-dropdown-menu{background:var(--mg-surface)!important;border:1px solid var(--mg-border)!important}
+.nav-dropdown-item{color:var(--mg-text-dim)!important}
+.nav-dropdown-item:hover{color:var(--mg-accent)!important;background:var(--mg-accent-dim)!important}
+.nav-search,.nav-search-expand{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
+.nav-search-icon-btn,.nav-search-btn{color:var(--mg-text-dim)!important}
+#searchInput{color:var(--mg-text)!important}
+.nav-search-suggestions{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
+.nav-login{color:var(--mg-text)!important;border-color:var(--mg-border-strong)!important}
+.nav-login:hover{border-color:var(--mg-accent)!important}
+.nav-cart{color:var(--mg-text)!important}
+.cart-count{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important}
+.mg-sino-btn{color:var(--mg-text)!important}
+.mg-sino-badge{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important}
+.mg-sino-panel{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
+.nav-mob-search-btn{color:var(--mg-text)!important}
+.nav-hamburger span{background:var(--mg-text)!important}
+.nav-mobile-menu{background:var(--mg-bg)!important;border-color:var(--mg-border)!important}
+.nav-mobile-link{color:var(--mg-text)!important}
+.nav-mobile-link.active{color:var(--mg-accent)!important}
+.nav-mobile-search input{background:var(--mg-surface)!important;border-color:var(--mg-border)!important;color:var(--mg-text)!important}
+.nav-avatar-ring{background:conic-gradient(var(--mg-accent),var(--mg-gold),var(--mg-accent))!important}
+
+/* ── Header simples (legais) ── */
+.nav-back{border-color:var(--mg-border)!important;color:var(--mg-text-dim)!important;background:rgba(255,255,255,.03)!important}
+.nav-back:hover{border-color:var(--mg-accent)!important;color:var(--mg-text)!important}
+
+/* ── Conteúdo das páginas legais / FAQ ── */
+.pol-eyebrow{color:var(--mg-accent)!important}
+.pol-section h2{color:var(--mg-accent)!important;border-bottom-color:var(--mg-border)!important}
+.pol-section ul li::before{color:var(--mg-accent)!important}
+.pol-contact{background:var(--mg-accent-dim)!important;border-color:var(--mg-border)!important}
+.pol-contact a{color:var(--mg-accent)!important}
+.pay-table th{background:var(--mg-accent-dim)!important;border-color:var(--mg-border)!important;color:var(--mg-accent)!important}
+.pay-table td{border-color:var(--mg-border)!important}
+.badge-instant{background:rgba(53,196,134,.12)!important;border-color:rgba(53,196,134,.35)!important;color:var(--mg-success)!important}
+.badge-wait{background:rgba(255,194,75,.12)!important;border-color:rgba(255,194,75,.35)!important;color:var(--mg-gold)!important}
+.faq-cat{color:var(--mg-accent)!important;border-bottom-color:var(--mg-border)!important}
+.faq-item.open .faq-arrow{color:var(--mg-accent)!important}
+.faq-a-inner a,.pol-section a{color:var(--mg-accent)!important}
+
+/* ── Rodapé ── */
+footer{background:var(--mg-bg)!important;border-top:1px solid var(--mg-border)!important}
+.footer-logo span{color:var(--mg-accent)!important}
+.footer-col-title{color:var(--mg-text)!important}
+.footer-desc,.footer-link,.footer-copy{color:var(--mg-text-dim)!important}
+.footer-link:hover{color:var(--mg-accent)!important}
+
+/* ── MarsPass removido por enquanto ── */
+.marspass-banner{display:none!important}
