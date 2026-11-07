@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════════
+   MarsGames — Tokens da nova identidade (espaço + petróleo)
+   Fonte única de cor/tipografia. Dark-only. Incluir em todas
+   as páginas: <link rel="stylesheet" href="mg-tokens.css">
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --mg-bg:#0A0E1A;
+  --mg-surface:#141A28;
+  --mg-surface-2:#1B2334;
+  --mg-border:#243049;
+  --mg-border-strong:#31405E;
+
+  --mg-text:#F2EFE6;
+  --mg-text-dim:#8A94AD;
+
+  --mg-accent:#2DD4C4;          /* petróleo — único accent */
+  --mg-accent-ink:#06312D;
+  --mg-accent-dim:rgba(45,212,196,.12);
+  --mg-accent-glow:rgba(45,212,196,.25);
+
+  --mg-gold:#FFC24B;            /* estrelas / oferta */
+  --mg-success:#35C486;        /* pago / entregue */
+  --mg-danger:#E25B5B;         /* esgotado / erro */
+  --mg-fav:#FF5C7A;            /* favorito */
+
+  --mg-radius:10px;
+  --mg-radius-lg:14px;
+  --mg-font-title:'Orbitron',sans-serif;
+  --mg-font:'Montserrat',sans-serif;
+}

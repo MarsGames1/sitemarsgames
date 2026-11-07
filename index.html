@@ -3584,6 +3584,48 @@ footer::before{
 .mg-sino-empty{padding:26px 16px;text-align:center;color:#7a7a8a;font-size:12px}
 @media(max-width:768px){.mg-sino-panel{position:fixed;top:62px;right:8px;left:8px;width:auto}}
 </style>
+<link rel="stylesheet" href="mg-tokens.css">
+<style id="mg-f2-header-footer">
+/* ── F2: reskin header + rodapé pra nova identidade (petróleo) ── */
+.navbar{background:rgba(10,14,26,.95)!important;border-bottom:1px solid var(--mg-border)!important}
+.navbar::after{background:linear-gradient(to right,transparent,var(--mg-accent) 40%,transparent)!important;opacity:.7}
+.nav-logo-text span{color:var(--mg-accent)!important}
+.nav-link{color:var(--mg-text-dim)!important}
+.nav-link:hover{color:var(--mg-text)!important}
+.nav-link.active{color:var(--mg-accent)!important}
+.nav-link-sorteio,.nav-link-chaves,.nav-link-marspass{color:var(--mg-text-dim)!important}
+.nav-dropdown-toggle{color:var(--mg-text-dim)!important}
+.nav-dropdown-toggle:hover{color:var(--mg-text)!important}
+.nav-dropdown-menu{background:var(--mg-surface)!important;border:1px solid var(--mg-border)!important}
+.nav-dropdown-item{color:var(--mg-text-dim)!important}
+.nav-dropdown-item:hover{color:var(--mg-accent)!important;background:var(--mg-accent-dim)!important}
+.nav-search,.nav-search-expand{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
+.nav-search-icon-btn,.nav-search-btn{color:var(--mg-text-dim)!important}
+#searchInput{color:var(--mg-text)!important}
+.nav-search-suggestions{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
+.nav-login{color:var(--mg-text)!important;border-color:var(--mg-border-strong)!important}
+.nav-login:hover{border-color:var(--mg-accent)!important}
+.nav-cart{color:var(--mg-text)!important}
+.cart-count{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important}
+.mg-sino-btn{color:var(--mg-text)!important}
+.mg-sino-badge{background:var(--mg-accent)!important;color:var(--mg-accent-ink)!important}
+.mg-sino-panel{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
+.nav-mob-search-btn,.nav-hamburger span{color:var(--mg-text)!important;background:var(--mg-text)}
+.nav-hamburger span{background:var(--mg-text)!important}
+.nav-mobile-menu{background:var(--mg-bg)!important;border-color:var(--mg-border)!important}
+.nav-mobile-link{color:var(--mg-text)!important}
+.nav-mobile-link.active{color:var(--mg-accent)!important}
+.nav-mobile-search input{background:var(--mg-surface)!important;border-color:var(--mg-border)!important;color:var(--mg-text)!important}
+.nav-avatar-ring{background:conic-gradient(var(--mg-accent),var(--mg-gold),var(--mg-accent))!important}
+/* rodapé */
+footer{background:var(--mg-bg)!important;border-top:1px solid var(--mg-border)!important}
+.footer-logo span{color:var(--mg-accent)!important}
+.footer-col-title{color:var(--mg-text)!important}
+.footer-desc,.footer-link,.footer-copy{color:var(--mg-text-dim)!important}
+.footer-link:hover{color:var(--mg-accent)!important}
+/* MarsPass removido por enquanto */
+.marspass-banner{display:none!important}
+</style>
 </head>
 <body>
 
@@ -4070,7 +4112,6 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
       Sorteios
     </a>
     <a class="nav-link" href="promocoes.html">Promoções</a>
-    <a class="nav-link nav-link-marspass" href="marspass.html">MarsPass</a>
     <a class="nav-link" href="combos.html">Bundles</a>
     <a class="nav-link nav-link-chaves" href="cdkeys.html" id="navChavesLink">
       CD Keys Originais
@@ -4087,7 +4128,6 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
         <a class="nav-dropdown-item" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
         <a class="nav-dropdown-item" href="cdkeys.html">CD Keys Originais</a>
         <a class="nav-dropdown-item" href="sorteio.html">Sorteios</a>
-        <a class="nav-dropdown-item" href="marspass.html">MarsPass</a>
         <a class="nav-dropdown-item" href="chaves.html">Chaves Aleatórias</a>
       </div>
     </div>
@@ -4183,7 +4223,6 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   <a class="nav-mobile-link active" href="catalogo.html">Todos os Produtos</a>
   <a class="nav-mobile-link" href="sorteio.html" style="color:#ffca3a">Sorteios</a>
   <a class="nav-mobile-link" href="cdkeys.html" style="color:#00d4ff">CD Keys Originais</a>
-  <a class="nav-mobile-link" href="marspass.html" style="color:#aa99ff">MarsPass</a>
   <a class="nav-mobile-link" href="promocoes.html">Promoções</a>
   <a class="nav-mobile-link" href="chaves.html" style="color:#c084fc">Chaves Steam Aleatórias</a>
   <a class="nav-mobile-link" href="combos.html">Combos e Bundles</a>
