@@ -505,7 +505,21 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   <div class="prods-grid" id="prodsGrid">
     <div class="loader-wrap"><div class="spinner"></div> Carregando jogos...</div>
   </div>
+  <div class="cat-pagination" id="catPagination"></div>
 </div>
+<style>
+.cat-pagination{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:28px}
+.cat-pagination:empty{display:none}
+.cat-pg-btn,.cat-pg-num{min-height:40px;min-width:40px;padding:0 14px;border-radius:10px;
+  border:1px solid var(--mg-border-strong,#31405E);background:var(--mg-surface,#141A28);
+  color:var(--mg-text,#F2EFE6);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  transition:border-color .2s,background .2s,color .2s}
+.cat-pg-btn:hover:not(:disabled),.cat-pg-num:hover{border-color:var(--mg-accent,#2DD4C4)}
+.cat-pg-btn:disabled{opacity:.4;cursor:default}
+.cat-pg-num.active{background:var(--mg-accent,#2DD4C4);color:var(--mg-accent-ink,#06312D);border-color:var(--mg-accent,#2DD4C4)}
+.cat-pg-dots{color:var(--mg-text-dim,#8A94AD);padding:0 4px}
+@media(max-width:560px){.cat-pg-btn,.cat-pg-num{min-height:38px;min-width:38px;padding:0 10px;font-size:11px}}
+</style>
 
 <!-- CARRINHO -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
@@ -571,6 +585,7 @@ function initSupabase(){
 }
 setTimeout(initSupabase, 50);
 var todosProdutos=[],catAtual='todos',buscaAtual='';
+var catPagina=1,CAT_POR_PAGINA=40;
 var carrinho=JSON.parse(localStorage.getItem('mg_cart')||'[]');
 var cupomAtual=null;
 
@@ -607,7 +622,8 @@ async function init(){
   });
 }
 
-function renderProdutos(){
+function renderProdutos(manterPagina){
+  if(!manterPagina)catPagina=1;
   var soPromo=document.getElementById('promoToggle');
   soPromo=soPromo&&soPromo.classList.contains('on');
   var lista=todosProdutos.filter(function(p){
@@ -624,12 +640,18 @@ function renderProdutos(){
   else if(ord==='novo')lista.sort(function(a,b){return new Date(b.created_at)-new Date(a.created_at)});
   document.getElementById('filterCount').textContent=lista.length+' jogo'+(lista.length!==1?'s':'');
   var grid=document.getElementById('prodsGrid');
+  var pagEl=document.getElementById('catPagination');
   if(lista.length===0){
-    grid.innerHTML='<div class="empty-grid">🔍 Nenhum jogo encontrado para <strong style="color:#ccc">"'+esc(buscaAtual)+'"</strong>.<br><span style="font-size:10px;margin-top:8px;display:block">Tente outro nome ou verifique a ortografia.</span></div>';
+    grid.innerHTML='<div class="empty-grid">Nenhum jogo encontrado para <strong style="color:#ccc">"'+esc(buscaAtual)+'"</strong>.<br><span style="font-size:10px;margin-top:8px;display:block">Tente outro nome ou verifique a ortografia.</span></div>';
+    if(pagEl)pagEl.innerHTML='';
     return;
   }
+  var totalPags=Math.max(1,Math.ceil(lista.length/CAT_POR_PAGINA));
+  if(catPagina>totalPags)catPagina=totalPags;
+  var ini=(catPagina-1)*CAT_POR_PAGINA;
+  var paginada=lista.slice(ini,ini+CAT_POR_PAGINA);
   var agora=Date.now();
-  grid.innerHTML=lista.map(function(p,i){
+  grid.innerHTML=paginada.map(function(p,i){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
     var precoN=Number(p.preco);
     var orig=p.preco_original?Number(p.preco_original):0;
@@ -665,7 +687,21 @@ function renderProdutos(){
       '</div>'+
     '</a>';
   }).join('');
+  renderCatPaginacao(totalPags);
 }
+function renderCatPaginacao(totalPags){
+  var el=document.getElementById('catPagination'); if(!el)return;
+  if(totalPags<=1){el.innerHTML='';return;}
+  var h='<button class="cat-pg-btn" '+(catPagina<=1?'disabled':'')+' onclick="catIrPagina('+(catPagina-1)+')">Anterior</button>';
+  for(var n=1;n<=totalPags;n++){
+    if(n===1||n===totalPags||Math.abs(n-catPagina)<=1){
+      h+='<button class="cat-pg-num'+(n===catPagina?' active':'')+'" onclick="catIrPagina('+n+')">'+n+'</button>';
+    } else if(Math.abs(n-catPagina)===2){ h+='<span class="cat-pg-dots">…</span>'; }
+  }
+  h+='<button class="cat-pg-btn" '+(catPagina>=totalPags?'disabled':'')+' onclick="catIrPagina('+(catPagina+1)+')">Próximo</button>';
+  el.innerHTML=h;
+}
+function catIrPagina(n){catPagina=n;renderProdutos(true);window.scrollTo({top:0,behavior:'smooth'});}
 
 /* Timer para debounce do tracking de busca */
 var _buscaTimer=null;
