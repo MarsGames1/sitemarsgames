@@ -30,9 +30,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--green:#00ff55;--green2:#00cc44;--mars:#e8421a;--orange:#ff6b2b;--gold:#ffb800;}
+:root{--green:#2DD4C4;--green2:#2DD4C4;--mars:#2DD4C4;--orange:#2DD4C4;--gold:#FFC24B;}
 body{-webkit-tap-highlight-color:transparent;background:#07070c;color:#fff;font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,85,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,85,.02) 1px,transparent 1px);background-size:48px 48px;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(45,212,196,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(45,212,196,.02) 1px,transparent 1px);background-size:48px 48px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
@@ -40,12 +40,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes countdown{from{stroke-dashoffset:0}to{stroke-dashoffset:283}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes glowPulse{0%,100%{box-shadow:0 0 16px rgba(0,255,85,.1)}50%{box-shadow:0 0 40px rgba(0,255,85,.35)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 16px rgba(45,212,196,.1)}50%{box-shadow:0 0 40px rgba(45,212,196,.35)}}
 
 .confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:100}
 .cp{position:absolute;border-radius:2px;opacity:0}
 
-.card{position:relative;z-index:1;background:#0f0f16;border:1px solid rgba(0,255,85,.11);border-radius:28px;padding:40px;width:100%;max-width:460px;text-align:center;animation:fadeUp .5s ease both;box-shadow:0 40px 100px rgba(0,0,0,.85);}
+.card{position:relative;z-index:1;background:#0f0f16;border:1px solid rgba(45,212,196,.11);border-radius:28px;padding:40px;width:100%;max-width:460px;text-align:center;animation:fadeUp .5s ease both;box-shadow:0 40px 100px rgba(0,0,0,.85);}
 .card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--green),transparent);border-radius:0 0 4px 4px;}
 
 /* ESTADOS */
@@ -53,7 +53,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 #stateLoading.show, #statePix.show, #stateSuccess.show, #stateError.show{display:block}
 
 /* LOADING */
-.loader{width:56px;height:56px;border:3px solid rgba(0,255,85,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px;}
+.loader{width:56px;height:56px;border:3px solid rgba(45,212,196,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px;}
 
 /* HEADER PIX */
 .pix-header{margin-bottom:24px;}
@@ -62,15 +62,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .pix-sub{font-size:12px;color:#555;font-weight:600;}
 
 /* VALOR */
-.valor-box{background:rgba(0,255,85,.04);border:1px solid rgba(0,255,85,.1);border-radius:12px;padding:14px;margin-bottom:20px;}
+.valor-box{background:rgba(45,212,196,.04);border:1px solid rgba(45,212,196,.1);border-radius:12px;padding:14px;margin-bottom:20px;}
 .valor-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:4px;}
 .valor-num{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--green);}
 .valor-prod{font-size:11px;color:#666;margin-top:4px;font-weight:600;}
 
 /* QR CODE */
 .qr-wrap{position:relative;display:inline-block;margin:0 auto 20px;}
-.qr-img{width:200px;height:200px;border-radius:12px;border:3px solid rgba(0,255,85,.2);background:#fff;display:block;}
-.qr-timer{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);background:#0f0f16;border:1px solid rgba(0,255,85,.2);border-radius:99px;padding:3px 12px;font-size:10px;font-weight:900;color:var(--green);white-space:nowrap;}
+.qr-img{width:200px;height:200px;border-radius:12px;border:3px solid rgba(45,212,196,.2);background:#fff;display:block;}
+.qr-timer{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);background:#0f0f16;border:1px solid rgba(45,212,196,.2);border-radius:99px;padding:3px 12px;font-size:10px;font-weight:900;color:var(--green);white-space:nowrap;}
 
 /* STATUS POLLING */
 .poll-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;font-size:12px;font-weight:700;color:#555;}
@@ -80,39 +80,39 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 .pix-copy-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:16px;text-align:left;}
 .pix-copy-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:6px;}
 .pix-copy-code{font-family:monospace;font-size:9px;color:#888;word-break:break-all;line-height:1.6;max-height:44px;overflow:hidden;}
-.btn-copy{width:100%;padding:13px;border-radius:10px;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);color:var(--green);font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-bottom:10px;}
-.btn-copy:hover{background:rgba(0,255,85,.14)}
-.btn-copy.copiado{background:rgba(0,255,85,.18);border-color:var(--green);}
+.btn-copy{width:100%;padding:13px;border-radius:10px;background:rgba(45,212,196,.08);border:1px solid rgba(45,212,196,.2);color:var(--green);font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-bottom:10px;}
+.btn-copy:hover{background:rgba(45,212,196,.14)}
+.btn-copy.copiado{background:rgba(45,212,196,.18);border-color:var(--green);}
 
 /* INSTRUÇÕES */
 .instrucoes{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:14px;margin-bottom:20px;text-align:left;}
 .inst-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:10px;}
 .inst-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
 .inst-item:last-child{margin-bottom:0}
-.inst-num{width:20px;height:20px;border-radius:50%;background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--green);flex-shrink:0;}
+.inst-num{width:20px;height:20px;border-radius:50%;background:rgba(45,212,196,.08);border:1px solid rgba(45,212,196,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--green);flex-shrink:0;}
 .inst-text{font-size:11px;color:#666;font-weight:600;line-height:1.5;}
 
 /* SUCESSO */
-.success-icon{width:80px;height:80px;border-radius:50%;background:rgba(0,255,85,.1);border:2px solid rgba(0,255,85,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:pop .5s ease both, glowPulse 3s ease-in-out 1s infinite;}
+.success-icon{width:80px;height:80px;border-radius:50%;background:rgba(45,212,196,.1);border:2px solid rgba(45,212,196,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;animation:pop .5s ease both, glowPulse 3s ease-in-out 1s infinite;}
 .success-title{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;}
 .success-title span{color:var(--green)}
 .success-sub{font-size:13px;color:#666;font-weight:600;margin-bottom:24px;line-height:1.6;}
 
 /* CHAVE */
-.chave-box{background:linear-gradient(135deg,rgba(232,66,26,.07),rgba(255,107,43,.04));border:1px dashed rgba(232,66,26,.3);border-radius:12px;padding:16px;margin-bottom:14px;text-align:left;position:relative;overflow:hidden;}
-.chave-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,66,26,.4),transparent);}
-.chave-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,107,43,.65);margin-bottom:10px;}
+.chave-box{background:linear-gradient(135deg,rgba(45,212,196,.07),rgba(45,212,196,.04));border:1px dashed rgba(45,212,196,.3);border-radius:12px;padding:16px;margin-bottom:14px;text-align:left;position:relative;overflow:hidden;}
+.chave-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(45,212,196,.4),transparent);}
+.chave-label{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(45,212,196,.65);margin-bottom:10px;}
 .chave-field-label{font-size:9px;color:#555;margin-bottom:3px;font-weight:600;}
-.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all;background:rgba(255,107,43,.06);border:1px solid rgba(255,107,43,.1);border-radius:8px;padding:8px 10px;margin-bottom:6px;background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.03) 50%,transparent);background-size:200% 100%;animation:shimmer 3s ease infinite;}
+.chave-code{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;color:var(--orange);letter-spacing:1px;word-break:break-all;background:rgba(45,212,196,.06);border:1px solid rgba(45,212,196,.1);border-radius:8px;padding:8px 10px;margin-bottom:6px;background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.03) 50%,transparent);background-size:200% 100%;animation:shimmer 3s ease infinite;}
 .btn-copiar-chave{width:100%;padding:9px;border-radius:8px;background:linear-gradient(135deg,var(--mars),var(--orange));border:none;color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity .2s;margin-top:6px;}
 .btn-copiar-chave.ok{background:linear-gradient(135deg,var(--green),var(--green2));color:#000;}
 
 /* PTS BADGE */
-.pts-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,184,0,.07);border:1px solid rgba(255,184,0,.2);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:900;color:var(--gold);margin-bottom:20px;}
+.pts-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,194,75,.07);border:1px solid rgba(255,194,75,.2);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:900;color:var(--gold);margin-bottom:20px;}
 
 /* BOTÕES FINAIS */
-.btn-primary{display:flex;align-items:center;justify-content:center;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;color:#000;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 20px rgba(0,255,85,.18);margin-bottom:10px;}
-.btn-primary:hover{box-shadow:0 8px 32px rgba(0,255,85,.35);transform:translateY(-2px)}
+.btn-primary{display:flex;align-items:center;justify-content:center;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;color:#000;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:box-shadow .2s,transform .15s;box-shadow:0 4px 20px rgba(45,212,196,.18);margin-bottom:10px;}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(45,212,196,.35);transform:translateY(-2px)}
 .btn-secondary{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.07);color:#555;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;text-decoration:none;transition:border-color .2s,color .2s;}
 .btn-secondary:hover{border-color:rgba(255,255,255,.18);color:#ccc}
 
@@ -141,8 +141,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 body:not(.tema-claro){
   --card:#13131a;--surface:#181820;
   --border:#23232f;--border2:#30303e;
-  --green-glow:rgba(0,255,85,.14);--green-dim:rgba(0,255,85,.08);
-  --mars-glow:rgba(232,66,26,.18);--mars-dim:rgba(232,66,26,.12);
+  --green-glow:rgba(45,212,196,.14);--green-dim:rgba(45,212,196,.08);
+  --mars-glow:rgba(45,212,196,.18);--mars-dim:rgba(45,212,196,.12);
   --text:#f6f6fa;            /* antes apagado → branco quente claro   */
   --muted:#a8a8b6;           /* legível de verdade (era ~#555/#8a)    */
   --dim:#16161e;--radius:14px;
@@ -173,7 +173,7 @@ body:not(.tema-claro) .prod-card::before{   /* assinatura: fio laranja no topo, 
     transform:translateY(-4px);
   }
   body:not(.tema-claro) .prod-card:hover::before{opacity:.9}
-  body:not(.tema-claro) .prod-btn-buy:hover{background:rgba(232,66,26,.18);box-shadow:none}
+  body:not(.tema-claro) .prod-btn-buy:hover{background:rgba(45,212,196,.18);box-shadow:none}
 }
 
 /* — Preço: verde vivo, tabular — */
@@ -182,20 +182,20 @@ body:not(.tema-claro) .prod-price{
 }
 
 /* — Stats do hero: número limpo com leve brilho (devolve o "pop") — */
-.hero-stat-val{text-shadow:0 0 18px rgba(0,255,85,.28)}
-.hero-title .line2{text-shadow:0 0 26px rgba(0,255,85,.22)}
+.hero-stat-val{text-shadow:0 0 18px rgba(45,212,196,.28)}
+.hero-title .line2{text-shadow:0 0 26px rgba(45,212,196,.22)}
 
 /* — Categoria ativa: profundidade sutil, sem halo neon — */
 body:not(.tema-claro) .cat-pill{box-shadow:none;transition:border-color .2s,color .2s,background .2s,transform .15s}
 body:not(.tema-claro) .cat-pill.active{
   background:var(--mars-dim);border-color:var(--mars);color:#ff8a5c;
-  box-shadow:0 2px 12px rgba(232,66,26,.18);
+  box-shadow:0 2px 12px rgba(45,212,196,.18);
 }
 @media(hover:hover){body:not(.tema-claro) .cat-pill:hover{transform:translateY(-1px)}}
 
 /* — CTA primário: gradiente sutil + brilho controlado no hover — */
-.btn-mars-green{background:linear-gradient(135deg,#00ff55,#00c944);box-shadow:0 2px 10px rgba(0,255,85,.14)}
-.btn-mars-green:hover{box-shadow:0 10px 30px rgba(0,255,85,.28);transform:translateY(-2px)}
+.btn-mars-green{background:linear-gradient(135deg,#2DD4C4,#00c944);box-shadow:0 2px 10px rgba(45,212,196,.14)}
+.btn-mars-green:hover{box-shadow:0 10px 30px rgba(45,212,196,.28);transform:translateY(-2px)}
 
 /* — Outros componentes: tira glow neon, mantém legibilidade — */
 body:not(.tema-claro) .modal-box,
@@ -217,13 +217,13 @@ body:not(.tema-claro) .navbar{
 
 /* — Busca: foco verde — */
 body:not(.tema-claro) .search-input:focus{
-  border-color:rgba(0,255,85,.4);box-shadow:0 0 0 3px rgba(0,255,85,.08);
+  border-color:rgba(45,212,196,.4);box-shadow:0 0 0 3px rgba(45,212,196,.08);
 }
 
-.prod-estoque-baixo{animation:none;background:rgba(232,66,26,.92)}
+.prod-estoque-baixo{animation:none;background:rgba(45,212,196,.92)}
 
 /* — Foco visível por teclado (acessibilidade) — */
-body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;border-radius:4px}
+body :focus-visible{outline:2px solid var(--green,#2DD4C4);outline-offset:2px;border-radius:4px}
 
 </style>
 <link rel="stylesheet" href="mg-tokens.css">
@@ -291,13 +291,13 @@ body :focus-visible{outline:2px solid var(--mg-accent)!important}
 
     <!-- Tela especial para câmbio concluído -->
     <div id="cambioResultBox" style="display:none;margin-bottom:20px">
-      <div style="background:rgba(0,255,85,.06);border:1px solid rgba(0,255,85,.2);border-radius:16px;padding:24px;text-align:center">
+      <div style="background:rgba(45,212,196,.06);border:1px solid rgba(45,212,196,.2);border-radius:16px;padding:24px;text-align:center">
         <div style="font-size:48px;margin-bottom:8px" id="cambioResultIcon">🎟️</div>
-        <div style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#00ff55;margin-bottom:4px" id="cambioResultQtd">+5 Tickets</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#2DD4C4;margin-bottom:4px" id="cambioResultQtd">+5 Tickets</div>
         <div style="font-size:12px;color:#555;margin-bottom:16px" id="cambioResultDesc">creditados na sua conta agora</div>
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
           <div style="background:rgba(255,194,0,.08);border:1px solid rgba(255,194,0,.2);border-radius:10px;padding:10px 16px;font-size:11px;color:#ffc200;font-weight:700" id="cambioResultMP">-200 MP debitados</div>
-          <div style="background:rgba(0,255,85,.08);border:1px solid rgba(0,255,85,.2);border-radius:10px;padding:10px 16px;font-size:11px;color:#00ff55;font-weight:700" id="cambioResultSaldo">Novo saldo: —</div>
+          <div style="background:rgba(45,212,196,.08);border:1px solid rgba(45,212,196,.2);border-radius:10px;padding:10px 16px;font-size:11px;color:#2DD4C4;font-weight:700" id="cambioResultSaldo">Novo saldo: —</div>
         </div>
       </div>
     </div>
@@ -381,7 +381,7 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 // ── CONFETTI ──
 function confetti() {
   const wrap = document.getElementById('confettiWrap');
-  const cores = ['#00ff55','#00cc44','#e8421a','#ffb800','#7b61ff','#00ffff','#fff'];
+  const cores = ['#2DD4C4','#2DD4C4','#2DD4C4','#FFC24B','#7b61ff','#00ffff','#fff'];
   for (let i = 0; i < 80; i++) {
     const el = document.createElement('div');
     el.className = 'cp';
@@ -429,8 +429,8 @@ async function irParaSucesso(ref) {
   const refFinal = ref || reference || pedidoId || '';
 
   document.getElementById('pollMsg').textContent = 'Pagamento confirmado! Processando...';
-  document.getElementById('pollMsg').style.color = '#00ff55';
-  document.querySelector('.poll-dot').style.background = '#00ff55';
+  document.getElementById('pollMsg').style.color = '#2DD4C4';
+  document.querySelector('.poll-dot').style.background = '#2DD4C4';
   document.querySelector('.poll-dot').style.animation = 'none';
 
   const itens   = JSON.parse(sessionStorage.getItem('mg_itens_pendentes') || '[]');
@@ -762,11 +762,11 @@ function _mostrarSucessoCambio(cambio, recompensaVal, tipo, descRecompensa, novo
   const icones = { 'ct-ticket': '🎟️', 'ct-xp': '⚡', 'ct-game': '🎮' };
   const icone  = icones[tipo] || '✅';
   const cores  = { 'ct-ticket': '#ffc200', 'ct-xp': '#00ffe7', 'ct-game': '#9f3fff' };
-  const cor    = cores[tipo] || '#00ff55';
+  const cor    = cores[tipo] || '#2DD4C4';
 
   // Atualiza ícone e título
   document.getElementById('successIcon').textContent = icone;
-  document.getElementById('successIcon').style.cssText += `;background:rgba(0,255,85,.1);border-color:rgba(0,255,85,.3)`;
+  document.getElementById('successIcon').style.cssText += `;background:rgba(45,212,196,.1);border-color:rgba(45,212,196,.3)`;
   document.getElementById('successTitle').innerHTML = 'Câmbio <span>Concluído!</span>';
   document.getElementById('successSub').textContent  = 'Seus itens foram creditados agora mesmo.';
 
@@ -792,7 +792,7 @@ function _mostrarSucessoCambio(cambio, recompensaVal, tipo, descRecompensa, novo
 /* Tela de erro do câmbio */
 function _mostrarErroCambio(msg) {
   document.getElementById('successIcon').textContent = '⚠️';
-  document.getElementById('successTitle').innerHTML  = 'Atenção <span style="color:#ffb800">necessária</span>';
+  document.getElementById('successTitle').innerHTML  = 'Atenção <span style="color:#FFC24B">necessária</span>';
   document.getElementById('successSub').textContent  = msg || 'Erro ao processar câmbio.';
   const btn = document.getElementById('successBtn');
   btn.style.display  = 'flex';
@@ -961,8 +961,8 @@ async function pollPagamento(paymentId, ref) {
   } else {
     // Esgotou tentativas — para câmbio/MP vai direto para o perfil executar
     document.getElementById('pollMsg').textContent = 'Verificando pagamento...';
-    document.getElementById('pollMsg').style.color = '#ffb800';
-    document.querySelector('.poll-dot').style.background = '#ffb800';
+    document.getElementById('pollMsg').style.color = '#FFC24B';
+    document.querySelector('.poll-dot').style.background = '#FFC24B';
     document.querySelector('.poll-dot').style.animation = 'none';
     setTimeout(() => {
       if (ehCambioOuMP) {
@@ -972,7 +972,7 @@ async function pollPagamento(paymentId, ref) {
         // Compra normal — expirou sem confirmação do MP
         // NÃO redireciona para sucesso — mostra mensagem para verificar email
         document.getElementById('pollMsg').textContent = 'Tempo esgotado. Verifique seu email para confirmação do pagamento.';
-        document.getElementById('pollMsg').style.color = '#ffb800';
+        document.getElementById('pollMsg').style.color = '#FFC24B';
         show('stateError');
         document.getElementById('erroMsg').textContent = 'O tempo de verificação expirou. Se você pagou, sua chave será entregue em até 5 minutos por email. Caso não receba, entre em contato.';
       }
