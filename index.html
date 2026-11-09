@@ -3754,26 +3754,70 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 </div>
 
 <!-- ══ HERO — banners (1 grande + 2 tiles) ══ -->
-<section class="mg-hero-brand" aria-label="MarsGames — sua loja de jogos digitais">
-  <a class="mg-hero-brand-img" href="catalogo.html" aria-label="Ver catálogo de jogos">
-    <picture>
-      <source srcset="assets/hero-banner.webp" type="image/webp">
-      <img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais, entrega imediata" loading="eager" fetchpriority="high" width="1672" height="941">
-    </picture>
-  </a>
+<section class="mg-hero-carousel" aria-label="Destaques MarsGames">
+  <div class="mgc-track" id="mgcTrack">
+    <a class="mgc-slide" href="catalogo.html" aria-label="Ver catálogo">
+      <picture><source srcset="assets/hero-banner.webp" type="image/webp"><img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais, entrega imediata" width="1672" height="941" fetchpriority="high"></picture>
+    </a>
+    <a class="mgc-slide" href="promocoes.html" aria-label="Promoções">
+      <picture><source srcset="banners/banner-blackfriday.webp" type="image/webp"><img src="banners/banner-blackfriday.png" alt="Promoções MarsGames" width="1672" height="941" loading="lazy"></picture>
+    </a>
+    <a class="mgc-slide" href="produto.html?slug=darkwood" aria-label="Darkwood">
+      <picture><source srcset="banners/banner-darkwood.webp" type="image/webp"><img src="banners/banner-darkwood.png" alt="Darkwood — CD key original" width="1672" height="941" loading="lazy"></picture>
+    </a>
+    <a class="mgc-slide" href="cdkeys.html" aria-label="CD Keys originais">
+      <picture><source srcset="banners/banner-keys.webp" type="image/webp"><img src="banners/banner-keys.png" alt="Keys originais Steam — entrega imediata" width="1672" height="941" loading="lazy"></picture>
+    </a>
+  </div>
+  <button class="mgc-arrow mgc-prev" type="button" aria-label="Anterior" onclick="mgcGo(-1)">‹</button>
+  <button class="mgc-arrow mgc-next" type="button" aria-label="Próximo" onclick="mgcGo(1)">›</button>
+  <div class="mgc-dots" id="mgcDots"></div>
+</section>
+<div class="mg-hero-searchwrap">
   <form class="mg-hero-search" role="search" onsubmit="var q=this.querySelector('input').value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');return false;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     <input type="text" placeholder="Buscar jogos, chaves ou contas..." autocomplete="off"
       onkeydown="if(event.key==='Enter'){event.preventDefault();var q=this.value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');}">
     <button type="submit">Buscar</button>
   </form>
-</section>
+</div>
+<script>
+(function(){
+  var track=document.getElementById('mgcTrack');if(!track)return;
+  var slides=track.children.length,idx=0,timer=null;
+  var dotsWrap=document.getElementById('mgcDots');
+  for(var i=0;i<slides;i++){(function(i){var d=document.createElement('button');d.className='mgc-dot'+(i===0?' active':'');d.setAttribute('aria-label','Banner '+(i+1));d.onclick=function(){mgcSet(i);mgcReset();};dotsWrap.appendChild(d);})(i);}
+  window.mgcSet=function(n){idx=(n+slides)%slides;track.style.transform='translateX(-'+(idx*100)+'%)';var ds=dotsWrap.children;for(var i=0;i<ds.length;i++)ds[i].className='mgc-dot'+(i===idx?' active':'');};
+  window.mgcGo=function(dir){mgcSet(idx+dir);mgcReset();};
+  function auto(){timer=setInterval(function(){mgcSet(idx+1);},5500);}
+  window.mgcReset=function(){clearInterval(timer);auto();};
+  auto();
+  var sec=document.querySelector('.mg-hero-carousel');
+  sec.addEventListener('mouseenter',function(){clearInterval(timer);});
+  sec.addEventListener('mouseleave',auto);
+  // swipe mobile
+  var x0=null;
+  sec.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+  sec.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)mgcGo(dx<0?1:-1);x0=null;});
+})();
+</script>
 <style>
-.mg-hero-brand{max-width:1240px;margin:18px auto 10px;padding:0 16px;display:flex;flex-direction:column;gap:18px}
-.mg-hero-brand-img{display:block;border-radius:18px;overflow:hidden;border:1px solid var(--mg-border)}
-.mg-hero-brand-img img{width:100%;height:auto;display:block;transition:transform .5s ease}
-.mg-hero-brand-img:hover{border-color:var(--mg-accent)}
-.mg-hero-brand-img:hover img{transform:scale(1.015)}
+/* Carrossel full-width estilo Nuuvem */
+.mg-hero-carousel{position:relative;width:100%;overflow:hidden;background:#06090F;margin:0 0 16px}
+.mgc-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform}
+.mgc-slide{flex:0 0 100%;display:block;aspect-ratio:1672/941}
+.mgc-slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.mgc-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+  background:rgba(10,14,26,.5);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:28px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;backdrop-filter:blur(4px);
+  transition:background .2s,color .2s;padding-bottom:3px}
+.mgc-arrow:hover{background:var(--mg-accent,#2DD4C4);color:#06312D;border-color:transparent}
+.mgc-prev{left:18px}.mgc-next{right:18px}
+.mgc-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:3}
+.mgc-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:all .25s;border:none;padding:0}
+.mgc-dot.active{background:var(--mg-accent,#2DD4C4);width:26px;border-radius:5px}
+.mg-hero-searchwrap{max-width:740px;margin:0 auto 12px;padding:0 16px}
+@media(max-width:560px){.mgc-arrow{width:38px;height:38px;font-size:22px}.mgc-prev{left:10px}.mgc-next{right:10px}}
 /* Barra de busca ampliada (estilo Nuuvem) */
 .mg-hero-search{display:flex;align-items:center;gap:10px;width:100%;max-width:740px;margin:0 auto;
   background:var(--mg-surface,#141A28);border:1.5px solid var(--mg-border,#243049);border-radius:14px;
