@@ -1751,46 +1751,46 @@ body.tema-claro .section-loader{color:var(--muted)}
 /* PEDIDOS */
 .pedidos-list{display:flex;flex-direction:column;gap:10px}
 .pedido-card{
-  background:linear-gradient(135deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.015) 100%);
-  border:1px solid rgba(255,255,255,.07);
-  border-radius:16px;
+  background:var(--card,#141A28);
+  border:1px solid var(--border,#243049);
+  border-radius:14px;
   padding:0;overflow:hidden;
   display:flex;flex-direction:column;
-  transition:border-color .2s,box-shadow .2s;
+  transition:border-color .2s;
 }
-.pedido-card:hover{border-color:rgba(255,255,255,.14);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.pedido-card:hover{border-color:var(--border2,#31405E)}
 .pedido-card-header{
   display:flex;align-items:center;gap:14px;
-  padding:14px 16px;
+  padding:16px;
 }
-.pedido-img{width:52px;height:52px;border-radius:10px;object-fit:cover;
-  background:var(--dim);flex-shrink:0;border:1px solid rgba(255,255,255,.06)}
+.pedido-img{width:48px;height:48px;border-radius:10px;object-fit:cover;
+  background:var(--dim);flex-shrink:0}
 .pedido-info{flex:1;min-width:0}
-.pedido-nome{font-size:12px;font-weight:800;color:#eee;margin-bottom:3px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pedido-data{font-size:10px;color:var(--muted);font-weight:600}
-.pedido-preco{font-size:15px;font-weight:900;color:var(--green);white-space:nowrap}
-.pedido-status{font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
-  padding:3px 10px;border-radius:99px;border:1px solid;white-space:nowrap}
-.status-entregue{color:var(--green);background:rgba(45,212,196,.08);border-color:rgba(45,212,196,.25)}
-.status-pendente{color:var(--amber);background:rgba(255,179,0,.08);border-color:rgba(255,179,0,.25)}
-.sem-pedidos{text-align:center;padding:48px 20px;color:var(--muted);font-size:12px;font-weight:600}
-.pedido-body{padding:0 16px 14px}
+.pedido-nome{font-size:13px;font-weight:700;color:var(--text,#F2EFE6);margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.pedido-data{font-size:10px;color:var(--muted);font-weight:500}
+.pedido-preco{font-size:15px;font-weight:800;color:var(--text,#F2EFE6);white-space:nowrap}
+.pedido-status{font-size:8px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  padding:3px 9px;border-radius:99px;border:1px solid;white-space:nowrap}
+.status-entregue{color:var(--green);background:rgba(45,212,196,.08);border-color:rgba(45,212,196,.22)}
+.status-pendente{color:var(--amber);background:rgba(255,194,75,.08);border-color:rgba(255,194,75,.22)}
+.sem-pedidos{text-align:center;padding:48px 20px;color:var(--muted);font-size:12px;font-weight:500}
+.pedido-body{padding:0 16px 16px}
 
 /* ── CHAVE ── */
 .chave-box{
-  background:rgba(45,212,196,.04);
-  border:1px solid rgba(45,212,196,.12);
-  border-radius:10px;padding:12px 14px;margin-bottom:10px;
+  background:transparent;
+  border:1px solid var(--border,#243049);
+  border-radius:12px;padding:14px;margin-bottom:10px;
 }
-.chave-label{font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
-  color:rgba(45,212,196,.5);margin-bottom:6px;display:flex;align-items:center;gap:5px}
-.chave-valor{font-family:monospace;font-size:12px;font-weight:700;color:var(--green);
-  word-break:break-all;line-height:1.6;margin-bottom:8px}
-.chave-copiar{width:100%;padding:7px;border-radius:7px;background:rgba(45,212,196,.12);
-  border:1px solid rgba(45,212,196,.25);color:var(--green);font-family:'Montserrat',sans-serif;
-  font-size:10px;font-weight:900;cursor:pointer;letter-spacing:.5px;transition:background .15s}
-.chave-copiar:hover{background:rgba(45,212,196,.22)}
+.chave-label{font-size:8px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.chave-valor{font-family:'SF Mono',ui-monospace,monospace;font-size:13px;font-weight:600;color:var(--green);
+  word-break:break-all;line-height:1.6;margin-bottom:10px}
+.chave-copiar{width:100%;padding:9px;border-radius:9px;background:transparent;
+  border:1px solid rgba(45,212,196,.3);color:var(--green);font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:background .15s}
+.chave-copiar:hover{background:rgba(45,212,196,.1)}
 
 /* ── AVALIAÇÃO ── */
 .aval-wrap{margin-top:10px}
@@ -2402,15 +2402,18 @@ body :focus-visible{outline:2px solid var(--green,#2DD4C4);outline-offset:2px;bo
 <link rel="stylesheet" href="mg-tokens.css">
 <link rel="stylesheet" href="mg-shell.css">
 <style id="mg-f5-cofre">
-.chave-cofre{position:relative;border-radius:12px;overflow:hidden}
-.cofre-conteudo{filter:blur(9px);opacity:.5;pointer-events:none;transition:filter .4s,opacity .4s;user-select:none}
+.chave-cofre{position:relative;border-radius:10px;overflow:hidden;min-height:150px}
+.chave-cofre.aberto{min-height:0}
+.cofre-conteudo{filter:blur(10px);opacity:.45;pointer-events:none;transition:filter .45s ease,opacity .45s ease;user-select:none}
 .chave-cofre.aberto .cofre-conteudo{filter:none;opacity:1;pointer-events:auto;user-select:auto}
 .cofre-cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;padding:16px;text-align:center;background:rgba(10,14,26,.8);backdrop-filter:blur(2px);border-radius:12px}
+  gap:10px;padding:18px;text-align:center;background:rgba(10,14,26,.72);backdrop-filter:blur(3px);border-radius:10px}
+.cofre-cover::before{content:'🔒';font-size:18px;opacity:.85;line-height:1}
 .chave-cofre.aberto .cofre-cover{display:none}
-.cofre-aviso{font-size:10.5px;line-height:1.5;color:var(--mg-text-dim,#8A94AD);max-width:340px}
-.cofre-btn{background:var(--mg-accent,#2DD4C4);color:var(--mg-accent-ink,#06312D);border:none;border-radius:10px;
-  padding:12px 24px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:.5px;cursor:pointer;min-height:44px}
+.cofre-aviso{font-size:10px;line-height:1.5;color:var(--muted);max-width:260px}
+.cofre-btn{background:var(--mg-accent,#2DD4C4);color:var(--mg-accent-ink,#06312D);border:none;border-radius:9px;
+  padding:11px 26px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:.4px;cursor:pointer;min-height:42px;transition:filter .15s}
+.cofre-btn:hover{filter:brightness(1.08)}
 .cofre-btn:disabled{opacity:.5;cursor:default}
 .cofre-registro{margin-top:10px;font-size:10px;font-weight:700;color:var(--mg-gold,#FFC24B);
   background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.25);border-radius:6px;padding:7px 10px;line-height:1.45}
@@ -2429,16 +2432,13 @@ body:not(.tema-claro),body.tema-claro{
 }
 /* Spinner em petróleo */
 .spinner{border-color:rgba(45,212,196,.2)!important;border-top-color:var(--mg-accent)!important}
-/* Caixa da chave: petróleo (era tudo verde hardcoded) */
-.chave-box{background:var(--mg-accent-dim,rgba(45,212,196,.06))!important;border:1px solid rgba(45,212,196,.18)!important}
-.chave-label{color:var(--mg-accent,#2DD4C4)!important;opacity:.8}
+/* Caixa da chave: minimalista petróleo */
+.chave-box{background:transparent!important;border:1px solid var(--border,#243049)!important}
+.chave-label{color:var(--muted)!important}
 .chave-valor{color:var(--mg-accent,#2DD4C4)!important}
-.chave-copiar{background:var(--mg-accent-dim,rgba(45,212,196,.12))!important;border:1px solid rgba(45,212,196,.3)!important;color:var(--mg-accent,#2DD4C4)!important}
-.chave-copiar:hover{background:rgba(45,212,196,.22)!important}
-/* Aviso do cofre menor e proporcional */
-.cofre-aviso{font-size:10px!important;line-height:1.45!important;max-width:300px!important}
+.chave-copiar{background:transparent!important;border:1px solid rgba(45,212,196,.3)!important;color:var(--mg-accent,#2DD4C4)!important}
+.chave-copiar:hover{background:rgba(45,212,196,.1)!important}
 .cofre-registro{font-size:9.5px!important;padding:6px 9px!important}
-.cofre-cover{padding:14px!important;gap:10px!important}
 /* Barra de abas: limpa e centralizada (só 3 abas agora) */
 .tabs-wrap{display:flex!important;flex-wrap:wrap;gap:8px;justify-content:center;background:transparent!important;
   border:none!important;border-bottom:1px solid var(--mg-border)!important;border-radius:0!important;
@@ -4044,7 +4044,7 @@ async function carregarPedidos(userId){
                 '<button class="chave-copiar" onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'">Copiar chave</button>'+
               '</div>'+
               '<div class="cofre-cover">'+
-                '<p class="cofre-aviso">Ao revelar, a abertura fica registrada. Antes de revelar, você pode desistir em até 7 dias.</p>'+
+                '<p class="cofre-aviso">A abertura fica registrada. Você tem 7 dias para desistir.</p>'+
                 '<button class="cofre-btn" onclick="revelarChavePerfil(\''+pid+'\','+idx+',this)">'+rotulo+'</button>'+
               '</div>'+
             '</div>'+
