@@ -129,6 +129,26 @@ body{
   overscroll-behavior-y:none;
   -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
+/* Fundo espacial ESTÁTICO (pintado 1x, sem JS/canvas) — nebulosa + estrelas */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 680px at 82% -6%, rgba(45,120,200,.13), transparent 62%),
+    radial-gradient(900px 620px at 10% 4%, rgba(120,70,210,.11), transparent 60%),
+    radial-gradient(760px 520px at 55% 108%, rgba(45,212,196,.07), transparent 60%),
+    radial-gradient(1.4px 1.4px at 14% 22%, rgba(255,255,255,.75), transparent 60%),
+    radial-gradient(1.2px 1.2px at 28% 64%, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1.6px 1.6px at 44% 34%, rgba(255,255,255,.65), transparent 60%),
+    radial-gradient(1.2px 1.2px at 62% 12%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1.4px 1.4px at 73% 52%, rgba(255,255,255,.6), transparent 60%),
+    radial-gradient(1.2px 1.2px at 88% 30%, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1.3px 1.3px at 34% 86%, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 92% 74%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1.2px 1.2px at 6% 50%, rgba(255,255,255,.45), transparent 60%),
+    radial-gradient(1.3px 1.3px at 50% 96%, rgba(255,255,255,.5), transparent 60%),
+    #0a0a0e;
+}
+body.tema-claro::before{display:none}
 
 /* ══════════════════════════════════════════════════════
    TEMA CLARO — MarsGames
@@ -6133,7 +6153,8 @@ window.addEventListener('resize',function(){
     var slow=conn&&(conn.saveData||conn.effectiveType==='2g'||conn.effectiveType==='slow-2g');
     var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
     var lowPower=window.matchMedia&&matchMedia('(max-width: 820px), (pointer: coarse)').matches;
-    if(!slow && !reduce && !lowPower) initSpace();
+    /* Fundo estático em CSS agora (body::before) — animação de canvas desativada por performance */
+    /* if(!slow && !reduce && !lowPower) initSpace(); */
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
