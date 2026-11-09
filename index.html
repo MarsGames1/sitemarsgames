@@ -258,43 +258,36 @@ body.tema-claro .exit-sub{color:#666}
 @keyframes manuBlink{0%,100%{opacity:1}50%{opacity:0}}
 #manutencao-screen{
   display:none;position:fixed;inset:0;z-index:99999;
-  background:#0a0a0e;
+  background:#0A0E1A;
   flex-direction:column;align-items:center;justify-content:center;
   font-family:"Montserrat",sans-serif;overflow:hidden;
 }
 .manu-grid{
   position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(232,66,26,.06) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(232,66,26,.06) 1px,transparent 1px);
+    linear-gradient(rgba(45,212,196,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(45,212,196,.04) 1px,transparent 1px);
   background-size:60px 60px;
   mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
   -webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
 }
-.manu-scan{
-  position:absolute;inset:0;overflow:hidden;pointer-events:none;
-}
-.manu-scan::after{
-  content:"";position:absolute;left:0;right:0;height:2px;
-  background:linear-gradient(to right,transparent,rgba(232,66,26,.6),rgba(0,255,85,.4),transparent);
-  animation:manuScan 4s linear infinite;
-  box-shadow:0 0 20px rgba(232,66,26,.4);
-}
+.manu-scan{display:none}
 .manu-planet-wrap{
-  position:relative;width:220px;height:220px;margin-bottom:40px;
+  position:relative;width:140px;height:140px;margin-bottom:36px;
+  display:flex;align-items:center;justify-content:center;
 }
 .manu-planet{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:100px;height:100px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#c0392b,#8b1a10 40%,#1a0504 80%);
-  box-shadow:0 0 40px rgba(232,66,26,.5),inset -14px -14px 28px rgba(0,0,0,.6);
+  width:96px;height:96px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#2DD4C4,#167a72 55%,#0c3b37 85%);
+  box-shadow:0 0 50px rgba(45,212,196,.3),inset -12px -12px 26px rgba(0,0,0,.45);
   animation:manuFloat 6s ease-in-out infinite;
+  display:flex;align-items:center;justify-content:center;
 }
 .manu-planet::after{
-  content:"🔧";font-size:32px;
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  filter:drop-shadow(0 0 8px rgba(255,200,0,.8));
+  content:"🔧";font-size:30px;
+  filter:drop-shadow(0 0 6px rgba(10,14,26,.6));
 }
+.manu-ring,.manu-ring-2,.manu-orbit-1,.manu-orbit-2{display:none}
 .manu-orbit-1,.manu-orbit-2{
   position:absolute;top:50%;left:50%;
   width:8px;height:8px;border-radius:50%;margin:-4px 0 0 -4px;
@@ -317,26 +310,26 @@ body.tema-claro .exit-sub{color:#666}
 .manu-badge{
   display:inline-flex;align-items:center;gap:8px;
   padding:6px 16px;border-radius:99px;
-  background:rgba(232,66,26,.12);border:1px solid rgba(232,66,26,.3);
+  background:rgba(45,212,196,.1);border:1px solid rgba(45,212,196,.3);
   font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  color:var(--mars);margin-bottom:24px;
+  color:#2DD4C4;margin-bottom:24px;
 }
 .manu-badge::before{
   content:"";width:7px;height:7px;border-radius:50%;
-  background:var(--mars);box-shadow:0 0 8px var(--mars);
+  background:#2DD4C4;box-shadow:0 0 8px #2DD4C4;
   animation:manuBlink 1s ease-in-out infinite;
 }
 .manu-title{
   font-family:"Orbitron",sans-serif;
-  font-size:clamp(26px,5vw,42px);font-weight:900;
-  color:#fff;letter-spacing:2px;margin-bottom:12px;
-  text-shadow:0 0 40px rgba(232,66,26,.4);
+  font-size:clamp(26px,5vw,40px);font-weight:900;
+  color:#F2EFE6;letter-spacing:2px;margin-bottom:12px;
+  text-shadow:0 0 40px rgba(45,212,196,.3);
 }
-.manu-title span{color:var(--mars)}
+.manu-title span{color:#2DD4C4}
 .manu-subtitle{
-  font-size:14px;color:#fff;font-weight:600;line-height:1.7;margin-bottom:32px;
+  font-size:13px;color:#8A94AD;font-weight:500;line-height:1.7;margin-bottom:32px;
 }
-.manu-subtitle strong{color:#fff}
+.manu-subtitle strong{color:#F2EFE6;font-weight:700}
 .manu-progress-wrap{
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
   border-radius:12px;padding:20px 24px;margin-bottom:28px;
@@ -349,7 +342,7 @@ body.tema-claro .exit-sub{color:#666}
 .manu-progress-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
 .manu-progress-fill{
   height:100%;border-radius:2px;
-  background:linear-gradient(to right,var(--mars),var(--green));
+  background:linear-gradient(to right,#167a72,#2DD4C4);
   animation:manuPulse 2s ease-in-out infinite;
 }
 .manu-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}

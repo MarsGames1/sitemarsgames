@@ -611,58 +611,48 @@ body.tema-claro .section-loader{color:var(--muted)}
 #login-screen{
   display:flex;align-items:center;justify-content:center;min-height:80vh;
   position:relative;z-index:1;padding:20px;
-  background:radial-gradient(ellipse at 50% 0%,rgba(232,66,26,.07) 0%,transparent 60%);
 }
 .login-card{
-  background:rgba(13,13,18,.97);
-  border:1px solid rgba(232,66,26,.2);
-  border-radius:24px;padding:44px 40px;width:100%;max-width:440px;text-align:center;
-  box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 1px rgba(232,66,26,.05);
+  background:var(--card,#141A28);
+  border:1px solid var(--border,#243049);
+  border-radius:20px;padding:40px 32px;width:100%;max-width:400px;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
   animation:fadeUp .5s ease both;position:relative;overflow:hidden;
 }
 .login-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(to right,transparent,var(--mars),var(--green),transparent);
+  background:linear-gradient(to right,transparent,var(--mg-accent,#2DD4C4),transparent);
 }
-/* Planeta decorativo */
-.login-planet{
-  width:80px;height:80px;border-radius:50%;margin:0 auto 20px;
-  background:radial-gradient(circle at 35% 30%,#c0392b,#8b1a10 40%,#1a0504 80%);
-  box-shadow:0 0 30px rgba(232,66,26,.3),inset -10px -10px 20px rgba(0,0,0,.5);
-  position:relative;
-}
-.login-planet::after{
-  content:'';position:absolute;inset:-8px;border-radius:50%;
-  border:1px solid rgba(232,66,26,.2);
-}
+/* Planeta decorativo removido (minimalista) */
+.login-planet{display:none}
 .login-logo{
-  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;
-  letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;
+  font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;color:var(--text,#F2EFE6);
 }
-.login-logo span{color:var(--green)}
+.login-logo span{color:var(--mg-accent,#2DD4C4)}
 .login-sub{
-  font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
-  color:var(--muted);margin-bottom:8px;
+  font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
 }
 .login-desc{
-  font-size:12px;color:#888;font-weight:600;line-height:1.6;margin-bottom:28px;
+  font-size:12px;color:var(--muted);font-weight:500;line-height:1.6;margin-bottom:24px;
 }
-.login-desc strong{color:var(--green)}
-.login-divider{height:1px;background:var(--border);margin:20px 0;position:relative}
+.login-desc strong{color:var(--mg-accent,#2DD4C4);font-weight:700}
+.login-divider{height:1px;background:var(--border);margin:22px 0;position:relative}
 .login-divider::after{
   content:'ESCOLHA COMO ENTRAR';position:absolute;top:-8px;left:50%;
-  transform:translateX(-50%);background:rgba(13,13,18,.97);padding:0 12px;
+  transform:translateX(-50%);background:var(--card,#141A28);padding:0 12px;
   font-size:7px;font-weight:700;letter-spacing:2px;color:var(--muted);white-space:nowrap;
 }
-/* Botões de login redesenhados */
+/* Botões de login */
 .login-btn{
   display:flex;align-items:center;gap:14px;
-  width:100%;padding:16px 20px;border-radius:12px;
-  border:1px solid var(--border2);
-  background:rgba(255,255,255,.03);color:#fff;
+  width:100%;padding:15px 18px;border-radius:12px;
+  border:1px solid var(--border,#243049);
+  background:transparent;color:var(--text,#F2EFE6);
   font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;
   letter-spacing:.5px;cursor:pointer;
-  transition:border-color .2s,box-shadow .2s,transform .15s,background .2s;
+  transition:border-color .2s,transform .15s,background .2s;
   margin-bottom:10px;text-align:left;position:relative;overflow:hidden;
 }
 .login-btn::after{
@@ -677,8 +667,8 @@ body.tema-claro .section-loader{color:var(--muted)}
 }
 .login-btn-icon svg{width:20px;height:20px}
 .login-btn-text{}
-.login-btn-title{font-size:12px;font-weight:900;color:#fff;display:block;margin-bottom:2px}
-.login-btn-sub{font-size:9px;font-weight:600;color:#888;display:block}
+.login-btn-title{font-size:12px;font-weight:800;color:var(--text,#F2EFE6);display:block;margin-bottom:2px}
+.login-btn-sub{font-size:9px;font-weight:500;color:var(--muted);display:block}
 /* Google */
 .login-btn.google{border-color:rgba(255,255,255,.08)}
 .login-btn.google .login-btn-icon{background:rgba(255,255,255,.06)}
