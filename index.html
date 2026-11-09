@@ -4528,7 +4528,7 @@ function aplicarFavs(){
   /* Carrega do Supabase quando disponível */
   function tryCarregar(){
     if(typeof sb==='undefined'||!sb){setTimeout(tryCarregar,200);return;}
-    sb.from('produtos').select('id,nome,preco,preco_original,imagem,categoria,plataforma,tipo_key,estoque,ativo')
+    sb.from('produtos').select('id,slug,nome,preco,preco_original,imagem,categoria,plataforma,tipo_key,estoque,ativo')
       .eq('ativo',true).order('created_at',{ascending:false}).limit(20)
       .then(function(res){
         iniciarCarrossel(res.data||[]);
@@ -5045,7 +5045,7 @@ function navBuscarSugestoes(q){
     }
     /* Fallback: Supabase direto */
     if(typeof sb==='undefined')return;
-    sb.from('produtos').select('id,nome,preco,imagem')
+    sb.from('produtos').select('id,slug,nome,preco,imagem')
       .ilike('nome','%'+q+'%').eq('ativo',true).limit(6)
       .then(function(r){_renderNavSugg(sugg,r.data||[],q);})
       .catch(function(){});
@@ -5074,7 +5074,7 @@ function _renderNavSugg(sugg,resultados,q){
 
 /* ── PRODUTOS ── */
 async function carregarProdutos(){
-  var{data,error}=await sb.from('produtos').select('id,nome,preco,preco_original,desconto,imagem,plataforma,tipo_key,categoria,estoque,ativo,created_at').eq('ativo',true).order('created_at',{ascending:false});
+  var{data,error}=await sb.from('produtos').select('id,slug,nome,preco,preco_original,desconto,imagem,plataforma,tipo_key,categoria,estoque,ativo,created_at').eq('ativo',true).order('created_at',{ascending:false});
   if(error||!data){
     document.getElementById('prodsGrid').innerHTML='<div class="loader-wrap">Erro ao carregar. Tente novamente.</div>';
     return;
