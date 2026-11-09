@@ -3755,7 +3755,10 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 <!-- ══ HERO — banners (1 grande + 2 tiles) ══ -->
 <section class="mg-hero-brand" aria-label="MarsGames — sua loja de jogos digitais">
   <a class="mg-hero-brand-img" href="catalogo.html" aria-label="Ver catálogo de jogos">
-    <img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais, entrega imediata" loading="eager" width="1700" height="953">
+    <picture>
+      <source srcset="assets/hero-banner.webp" type="image/webp">
+      <img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais, entrega imediata" loading="eager" fetchpriority="high" width="1672" height="941">
+    </picture>
   </a>
   <form class="mg-hero-search" role="search" onsubmit="buscar(this.querySelector('input').value);return false;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
