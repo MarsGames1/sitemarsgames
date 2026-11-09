@@ -837,27 +837,32 @@ var favoritos=JSON.parse(localStorage.getItem('mg_favs')||'[]');
 /* ── INIT ── */
 async function init(){
   var params=new URLSearchParams(window.location.search);
+  var slug=params.get('slug');
   var id=params.get('id');
   var nome=params.get('nome');
 
-  if(!id&&!nome){showError();return}
+  if(!slug&&!id&&!nome){showError();return}
 
-  var query=sb.from('produtos').select('*');
-  if(id){
-    query=query.eq('id',id);
-    var{data,error}=await query.maybeSingle();
+  var data=null,error=null;
+  if(slug){
+    // URL amigável: resolve pelo slug
+    var rSlug=await sb.from('produtos').select('*').eq('slug',slug).maybeSingle();
+    data=rSlug.data;error=rSlug.error;
+  } else if(id){
+    // Compatibilidade: links antigos por id
+    var rId=await sb.from('produtos').select('*').eq('id',id).maybeSingle();
+    data=rId.data;error=rId.error;
   } else {
-    // Decodificar nome da URL corretamente
+    // Compatibilidade: links por nome
     var nomeDecoded=decodeURIComponent((nome||'').replace(/\+/g,' ')).trim();
-    // Busca exata primeiro
-    var{data,error}=await sb.from('produtos')
+    var rNome=await sb.from('produtos')
       .select('*').ilike('nome',nomeDecoded).eq('ativo',true).maybeSingle();
-    // Se não achou, busca parcial com primeiro trecho do nome
+    data=rNome.data;error=rNome.error;
     if(!data){
       var primeiraPalavra=nomeDecoded.split(' ').slice(0,2).join(' ');
-      var{data:data2}=await sb.from('produtos')
+      var r2=await sb.from('produtos')
         .select('*').ilike('nome','%'+primeiraPalavra+'%').eq('ativo',true).limit(1).maybeSingle();
-      data=data2;
+      data=r2.data;
     }
   }
 
@@ -899,7 +904,7 @@ async function init(){
 
 function aplicarSEOProduto(p){
   try{
-    var base='https://marsgames.com.br/produto.html?id='+encodeURIComponent(p.id);
+    var base='https://marsgames.com.br/produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+encodeURIComponent(p.id));
     var preco=Number(p.preco)||0;
     var temEstoque=p.estoque===null||p.estoque===undefined||p.estoque>0;
     var tipoKey=(p.tipo_key||'').toLowerCase();
