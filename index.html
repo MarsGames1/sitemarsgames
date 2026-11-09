@@ -4408,9 +4408,10 @@ function aplicarFavs(){
     var ribbonHtml='<div class="mv-ribbon-wrap"><div class="mv-ribbon '+ribbon+'">'+ribbonLabel+'</div></div>';
     var discHtml=pct?'<div class="mv-disc-badge">−'+pct+'% OFF</div>':'';
     var baseHtml=precoOrig?'<div class="mv-old-price">'+precoOrig+'</div>':'';
-    var urgHtml=ok?'<div class="mv-urgency"><div class="mv-urgency-dot"></div><span class="mv-urgency-txt">'+MV_URGENCY[idx%MV_URGENCY.length]+'</span></div>':'';
+    var urgTxt=MV_URGENCY[idx%MV_URGENCY.length];
+    var urgHtml=(ok&&urgTxt)?'<div class="mv-urgency"><div class="mv-urgency-dot"></div><span class="mv-urgency-txt">'+urgTxt+'</span></div>':'';
     var sale=MV_SALES[idx%MV_SALES.length];
-    var salesHtml=ok?'<div class="mv-sales-count mv-sales-'+sale.type+'">'+sale.label+'</div>':'';
+    var salesHtml=(ok&&sale&&sale.label)?'<div class="mv-sales-count mv-sales-'+sale.type+'">'+sale.label+'</div>':'';
     var dis=ok?'':' mv-dis';
     var lbl=ok?'COMPRAR AGORA':'ESGOTADO';
     var buyEvt=ok?'data-mvbuy="'+link+'"':'onclick="event.stopPropagation()"';
