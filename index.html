@@ -3421,7 +3421,24 @@ footer::before{
     background:var(--mg-accent,#2DD4C4);border-radius:1px 1px 0 0;
   }
   .nav-menu-bar .nav-dropdown{margin-left:auto;display:flex;align-items:center}
-  .nav-menu-bar .nav-dropdown-toggle{height:48px;padding:0 16px}
+  .nav-menu-bar .nav-dropdown-toggle{height:48px;padding:0 16px;font-size:13px;font-weight:700;letter-spacing:.3px;color:var(--mg-text,#F2EFE6)!important}
+  .nav-menu-bar .nav-dropdown-toggle:hover{color:#fff!important}
+  /* Todos os itens do menu com o MESMO visual branco — remove pílulas/bordas de destaque */
+  .nav-menu-bar .nav-link-sorteio,
+  .nav-menu-bar .nav-link-chaves,
+  .nav-menu-bar .nav-link-marspass{
+    color:var(--mg-text,#F2EFE6)!important;
+    background:none!important;border:none!important;isolation:auto!important;
+  }
+  .nav-menu-bar .nav-link-sorteio:hover,
+  .nav-menu-bar .nav-link-chaves:hover,
+  .nav-menu-bar .nav-link-marspass:hover{color:#fff!important;background:rgba(255,255,255,.05)!important}
+  .nav-menu-bar .nav-link-sorteio::before,
+  .nav-menu-bar .nav-link-sorteio::after,
+  .nav-menu-bar .nav-link-chaves::before,
+  .nav-menu-bar .nav-link-chaves::after,
+  .nav-menu-bar .nav-link-marspass::before,
+  .nav-menu-bar .nav-link-marspass::after{display:none!important;content:none!important}
 }
 @media(min-width:768px) and (max-width:1023px){
   .nav-menu-bar{top:72px}
