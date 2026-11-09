@@ -604,6 +604,13 @@ async function init(){
       p.classList.toggle('active',p.dataset.cat===cat);
     });
   }
+  /* Busca vinda de outra página (hero/nav): ?q=termo */
+  var qUrl=params.get('q')||params.get('busca');
+  if(qUrl){
+    buscaAtual=qUrl.trim();
+    var siq=document.getElementById('searchInput');
+    if(siq) siq.value=buscaAtual;
+  }
 
   var{data,error}=await sb.from('produtos').select('*').eq('ativo',true).order('created_at',{ascending:false});
   if(error||!data){

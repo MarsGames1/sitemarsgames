@@ -3652,10 +3652,10 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
       </button>
       <div class="nav-search-expand" id="navSearchExpand">
         <input type="text" id="searchInput" placeholder="Buscar jogo..." autocomplete="off"
-          oninput="navBuscarSugestoes(this.value);var l=document.getElementById('searchInputLoja');if(l){l.value=this.value;buscar(this.value);}"
+          oninput="navBuscarSugestoes(this.value)"
           onblur="recolherSearch()"
-          onkeydown="if(event.key==='Escape'){recolherSearch();this.blur()}if(event.key==='Enter'){var l=document.getElementById('searchInputLoja');if(l){l.value=this.value;buscar(this.value);}fecharNavSugg()}">
-        <button class="nav-search-btn" aria-label="Buscar">
+          onkeydown="if(event.key==='Escape'){recolherSearch();this.blur()}if(event.key==='Enter'){event.preventDefault();var q=this.value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');}">
+        <button class="nav-search-btn" aria-label="Buscar" onclick="var q=document.getElementById('searchInput').value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
       </div>
@@ -3714,8 +3714,8 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   </button>
   <div style="flex:1;position:relative">
     <input type="search" id="mobSearchInput" placeholder="Buscar jogo..." autocomplete="off"
-      oninput="mobBuscar(this.value);mobBuscarSugestoes(this.value)"
-      onkeydown="if(event.key==='Escape')fecharBuscaMob()">
+      oninput="mobBuscarSugestoes(this.value)"
+      onkeydown="if(event.key==='Escape')fecharBuscaMob();if(event.key==='Enter'){event.preventDefault();var q=this.value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');}">
     <div id="mobSuggestions" style="position:absolute;top:calc(100% + 8px);left:0;right:0;background:rgba(10,10,14,.99);border:1px solid rgba(232,66,26,.3);border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.8);display:none;z-index:9999;max-height:60vh;overflow-y:auto"></div>
   </div>
 </div>
@@ -3761,10 +3761,10 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
       <img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais, entrega imediata" loading="eager" fetchpriority="high" width="1672" height="941">
     </picture>
   </a>
-  <form class="mg-hero-search" role="search" onsubmit="buscar(this.querySelector('input').value);return false;">
+  <form class="mg-hero-search" role="search" onsubmit="var q=this.querySelector('input').value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');return false;">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     <input type="text" placeholder="Buscar jogos, chaves ou contas..." autocomplete="off"
-      oninput="var v=this.value;var a=document.getElementById('searchInput');if(a)a.value=v;var l=document.getElementById('searchInputLoja');if(l)l.value=v;buscar(v);">
+      onkeydown="if(event.key==='Enter'){event.preventDefault();var q=this.value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');}">
     <button type="submit">Buscar</button>
   </form>
 </section>
