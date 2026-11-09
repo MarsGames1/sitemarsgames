@@ -4009,6 +4009,13 @@ async function carregarPedidos(userId){
       }
     }catch(ae){console.warn('[avaliacoes check]',ae);}
 
+    /* Chaves já reveladas — não pode bloquear de novo após recarregar */
+    window._revelado={};
+    try{
+      var revRes=await sb.from('chave_revelacoes').select('pedido_id,chave_ref,revelado_em');
+      (revRes.data||[]).forEach(function(r){ window._revelado[r.pedido_id+'|'+r.chave_ref]=r.revelado_em; });
+    }catch(re){console.warn('[revelacoes check]',re);}
+
     window._pedidosData=data; window._pedidosPag=1;
     window._pedidoCard=function(p){
       var statusPago=p.status==='pago'||p.status==='aprovado'||p.status==='entregue';
@@ -4026,12 +4033,21 @@ async function carregarPedidos(userId){
           var ehConta=c.tipo==='login_senha';
           var rotulo=ehConta?'Ver meu jogo':'Ver minha chave';
           var pid=esc(p.id||'');
+          /* Já revelada? mantém aberta após recarregar */
+          var revEm=(window._revelado&&window._revelado[p.id+'|'+idx])||null;
+          var registroHtml='';
+          if(revEm){
+            var d=new Date(revEm);
+            var dt=d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+            registroHtml='<div class="cofre-registro">Revelada em '+dt+' · troca apenas com comprovação de defeito.</div>';
+          }
           return '<div class="chave-box">'+
             '<div class="chave-label">Sua chave de acesso</div>'+
-            '<div class="chave-cofre">'+
+            '<div class="chave-cofre'+(revEm?' aberto':'')+'">'+
               '<div class="cofre-conteudo">'+
                 '<div class="chave-valor">'+conteudo+'</div>'+
                 '<button class="chave-copiar" onclick="copiarChavePerfil(this)" data-chave="'+conteudo+'">Copiar chave</button>'+
+                registroHtml+
               '</div>'+
               '<div class="cofre-cover">'+
                 '<p class="cofre-aviso">A abertura fica registrada. Você tem 7 dias para desistir.</p>'+
