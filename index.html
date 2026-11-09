@@ -3357,6 +3357,75 @@ footer::before{
 .mg-sino-panel{background:var(--mg-surface)!important;border-color:var(--mg-border)!important}
 .nav-mob-search-btn,.nav-hamburger span{color:var(--mg-text)!important;background:var(--mg-text)}
 .nav-hamburger span{background:var(--mg-text)!important}
+
+/* ========= HEADER 2 LINHAS estilo Green Man (busca no topo + menu abaixo) ========= */
+/* Barra de busca ampla no topo (desktop) */
+.nav-wsearch{display:none}
+@media(min-width:768px){
+  .navbar{gap:20px}
+  .nav-wsearch{
+    display:flex;align-items:center;flex:1;max-width:620px;position:relative;
+    height:46px;border-radius:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--mg-border,#243049);
+    transition:border-color .18s,box-shadow .18s;
+  }
+  .nav-wsearch:focus-within{border-color:var(--mg-accent,#2DD4C4);box-shadow:0 0 0 3px rgba(45,212,196,.12)}
+  .nav-wsearch .nav-wsearch-ic{display:flex;align-items:center;padding-left:16px;color:var(--mg-text-dim,#8A94AD);flex-shrink:0}
+  .nav-wsearch input{
+    flex:1;min-width:0;background:none;border:none;outline:none;
+    color:var(--mg-text,#F2EFE6);font-size:14px;font-family:"Montserrat",sans-serif;
+    padding:0 12px;height:100%;
+  }
+  .nav-wsearch input::placeholder{color:var(--mg-text-dim,#8A94AD)}
+  .nav-wsearch button{
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:7px;
+    height:36px;margin-right:5px;padding:0 18px;border:none;border-radius:9px;cursor:pointer;
+    background:linear-gradient(135deg,#2DD4C4 0%,#1fa89b 100%);color:#06312D;
+    font-weight:800;font-size:12px;letter-spacing:.6px;text-transform:uppercase;
+    transition:filter .18s;
+  }
+  .nav-wsearch button:hover{filter:brightness(1.07)}
+  .nav-wsearch button svg{stroke:#06312D}
+  /* sugestões da busca ampla */
+  .nav-wsearch .nav-search-suggestions{
+    position:absolute;top:calc(100% + 8px);left:0;right:0;
+    background:var(--mg-surface,#141A28);border:1px solid var(--mg-border,#243049);
+    border-radius:12px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.6);
+    display:none;z-index:9999;max-height:64vh;overflow-y:auto;
+  }
+  .nav-wsearch .nav-search-suggestions.open{display:block}
+}
+/* Segunda linha: barra de menus */
+.nav-menu-bar{display:none}
+@media(min-width:768px){
+  .nav-menu-bar{
+    display:block;position:sticky;top:72px;z-index:199;
+    background:rgba(10,14,26,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--mg-border,#243049);
+  }
+  .nav-menu-inner{
+    max-width:1480px;margin:0 auto;padding:0 28px;
+    display:flex;align-items:center;gap:2px;height:48px;
+  }
+  .nav-menu-bar .nav-link{
+    padding:0 16px;height:48px;display:flex;align-items:center;
+    font-size:13px;font-weight:700;letter-spacing:.3px;white-space:nowrap;
+    color:var(--mg-text,#F2EFE6)!important;text-decoration:none;position:relative;
+    transition:color .15s,background .15s;cursor:pointer;
+  }
+  .nav-menu-bar .nav-link:hover{color:#fff!important;background:rgba(255,255,255,.05)}
+  .nav-menu-bar .nav-link.active{color:var(--mg-accent)!important}
+  .nav-menu-bar .nav-link.active::after{
+    content:"";position:absolute;bottom:0;left:16px;right:16px;height:2px;
+    background:var(--mg-accent,#2DD4C4);border-radius:1px 1px 0 0;
+  }
+  .nav-menu-bar .nav-dropdown{margin-left:auto;display:flex;align-items:center}
+  .nav-menu-bar .nav-dropdown-toggle{height:48px;padding:0 16px}
+}
+@media(min-width:768px) and (max-width:1023px){
+  .nav-menu-bar{top:72px}
+}
 .nav-mobile-menu{background:var(--mg-bg)!important;border-color:var(--mg-border)!important}
 .nav-mobile-link{color:var(--mg-text)!important}
 .nav-mobile-link.active{color:var(--mg-accent)!important}
@@ -3614,54 +3683,23 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
     <img src="Favicon.png" alt="MarsGames" style="height:50px;width:auto;vertical-align:middle;margin-right:0;display:inline-block"><div class="nav-logo-text">Mars<span>Games</span></div>
   </a>
 
-  <!-- Links centrais -->
-  <div class="nav-links">
-    <a class="nav-link active" href="index.html">Loja</a>
-    <a class="nav-link nav-link-sorteio" href="sorteio.html" id="navSorteioLink">
-      Sorteios
-    </a>
-    <a class="nav-link" href="promocoes.html">Promoções</a>
-    <a class="nav-link" href="combos.html">Bundles</a>
-    <a class="nav-link nav-link-chaves" href="cdkeys.html" id="navChavesLink">
-      CD Keys Originais
-    </a>
-    <div class="nav-dropdown" id="navDropdown">
-      <button class="nav-dropdown-toggle" id="navDropdownToggle">
-        Mais
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="nav-dropdown-menu" id="navDropdownMenu">
-        <a class="nav-dropdown-item" href="catalogo.html?cat=Ação+%2F+RPG">Ação / RPG</a>
-        <a class="nav-dropdown-item" href="catalogo.html?cat=Luta+%2F+Tiros">Luta / Tiros</a>
-        <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação</a>
-        <a class="nav-dropdown-item" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
-        <a class="nav-dropdown-item" href="cdkeys.html">CD Keys Originais</a>
-        <a class="nav-dropdown-item" href="sorteio.html">Sorteios</a>
-        <a class="nav-dropdown-item" href="chaves.html">Chaves Aleatórias</a>
-        <a class="nav-dropdown-item" href="blog.html">Blog</a>
-      </div>
-    </div>
-  </div>
+  <!-- Busca ampla no topo (estilo Green Man) -->
+  <form class="nav-wsearch" role="search" onsubmit="var q=document.getElementById('searchInput').value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');return false;">
+    <span class="nav-wsearch-ic">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </span>
+    <input type="text" id="searchInput" placeholder="Buscar jogos, chaves ou contas..." autocomplete="off"
+      oninput="navBuscarSugestoes(this.value)"
+      onkeydown="if(event.key==='Escape'){this.blur()}">
+    <div class="nav-search-suggestions" id="navSuggestions"></div>
+    <button type="submit" aria-label="Buscar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Buscar
+    </button>
+  </form>
 
   <!-- Direita -->
   <div class="nav-right">
-    <!-- Busca compacta -->
-    <div class="nav-search" id="navSearchWrap">
-      <button class="nav-search-icon-btn" id="navSearchToggle" onclick="toggleNavSearch()" aria-label="Buscar">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-      <div class="nav-search-expand" id="navSearchExpand">
-        <input type="text" id="searchInput" placeholder="Buscar jogo..." autocomplete="off"
-          oninput="navBuscarSugestoes(this.value)"
-          onblur="recolherSearch()"
-          onkeydown="if(event.key==='Escape'){recolherSearch();this.blur()}if(event.key==='Enter'){event.preventDefault();var q=this.value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');}">
-        <button class="nav-search-btn" aria-label="Buscar" onclick="var q=document.getElementById('searchInput').value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </button>
-      </div>
-      <!-- Sugestões FORA do expand para não ser cortado pelo overflow:hidden -->
-      <div class="nav-search-suggestions" id="navSuggestions"></div>
-    </div>
     <!-- Discord -->
     <a class="nav-discord" href="https://discord.gg/bKnR9accnw" target="_blank">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="#7289da"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
@@ -3706,6 +3744,31 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
     </button>
   </div>
 </nav>
+
+<!-- Segunda linha: menu de navegação (estilo Green Man) -->
+<div class="nav-menu-bar">
+  <div class="nav-menu-inner">
+    <a class="nav-link active" href="index.html">Loja</a>
+    <a class="nav-link nav-link-sorteio" href="sorteio.html" id="navSorteioLink">Sorteios</a>
+    <a class="nav-link" href="promocoes.html">Promoções</a>
+    <a class="nav-link" href="combos.html">Bundles</a>
+    <a class="nav-link nav-link-chaves" href="cdkeys.html" id="navChavesLink">CD Keys Originais</a>
+    <a class="nav-link" href="blog.html">Blog</a>
+    <div class="nav-dropdown" id="navDropdown">
+      <button class="nav-dropdown-toggle" id="navDropdownToggle">
+        Mais
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="nav-dropdown-menu" id="navDropdownMenu">
+        <a class="nav-dropdown-item" href="catalogo.html?cat=Ação+%2F+RPG">Ação / RPG</a>
+        <a class="nav-dropdown-item" href="catalogo.html?cat=Luta+%2F+Tiros">Luta / Tiros</a>
+        <a class="nav-dropdown-item" href="catalogo.html?cat=Simulação+%2F+Sobrevivência">Simulação</a>
+        <a class="nav-dropdown-item" href="catalogo.html?cat=Terror+%2F+Indie">Terror / Indie</a>
+        <a class="nav-dropdown-item" href="chaves.html">Chaves Aleatórias</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Overlay de busca mobile — FORA do menu para não ser cortado pelo overflow -->
 <div class="mob-search-overlay" id="mobSearchOverlay">
@@ -3805,8 +3868,8 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 /* Carrossel full-width estilo Nuuvem */
 .mg-hero-carousel{position:relative;width:100%;overflow:hidden;background:#06090F;margin:0 0 16px}
 .mgc-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform}
-.mgc-slide{flex:0 0 100%;display:block;aspect-ratio:1672/941}
-.mgc-slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.mgc-slide{flex:0 0 100%;display:block;height:clamp(200px,28vw,420px)}
+.mgc-slide img{width:100%;height:100%;object-fit:cover;object-position:center 32%;display:block}
 .mgc-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
   background:rgba(10,14,26,.5);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:28px;line-height:1;
   cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;backdrop-filter:blur(4px);
@@ -3817,6 +3880,7 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 .mgc-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:all .25s;border:none;padding:0}
 .mgc-dot.active{background:var(--mg-accent,#2DD4C4);width:26px;border-radius:5px}
 .mg-hero-searchwrap{max-width:740px;margin:0 auto 12px;padding:0 16px}
+@media(min-width:768px){.mg-hero-searchwrap{display:none}}
 @media(max-width:560px){.mgc-arrow{width:38px;height:38px;font-size:22px}.mgc-prev{left:10px}.mgc-next{right:10px}}
 /* Barra de busca ampliada (estilo Nuuvem) */
 .mg-hero-search{display:flex;align-items:center;gap:10px;width:100%;max-width:740px;margin:0 auto;
