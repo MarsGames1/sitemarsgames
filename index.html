@@ -3834,25 +3834,28 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
   </a>
 </div>
 
-<!-- ══ HERO — banners (1 grande + 2 tiles) ══ -->
-<section class="mg-hero-carousel" aria-label="Destaques MarsGames">
-  <div class="mgc-track" id="mgcTrack">
-    <a class="mgc-slide" href="catalogo.html" aria-label="Ver catálogo" style="background-image:url(assets/hero-banner.png)">
-      <picture><source srcset="assets/hero-banner.webp" type="image/webp"><img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais, entrega imediata" width="1672" height="941" fetchpriority="high"></picture>
+<!-- ══ HERO — 2 colunas (2+2) com crossfade ══ -->
+<section class="mg-hero2" aria-label="Destaques MarsGames">
+  <!-- Coluna 1: Catálogo ↔ Darkwood -->
+  <div class="mg-htile" data-interval="5200">
+    <a class="mg-hslide on" href="catalogo.html" aria-label="Ver catálogo" style="background-image:url(assets/hero-banner.png)">
+      <picture><source srcset="assets/hero-banner.webp" type="image/webp"><img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais" width="1672" height="941" fetchpriority="high"></picture>
     </a>
-    <a class="mgc-slide" href="promocoes.html" aria-label="Promoções" style="background-image:url(banners/banner-blackfriday.png)">
-      <picture><source srcset="banners/banner-blackfriday.webp" type="image/webp"><img src="banners/banner-blackfriday.png" alt="Promoções MarsGames" width="1672" height="941" loading="lazy"></picture>
-    </a>
-    <a class="mgc-slide" href="produto.html?slug=darkwood" aria-label="Darkwood" style="background-image:url(banners/banner-darkwood.png)">
+    <a class="mg-hslide" href="produto.html?slug=darkwood" aria-label="Darkwood" style="background-image:url(banners/banner-darkwood.png)">
       <picture><source srcset="banners/banner-darkwood.webp" type="image/webp"><img src="banners/banner-darkwood.png" alt="Darkwood — CD key original" width="1672" height="941" loading="lazy"></picture>
     </a>
-    <a class="mgc-slide" href="cdkeys.html" aria-label="CD Keys originais" style="background-image:url(banners/banner-keys.png)">
+    <div class="mg-hdots"></div>
+  </div>
+  <!-- Coluna 2: Black Friday ↔ Keys -->
+  <div class="mg-htile" data-interval="5200" data-delay="2600">
+    <a class="mg-hslide on" href="promocoes.html" aria-label="Promoções Black Friday" style="background-image:url(banners/banner-blackfriday.png)">
+      <picture><source srcset="banners/banner-blackfriday.webp" type="image/webp"><img src="banners/banner-blackfriday.png" alt="Promoções Black Friday MarsGames" width="1672" height="941" loading="lazy"></picture>
+    </a>
+    <a class="mg-hslide" href="cdkeys.html" aria-label="CD Keys originais" style="background-image:url(banners/banner-keys.png)">
       <picture><source srcset="banners/banner-keys.webp" type="image/webp"><img src="banners/banner-keys.png" alt="Keys originais Steam — entrega imediata" width="1672" height="941" loading="lazy"></picture>
     </a>
+    <div class="mg-hdots"></div>
   </div>
-  <button class="mgc-arrow mgc-prev" type="button" aria-label="Anterior" onclick="mgcGo(-1)">‹</button>
-  <button class="mgc-arrow mgc-next" type="button" aria-label="Próximo" onclick="mgcGo(1)">›</button>
-  <div class="mgc-dots" id="mgcDots"></div>
 </section>
 <div class="mg-hero-searchwrap">
   <form class="mg-hero-search" role="search" onsubmit="var q=this.querySelector('input').value.trim();window.location.href='catalogo.html'+(q?('?q='+encodeURIComponent(q)):'');return false;">
@@ -3864,40 +3867,45 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 </div>
 <script>
 (function(){
-  var track=document.getElementById('mgcTrack');if(!track)return;
-  var slides=track.children.length,idx=0,timer=null;
-  var dotsWrap=document.getElementById('mgcDots');
-  for(var i=0;i<slides;i++){(function(i){var d=document.createElement('button');d.className='mgc-dot'+(i===0?' active':'');d.setAttribute('aria-label','Banner '+(i+1));d.onclick=function(){mgcSet(i);mgcReset();};dotsWrap.appendChild(d);})(i);}
-  window.mgcSet=function(n){idx=(n+slides)%slides;track.style.transform='translateX(-'+(idx*100)+'%)';var ds=dotsWrap.children;for(var i=0;i<ds.length;i++)ds[i].className='mgc-dot'+(i===idx?' active':'');};
-  window.mgcGo=function(dir){mgcSet(idx+dir);mgcReset();};
-  function auto(){timer=setInterval(function(){mgcSet(idx+1);},5500);}
-  window.mgcReset=function(){clearInterval(timer);auto();};
-  auto();
-  var sec=document.querySelector('.mg-hero-carousel');
-  sec.addEventListener('mouseenter',function(){clearInterval(timer);});
-  sec.addEventListener('mouseleave',auto);
-  // swipe mobile
-  var x0=null;
-  sec.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
-  sec.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)mgcGo(dx<0?1:-1);x0=null;});
+  var tiles=document.querySelectorAll('.mg-htile');
+  tiles.forEach(function(tile){
+    var slides=tile.querySelectorAll('.mg-hslide');
+    if(slides.length<2){return;}
+    var dotsWrap=tile.querySelector('.mg-hdots');
+    var idx=0,timer=null,interval=parseInt(tile.getAttribute('data-interval'))||5200;
+    var delay=parseInt(tile.getAttribute('data-delay'))||0;
+    // dots
+    slides.forEach(function(s,i){
+      var d=document.createElement('button');d.className='mg-hdot'+(i===0?' active':'');
+      d.setAttribute('aria-label','Banner '+(i+1));
+      d.onclick=function(e){e.preventDefault();show(i);reset();};
+      dotsWrap.appendChild(d);
+    });
+    function show(n){
+      idx=(n+slides.length)%slides.length;
+      slides.forEach(function(s,i){s.classList.toggle('on',i===idx);});
+      var ds=dotsWrap.children;for(var i=0;i<ds.length;i++)ds[i].className='mg-hdot'+(i===idx?' active':'');
+    }
+    function auto(){timer=setInterval(function(){show(idx+1);},interval);}
+    function reset(){clearInterval(timer);auto();}
+    tile.addEventListener('mouseenter',function(){clearInterval(timer);});
+    tile.addEventListener('mouseleave',auto);
+    setTimeout(auto,delay);
+  });
 })();
 </script>
 <style>
-/* Carrossel full-width estilo Nuuvem */
-.mg-hero-carousel{position:relative;width:100%;overflow:hidden;background:#06090F;margin:0 0 16px}
-.mgc-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform}
-.mgc-slide{flex:0 0 100%;position:relative;overflow:hidden;display:block;height:clamp(240px,30vw,460px);background:#0a1020 center/cover no-repeat}
-.mgc-slide::before{content:"";position:absolute;inset:-40px;background:inherit;background-size:cover;background-position:center;filter:blur(26px) brightness(.5) saturate(1.1);z-index:0}
-.mgc-slide img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;object-position:center;display:block}
-.mgc-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
-  background:rgba(10,14,26,.5);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:28px;line-height:1;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;backdrop-filter:blur(4px);
-  transition:background .2s,color .2s;padding-bottom:3px}
-.mgc-arrow:hover{background:var(--mg-accent,#2DD4C4);color:#06312D;border-color:transparent}
-.mgc-prev{left:18px}.mgc-next{right:18px}
-.mgc-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:3}
-.mgc-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:all .25s;border:none;padding:0}
-.mgc-dot.active{background:var(--mg-accent,#2DD4C4);width:26px;border-radius:5px}
+/* Hero 2 colunas (2+2) com crossfade */
+.mg-hero2{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:1480px;margin:0 auto 18px;padding:0 16px}
+.mg-htile{position:relative;overflow:hidden;border-radius:16px;height:clamp(200px,24vw,360px);background:#0a1020;border:1px solid var(--mg-border,#243049)}
+.mg-hslide{position:absolute;inset:0;display:block;opacity:0;transition:opacity .9s ease;background:#0a1020 center/cover no-repeat;pointer-events:none}
+.mg-hslide.on{opacity:1;pointer-events:auto;z-index:1}
+.mg-hslide::before{content:"";position:absolute;inset:-40px;background:inherit;background-size:cover;background-position:center;filter:blur(26px) brightness(.5) saturate(1.1);z-index:0}
+.mg-hslide img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+.mg-hdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:3}
+.mg-hdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:all .25s;border:none;padding:0}
+.mg-hdot.active{background:var(--mg-accent,#2DD4C4);width:22px;border-radius:4px}
+@media(max-width:767px){.mg-hero2{grid-template-columns:1fr;gap:12px}}
 .mg-hero-searchwrap{max-width:740px;margin:0 auto 12px;padding:0 16px}
 @media(min-width:768px){.mg-hero-searchwrap{display:none}}
 @media(max-width:560px){.mgc-arrow{width:38px;height:38px;font-size:22px}.mgc-prev{left:10px}.mgc-next{right:10px}}
