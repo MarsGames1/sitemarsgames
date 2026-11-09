@@ -244,8 +244,8 @@ body.tema-claro .hsp-rating-text strong{color:var(--text)}
 body.tema-claro .hsp-review-text{color:#555}
 body.tema-claro .hsp-review-name{color:#888}
 body.tema-claro .hsp-divider{background:var(--border)}
-body.tema-claro .mv-sales-hot{background:rgba(214,58,20,.1);border-color:rgba(214,58,20,.3);color:var(--mars)}
-body.tema-claro .mv-sales-last{background:rgba(200,130,0,.08);border-color:rgba(200,130,0,.3);color:#b07800}
+body.tema-claro .mv-sales-hot{background:rgba(255,194,75,.12);border-color:rgba(255,194,75,.4);color:#b8860b}
+body.tema-claro .mv-sales-last{background:rgba(45,212,196,.1);border-color:rgba(45,212,196,.4);color:#1fa89b}
 
 body.tema-claro .exit-sub{color:#666}
 
@@ -1721,8 +1721,8 @@ footer::before{
 .mv-price{font-size:26px;color:var(--green);font-weight:900;text-shadow:0 0 10px rgba(0,255,85,.3);line-height:1}
 .mv-card.mv-esgotado .mv-price{color:#888;text-shadow:none}
 .mv-urgency{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:6px}
-.mv-urgency-dot{width:5px;height:5px;background:#ff9500;border-radius:50%;animation:mvBlink 1.1s ease-in-out infinite;flex-shrink:0}
-.mv-urgency-txt{font-size:9px;color:#ff9500;font-weight:700;letter-spacing:.2px}
+.mv-urgency-dot{width:5px;height:5px;background:#35C486;border-radius:50%;animation:mvBlink 1.1s ease-in-out infinite;flex-shrink:0}
+.mv-urgency-txt{font-size:9px;color:#35C486;font-weight:700;letter-spacing:.2px}
 
 /* ══ SALES COUNTER — card carrossel ══ */
 .mv-sales-count{
@@ -1733,14 +1733,14 @@ footer::before{
   margin-bottom:7px;text-transform:uppercase;
 }
 .mv-sales-hot{
-  background:rgba(232,66,26,.15);
-  border:1px solid rgba(232,66,26,.35);
-  color:#ff8055;
+  background:rgba(255,194,75,.12);
+  border:1px solid rgba(255,194,75,.35);
+  color:#FFC24B;
 }
 .mv-sales-last{
-  background:rgba(255,179,0,.12);
-  border:1px solid rgba(255,179,0,.35);
-  color:#ffb300;
+  background:rgba(45,212,196,.1);
+  border:1px solid rgba(45,212,196,.35);
+  color:#2DD4C4;
   animation:countPulse 1.8s ease-in-out infinite;
 }
 
@@ -4352,19 +4352,19 @@ function aplicarFavs(){
 /* ── Carrossel de produtos — carregado do Supabase ── */
 (function(){
   var MV_LABELS={imperdivel:'Imperdível',combo:'Combo',bundle:'Bundle',novidade:'Novidade'};
-  var MV_URGENCY=['','','','',''];
-  /* Contadores de vendas — rotacionam pelos produtos */
+  var MV_URGENCY=['Disponível agora','Disponível agora','Disponível agora','Disponível agora','Disponível agora'];
+  /* Selos de valor (honestos, sem escassez falsa) — rotacionam pelos produtos */
   var MV_SALES=[
-    {type:'hot',  label:''},
-    {type:'hot',  label:''},
-    {type:'last', label:''},
-    {type:'hot',  label:''},
-    {type:'last', label:''},
-    {type:'hot',  label:''},
-    {type:'hot',  label:''},
-    {type:'last', label:''},
-    {type:'hot',  label:''},
-    {type:'hot',  label:''},
+    {type:'hot',  label:'🔥 Em alta'},
+    {type:'last', label:'⚡ Entrega imediata'},
+    {type:'hot',  label:'🔑 CD key original'},
+    {type:'last', label:'⚡ Entrega imediata'},
+    {type:'hot',  label:'🔥 Em alta'},
+    {type:'last', label:'⚡ Entrega imediata'},
+    {type:'hot',  label:'🔑 CD key original'},
+    {type:'last', label:'⚡ Entrega imediata'},
+    {type:'hot',  label:'🔥 Em alta'},
+    {type:'last', label:'⚡ Entrega imediata'},
   ];
   var track=document.getElementById('mvTrack');
   var CARD_W, GAP=14, CLONES=4;
