@@ -399,7 +399,7 @@ function renderProdutos(){
     var ok=p.estoque===null||p.estoque===undefined||p.estoque>0;
     var tagClass=!ok?'tag-esgotado':p.categoria==='Combos e Bundles'?'tag-combo':p.categoria==='Steam Key / Outros'?'tag-key':'tag-oferta';
     var tagTxt=!ok?'Esgotado':p.categoria==='Combos e Bundles'?'Bundle':p.categoria==='Steam Key / Outros'?'Key':'Oferta';
-    return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s">'+
+    return '<a class="prod-card" href="produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+p.id)+'" style="animation-delay:'+(i%12*.04)+'s">'+
       '<div class="prod-img-wrap">'+
         (p.imagem?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">':'')+
         '<div class="prod-tag '+tagClass+'">'+tagTxt+'</div>'+

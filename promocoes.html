@@ -644,7 +644,7 @@ function renderProdutos(){
     else if(_isAleatorio&&!_isCDKey) {tagClass='tag-aleatorio';tagTxt='🎰 Chave Aleatória';}
     else if(_isCDKey)                {tagClass='tag-cdkey';   tagTxt='🔑 CD Key';}
     else                             {tagClass='tag-steamoff';tagTxt='💻 Steam Offline';}
-    return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%POR_PAGINA*.03)+'s">'
+    return '<a class="prod-card" href="produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+p.id)+'" style="animation-delay:'+(i%POR_PAGINA*.03)+'s">'
       +'<div class="prod-img-wrap">'
         +(p.imagem?'<img class="prod-img" src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">':'')
         +'<div class="prod-tag '+tagClass+'">'+tagTxt+'</div>'

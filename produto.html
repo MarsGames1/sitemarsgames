@@ -1155,7 +1155,7 @@ async function carregarRelacionados(cat,idAtual){
   if(!data||data.length===0){grid.parentElement.style.display='none';return}
 
   grid.innerHTML=data.map(function(p){
-    return '<a class="rel-card" href="produto.html?id='+p.id+'">'+
+    return '<a class="rel-card" href="produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+p.id)+'">'+
       '<img class="rel-img" src="'+esc(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
       '<div class="rel-body">'+
         '<div class="rel-name">'+esc(p.nome)+'</div>'+

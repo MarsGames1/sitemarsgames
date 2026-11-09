@@ -783,7 +783,7 @@ function renderProdutos(resetPagina){
       discountBadge='<span class="prod-discount">-'+pct+'%</span>';
       precoOld='<span class="prod-price-old">R$ '+Number(p.preco_original).toFixed(2).replace('.',',')+'</span>';
     }
-    return '<a class="prod-card" href="produto.html?id='+p.id+'" style="animation-delay:'+(i%12*.04)+'s">'+
+    return '<a class="prod-card" href="produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+p.id)+'" style="animation-delay:'+(i%12*.04)+'s">'+
       '<div class="prod-img-wrap">'+imgContent+
       '<div class="prod-plat-tag '+getPlatTag(plat)+'">'+getPlatSvg(plat)+esc(plat)+'</div>'+stockBadge+'</div>'+
       '<div class="prod-body">'+

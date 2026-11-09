@@ -4289,7 +4289,7 @@ async function carregarFavoritos(userId){
     if(document.getElementById('statFavs'))document.getElementById('statFavs').textContent=data.length;
     listEl.innerHTML=data.map(function(f){
       var p=f.produtos;if(!p)return '';
-      return '<a class="fav-card" href="produto.html?id='+p.id+'">'+
+      return '<a class="fav-card" href="produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+p.id)+'">'+
         '<img class="fav-img" src="'+esc(p.imagem||'')+'" alt="'+esc(p.nome)+'" loading="lazy">'+
         '<div class="fav-body">'+
           '<div class="fav-name">'+esc(p.nome)+'</div>'+
