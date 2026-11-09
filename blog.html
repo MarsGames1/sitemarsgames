@@ -35,7 +35,9 @@ a{color:inherit;text-decoration:none}
 .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:20px 0 64px}
 .post-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
 .post-card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.post-cover{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,rgba(45,212,196,.12),rgba(45,212,196,.03))}
+.post-cover{aspect-ratio:16/9;overflow:hidden;background:var(--bg)}
+.post-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.post-card:hover .post-cover img{transform:scale(1.03)}
 .post-body{padding:20px}
 .post-tag{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:inline-block}
 .post-body h2{font-size:17px;font-weight:800;margin-bottom:8px;line-height:1.3}
@@ -61,7 +63,7 @@ footer a{color:var(--accent)}
 <div class="wrap">
   <div class="posts">
     <a class="post-card" href="blog-jogos-baratos-pc.html">
-      <div class="post-cover">🎮</div>
+      <div class="post-cover"><picture><source srcset="assets/blog-jogos-baratos.webp" type="image/webp"><img src="assets/blog-jogos-baratos.png" alt="Melhores jogos baratos para PC em 2026" loading="lazy" width="1672" height="941"></picture></div>
       <div class="post-body">
         <span class="post-tag">Guia de compras</span>
         <h2>Melhores jogos baratos para PC em 2026</h2>
@@ -70,7 +72,7 @@ footer a{color:var(--accent)}
       </div>
     </a>
     <a class="post-card" href="blog-como-ativar-chave-steam.html">
-      <div class="post-cover">🔑</div>
+      <div class="post-cover"><picture><source srcset="assets/blog-ativar-chave.webp" type="image/webp"><img src="assets/blog-ativar-chave.png" alt="Como ativar uma chave Steam passo a passo" loading="lazy" width="1672" height="941"></picture></div>
       <div class="post-body">
         <span class="post-tag">Passo a passo</span>
         <h2>Como ativar uma chave Steam (passo a passo)</h2>
