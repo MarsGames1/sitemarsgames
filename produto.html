@@ -902,7 +902,7 @@ async function init(){
   atualizarCarrinho();
 }
 
-function aplicarSEOProduto(p){
+function aplicarSEOProduto(p,reviewInfo){
   try{
     var base='https://marsgames.com.br/produto.html?'+(p.slug?'slug='+encodeURIComponent(p.slug):'id='+encodeURIComponent(p.id));
     var preco=Number(p.preco)||0;
@@ -939,9 +939,37 @@ function aplicarSEOProduto(p){
         "price":preco.toFixed(2),
         "availability":temEstoque?"https://schema.org/InStock":"https://schema.org/OutOfStock",
         "itemCondition":"https://schema.org/NewCondition",
-        "seller":{"@type":"Organization","name":"MarsGames"}
+        "priceValidUntil":(new Date(Date.now()+1000*60*60*24*365)).toISOString().slice(0,10),
+        "seller":{"@type":"Organization","name":"MarsGames"},
+        "shippingDetails":{
+          "@type":"OfferShippingDetails",
+          "shippingRate":{"@type":"MonetaryAmount","value":"0","currency":"BRL"},
+          "shippingDestination":{"@type":"DefinedRegion","addressCountry":"BR"},
+          "deliveryTime":{
+            "@type":"ShippingDeliveryTime",
+            "handlingTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":0,"unitCode":"DAY"},
+            "transitTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":0,"unitCode":"DAY"}
+          }
+        },
+        "hasMerchantReturnPolicy":{
+          "@type":"MerchantReturnPolicy",
+          "applicableCountry":"BR",
+          "returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays":7,
+          "returnFees":"https://schema.org/FreeReturn"
+        }
       }
     };
+    /* review/aggregateRating: SÓ com avaliações reais aprovadas (nunca fabricado) */
+    if(reviewInfo && reviewInfo.count>0){
+      ld.aggregateRating={
+        "@type":"AggregateRating",
+        "ratingValue":String(reviewInfo.media),
+        "reviewCount":String(reviewInfo.count),
+        "bestRating":"5","worstRating":"1"
+      };
+      if(reviewInfo.reviews && reviewInfo.reviews.length) ld.review=reviewInfo.reviews;
+    }
     var old=document.getElementById('prodLD');if(old)old.remove();
     var sc=document.createElement('script');sc.type='application/ld+json';sc.id='prodLD';
     sc.textContent=JSON.stringify(ld);
@@ -1559,6 +1587,25 @@ async function carregarAvaliacoesProduto(produtoNome){
         comentario+
       '</div>';
     }).join('')+'</div>';
+
+    /* Re-injeta Product JSON-LD agora COM avaliações reais (aggregateRating + review) */
+    try{
+      if(typeof produto!=='undefined'&&produto&&data.length>0){
+        var _sample=data.slice(0,5).map(function(a){
+          var _pf=perfisMap[a.user_email]||{};
+          var _nm=_pf.nome||a.user_nome||'Cliente MarsGames';
+          var _rev={
+            "@type":"Review",
+            "reviewRating":{"@type":"Rating","ratingValue":String(a.estrelas||5),"bestRating":"5","worstRating":"1"},
+            "author":{"@type":"Person","name":String(_nm)}
+          };
+          if(a.comentario) _rev.reviewBody=String(a.comentario);
+          if(a.created_at) _rev.datePublished=String(a.created_at).slice(0,10);
+          return _rev;
+        });
+        aplicarSEOProduto(produto,{media:media,count:data.length,reviews:_sample});
+      }
+    }catch(_e){}
 
   }catch(e){console.warn('[avaliacoes produto]',e);section.style.display='none';}
 }
