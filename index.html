@@ -58,6 +58,75 @@
         "currenciesAccepted": "BRL",
         "paymentAccepted": "Pix, Cartão de crédito",
         "areaServed": "BR"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://marsgames.com.br/#organization",
+        "name": "MarsGames",
+        "alternateName": "MarsGames CD Keys",
+        "url": "https://marsgames.com.br/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://marsgames.com.br/og-image.jpg"
+        },
+        "image": "https://marsgames.com.br/og-image.jpg",
+        "description": "Loja brasileira de CD keys originais e contas de jogos para PC, com entrega digital imediata e pagamento via Pix ou cartão.",
+        "slogan": "Sua loja de jogos digitais",
+        "knowsLanguage": "pt-BR",
+        "areaServed": {"@type": "Country", "name": "Brasil"},
+        "sameAs": ["https://discord.gg/bKnR9accnw"],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "availableLanguage": ["Portuguese"],
+          "url": "https://discord.gg/bKnR9accnw"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://marsgames.com.br/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "As chaves (CD keys) da MarsGames são originais?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim. Todas as CD keys vendidas na MarsGames são originais e ativam direto nas plataformas oficiais como Steam, Epic Games, Xbox, PlayStation e Nintendo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quanto tempo leva para receber a chave após o pagamento?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A entrega é digital e imediata. Assim que o pagamento via Pix ou cartão é confirmado, a chave aparece automaticamente na sua conta MarsGames, em segundos."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quais formas de pagamento a MarsGames aceita?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A MarsGames aceita Pix e cartão de crédito, com processamento seguro pelo Mercado Pago."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "A compra é segura?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim. O pagamento é processado pelo Mercado Pago e você tem 7 dias de direito de arrependimento conforme o Código de Defesa do Consumidor."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "A MarsGames vende contas de jogos além de chaves?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sim. Além de CD keys originais, a MarsGames oferece contas de jogos e chaves para PC, Xbox, PlayStation e Nintendo."
+            }
+          }
+        ]
       }
     ]
   }
@@ -70,6 +139,9 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://www.youtube.com">
 <link rel="dns-prefetch" href="https://i.ytimg.com">
+<!-- Preload dos banners da hero (acelera LCP) -->
+<link rel="preload" as="image" href="assets/hero-banner.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="banners/banner-blackfriday.webp" type="image/webp">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
 <script>
 /* ── Safari scroll helper — evita trava de scroll após scrollIntoView ── */
@@ -3881,20 +3953,20 @@ body :focus-visible{outline:2px solid var(--green,#00ff55);outline-offset:2px;bo
 <section class="mg-hero2" aria-label="Destaques MarsGames">
   <!-- Coluna 1: Catálogo ↔ Darkwood -->
   <div class="mg-htile" data-interval="5200">
-    <a class="mg-hslide on" href="catalogo.html" aria-label="Ver catálogo" style="background-image:url(assets/hero-banner.png)">
+    <a class="mg-hslide on" href="catalogo.html" aria-label="Ver catálogo">
       <picture><source srcset="assets/hero-banner.webp" type="image/webp"><img src="assets/hero-banner.png" alt="MarsGames — sua loja de jogos digitais" width="1672" height="941" fetchpriority="high"></picture>
     </a>
-    <a class="mg-hslide" href="produto.html?slug=darkwood" aria-label="Darkwood" style="background-image:url(banners/banner-darkwood.png)">
+    <a class="mg-hslide" href="produto.html?slug=darkwood" aria-label="Darkwood">
       <picture><source srcset="banners/banner-darkwood.webp" type="image/webp"><img src="banners/banner-darkwood.png" alt="Darkwood — CD key original" width="1672" height="941" loading="lazy"></picture>
     </a>
     <div class="mg-hdots"></div>
   </div>
   <!-- Coluna 2: Black Friday ↔ Keys -->
   <div class="mg-htile" data-interval="5200" data-delay="2600">
-    <a class="mg-hslide on" href="promocoes.html" aria-label="Promoções Black Friday" style="background-image:url(banners/banner-blackfriday.png)">
+    <a class="mg-hslide on" href="promocoes.html" aria-label="Promoções Black Friday">
       <picture><source srcset="banners/banner-blackfriday.webp" type="image/webp"><img src="banners/banner-blackfriday.png" alt="Promoções Black Friday MarsGames" width="1672" height="941" loading="lazy"></picture>
     </a>
-    <a class="mg-hslide" href="cdkeys.html" aria-label="CD Keys originais" style="background-image:url(banners/banner-keys.png)">
+    <a class="mg-hslide" href="cdkeys.html" aria-label="CD Keys originais">
       <picture><source srcset="banners/banner-keys.webp" type="image/webp"><img src="banners/banner-keys.png" alt="Keys originais Steam — entrega imediata" width="1672" height="941" loading="lazy"></picture>
     </a>
     <div class="mg-hdots"></div>
@@ -4939,6 +5011,50 @@ function aplicarFavs(){
     <div class="notif-time">Agora mesmo • Brasil 🇧🇷</div>
   </div>
 </div>
+
+<!-- ══ FAQ — perguntas frequentes (SEO + leitura por IA) ══ -->
+<section class="mg-faq" aria-labelledby="faqTitulo">
+  <div class="mg-faq-inner">
+    <p class="mg-faq-eyebrow">DÚVIDAS FREQUENTES</p>
+    <h2 id="faqTitulo" class="mg-faq-title">Tudo o que você precisa saber antes de comprar</h2>
+    <div class="mg-faq-list">
+      <details class="mg-faq-item" open>
+        <summary><h3>As chaves (CD keys) da MarsGames são originais?</h3><span class="mg-faq-ic">+</span></summary>
+        <div class="mg-faq-ans">Sim. Todas as CD keys vendidas na MarsGames são originais e ativam direto nas plataformas oficiais como Steam, Epic Games, Xbox, PlayStation e Nintendo.</div>
+      </details>
+      <details class="mg-faq-item">
+        <summary><h3>Quanto tempo leva para receber a chave?</h3><span class="mg-faq-ic">+</span></summary>
+        <div class="mg-faq-ans">A entrega é digital e imediata. Assim que o pagamento via Pix ou cartão é confirmado, a chave aparece automaticamente na sua conta MarsGames, em segundos.</div>
+      </details>
+      <details class="mg-faq-item">
+        <summary><h3>Quais formas de pagamento vocês aceitam?</h3><span class="mg-faq-ic">+</span></summary>
+        <div class="mg-faq-ans">Aceitamos Pix e cartão de crédito, com processamento seguro pelo Mercado Pago.</div>
+      </details>
+      <details class="mg-faq-item">
+        <summary><h3>A compra é segura?</h3><span class="mg-faq-ic">+</span></summary>
+        <div class="mg-faq-ans">Sim. O pagamento é processado pelo Mercado Pago e você tem 7 dias de direito de arrependimento conforme o Código de Defesa do Consumidor.</div>
+      </details>
+      <details class="mg-faq-item">
+        <summary><h3>Vocês vendem contas de jogos além de chaves?</h3><span class="mg-faq-ic">+</span></summary>
+        <div class="mg-faq-ans">Sim. Além de CD keys originais, a MarsGames oferece contas de jogos e chaves para PC, Xbox, PlayStation e Nintendo.</div>
+      </details>
+    </div>
+  </div>
+</section>
+<style>
+.mg-faq{padding:48px 16px 8px;max-width:900px;margin:0 auto}
+.mg-faq-eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;color:var(--mg-accent,#2DD4C4);margin-bottom:8px;text-align:center}
+.mg-faq-title{font-size:clamp(22px,3.4vw,30px);font-weight:900;text-align:center;color:var(--mg-text,#F2EFE6);margin-bottom:28px;line-height:1.2}
+.mg-faq-list{display:flex;flex-direction:column;gap:12px}
+.mg-faq-item{background:var(--mg-surface,#141A28);border:1px solid var(--mg-border,#243049);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.mg-faq-item[open]{border-color:rgba(45,212,196,.4)}
+.mg-faq-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px}
+.mg-faq-item summary::-webkit-details-marker{display:none}
+.mg-faq-item summary h3{font-size:15px;font-weight:700;color:var(--mg-text,#F2EFE6);margin:0}
+.mg-faq-ic{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(45,212,196,.12);color:var(--mg-accent,#2DD4C4);font-size:20px;font-weight:700;line-height:1;transition:transform .2s}
+.mg-faq-item[open] .mg-faq-ic{transform:rotate(45deg)}
+.mg-faq-ans{padding:0 20px 20px;color:var(--mg-text-dim,#8A94AD);font-size:14px;line-height:1.65}
+</style>
 
 <!-- TOAST -->
 <div id="toast"></div>
